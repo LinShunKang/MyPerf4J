@@ -1,38 +1,40 @@
 package cn.perf4j;
 
+import java.util.Date;
+
 /**
  * Created by LinShunkang on 2018/3/11
  */
 public class PerfStatistic {
 
-    private int minTime;
+    private static final int TP_50_IDX = 0;
+    private static final int TP_90_IDX = 1;
+    private static final int TP_95_IDX = 2;
+    private static final int TP_99_IDX = 3;
+    private static final int TP_999_IDX = 4;
+    private static final int TP_9999_IDX = 5;
+    private static final int TP_100_IDX = 6;
 
-    private int maxTime;
+    private static final double[] TOP_PERCENTILE_ARR = {0.5D, 0.9D, 0.95D, 0.99D, 0.999D, 0.9999D, 1.0D};
 
-    private TimingRecord tp50;
+    private String api;
 
-    private TimingRecord tp90;
+    private final int[] tpArr = {-1, -1, -1, -1, -1, -1, -1};
 
-    private TimingRecord tp95;
+    private int minTime = -1;//ms
 
-    private TimingRecord tp99;
+    private int maxTime = -1;//ms
 
-    private TimingRecord tp999;
+    private int totalCount = -1;//ms
 
-    private TimingRecord tp9999;
+    private long timeslice = -1;//ms
 
-    private TimingRecord tp100;
+    private long startMillTime = -1L;
 
-    private PerfStatistic() {
-        this.minTime = -1;
-        this.maxTime = -1;
-        this.tp50 = TimingRecord.getInstance();
-        this.tp90 = TimingRecord.getInstance();
-        this.tp95 = TimingRecord.getInstance();
-        this.tp99 = TimingRecord.getInstance();
-        this.tp999 = TimingRecord.getInstance();
-        this.tp9999 = TimingRecord.getInstance();
-        this.tp100 = TimingRecord.getInstance();
+    private long stopMillTime = -1L;
+
+    private PerfStatistic(String api) {
+        this.api = api;
     }
 
     public int getMinTime() {
@@ -51,83 +53,123 @@ public class PerfStatistic {
         this.maxTime = maxTime;
     }
 
-    public TimingRecord getTp50() {
-        return tp50;
+    public int getTotalCount() {
+        return totalCount;
     }
 
-    public void setTp50(TimingRecord tp50) {
-        this.tp50 = tp50;
+    public void setTotalCount(int totalCount) {
+        this.totalCount = totalCount;
     }
 
-    public TimingRecord getTp90() {
-        return tp90;
+    public long getTimeslice() {
+        return timeslice;
     }
 
-    public void setTp90(TimingRecord tp90) {
-        this.tp90 = tp90;
+    public void setTimeslice(long timeslice) {
+        this.timeslice = timeslice;
     }
 
-    public TimingRecord getTp95() {
-        return tp95;
+    public int getTp50() {
+        return tpArr[TP_50_IDX];
     }
 
-    public void setTp95(TimingRecord tp95) {
-        this.tp95 = tp95;
+    public void setTp50(int tp50) {
+        this.tpArr[TP_50_IDX] = tp50;
     }
 
-    public TimingRecord getTp99() {
-        return tp99;
+    public int getTp90() {
+        return tpArr[TP_90_IDX];
     }
 
-    public void setTp99(TimingRecord tp99) {
-        this.tp99 = tp99;
+    public void setTp90(int tp90) {
+        this.tpArr[TP_90_IDX] = tp90;
     }
 
-    public TimingRecord getTp999() {
-        return tp999;
+    public int getTp95() {
+        return tpArr[TP_95_IDX];
     }
 
-    public void setTp999(TimingRecord tp999) {
-        this.tp999 = tp999;
+    public void setTp95(int tp95) {
+        this.tpArr[TP_95_IDX] = tp95;
     }
 
-    public TimingRecord getTp9999() {
-        return tp9999;
+    public int getTp99() {
+        return tpArr[TP_99_IDX];
     }
 
-    public void setTp9999(TimingRecord tp9999) {
-        this.tp9999 = tp9999;
+    public void setTp99(int tp99) {
+        this.tpArr[TP_99_IDX] = tp99;
     }
 
-    public TimingRecord getTp100() {
-        return tp100;
+    public int getTp999() {
+        return tpArr[TP_999_IDX];
     }
 
-    public void setTp100(TimingRecord tp100) {
-        this.tp100 = tp100;
+    public void setTp999(int tp999) {
+        this.tpArr[TP_999_IDX] = tp999;
     }
 
-    public TimingRecord[] getTpArr() {
-        TimingRecord[] tpArr = {tp50, tp90, tp95, tp99, tp999, tp9999, tp100};
+    public int getTp9999() {
+        return tpArr[TP_9999_IDX];
+    }
+
+    public void setTp9999(int tp9999) {
+        this.tpArr[TP_9999_IDX] = tp9999;
+    }
+
+    public int getTp100() {
+        return tpArr[TP_100_IDX];
+    }
+
+    public void setTp100(int tp100) {
+        this.tpArr[TP_100_IDX] = tp100;
+    }
+
+    public int[] getTpArr() {
         return tpArr;
     }
 
-    public static PerfStatistic getInstance() {
-        return new PerfStatistic();
+    public double[] getPercentiles() {
+        return TOP_PERCENTILE_ARR;
+    }
+
+    public long getStartMillTime() {
+        return startMillTime;
+    }
+
+    public void setStartMillTime(long startMillTime) {
+        this.startMillTime = startMillTime;
+    }
+
+    public long getStopMillTime() {
+        return stopMillTime;
+    }
+
+    public void setStopMillTime(long stopMillTime) {
+        this.stopMillTime = stopMillTime;
+    }
+
+    public static PerfStatistic getInstance(String api) {
+        return new PerfStatistic(api);
     }
 
     @Override
     public String toString() {
         return "PerfStatistic{" +
-                "minTime=" + minTime +
+                "api=" + api +
+                ", startMillTime=" + new Date(startMillTime) +
+                ", stopMillTime=" + new Date(stopMillTime) +
+                ", tp50=" + getTp50() +
+                ", tp90=" + getTp90() +
+                ", tp95=" + getTp95() +
+                ", tp99=" + getTp99() +
+                ", tp999=" + getTp999() +
+                ", tp9999=" + getTp999() +
+                ", tp100=" + getTp100() +
+                ", minTime=" + minTime +
                 ", maxTime=" + maxTime +
-                ", tp50=" + tp50 +
-                ", tp90=" + tp90 +
-                ", tp95=" + tp95 +
-                ", tp99=" + tp99 +
-                ", tp999=" + tp999 +
-                ", tp9999=" + tp9999 +
-                ", tp100=" + tp100 +
+                ", totalCount=" + totalCount +
+                ", timeslice=" + timeslice +
                 '}';
     }
 }

@@ -15,7 +15,6 @@ public class StopWatch {
 
     private String message;
 
-
     public StopWatch() {
         this("", null);
     }
@@ -111,8 +110,8 @@ public class StopWatch {
 
     public String toString() {
         String message = getMessage();
-        return "start[" + getStartNanoTime() + "] " +
-                "time[" + getElapsedMillTime() + "ms] " +
+//        return "start[" + getStartNanoTime() + "] " +
+        return "time[" + getElapsedMillTime() + "ms] " +
                 "tag[" + getTag() + ((message == null) ? "]" : "] message[" + message + "]");
     }
 

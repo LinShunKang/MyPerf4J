@@ -30,6 +30,11 @@ public class TimingRecord {
         this.count = count;
     }
 
+    public void reset(TimingRecord record) {
+        this.time = record.getTime();
+        this.count = record.getCount();
+    }
+
     @Override
     public String toString() {
         return "TimingRecord{" +
