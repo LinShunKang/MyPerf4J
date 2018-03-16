@@ -36,10 +36,6 @@ public class AsyncRecordProcessor implements RecordProcessor, InitializingBean {
         }
     }
 
-    public RecordProcessor getTarget() {
-        return target;
-    }
-
     public ThreadPoolExecutor getExecutor() {
         return executor;
     }

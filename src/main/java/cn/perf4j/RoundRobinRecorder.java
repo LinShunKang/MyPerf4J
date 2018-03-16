@@ -9,7 +9,7 @@ import java.util.List;
 public class RoundRobinRecorder extends AbstractRecorder {
 
     private static final long millTimeSlice = 60 * 1000L;//60s
-//    private static final long millTimeSlice = 1 * 1000L;//60s
+//    private static final long millTimeSlice = 10 * 1000L;//10s
 
     private static final long nanoTimeSlice = millTimeSlice * 1000 * 1000L;
 
@@ -34,10 +34,6 @@ public class RoundRobinRecorder extends AbstractRecorder {
      */
     @Override
     public void recordTime(long startNanoTime, long endNanoTime) {
-        if (isShutdown()) {
-            return;
-        }
-
         if (nextNanoTimeSlice == 0L) {
             nextNanoTimeSlice = ((startNanoTime / nanoTimeSlice) * nanoTimeSlice) + nanoTimeSlice;
         }
@@ -69,7 +65,10 @@ public class RoundRobinRecorder extends AbstractRecorder {
                 curRecorder.setStopMilliTime(currentMills + millTimeSlice);
 
                 nextNanoTimeSlice = ((startNanoTime / nanoTimeSlice) * nanoTimeSlice) + nanoTimeSlice;
-                processor.process(tmp.getApi(), tmp.getStartMilliTime(), tmp.getStopMilliTime(), tmp.getSortedTimingRecords());
+
+                if (!isShutdown()) {
+                    processor.process(tmp.getApi(), tmp.getStartMilliTime(), tmp.getStopMilliTime(), tmp.getSortedTimingRecords());
+                }
             }
         }
 

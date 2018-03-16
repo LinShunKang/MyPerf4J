@@ -1,6 +1,7 @@
-package cn.perf4j.aop;
+package cn.perf4j;
 
-import cn.perf4j.*;
+import cn.perf4j.aop.AopTargetUtils;
+import cn.perf4j.aop.Profiler;
 import cn.perf4j.utils.MapUtils;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
@@ -17,7 +18,7 @@ import java.util.Map;
 /**
  * Created by LinShunkang on 2018/3/13
  */
-public class ProfilerContainer implements InitializingBean, ApplicationContextAware {
+public class RecorderContainer implements InitializingBean, ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
@@ -36,14 +37,14 @@ public class ProfilerContainer implements InitializingBean, ApplicationContextAw
 
     private void initRecorderMap() {
         if (applicationContext == null) {
-            System.err.println("ProfilerContainer.initRecorderMap(): applicationContext is null!!!");
+            System.err.println("RecorderContainer.initRecorderMap(): applicationContext is null!!!");
             return;
         }
 
-        Map<String, Object> objectMap = applicationContext.getBeansWithAnnotation(Profiler.class);
-        for (Map.Entry<String, Object> entry : objectMap.entrySet()) {
+        String[] beanNames = applicationContext.getBeanDefinitionNames();
+        for (int i = 0; i < beanNames.length; ++i) {
             try {
-                Object bean = entry.getValue();
+                Object bean = applicationContext.getBean(beanNames[i]);
                 if (AopUtils.isAopProxy(bean)) {
                     bean = AopTargetUtils.getTarget(bean);
                 }
@@ -51,8 +52,8 @@ public class ProfilerContainer implements InitializingBean, ApplicationContextAw
                 Class<?> clazz = bean.getClass();
                 Profiler classProfiler = clazz.getAnnotation(Profiler.class);
                 Method[] methodArray = clazz.getMethods();
-                for (int i = 0, length = methodArray.length; i < length; ++i) {
-                    Method method = methodArray[i];
+                for (int k = 0, length = methodArray.length; k < length; ++k) {
+                    Method method = methodArray[k];
                     if (!clazz.equals(method.getDeclaringClass())) {
                         continue;
                     }
@@ -61,13 +62,16 @@ public class ProfilerContainer implements InitializingBean, ApplicationContextAw
                     if (methodProfiler == null) {
                         methodProfiler = classProfiler;
                     }
+                    if (methodProfiler == null) {
+                        continue;
+                    }
 
                     //从性能角度考虑，只用类名+方法名，不去组装方法的参数类型！！！
                     String api = clazz.getSimpleName() + "." + method.getName();
                     recorderMap.put(api, RoundRobinRecorder.getInstance(api, methodProfiler.mostTimeThreshold(), methodProfiler.outThresholdCount(), recordProcessor));
                 }
             } catch (Exception e) {
-                System.err.println("ProfilerContainer.initRecorderMap(): init Error!!!");
+                System.err.println("RecorderContainer.initRecorderMap(): init Error!!!");
             }
         }
     }

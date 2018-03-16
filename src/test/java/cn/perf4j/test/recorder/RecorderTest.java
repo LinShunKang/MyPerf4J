@@ -1,4 +1,4 @@
-package cn.perf4j.test;
+package cn.perf4j.test.recorder;
 
 import cn.perf4j.*;
 import cn.perf4j.utils.StopWatch;
@@ -9,7 +9,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Created by LinShunkang on 2018/3/11
  */
-public class TimingRecorderTest {
+public class RecorderTest {
 
     public static void main(String[] args) throws InterruptedException {
         AbstractRecorder recorder = Recorder.getInstance(100, 10);

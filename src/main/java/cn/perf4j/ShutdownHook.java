@@ -1,6 +1,5 @@
 package cn.perf4j;
 
-import cn.perf4j.aop.ProfilerContainer;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -11,15 +10,15 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by LinShunkang on 2018/3/16
  */
-public class Cleaner implements InitializingBean {
+public class ShutdownHook implements InitializingBean {
 
-    private ProfilerContainer profilerContainer;
+    private RecorderContainer recorderContainer;
 
     private AsyncRecordProcessor asyncRecordProcessor;
 
 
-    public void setProfilerContainer(ProfilerContainer profilerContainer) {
-        this.profilerContainer = profilerContainer;
+    public void setRecorderContainer(RecorderContainer recorderContainer) {
+        this.recorderContainer = recorderContainer;
     }
 
     public void setAsyncRecordProcessor(AsyncRecordProcessor asyncRecordProcessor) {
@@ -28,15 +27,15 @@ public class Cleaner implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        Assert.notNull(profilerContainer, "profilerContainer is required!!!");
+        Assert.notNull(recorderContainer, "recorderContainer is required!!!");
         Assert.notNull(asyncRecordProcessor, "asyncRecordProcessor is required!!!");
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
             public void run() {
+                System.out.println("ENTER RecorderContainer.shutdownHook...");
                 try {
-                    System.out.println("ENTER ProfilerContainer.shutdownHook...");
-                    Map<String, AbstractRecorder> recorderMap = profilerContainer.getRecorderMap();
+                    Map<String, AbstractRecorder> recorderMap = recorderContainer.getRecorderMap();
                     for (Map.Entry<String, AbstractRecorder> entry : recorderMap.entrySet()) {
                         AbstractRecorder recorder = entry.getValue();
                         recorder.setShutdown(true);
@@ -53,7 +52,7 @@ public class Cleaner implements InitializingBean {
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
-                    System.out.println("EXIT ProfilerContainer.shutdownHook...");
+                    System.out.println("EXIT RecorderContainer.shutdownHook...");
                 }
             }
         }));

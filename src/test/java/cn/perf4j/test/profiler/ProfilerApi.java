@@ -1,4 +1,4 @@
-package cn.perf4j.test;
+package cn.perf4j.test.profiler;
 
 /**
  * Created by LinShunkang on 2018/3/11

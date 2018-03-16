@@ -1,14 +1,14 @@
-package cn.perf4j.test;
+package cn.perf4j.test.profiler;
 
+import cn.perf4j.RecorderContainer;
 import cn.perf4j.utils.StopWatch;
-import cn.perf4j.aop.ProfilerContainer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Created by LinShunkang on 2018/3/11
  */
-public class ProfilerTest{
+public class ProfilerTest {
 
     public static void main(String[] args) {
         ApplicationContext ctx = new ClassPathXmlApplicationContext("*.xml");
@@ -22,7 +22,13 @@ public class ProfilerTest{
         for (int i = 0; i < times; ++i) {
             profilerApi.test1("1","2");
         }
-        System.out.println(stopWatch.lap("ProfilerTest", String.valueOf(times)));
+        System.out.println(stopWatch.lap("ProfilerTest.test1(String, String)", String.valueOf(times)));
+
+
+        for (int i = 0; i < times; ++i) {
+            profilerApi.test1("1");
+        }
+        System.out.println(stopWatch.lap("ProfilerTest.test1(String)", String.valueOf(times)));
 
 //        for (int i = 0; i < times; ++i) {
 //            profilerApi.test1("1111", "222");
@@ -33,8 +39,8 @@ public class ProfilerTest{
 //            profilerApi.test2();
 //        }
 
-        ProfilerContainer profilerContainer = ctx.getBean("profilerContainer", ProfilerContainer.class);
-        System.out.println(profilerContainer.getRecorderMap());
+        RecorderContainer recorderContainer = ctx.getBean("recorderContainer", RecorderContainer.class);
+        System.out.println(recorderContainer.getRecorderMap());
     }
 
 }

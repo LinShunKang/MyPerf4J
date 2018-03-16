@@ -1,7 +1,6 @@
-package cn.perf4j.test.impl;
+package cn.perf4j.test.profiler;
 
 import cn.perf4j.aop.Profiler;
-import cn.perf4j.test.ProfilerApi;
 
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -9,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by LinShunkang on 2018/3/11
  */
-@Profiler(mostTimeThreshold = 10, outThresholdCount = 10)
+//@Profiler(mostTimeThreshold = 10, outThresholdCount = 10)
 public class ProfilerApiImpl implements ProfilerApi {
 
     @Override
@@ -25,7 +24,7 @@ public class ProfilerApiImpl implements ProfilerApi {
     }
 
     @Override
-    @Profiler(mostTimeThreshold = 20, outThresholdCount = 10)
+//    @Profiler(mostTimeThreshold = 20, outThresholdCount = 10)
     public void test1(String aaa, String bbb) {
 //        System.out.println("ProfilerApiImpl.test1(" + aaa + ", " + bbb + ")");
 //        try {

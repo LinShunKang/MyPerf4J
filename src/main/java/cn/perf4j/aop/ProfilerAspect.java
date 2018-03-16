@@ -1,21 +1,20 @@
 package cn.perf4j.aop;
 
 import cn.perf4j.AbstractRecorder;
+import cn.perf4j.RecorderContainer;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 
 /**
  * Created by LinShunkang on 2018/3/11
  */
 @Aspect
-@Component
-public class ProfilerAspect {
+public class ProfilerAspect implements InitializingBean {
 
-    @Autowired
-    private ProfilerContainer profilerContainer;
+    private RecorderContainer recorderContainer;
 
     //    @Pointcut("execution(public * cn.perf4j.*.impl.*.* (..))")//OK!!!
     @Pointcut("@within(cn.perf4j.aop.Profiler) || @annotation(cn.perf4j.aop.Profiler)")//OK!!!
@@ -33,7 +32,7 @@ public class ProfilerAspect {
             System.err.println("环绕增强发生异常!!!");
             throw throwable;
         } finally {
-            AbstractRecorder recorder = profilerContainer.getRecorder(api);
+            AbstractRecorder recorder = recorderContainer.getRecorder(api);
             if (recorder != null) {
                 recorder.recordTime(startNano, System.nanoTime());
             } else {
@@ -46,5 +45,14 @@ public class ProfilerAspect {
     private String getApi(ProceedingJoinPoint joinPoint) {
         Class<?> clazz = joinPoint.getTarget().getClass();
         return clazz.getSimpleName() + "." + joinPoint.getSignature().getName();
+    }
+
+    public void setRecorderContainer(RecorderContainer recorderContainer) {
+        this.recorderContainer = recorderContainer;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        Assert.notNull(recorderContainer, "recorderContainer is required!!!");
     }
 }
