@@ -8,36 +8,41 @@ import java.util.List;
  */
 public final class PerfStatsCalculator {
 
-    public static PerfStatistic calPerfStat(AbstractTimingRecorder recorder) {
-        List<TimingRecord> sortedRecords = recorder.getSortedTimingRecords();
+    public static PerfStats calPerfStat(AbstractRecorder recorder) {
+        List<Record> sortedRecords = recorder.getSortedTimingRecords();
         return calPerfStat(recorder.getApi(), recorder.getStartMilliTime(), recorder.getStopMilliTime(), sortedRecords);
     }
 
-    public static PerfStatistic calPerfStat(String api, long startMilliTime, long stopMillTime, List<TimingRecord> sortedRecords) {
+    public static PerfStats calPerfStat(String api, long startMilliTime, long stopMillTime, List<Record> sortedRecords) {
         int totalCount = getTotalCount(sortedRecords);
-        PerfStatistic result = PerfStatistic.getInstance(api);
+        PerfStats result = PerfStats.getInstance(api);
         result.setTotalCount(totalCount);
         result.setStartMillTime(startMilliTime);
         result.setStopMillTime(stopMillTime);
+
+        if (sortedRecords == null || sortedRecords.isEmpty()) {
+            return result;
+        }
+
         result.setMinTime(sortedRecords.get(0).getTime());
         result.setMaxTime(sortedRecords.get(sortedRecords.size() - 1).getTime());
 
-        int[] perIndexArr = getPercentileIndexArr(totalCount, result.getPercentiles());
-        int[] records = result.getTpArr();
+        int[] topPerIndexArr = getTopPercentileIndexArr(totalCount, PerfStats.getPercentiles());
+        int[] topPerArr = result.getTPArr();
         int countMile = 0, perIndex = 0;
         for (int i = 0; i < sortedRecords.size(); ++i) {
-            TimingRecord record = sortedRecords.get(i);
+            Record record = sortedRecords.get(i);
             countMile += record.getCount();
-            int index = perIndexArr[perIndex];
+            int index = topPerIndexArr[perIndex];
             if (countMile >= index) {
-                records[perIndex] = record.getTime();
+                topPerArr[perIndex] = record.getTime();
                 perIndex++;
             }
         }
         return reviseStatistic(result);
     }
 
-    private static int getTotalCount(List<TimingRecord> sortedRecords) {
+    private static int getTotalCount(List<Record> sortedRecords) {
         int totalCount = 0;
         for (int i = 0, size = sortedRecords.size(); i < size; ++i) {
             totalCount += sortedRecords.get(i).getCount();
@@ -45,8 +50,8 @@ public final class PerfStatsCalculator {
         return totalCount;
     }
 
-    private static PerfStatistic reviseStatistic(PerfStatistic perfStatistic) {
-        int[] tpArr = perfStatistic.getTpArr();
+    private static PerfStats reviseStatistic(PerfStats perfStats) {
+        int[] tpArr = perfStats.getTPArr();
         for (int i = 1; i < tpArr.length; ++i) {
             int last = tpArr[i - 1];
             int cur = tpArr[i];
@@ -54,14 +59,14 @@ public final class PerfStatsCalculator {
                 tpArr[i] = last;
             }
         }
-        return perfStatistic;
+        return perfStats;
     }
 
     private static int getIndex(int totalCount, double percentile) {
         return (int) Math.ceil(totalCount * percentile);
     }
 
-    private static int[] getPercentileIndexArr(int totalCount, double... percentiles) {
+    private static int[] getTopPercentileIndexArr(int totalCount, double... percentiles) {
         int[] result = new int[percentiles.length];
         for (int i = 0; i < percentiles.length; ++i) {
             result[i] = getIndex(totalCount, percentiles[i]);

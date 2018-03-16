@@ -5,13 +5,15 @@ import java.util.List;
 /**
  * Created by LinShunkang on 2018/3/13
  */
-public abstract class AbstractTimingRecorder {
+public abstract class AbstractRecorder {
 
     private String api;
 
     private long startMilliTime;
 
     private long stopMilliTime;
+
+    private volatile boolean shutdown;
 
     public String getApi() {
         return api;
@@ -37,9 +39,17 @@ public abstract class AbstractTimingRecorder {
         this.stopMilliTime = stopMilliTime;
     }
 
+    public boolean isShutdown() {
+        return shutdown;
+    }
+
+    public void setShutdown(boolean shutdown) {
+        this.shutdown = shutdown;
+    }
+
     public abstract void recordTime(long startNanoTime, long endNanoTime);
 
-    public abstract List<TimingRecord> getSortedTimingRecords();
+    public abstract List<Record> getSortedTimingRecords();
 
     public abstract void resetRecord();
 

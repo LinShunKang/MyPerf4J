@@ -1,48 +1,27 @@
 package cn.perf4j;
 
-import cn.perf4j.utils.ThreadUtils;
-
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by LinShunkang on 2018/3/15
  */
-public class RoundRobinTimingRecorder extends AbstractTimingRecorder {
+public class RoundRobinRecorder extends AbstractRecorder {
 
     private static final long millTimeSlice = 60 * 1000L;//60s
+//    private static final long millTimeSlice = 1 * 1000L;//60s
 
     private static final long nanoTimeSlice = millTimeSlice * 1000 * 1000L;
 
-    private static final ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 1, TimeUnit.HOURS, new LinkedBlockingQueue<Runnable>(1000), ThreadUtils.newThreadFactory("MyPerf4J-CycleTimingRecorder_"), new ThreadPoolExecutor.DiscardPolicy());
+    private AbstractRecorder nextRecorder;
 
-    static {
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    System.out.println("RoundRobinTimingRecorder.shutdown hook...");
-                    executor.shutdown();
-                    executor.awaitTermination(10, TimeUnit.SECONDS);
-                } catch (Exception e) {
-                    System.err.println("");
-                }
-            }
-        }));
-    }
-
-    private AbstractTimingRecorder nextRecorder;
-
-    private AbstractTimingRecorder curRecorder;
+    private AbstractRecorder curRecorder;
 
     private volatile long nextNanoTimeSlice = 0L;
 
-    private RecorderProcessor processor;
+    private RecordProcessor processor;
 
-    private RoundRobinTimingRecorder() {
+    private RoundRobinRecorder() {
         //empty
     }
 
@@ -55,6 +34,10 @@ public class RoundRobinTimingRecorder extends AbstractTimingRecorder {
      */
     @Override
     public void recordTime(long startNanoTime, long endNanoTime) {
+        if (isShutdown()) {
+            return;
+        }
+
         if (nextNanoTimeSlice == 0L) {
             nextNanoTimeSlice = ((startNanoTime / nanoTimeSlice) * nanoTimeSlice) + nanoTimeSlice;
         }
@@ -78,7 +61,7 @@ public class RoundRobinTimingRecorder extends AbstractTimingRecorder {
                 curRecorder.setStopMilliTime(currentMills);
 
                 //调换curRecorder和nextRecorder
-                final AbstractTimingRecorder tmp = curRecorder;
+                AbstractRecorder tmp = curRecorder;
                 curRecorder = nextRecorder;
                 nextRecorder = tmp;
 
@@ -86,12 +69,7 @@ public class RoundRobinTimingRecorder extends AbstractTimingRecorder {
                 curRecorder.setStopMilliTime(currentMills + millTimeSlice);
 
                 nextNanoTimeSlice = ((startNanoTime / nanoTimeSlice) * nanoTimeSlice) + nanoTimeSlice;
-                executor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        processor.process(tmp.getApi(), tmp.getStartMilliTime(), tmp.getStopMilliTime(), tmp.getSortedTimingRecords());
-                    }
-                });
+                processor.process(tmp.getApi(), tmp.getStartMilliTime(), tmp.getStopMilliTime(), tmp.getSortedTimingRecords());
             }
         }
 
@@ -99,7 +77,7 @@ public class RoundRobinTimingRecorder extends AbstractTimingRecorder {
     }
 
     @Override
-    public List<TimingRecord> getSortedTimingRecords() {
+    public List<Record> getSortedTimingRecords() {
         return curRecorder.getSortedTimingRecords();
     }
 
@@ -108,13 +86,13 @@ public class RoundRobinTimingRecorder extends AbstractTimingRecorder {
         curRecorder.resetRecord();
     }
 
-    public static RoundRobinTimingRecorder getInstance(String api, int mostTimeThreshold, int outThresholdCount, RecorderProcessor processor) {
-        RoundRobinTimingRecorder result = new RoundRobinTimingRecorder();
+    public static RoundRobinRecorder getInstance(String api, int mostTimeThreshold, int outThresholdCount, RecordProcessor processor) {
+        RoundRobinRecorder result = new RoundRobinRecorder();
         result.setApi(api);
-        result.curRecorder = TimingRecorder.getInstance(mostTimeThreshold, outThresholdCount);
+        result.curRecorder = Recorder.getInstance(mostTimeThreshold, outThresholdCount);
         result.curRecorder.setApi(api);
 
-        result.nextRecorder = TimingRecorder.getInstance(mostTimeThreshold, outThresholdCount);
+        result.nextRecorder = Recorder.getInstance(mostTimeThreshold, outThresholdCount);
         result.nextRecorder.setApi(api);
         result.processor = processor;
         return result;

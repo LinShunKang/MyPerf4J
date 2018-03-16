@@ -1,6 +1,6 @@
 package cn.perf4j.aop;
 
-import cn.perf4j.AbstractTimingRecorder;
+import cn.perf4j.AbstractRecorder;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +19,11 @@ public class ProfilerAspect {
 
     //    @Pointcut("execution(public * cn.perf4j.*.impl.*.* (..))")//OK!!!
     @Pointcut("@within(cn.perf4j.aop.Profiler) || @annotation(cn.perf4j.aop.Profiler)")//OK!!!
-    private void profileMethod() {
+    private void profilingMethod() {
     }
 
-    @Around("profileMethod()")//OK!!!
-    public Object doProfile(ProceedingJoinPoint joinPoint) throws Throwable {
+    @Around("profilingMethod()")//OK!!!
+    public Object doProfiling(ProceedingJoinPoint joinPoint) throws Throwable {
         long startNano = System.nanoTime();
         String api = "";
         try {
@@ -33,11 +33,11 @@ public class ProfilerAspect {
             System.err.println("环绕增强发生异常!!!");
             throw throwable;
         } finally {
-            AbstractTimingRecorder recorder = profilerContainer.getRecorder(api);
-            if (recorder == null) {
-                System.err.println("ProfilerAspect.doProfile(): UnKnown api=" + api);
-            } else {
+            AbstractRecorder recorder = profilerContainer.getRecorder(api);
+            if (recorder != null) {
                 recorder.recordTime(startNano, System.nanoTime());
+            } else {
+                System.err.println("ProfilerAspect.doProfile(): UnKnown api=" + api);
             }
         }
     }

@@ -11,6 +11,24 @@
     <!-- 自动为切面方法中匹配的方法所在的类生成代理对象。 -->
     <aop:aspectj-autoproxy/>
 
+    <!--TODO: 将来正式打包时，把这个bean删掉-->
     <bean id="profilerApi" class="cn.perf4j.test.impl.ProfilerApiImpl"/>
+
+    <!--TODO: 将来正式打包时，把这个bean删掉-->
+    <bean id="myRecordProcessor" class="cn.perf4j.test.MyRecordProcessor"/>
+
+    <!--TODO: 将来正式打包时，把这个bean删掉，哪里需要使用则在哪里定义这个bean-->
+    <bean id="asyncRecordProcessor" class="cn.perf4j.AsyncRecordProcessor">
+        <constructor-arg index="0" ref="myRecordProcessor"/>
+    </bean>
+
+    <bean id="profilerContainer" class="cn.perf4j.aop.ProfilerContainer">
+        <property name="recordProcessor" ref="asyncRecordProcessor"/>
+    </bean>
+
+    <bean id="cleaner" class="cn.perf4j.Cleaner">
+        <property name="asyncRecordProcessor" ref="asyncRecordProcessor"/>
+        <property name="profilerContainer" ref="profilerContainer"/>
+    </bean>
 
 </beans>

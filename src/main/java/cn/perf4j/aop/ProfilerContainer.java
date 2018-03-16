@@ -8,30 +8,29 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  * Created by LinShunkang on 2018/3/13
  */
-@Component
 public class ProfilerContainer implements InitializingBean, ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
-    //为了让recorderMap.get()更加快速，减小loadFactor->减少碰撞的概率->加快get()的执行速度
-    private final Map<String, AbstractTimingRecorder> recorderMap = MapUtils.createHashMap(1000, 0.4F);
+    private RecordProcessor recordProcessor;
 
-    public AbstractTimingRecorder getRecorder(String api) {
+    //为了让recorderMap.get()更加快速，减小loadFactor->减少碰撞的概率->加快get()的执行速度
+    private final Map<String, AbstractRecorder> recorderMap = MapUtils.createHashMap(1000, 0.4F);
+
+    public AbstractRecorder getRecorder(String api) {
         return recorderMap.get(api);
     }
 
-    public Map<String, AbstractTimingRecorder> getRecorderMap() {
+    public Map<String, AbstractRecorder> getRecorderMap() {
         return new HashMap<>(recorderMap);
     }
 
@@ -65,13 +64,7 @@ public class ProfilerContainer implements InitializingBean, ApplicationContextAw
 
                     //从性能角度考虑，只用类名+方法名，不去组装方法的参数类型！！！
                     String api = clazz.getSimpleName() + "." + method.getName();
-                    AbstractTimingRecorder recorder = RoundRobinTimingRecorder.getInstance(api, methodProfiler.mostTimeThreshold(), methodProfiler.outThresholdCount(), new RecorderProcessor() {
-                        @Override
-                        public void process(String api, long startMilliTime, long stopMillTime, List<TimingRecord> sortedRecords) {
-                            System.out.println(PerfStatsCalculator.calPerfStat(api, startMilliTime, stopMillTime, sortedRecords));
-                        }
-                    });
-                    recorderMap.put(api, recorder);
+                    recorderMap.put(api, RoundRobinRecorder.getInstance(api, methodProfiler.mostTimeThreshold(), methodProfiler.outThresholdCount(), recordProcessor));
                 }
             } catch (Exception e) {
                 System.err.println("ProfilerContainer.initRecorderMap(): init Error!!!");
@@ -84,11 +77,16 @@ public class ProfilerContainer implements InitializingBean, ApplicationContextAw
         this.applicationContext = applicationContext;
     }
 
+    public void setRecordProcessor(RecordProcessor recordProcessor) {
+        this.recordProcessor = recordProcessor;
+    }
+
     @Override
     public void afterPropertiesSet() {
         Assert.notNull(applicationContext, "applicationContext is required!!!");
+        Assert.notNull(recordProcessor, "recordProcessor is required!!!");
+
         initRecorderMap();
         System.out.println(recorderMap);
     }
-
 }

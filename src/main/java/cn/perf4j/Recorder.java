@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
 /**
  * Created by LinShunkang on 2018/3/13
  */
-public class TimingRecorder extends AbstractTimingRecorder {
+public class Recorder extends AbstractRecorder {
 
     private final int mostTimeThreshold;
 
@@ -18,7 +18,7 @@ public class TimingRecorder extends AbstractTimingRecorder {
 
     private final ConcurrentHashMap<Integer, AtomicInteger> timingMap;
 
-    private TimingRecorder(int mostTimeThreshold, int outThresholdCount) {
+    private Recorder(int mostTimeThreshold, int outThresholdCount) {
         this.mostTimeThreshold = mostTimeThreshold;
         this.timingArr = new AtomicIntegerArray(mostTimeThreshold);
         this.timingMap = new ConcurrentHashMap<>(MapUtils.getFitCapacity(outThresholdCount));
@@ -43,29 +43,29 @@ public class TimingRecorder extends AbstractTimingRecorder {
     }
 
     @Override
-    public List<TimingRecord> getSortedTimingRecords() {
-        List<TimingRecord> result = new ArrayList<>(timingArr.length() + timingMap.size());
+    public List<Record> getSortedTimingRecords() {
+        List<Record> result = new ArrayList<>(timingArr.length() + timingMap.size());
         for (int i = 0; i < timingArr.length(); ++i) {
             int count = timingArr.get(i);
             if (count > 0) {
-                result.add(TimingRecord.getInstance(i, count));
+                result.add(Record.getInstance(i, count));
             }
         }
         result.addAll(getSortedMapRecords());
         return result;
     }
 
-    private List<TimingRecord> getSortedMapRecords() {
-        List<TimingRecord> mapRecords = new ArrayList<>(timingMap.size());
+    private List<Record> getSortedMapRecords() {
+        List<Record> mapRecords = new ArrayList<>(timingMap.size());
         for (Map.Entry<Integer, AtomicInteger> entry : timingMap.entrySet()) {
             if (entry.getValue().get() > 0) {
-                mapRecords.add(TimingRecord.getInstance(entry.getKey(), entry.getValue().get()));
+                mapRecords.add(Record.getInstance(entry.getKey(), entry.getValue().get()));
             }
         }
 
-        Collections.sort(mapRecords, new Comparator<TimingRecord>() {
+        Collections.sort(mapRecords, new Comparator<Record>() {
             @Override
-            public int compare(TimingRecord o1, TimingRecord o2) {
+            public int compare(Record o1, Record o2) {
                 return o1.getTime() - o2.getTime();
             }
         });
@@ -92,7 +92,7 @@ public class TimingRecorder extends AbstractTimingRecorder {
         setStopMilliTime(0L);
     }
 
-    public static TimingRecorder getInstance(int mostTimeThreshold, int outThresholdCount) {
-        return new TimingRecorder(mostTimeThreshold, outThresholdCount);
+    public static Recorder getInstance(int mostTimeThreshold, int outThresholdCount) {
+        return new Recorder(mostTimeThreshold, outThresholdCount);
     }
 }

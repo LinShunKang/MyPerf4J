@@ -9,7 +9,7 @@
     <url>http://maven.apache.org</url>
 
     <properties>
-        <springframework-version>3.2.4.RELEASE</springframework-version>
+        <springframework-version>4.3.14.RELEASE</springframework-version>
     </properties>
 
     <dependencies>
@@ -29,6 +29,12 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
+            <version>${springframework-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
             <version>${springframework-version}</version>
         </dependency>
     </dependencies>

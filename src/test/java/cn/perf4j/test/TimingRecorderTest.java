@@ -1,6 +1,7 @@
 package cn.perf4j.test;
 
 import cn.perf4j.*;
+import cn.perf4j.utils.StopWatch;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -11,10 +12,10 @@ import java.util.concurrent.ThreadLocalRandom;
 public class TimingRecorderTest {
 
     public static void main(String[] args) throws InterruptedException {
-        AbstractTimingRecorder recorder = TimingRecorder.getInstance(100, 10);
-        AbstractTimingRecorder recorderV2 = RoundRobinTimingRecorder.getInstance("", 100, 10, new RecorderProcessor() {
+        AbstractRecorder recorder = Recorder.getInstance(100, 10);
+        AbstractRecorder recorderV2 = RoundRobinRecorder.getInstance("", 100, 10, new RecordProcessor() {
             @Override
-            public void process(String api, long startMilliTime, long stopMillTime, List<TimingRecord> sortedRecords) {
+            public void process(String api, long startMilliTime, long stopMillTime, List<Record> sortedRecords) {
                 //empty
             }
         });

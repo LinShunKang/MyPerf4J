@@ -3,13 +3,13 @@ package cn.perf4j;
 /**
  * Created by LinShunkang on 2018/3/11
  */
-public class TimingRecord {
+public class Record {
 
     private int time;
 
     private int count;
 
-    private TimingRecord(int time, int count) {
+    private Record(int time, int count) {
         this.time = time;
         this.count = count;
     }
@@ -30,24 +30,24 @@ public class TimingRecord {
         this.count = count;
     }
 
-    public void reset(TimingRecord record) {
+    public void reset(Record record) {
         this.time = record.getTime();
         this.count = record.getCount();
     }
 
     @Override
     public String toString() {
-        return "TimingRecord{" +
+        return "Record{" +
                 "time=" + time +
                 ", count=" + count +
                 '}';
     }
 
-    public static TimingRecord getInstance() {
+    public static Record getInstance() {
         return getInstance(-1, -1);
     }
 
-    public static TimingRecord getInstance(int time, int count) {
-        return new TimingRecord(time, count);
+    public static Record getInstance(int time, int count) {
+        return new Record(time, count);
     }
 }

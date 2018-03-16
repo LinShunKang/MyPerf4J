@@ -1,6 +1,6 @@
 package cn.perf4j.test;
 
-import cn.perf4j.StopWatch;
+import cn.perf4j.utils.StopWatch;
 import cn.perf4j.aop.ProfilerContainer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -17,8 +17,8 @@ public class ProfilerTest{
         System.out.println(profilerApi.getClass());
 
         StopWatch stopWatch = new StopWatch();
-//        int times = 100000000;
-        int times = 10000000;
+        int times = 100000000;
+//        int times = 10000000;
         for (int i = 0; i < times; ++i) {
             profilerApi.test1("1","2");
         }
