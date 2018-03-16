@@ -26,14 +26,13 @@ public class ProfilerApiImpl implements ProfilerApi {
 
     @Override
     @Profiler(mostTimeThreshold = 20, outThresholdCount = 10)
-    public String test1(String aaa, String bbb) {
+    public void test1(String aaa, String bbb) {
 //        System.out.println("ProfilerApiImpl.test1(" + aaa + ", " + bbb + ")");
-        try {
-            TimeUnit.MILLISECONDS.sleep(ThreadLocalRandom.current().nextInt(50));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return null;
+//        try {
+//            TimeUnit.MILLISECONDS.sleep(ThreadLocalRandom.current().nextInt(50));
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
 
     @Override

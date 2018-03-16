@@ -27,8 +27,7 @@ public class ProfilerAspect {
         long startNano = System.nanoTime();
         String api = "";
         try {
-            Class<?> clazz = joinPoint.getTarget().getClass();
-            api = clazz.getSimpleName() + "." + joinPoint.getSignature().getName();
+            api = getApi(joinPoint);
             return joinPoint.proceed(joinPoint.getArgs());
         } catch (Throwable throwable) {
             System.err.println("环绕增强发生异常!!!");
@@ -41,5 +40,11 @@ public class ProfilerAspect {
                 recorder.recordTime(startNano, System.nanoTime());
             }
         }
+    }
+
+    //从性能角度考虑，只用类名+方法名，不去组装方法的参数类型！！！
+    private String getApi(ProceedingJoinPoint joinPoint) {
+        Class<?> clazz = joinPoint.getTarget().getClass();
+        return clazz.getSimpleName() + "." + joinPoint.getSignature().getName();
     }
 }

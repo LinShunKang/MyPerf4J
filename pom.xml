@@ -3,14 +3,10 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>MyPerf4J</groupId>
     <artifactId>MyPerf4J</artifactId>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
-    <name>MyPerf4J Maven Webapp</name>
+    <name>MyPerf4J</name>
     <url>http://maven.apache.org</url>
-
-    <build>
-        <finalName>MyPerf4J</finalName>
-    </build>
 
     <properties>
         <springframework-version>3.2.4.RELEASE</springframework-version>
@@ -36,4 +32,38 @@
             <version>${springframework-version}</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <finalName>MyPerf4J</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                    <verbose>true</verbose>
+                    <encoding>UTF-8</encoding>
+                    <compilerArguments>
+                        <sourcepath>${project.basedir}/src/main/java</sourcepath>
+                    </compilerArguments>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>external.atlassian.jgitflow</groupId>
+                <artifactId>jgitflow-maven-plugin</artifactId>
+                <version>1.0-m5.1</version>
+                <configuration>
+                    <enableSshAgent>true</enableSshAgent>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <pushFeatures>false</pushFeatures>
+                    <pushReleases>false</pushReleases>
+                    <pushHotfixes>false</pushHotfixes>
+                    <flowInitContext>
+                        <versionTagPrefix>rev-</versionTagPrefix>
+                    </flowInitContext>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -8,11 +8,21 @@ import java.util.Map;
  */
 public final class MapUtils {
 
+    private static final float DEFAULT_LOAD_FACTOR = 0.75f;
+
     public static <K, V> Map<K, V> createHashMap(int keyNum) {
         return new HashMap<>(getFitCapacity(keyNum));
     }
 
+    public static <K, V> Map<K, V> createHashMap(int keyNum, float loadFactor) {
+        return new HashMap<>(getFitCapacity(keyNum, loadFactor));
+    }
+
     public static int getFitCapacity(int keyNum) {
-        return (int) (keyNum / 0.75) + 1;
+        return getFitCapacity(keyNum, DEFAULT_LOAD_FACTOR);
+    }
+
+    public static int getFitCapacity(int keyNum, float loadFactor) {
+        return (int) (keyNum / loadFactor) + 1;
     }
 }

@@ -27,8 +27,6 @@ public class PerfStatistic {
 
     private int totalCount = -1;//ms
 
-    private long timeslice = -1;//ms
-
     private long startMillTime = -1L;
 
     private long stopMillTime = -1L;
@@ -59,14 +57,6 @@ public class PerfStatistic {
 
     public void setTotalCount(int totalCount) {
         this.totalCount = totalCount;
-    }
-
-    public long getTimeslice() {
-        return timeslice;
-    }
-
-    public void setTimeslice(long timeslice) {
-        this.timeslice = timeslice;
     }
 
     public int getTp50() {
@@ -169,7 +159,6 @@ public class PerfStatistic {
                 ", minTime=" + minTime +
                 ", maxTime=" + maxTime +
                 ", totalCount=" + totalCount +
-                ", timeslice=" + timeslice +
                 '}';
     }
 }

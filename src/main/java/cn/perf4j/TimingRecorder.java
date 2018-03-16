@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
 /**
  * Created by LinShunkang on 2018/3/13
  */
-public class TimingRecorderV2 extends AbstractTimingRecorder {
+public class TimingRecorder extends AbstractTimingRecorder {
 
     private final int mostTimeThreshold;
 
@@ -18,7 +18,7 @@ public class TimingRecorderV2 extends AbstractTimingRecorder {
 
     private final ConcurrentHashMap<Integer, AtomicInteger> timingMap;
 
-    private TimingRecorderV2(int mostTimeThreshold, int outThresholdCount) {
+    private TimingRecorder(int mostTimeThreshold, int outThresholdCount) {
         this.mostTimeThreshold = mostTimeThreshold;
         this.timingArr = new AtomicIntegerArray(mostTimeThreshold);
         this.timingMap = new ConcurrentHashMap<>(MapUtils.getFitCapacity(outThresholdCount));
@@ -73,7 +73,7 @@ public class TimingRecorderV2 extends AbstractTimingRecorder {
     }
 
     @Override
-    public void resetRecord() {
+    public synchronized void resetRecord() {
         for (int i = 0; i < timingArr.length(); ++i) {
             timingArr.set(i, 0);
         }
@@ -83,15 +83,16 @@ public class TimingRecorderV2 extends AbstractTimingRecorder {
             Map.Entry<Integer, AtomicInteger> entry = iterator.next();
             if (entry.getKey() > (1.5 * mostTimeThreshold)) {
                 iterator.remove();
+            } else {
+                entry.getValue().set(0);
             }
-            entry.getValue().set(0);
         }
 
         setStartMilliTime(0L);
         setStopMilliTime(0L);
     }
 
-    public static TimingRecorderV2 getRecorder(int mostTimeThreshold, int outThresholdCount) {
-        return new TimingRecorderV2(mostTimeThreshold, outThresholdCount);
+    public static TimingRecorder getInstance(int mostTimeThreshold, int outThresholdCount) {
+        return new TimingRecorder(mostTimeThreshold, outThresholdCount);
     }
 }

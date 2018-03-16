@@ -13,8 +13,6 @@ public abstract class AbstractTimingRecorder {
 
     private long stopMilliTime;
 
-    private long milliTimeSlice;
-
     public String getApi() {
         return api;
     }
@@ -37,14 +35,6 @@ public abstract class AbstractTimingRecorder {
 
     public void setStopMilliTime(long stopMilliTime) {
         this.stopMilliTime = stopMilliTime;
-    }
-
-    public long getMilliTimeSlice() {
-        return milliTimeSlice;
-    }
-
-    public void setMilliTimeSlice(long milliTimeSlice) {
-        this.milliTimeSlice = milliTimeSlice;
     }
 
     public abstract void recordTime(long startNanoTime, long endNanoTime);

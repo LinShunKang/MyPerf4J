@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,15 +24,15 @@ public class ProfilerContainer implements InitializingBean, ApplicationContextAw
 
     private ApplicationContext applicationContext;
 
-    private Map<String, AbstractTimingRecorder> recorderMap = MapUtils.createHashMap(100);
-
+    //为了让recorderMap.get()更加快速，减小loadFactor->减少碰撞的概率->加快get()的执行速度
+    private final Map<String, AbstractTimingRecorder> recorderMap = MapUtils.createHashMap(1000, 0.4F);
 
     public AbstractTimingRecorder getRecorder(String api) {
         return recorderMap.get(api);
     }
 
     public Map<String, AbstractTimingRecorder> getRecorderMap() {
-        return recorderMap;
+        return new HashMap<>(recorderMap);
     }
 
     private void initRecorderMap() {
@@ -50,7 +52,8 @@ public class ProfilerContainer implements InitializingBean, ApplicationContextAw
                 Class<?> clazz = bean.getClass();
                 Profiler classProfiler = clazz.getAnnotation(Profiler.class);
                 Method[] methodArray = clazz.getMethods();
-                for (Method method : methodArray) {
+                for (int i = 0, length = methodArray.length; i < length; ++i) {
+                    Method method = methodArray[i];
                     if (!clazz.equals(method.getDeclaringClass())) {
                         continue;
                     }
@@ -62,11 +65,10 @@ public class ProfilerContainer implements InitializingBean, ApplicationContextAw
 
                     //从性能角度考虑，只用类名+方法名，不去组装方法的参数类型！！！
                     String api = clazz.getSimpleName() + "." + method.getName();
-                    AbstractTimingRecorder recorder = CycleTimingRecorder.getInstance(api, methodProfiler.mostTimeThreshold(), methodProfiler.outThresholdCount(), new RecorderProcessor() {
+                    AbstractTimingRecorder recorder = RoundRobinTimingRecorder.getInstance(api, methodProfiler.mostTimeThreshold(), methodProfiler.outThresholdCount(), new RecorderProcessor() {
                         @Override
-                        public void process(AbstractTimingRecorder recorder) {
-//                            System.out.println(recorder.getSortedTimingRecords());
-                            System.out.println(PerfCalculator.calPerfStat(recorder));
+                        public void process(String api, long startMilliTime, long stopMillTime, List<TimingRecord> sortedRecords) {
+                            System.out.println(PerfStatsCalculator.calPerfStat(api, startMilliTime, stopMillTime, sortedRecords));
                         }
                     });
                     recorderMap.put(api, recorder);
@@ -83,7 +85,7 @@ public class ProfilerContainer implements InitializingBean, ApplicationContextAw
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         Assert.notNull(applicationContext, "applicationContext is required!!!");
         initRecorderMap();
         System.out.println(recorderMap);

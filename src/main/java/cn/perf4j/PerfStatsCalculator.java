@@ -6,24 +6,19 @@ import java.util.List;
 /**
  * Created by LinShunkang on 2018/3/11
  */
-
-/**
- * Top Percentile calculator
- */
-public final class PerfCalculator {
+public final class PerfStatsCalculator {
 
     public static PerfStatistic calPerfStat(AbstractTimingRecorder recorder) {
         List<TimingRecord> sortedRecords = recorder.getSortedTimingRecords();
-        if (sortedRecords == null || sortedRecords.isEmpty()) {
-            return PerfStatistic.getInstance(recorder.getApi());
-        }
+        return calPerfStat(recorder.getApi(), recorder.getStartMilliTime(), recorder.getStopMilliTime(), sortedRecords);
+    }
 
+    public static PerfStatistic calPerfStat(String api, long startMilliTime, long stopMillTime, List<TimingRecord> sortedRecords) {
         int totalCount = getTotalCount(sortedRecords);
-        PerfStatistic result = PerfStatistic.getInstance(recorder.getApi());
+        PerfStatistic result = PerfStatistic.getInstance(api);
         result.setTotalCount(totalCount);
-        result.setTimeslice(recorder.getMilliTimeSlice());
-        result.setStartMillTime(recorder.getStartMilliTime());
-        result.setStopMillTime(recorder.getStopMilliTime());
+        result.setStartMillTime(startMilliTime);
+        result.setStopMillTime(stopMillTime);
         result.setMinTime(sortedRecords.get(0).getTime());
         result.setMaxTime(sortedRecords.get(sortedRecords.size() - 1).getTime());
 

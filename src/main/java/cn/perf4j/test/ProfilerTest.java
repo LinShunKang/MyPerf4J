@@ -1,5 +1,6 @@
 package cn.perf4j.test;
 
+import cn.perf4j.StopWatch;
 import cn.perf4j.aop.ProfilerContainer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -15,11 +16,13 @@ public class ProfilerTest{
 //        ProfilerApi profilerApi = new ProfilerApiImpl();
         System.out.println(profilerApi.getClass());
 
-        int times = 1000000000;
+        StopWatch stopWatch = new StopWatch();
+//        int times = 100000000;
+        int times = 10000000;
         for (int i = 0; i < times; ++i) {
-            profilerApi.test1("1111");
+            profilerApi.test1("1","2");
         }
-        System.out.println();
+        System.out.println(stopWatch.lap("ProfilerTest", String.valueOf(times)));
 
 //        for (int i = 0; i < times; ++i) {
 //            profilerApi.test1("1111", "222");
@@ -32,7 +35,6 @@ public class ProfilerTest{
 
         ProfilerContainer profilerContainer = ctx.getBean("profilerContainer", ProfilerContainer.class);
         System.out.println(profilerContainer.getRecorderMap());
-
     }
 
 }
