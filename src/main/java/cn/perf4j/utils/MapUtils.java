@@ -2,6 +2,7 @@ package cn.perf4j.utils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by LinShunkang on 2018/3/11
@@ -16,6 +17,10 @@ public final class MapUtils {
 
     public static <K, V> Map<K, V> createHashMap(int keyNum, float loadFactor) {
         return new HashMap<>(getFitCapacity(keyNum, loadFactor));
+    }
+
+    public static <K, V> ConcurrentHashMap<K, V> createConcHashMap(int keyNum, float loadFactor) {
+        return new ConcurrentHashMap<>(getFitCapacity(keyNum, loadFactor));
     }
 
     public static int getFitCapacity(int keyNum) {

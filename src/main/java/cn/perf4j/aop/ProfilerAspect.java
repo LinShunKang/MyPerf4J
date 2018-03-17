@@ -16,12 +16,7 @@ public class ProfilerAspect implements InitializingBean {
 
     private RecorderContainer recorderContainer;
 
-    //    @Pointcut("execution(public * cn.perf4j.*.impl.*.* (..))")//OK!!!
-    @Pointcut("@within(cn.perf4j.aop.Profiler) || @annotation(cn.perf4j.aop.Profiler)")//OK!!!
-    private void profilingMethod() {
-    }
-
-    @Around("profilingMethod()")//OK!!!
+    @Around("@within(cn.perf4j.aop.Profiler) || @annotation(cn.perf4j.aop.Profiler)")//OK!!!
     public Object doProfiling(ProceedingJoinPoint joinPoint) throws Throwable {
         long startNano = System.nanoTime();
         String api = "";
@@ -29,7 +24,7 @@ public class ProfilerAspect implements InitializingBean {
             api = getApi(joinPoint);
             return joinPoint.proceed(joinPoint.getArgs());
         } catch (Throwable throwable) {
-            System.err.println("环绕增强发生异常!!!");
+            System.err.println("ProfilerAspect.doProfiling");
             throw throwable;
         } finally {
             AbstractRecorder recorder = recorderContainer.getRecorder(api);
@@ -44,7 +39,7 @@ public class ProfilerAspect implements InitializingBean {
     //从性能角度考虑，只用类名+方法名，不去组装方法的参数类型！！！
     private String getApi(ProceedingJoinPoint joinPoint) {
         Class<?> clazz = joinPoint.getTarget().getClass();
-        return clazz.getSimpleName() + "." + joinPoint.getSignature().getName();
+        return clazz.getSimpleName().concat(".").concat(joinPoint.getSignature().getName());
     }
 
     public void setRecorderContainer(RecorderContainer recorderContainer) {
@@ -52,7 +47,7 @@ public class ProfilerAspect implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         Assert.notNull(recorderContainer, "recorderContainer is required!!!");
     }
 }

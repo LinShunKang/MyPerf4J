@@ -26,6 +26,10 @@ public class Recorder extends AbstractRecorder {
 
     @Override
     public void recordTime(long startNanoTime, long endNanoTime) {
+        if (startNanoTime > endNanoTime) {
+            return;
+        }
+
         int elapsedTime = (int) ((endNanoTime - startNanoTime) / 1000000);
         if (elapsedTime < mostTimeThreshold) {
             timingArr.incrementAndGet(elapsedTime);
@@ -38,8 +42,10 @@ public class Recorder extends AbstractRecorder {
             return;
         }
 
-        timingMap.putIfAbsent(elapsedTime, new AtomicInteger(0));
-        timingMap.get(elapsedTime).incrementAndGet();
+        AtomicInteger oldCounter = timingMap.putIfAbsent(elapsedTime, new AtomicInteger(1));
+        if (oldCounter != null) {
+            oldCounter.incrementAndGet();
+        }
     }
 
     @Override
@@ -92,7 +98,9 @@ public class Recorder extends AbstractRecorder {
         setStopMilliTime(0L);
     }
 
-    public static Recorder getInstance(int mostTimeThreshold, int outThresholdCount) {
-        return new Recorder(mostTimeThreshold, outThresholdCount);
+    public static Recorder getInstance(String api, int mostTimeThreshold, int outThresholdCount) {
+        Recorder recorder = new Recorder(mostTimeThreshold, outThresholdCount);
+        recorder.setApi(api);
+        return recorder;
     }
 }

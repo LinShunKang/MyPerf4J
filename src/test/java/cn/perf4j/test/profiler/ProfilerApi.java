@@ -7,7 +7,7 @@ public interface ProfilerApi {
 
     String test1(String aaa);
 
-    void test1(String aaa, String bbb);
+    void test3(String aaa, String bbb);
 
     int test2();
 }

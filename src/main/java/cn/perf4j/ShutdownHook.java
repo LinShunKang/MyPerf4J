@@ -39,16 +39,12 @@ public class ShutdownHook implements InitializingBean {
                     for (Map.Entry<String, AbstractRecorder> entry : recorderMap.entrySet()) {
                         AbstractRecorder recorder = entry.getValue();
                         recorder.setShutdown(true);
+                        asyncRecordProcessor.process(recorder.getApi(), recorder.getStartMilliTime(), recorder.getStopMilliTime(), recorder.getSortedTimingRecords());
                     }
 
                     ThreadPoolExecutor executor = asyncRecordProcessor.getExecutor();
                     executor.shutdown();
                     executor.awaitTermination(30, TimeUnit.SECONDS);
-
-                    for (Map.Entry<String, AbstractRecorder> entry : recorderMap.entrySet()) {
-                        AbstractRecorder recorder = entry.getValue();
-                        asyncRecordProcessor.process(recorder.getApi(), recorder.getStartMilliTime(), recorder.getStopMilliTime(), recorder.getSortedTimingRecords());
-                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {

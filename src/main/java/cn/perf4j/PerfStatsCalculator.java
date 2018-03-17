@@ -43,6 +43,10 @@ public final class PerfStatsCalculator {
     }
 
     private static int getTotalCount(List<Record> sortedRecords) {
+        if (sortedRecords == null || sortedRecords.isEmpty()) {
+            return 0;
+        }
+
         int totalCount = 0;
         for (int i = 0, size = sortedRecords.size(); i < size; ++i) {
             totalCount += sortedRecords.get(i).getCount();
