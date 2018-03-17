@@ -55,7 +55,7 @@ public class MyRecordProcessor implements RecordProcessor {
 ```
 * 在Spring配置文件中加入
 ```
-    <bean id="myRecordProcessor" class="cn.techwolf.boss.data.api.MyRecordProcessor"/>
+    <bean id="myRecordProcessor" class="cn.data.api.MyRecordProcessor"/>
 
     <bean id="asyncRecordProcessor" class="cn.perf4j.AsyncRecordProcessor">
         <constructor-arg index="0" ref="myRecordProcessor"/>

@@ -1,4 +1,4 @@
-package cn.perf4j.utils;
+package cn.perf4j.util;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;

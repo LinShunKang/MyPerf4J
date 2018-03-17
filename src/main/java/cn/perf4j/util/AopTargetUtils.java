@@ -1,4 +1,4 @@
-package cn.perf4j.aop;
+package cn.perf4j.util;
 
 import org.springframework.aop.framework.AdvisedSupport;
 import org.springframework.aop.framework.AopProxy;

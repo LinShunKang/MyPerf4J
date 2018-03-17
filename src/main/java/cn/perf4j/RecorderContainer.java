@@ -1,9 +1,9 @@
 package cn.perf4j;
 
-import cn.perf4j.aop.AopTargetUtils;
+import cn.perf4j.util.AopTargetUtils;
 import cn.perf4j.aop.Profiler;
-import cn.perf4j.utils.MapUtils;
-import cn.perf4j.utils.ThreadUtils;
+import cn.perf4j.util.MapUtils;
+import cn.perf4j.util.ThreadUtils;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;

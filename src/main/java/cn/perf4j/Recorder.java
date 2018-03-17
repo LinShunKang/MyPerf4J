@@ -1,6 +1,6 @@
 package cn.perf4j;
 
-import cn.perf4j.utils.MapUtils;
+import cn.perf4j.util.MapUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

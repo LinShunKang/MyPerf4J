@@ -1,7 +1,7 @@
 package cn.perf4j.test.recorder;
 
 import cn.perf4j.*;
-import cn.perf4j.utils.StopWatch;
+import cn.perf4j.util.StopWatch;
 
 import java.util.concurrent.ThreadLocalRandom;
 

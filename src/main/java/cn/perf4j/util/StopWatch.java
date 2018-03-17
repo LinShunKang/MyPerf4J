@@ -1,4 +1,4 @@
-package cn.perf4j.utils;
+package cn.perf4j.util;
 
 /**
  * Created by LinShunkang on 2018/3/11

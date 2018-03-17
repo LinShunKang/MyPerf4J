@@ -1,6 +1,6 @@
 package cn.perf4j;
 
-import cn.perf4j.utils.ThreadUtils;
+import cn.perf4j.util.ThreadUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 

@@ -1,7 +1,7 @@
 package cn.perf4j.test.profiler;
 
 import cn.perf4j.RecorderContainer;
-import cn.perf4j.utils.StopWatch;
+import cn.perf4j.util.StopWatch;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
