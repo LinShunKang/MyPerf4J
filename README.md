@@ -24,3 +24,46 @@
 * AOP相关功能开发完成
 * 性能指标统计功能开发完成
 
+## 使用
+* 引入Maven依赖
+```
+    <dependency>
+        <groupId>MyPerf4J</groupId>
+        <artifactId>MyPerf4J</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+```
+* 在你想要分析性能的类或方法明上加上 @Profiler
+* 新建一个MyRecordProcessor类
+``` 
+import cn.perf4j.PerfStatsCalculator;
+import cn.perf4j.Record;
+import cn.perf4j.RecordProcessor;
+
+import java.util.List;
+
+/**
+ * Created by LinShunkang on 2018/3/17
+ */
+public class MyRecordProcessor implements RecordProcessor {
+
+    @Override
+    public void process(String api, long startMilliTime, long stopMillTime, List<Record> sortedRecords) {
+        System.out.println("MyRecordProcessor():" + PerfStatsCalculator.calPerfStat(api, startMilliTime, stopMillTime, sortedRecords));
+    }
+}
+```
+* 在Spring配置文件中加入
+```
+    <bean id="myRecordProcessor" class="cn.techwolf.boss.data.api.MyRecordProcessor"/>
+
+    <bean id="asyncRecordProcessor" class="cn.perf4j.AsyncRecordProcessor">
+        <constructor-arg index="0" ref="myRecordProcessor"/>
+    </bean>
+```
+* 输出结果
+```
+MyRecordProcessor():PerfStats{api=UserSocialApiImpl.getAll, [2018-03-18 00:03:00, 2018-03-18 00:04:00], RPS=55, TP50=0, TP90=4, TP95=4, TP99=4, TP999=4, TP9999=4, TP100=4, minTime=0, maxTime=4, totalCount=3399}
+MyRecordProcessor():PerfStats{api=UserSocialApiImpl.remove, [2018-03-18 00:03:00, 2018-03-18 00:04:00], RPS=0, TP50=-1, TP90=-1, TP95=-1, TP99=-1, TP999=-1, TP9999=-1, TP100=-1, minTime=-1, maxTime=-1, totalCount=0}
+```
+
