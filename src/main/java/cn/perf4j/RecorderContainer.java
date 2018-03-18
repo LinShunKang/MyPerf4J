@@ -25,12 +25,12 @@ import java.util.concurrent.TimeUnit;
  */
 public class RecorderContainer implements InitializingBean, ApplicationContextAware {
 
-        private static final long millTimeSlice = 60 * 1000L;//60s
+    private static final long millTimeSlice = 60 * 1000L;//60s
 //    private static final long millTimeSlice = 10 * 1000L;//10s
 
-    private static final ScheduledThreadPoolExecutor roundRobinExecutor = new ScheduledThreadPoolExecutor(1, ThreadUtils.newThreadFactory("roundRobinExecutor_"), new ThreadPoolExecutor.DiscardPolicy());
+    private static final ScheduledThreadPoolExecutor roundRobinExecutor = new ScheduledThreadPoolExecutor(1, ThreadUtils.newThreadFactory("MyPerf4J-RoundRobinExecutor_"), new ThreadPoolExecutor.DiscardPolicy());
 
-    private static final ScheduledThreadPoolExecutor backgroundExecutor = new ScheduledThreadPoolExecutor(1, ThreadUtils.newThreadFactory("backgroundExecutor_"), new ThreadPoolExecutor.DiscardPolicy());
+    private static final ScheduledThreadPoolExecutor backgroundExecutor = new ScheduledThreadPoolExecutor(1, ThreadUtils.newThreadFactory("MyPerf4J-BackgroundExecutor_"), new ThreadPoolExecutor.DiscardPolicy());
 
     private volatile long nextMilliTimeSlice = ((System.currentTimeMillis() / millTimeSlice) * millTimeSlice) + millTimeSlice;
 

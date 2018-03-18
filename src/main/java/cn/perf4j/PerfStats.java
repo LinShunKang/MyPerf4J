@@ -140,8 +140,8 @@ public class PerfStats {
     }
 
     public int getRPS() {
-        long mills = (stopMillTime - startMillTime) / 1000 + 1;
-        return (int) (totalCount / mills);
+        long seconds = (stopMillTime - startMillTime) / 1000 + 1;
+        return (int) (totalCount / seconds);
     }
 
 

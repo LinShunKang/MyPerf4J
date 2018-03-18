@@ -7,7 +7,7 @@
     <!-- 自动为切面方法中匹配的方法所在的类生成代理对象。 -->
     <aop:aspectj-autoproxy/>
 
-    <bean id="profilerApi" class="cn.perf4j.test.profiler.ProfilerApiImpl"/>
+    <bean id="profilerTestApi" class="cn.perf4j.test.profiler.ProfilerTestApiImpl"/>
 
     <bean id="myRecordProcessor" class="cn.perf4j.test.profiler.MyRecordProcessor"/>
 
