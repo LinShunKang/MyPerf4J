@@ -13,8 +13,6 @@ public abstract class AbstractRecorder {
 
     private long stopMilliTime;
 
-    private volatile boolean shutdown;
-
     public String getApi() {
         return api;
     }
@@ -37,14 +35,6 @@ public abstract class AbstractRecorder {
 
     public void setStopMilliTime(long stopMilliTime) {
         this.stopMilliTime = stopMilliTime;
-    }
-
-    public boolean isShutdown() {
-        return shutdown;
-    }
-
-    public void setShutdown(boolean shutdown) {
-        this.shutdown = shutdown;
     }
 
     public abstract void recordTime(long startNanoTime, long endNanoTime);

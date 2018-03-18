@@ -16,7 +16,6 @@ public class ShutdownHook implements InitializingBean {
 
     private AsyncRecordProcessor asyncRecordProcessor;
 
-
     public void setRecorderContainer(RecorderContainer recorderContainer) {
         this.recorderContainer = recorderContainer;
     }
@@ -26,19 +25,18 @@ public class ShutdownHook implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         Assert.notNull(recorderContainer, "recorderContainer is required!!!");
         Assert.notNull(asyncRecordProcessor, "asyncRecordProcessor is required!!!");
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
             public void run() {
-                System.out.println("ENTER RecorderContainer.shutdownHook...");
+                System.out.println("ENTER ShutdownHook...");
                 try {
                     Map<String, AbstractRecorder> recorderMap = recorderContainer.getRecorderMap();
                     for (Map.Entry<String, AbstractRecorder> entry : recorderMap.entrySet()) {
                         AbstractRecorder recorder = entry.getValue();
-                        recorder.setShutdown(true);
                         asyncRecordProcessor.process(recorder.getApi(), recorder.getStartMilliTime(), recorder.getStopMilliTime(), recorder.getSortedTimingRecords());
                     }
 
@@ -48,7 +46,7 @@ public class ShutdownHook implements InitializingBean {
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
-                    System.out.println("EXIT RecorderContainer.shutdownHook...");
+                    System.out.println("EXIT ShutdownHook...");
                 }
             }
         }));
