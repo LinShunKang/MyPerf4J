@@ -1,6 +1,5 @@
 # MyPerf4J
-一个简单、快速的Java接口性能监控和统计工具
-
+A Simple and Fast Performance Monitoring and Statistics for Java Code. Inspired by perf4j link: https://github.com/perf4j/perf4j
 ## 背景
 * 我需要一个能统计接口响应时间的程序
 * perf4j现有的统计数据不能满足我的需求
