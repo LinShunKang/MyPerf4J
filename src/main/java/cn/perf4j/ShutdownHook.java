@@ -3,6 +3,8 @@ package cn.perf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -18,20 +20,20 @@ public class ShutdownHook implements InitializingBean {
 
     private RecorderContainer recorderContainer;
 
-    private AsyncRecordProcessor asyncRecordProcessor;
+    private AsyncPerfStatsProcessor asyncPerfStatsProcessor;
 
     public void setRecorderContainer(RecorderContainer recorderContainer) {
         this.recorderContainer = recorderContainer;
     }
 
-    public void setAsyncRecordProcessor(AsyncRecordProcessor asyncRecordProcessor) {
-        this.asyncRecordProcessor = asyncRecordProcessor;
+    public void setAsyncPerfStatsProcessor(AsyncPerfStatsProcessor asyncPerfStatsProcessor) {
+        this.asyncPerfStatsProcessor = asyncPerfStatsProcessor;
     }
 
     @Override
     public void afterPropertiesSet() {
         Assert.notNull(recorderContainer, "recorderContainer is required!!!");
-        Assert.notNull(asyncRecordProcessor, "asyncRecordProcessor is required!!!");
+        Assert.notNull(asyncPerfStatsProcessor, "asyncPerfStatsProcessor is required!!!");
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
@@ -39,12 +41,18 @@ public class ShutdownHook implements InitializingBean {
                 System.out.println("ENTER ShutdownHook...");
                 try {
                     Map<String, AbstractRecorder> recorderMap = recorderContainer.getRecorderMap();
+                    List<PerfStats> perfStatsList = new ArrayList<>(recorderMap.size());
+                    AbstractRecorder recorder = null;
                     for (Map.Entry<String, AbstractRecorder> entry : recorderMap.entrySet()) {
-                        AbstractRecorder recorder = entry.getValue();
-                        asyncRecordProcessor.process(recorder.getApi(), recorder.getStartMilliTime(), recorder.getStopMilliTime(), recorder.getSortedTimingRecords());
+                        recorder = entry.getValue();
+                        perfStatsList.add(PerfStatsCalculator.calPerfStats(recorder));
                     }
 
-                    ThreadPoolExecutor executor = asyncRecordProcessor.getExecutor();
+                    if (recorder != null) {
+                        asyncPerfStatsProcessor.process(perfStatsList, recorder.getStartMilliTime(), recorder.getStopMilliTime());
+                    }
+
+                    ThreadPoolExecutor executor = asyncPerfStatsProcessor.getExecutor();
                     executor.shutdown();
                     executor.awaitTermination(30, TimeUnit.SECONDS);
                 } catch (Exception e) {

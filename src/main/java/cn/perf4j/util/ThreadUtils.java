@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by LinShunkang on 2018/3/16
  */
-public class ThreadUtils {
+public final class ThreadUtils {
 
     public static ThreadFactory newThreadFactory(final String prefix) {
         return new ThreadFactory() {

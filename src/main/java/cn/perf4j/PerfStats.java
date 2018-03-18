@@ -1,15 +1,9 @@
 package cn.perf4j;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 /**
  * Created by LinShunkang on 2018/3/11
  */
 public class PerfStats {
-
-    private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private static final int TP_50_IDX = 0;
     private static final int TP_90_IDX = 1;
@@ -20,11 +14,11 @@ public class PerfStats {
     private static final int TP_99999_IDX = 6;
     private static final int TP_100_IDX = 7;
 
-    private static final double[] TOP_PERCENTILE_ARR = {0.5D, 0.9D, 0.95D, 0.99D, 0.999D, 0.9999D, 0.99999D, 1.0D};
+    private static final double[] TOP_PERCENTILE_ARR = {0.5D, 0.9D, 0.95D, 0.99D, 0.999D, 0.9999D, 0.99999D, 1.0D};//注意：TPArr和TOP_PERCENTILE_ARR的大小请保持一致！！！！
+
+    private final int[] TPArr = {-1, -1, -1, -1, -1, -1, -1, -1};//注意：TPArr和TOP_PERCENTILE_ARR的大小请保持一致！！！！
 
     private String api;
-
-    private final int[] TPArr = {-1, -1, -1, -1, -1, -1, -1};
 
     private int minTime = -1;//ms
 
@@ -153,12 +147,11 @@ public class PerfStats {
         return (int) (totalCount / seconds);
     }
 
-
     @Override
     public String toString() {
         return "PerfStats{" +
                 "api=" + api +
-                ", [" + dateFormat.format(new Date(startMillTime)) + ", " + dateFormat.format(new Date(stopMillTime)) + "]" +
+//                ", [" + dateFormat.format(new Date(startMillTime)) + ", " + dateFormat.format(new Date(stopMillTime)) + "]" +
                 ", RPS=" + getRPS() +
                 ", TP50=" + getTP50() +
                 ", TP90=" + getTP90() +
@@ -177,7 +170,6 @@ public class PerfStats {
     public static PerfStats getInstance(String api) {
         return new PerfStats(api);
     }
-
 
     public static double[] getPercentiles() {
         return TOP_PERCENTILE_ARR;

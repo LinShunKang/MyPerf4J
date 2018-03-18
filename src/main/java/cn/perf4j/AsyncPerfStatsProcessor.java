@@ -12,23 +12,23 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by LinShunkang on 2018/3/16
  */
-public class AsyncRecordProcessor implements RecordProcessor, InitializingBean {
+public class AsyncPerfStatsProcessor implements PerfStatsProcessor, InitializingBean {
 
     private static final ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 2, 5, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>(2000), ThreadUtils.newThreadFactory("MyPerf4J-AsyncRecordProcessor_"), new ThreadPoolExecutor.DiscardPolicy());
 
-    private final RecordProcessor target;
+    private final PerfStatsProcessor target;
 
-    public AsyncRecordProcessor(RecordProcessor target) {
+    public AsyncPerfStatsProcessor(PerfStatsProcessor target) {
         this.target = target;
     }
 
     @Override
-    public void process(final String api, final long startMilliTime, final long stopMillTime, final List<Record> sortedRecords) {
+    public void process(final List<PerfStats> perfStatsList, final long startMillis, final long stopMillis) {
         try {
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    target.process(api, startMilliTime, stopMillTime, sortedRecords);
+                    target.process(perfStatsList, startMillis, stopMillis);
                 }
             });
         } catch (Exception e) {

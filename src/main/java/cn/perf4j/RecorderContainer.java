@@ -13,9 +13,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.Method;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -46,7 +44,7 @@ public class RecorderContainer implements InitializingBean, ApplicationContextAw
 
     private ApplicationContext applicationContext;
 
-    private RecordProcessor recordProcessor;
+    private PerfStatsProcessor perfStatsProcessor;
 
     //为了让recorderMap.get()更加快速，减小loadFactor->减少碰撞的概率->加快get()的执行速度
     private volatile Map<String, AbstractRecorder> recorderMap = MapUtils.createHashMap(1000, 0.4F);
@@ -110,14 +108,14 @@ public class RecorderContainer implements InitializingBean, ApplicationContextAw
         this.applicationContext = applicationContext;
     }
 
-    public void setRecordProcessor(RecordProcessor recordProcessor) {
-        this.recordProcessor = recordProcessor;
+    public void setPerfStatsProcessor(PerfStatsProcessor perfStatsProcessor) {
+        this.perfStatsProcessor = perfStatsProcessor;
     }
 
     @Override
     public void afterPropertiesSet() {
         Assert.notNull(applicationContext, "applicationContext is required!!!");
-        Assert.notNull(recordProcessor, "recordProcessor is required!!!");
+        Assert.notNull(perfStatsProcessor, "perfStatsProcessor is required!!!");
 
         initRecorderMap();
 
@@ -172,10 +170,17 @@ public class RecorderContainer implements InitializingBean, ApplicationContextAw
                 }
 
                 try {
+                    AbstractRecorder recorder = null;
+                    List<PerfStats> perfStatsList = new ArrayList<>(backupRecorderMap.size());
                     for (Map.Entry<String, AbstractRecorder> entry : backupRecorderMap.entrySet()) {
-                        AbstractRecorder recorder = entry.getValue();
-                        recordProcessor.process(recorder.getApi(), recorder.getStartMilliTime(), recorder.getStopMilliTime(), recorder.getSortedTimingRecords());
+                        recorder = entry.getValue();
+                        perfStatsList.add(PerfStatsCalculator.calPerfStats(recorder));
                     }
+
+                    if (recorder != null) {
+                        perfStatsProcessor.process(perfStatsList, recorder.getStartMilliTime(), recorder.getStopMilliTime());
+                    }
+
                     System.out.println("Time=" + new Date() + ", backgroundExecutor finished!!!!");
                 } catch (Exception e) {
                     e.printStackTrace();
