@@ -10,6 +10,12 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
 /**
  * Created by LinShunkang on 2018/3/13
  */
+
+/**
+ * 该类用于存储某一个api在指定时间片内的响应时间
+ * 为了减小内存占用，利用数组+Map的方式，将小于mostTimeThreshold的响应时间记录在数组中，
+ * 将大于等于mostTimeThreshold的响应时间记录到Map中;
+ */
 public class Recorder extends AbstractRecorder {
 
     private final int mostTimeThreshold;

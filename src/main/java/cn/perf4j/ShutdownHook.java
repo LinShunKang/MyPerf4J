@@ -10,6 +10,10 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by LinShunkang on 2018/3/16
  */
+
+/**
+ * 该类用于在JVM关闭前通过调用asyncRecordProcessor把内存中的数据处理完，保证尽量不丢失采集的数据
+ */
 public class ShutdownHook implements InitializingBean {
 
     private RecorderContainer recorderContainer;

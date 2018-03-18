@@ -1,7 +1,6 @@
 package cn.perf4j.test.recorder;
 
 import cn.perf4j.*;
-import cn.perf4j.util.StopWatch;
 
 import java.util.concurrent.*;
 
@@ -15,23 +14,23 @@ public class RecorderBenchmarkTest {
 
         int times = 100000000;
         singleThreadBenchmark(recorder, times / 10);//warm up
-        System.out.println(PerfStatsCalculator.calPerfStat(recorder));
+        System.out.println(PerfStatsCalculator.calPerfStats(recorder));
 
         recorder.resetRecord();
         singleThreadBenchmark(recorder, times);
-        System.out.println(PerfStatsCalculator.calPerfStat(recorder));
+        System.out.println(PerfStatsCalculator.calPerfStats(recorder));
 
         recorder.resetRecord();
         multiThreadBenchmark(recorder, times, 2);
-        System.out.println(PerfStatsCalculator.calPerfStat(recorder));
+        System.out.println(PerfStatsCalculator.calPerfStats(recorder));
 
         recorder.resetRecord();
         multiThreadBenchmark(recorder, times, 4);
-        System.out.println(PerfStatsCalculator.calPerfStat(recorder));
+        System.out.println(PerfStatsCalculator.calPerfStats(recorder));
 
         recorder.resetRecord();
         multiThreadBenchmark(recorder, times, 8);
-        System.out.println(PerfStatsCalculator.calPerfStat(recorder));
+        System.out.println(PerfStatsCalculator.calPerfStats(recorder));
     }
 
     private static void singleThreadBenchmark(AbstractRecorder recorder, int times) {

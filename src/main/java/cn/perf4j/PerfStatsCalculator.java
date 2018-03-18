@@ -8,19 +8,19 @@ import java.util.List;
  */
 public final class PerfStatsCalculator {
 
-    public static PerfStats calPerfStat(AbstractRecorder recorder) {
+    public static PerfStats calPerfStats(AbstractRecorder recorder) {
         List<Record> sortedRecords = recorder.getSortedTimingRecords();
-        return calPerfStat(recorder.getApi(), recorder.getStartMilliTime(), recorder.getStopMilliTime(), sortedRecords);
+        return calPerfStats(recorder.getApi(), recorder.getStartMilliTime(), recorder.getStopMilliTime(), sortedRecords);
     }
 
-    public static PerfStats calPerfStat(String api, long startMilliTime, long stopMillTime, List<Record> sortedRecords) {
+    public static PerfStats calPerfStats(String api, long startMilliTime, long stopMillTime, List<Record> sortedRecords) {
         int totalCount = getTotalCount(sortedRecords);
         PerfStats result = PerfStats.getInstance(api);
         result.setTotalCount(totalCount);
         result.setStartMillTime(startMilliTime);
         result.setStopMillTime(stopMillTime);
 
-        if (sortedRecords == null || sortedRecords.isEmpty()) {
+        if (totalCount <= 0) {
             return result;
         }
 

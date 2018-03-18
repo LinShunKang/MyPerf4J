@@ -23,6 +23,14 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by LinShunkang on 2018/3/13
  */
+
+/**
+ * 该类用于存储所有添加了注解的接口对应的Recorder
+ * 该类的实现原因：
+ * 1.为了保证运行时的性能和简化编程，在程序启动时就把recorderMap和backupRecorderMap初始化完成，并且通过减小loadFactor来优化Map的get()性能；
+ * 2.为了避免影响程序的响应时间，利用roundRobinExecutor定时去对recorderMap和backupRecorderMap进行轮转；
+ * 3.为了避免recordProcessor处理时间过长影响roundRobinExecutor的处理逻辑，增加一个backgroundExecutor来定时执行recordProcessor
+ */
 public class RecorderContainer implements InitializingBean, ApplicationContextAware {
 
     private static final long millTimeSlice = 60 * 1000L;//60s

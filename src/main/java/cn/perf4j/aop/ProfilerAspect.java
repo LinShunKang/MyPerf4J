@@ -11,20 +11,27 @@ import org.springframework.util.Assert;
 /**
  * Created by LinShunkang on 2018/3/11
  */
+
+/**
+ * 该类利用切面对应用程序接口的响应时间进行统计
+ * 为何只对拥有cn.perf4j.aop.Profiler注解的类和方法进行监控？
+ * 因为为了保证运行时的性能，会在recorderContainer初始化的时候就把所有api对应的Recorder初始化完成，
+ * 保证所有执行到doProfiling()方法的接口一定有对应的AbstractRecorder，而不用先判断不存在然后再插入，避免同步，简化代码逻辑。
+ */
 @Aspect
 public class ProfilerAspect implements InitializingBean {
 
     private RecorderContainer recorderContainer;
 
-    @Around("@within(cn.perf4j.aop.Profiler) || @annotation(cn.perf4j.aop.Profiler)")//OK!!!
+    @Around("@within(cn.perf4j.aop.Profiler) || @annotation(cn.perf4j.aop.Profiler)")
     public Object doProfiling(ProceedingJoinPoint joinPoint) throws Throwable {
         long startNano = System.nanoTime();
-        String api = "";
+        String api = null;
         try {
             api = getApi(joinPoint);
             return joinPoint.proceed(joinPoint.getArgs());
         } catch (Throwable throwable) {
-            System.err.println("ProfilerAspect.doProfiling");
+            System.err.println("ProfilerAspect.doProfiling(): api=" + api);
             throw throwable;
         } finally {
             AbstractRecorder recorder = recorderContainer.getRecorder(api);

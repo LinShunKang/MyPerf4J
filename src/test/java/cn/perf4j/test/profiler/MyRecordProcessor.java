@@ -13,6 +13,6 @@ public class MyRecordProcessor implements RecordProcessor {
 
     @Override
     public void process(String api, long startMilliTime, long stopMillTime, List<Record> sortedRecords) {
-        System.out.println(PerfStatsCalculator.calPerfStat(api, startMilliTime, stopMillTime, sortedRecords));
+        System.out.println(PerfStatsCalculator.calPerfStats(api, startMilliTime, stopMillTime, sortedRecords));
     }
 }
