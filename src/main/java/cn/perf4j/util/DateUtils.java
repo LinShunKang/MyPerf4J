@@ -11,17 +11,35 @@ public final class DateUtils {
 
     private static final String DEFAULT_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
-    private static final  DateFormat DEFALUT_DATE_FORMAT = new SimpleDateFormat(DEFAULT_FORMAT);
+    private static final ThreadLocal<DateFormat> DEFAULT_DATE_FORMAT = new ThreadLocal<DateFormat>() {
+        @Override
+        protected DateFormat initialValue() {
+            return new SimpleDateFormat(DEFAULT_FORMAT);
+        }
+    };
 
-    public static String getDateStr(long millis) {
-        return getDateStr(new Date(millis));
+    private static final String TO_MILLS_FORMAT = "yyyy-MM-dd HH:mm:ss.S";
+
+    private static final ThreadLocal<DateFormat> TO_MILLS_DATE_FORMAT = new ThreadLocal<DateFormat>() {
+        @Override
+        protected DateFormat initialValue() {
+            return new SimpleDateFormat(TO_MILLS_FORMAT);
+        }
+    };
+
+    public static String getStr(long millis) {
+        return getStr(new Date(millis));
     }
 
-    public static String getDateStr(Date date) {
-        return DEFALUT_DATE_FORMAT.format(date);
+    public static String getStr(Date date) {
+        return DEFAULT_DATE_FORMAT.get().format(date);
     }
 
-    public static String getDateStr(Date date, String pattern) {
+    public static String getToMillisStr(Date date) {
+        return TO_MILLS_DATE_FORMAT.get().format(date);
+    }
+
+    public static String getStr(Date date, String pattern) {
         DateFormat df = new SimpleDateFormat(pattern);
         return df.format(date);
     }

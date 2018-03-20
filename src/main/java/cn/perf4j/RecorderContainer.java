@@ -2,6 +2,7 @@ package cn.perf4j;
 
 import cn.perf4j.util.AopTargetUtils;
 import cn.perf4j.aop.Profiler;
+import cn.perf4j.util.Logger;
 import cn.perf4j.util.MapUtils;
 import cn.perf4j.util.ThreadUtils;
 import org.springframework.aop.support.AopUtils;
@@ -25,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * 该类用于存储所有添加了注解的接口对应的Recorder
  * 该类的实现原因：
- * 1.为了保证运行时的性能和简化编程，在程序启动时就把recorderMap和backupRecorderMap初始化完成，并且通过减小loadFactor来优化Map的get()性能；
+ * 1.为了保证运行时的性能和简化编程，在程序启动时就把recorderMap和backupRecorderMap初始化完成，可以避免判断，并且通过减小loadFactor来优化Map的get()性能；
  * 2.为了避免影响程序的响应时间，利用roundRobinExecutor定时去对recorderMap和backupRecorderMap进行轮转；
  * 3.为了避免recordProcessor处理时间过长影响roundRobinExecutor的处理逻辑，增加一个backgroundExecutor来定时执行recordProcessor
  */
@@ -47,9 +48,9 @@ public class RecorderContainer implements InitializingBean, ApplicationContextAw
     private PerfStatsProcessor perfStatsProcessor;
 
     //为了让recorderMap.get()更加快速，减小loadFactor->减少碰撞的概率->加快get()的执行速度
-    private volatile Map<String, AbstractRecorder> recorderMap = MapUtils.createHashMap(1000, 0.4F);
+    private volatile Map<String, AbstractRecorder> recorderMap = MapUtils.createHashMap(128, 0.2F);
 
-    private volatile Map<String, AbstractRecorder> backupRecorderMap = MapUtils.createHashMap(1000, 0.6F);
+    private volatile Map<String, AbstractRecorder> backupRecorderMap = MapUtils.createHashMap(128, 0.2F);
 
     public AbstractRecorder getRecorder(String api) {
         return recorderMap.get(api);
@@ -61,7 +62,7 @@ public class RecorderContainer implements InitializingBean, ApplicationContextAw
 
     private void initRecorderMap() {
         if (applicationContext == null) {
-            System.err.println("RecorderContainer.initRecorderMap(): applicationContext is null!!!");
+            Logger.error("RecorderContainer.initRecorderMap(): applicationContext is null!!!");
             return;
         }
 
@@ -84,10 +85,7 @@ public class RecorderContainer implements InitializingBean, ApplicationContextAw
                     }
 
                     Profiler methodProfiler = AnnotationUtils.findAnnotation(method, Profiler.class);
-                    if (methodProfiler == null) {
-                        methodProfiler = classProfiler;
-                    }
-                    if (methodProfiler == null) {
+                    if (methodProfiler == null || (methodProfiler = classProfiler) == null) {
                         continue;
                     }
 
@@ -97,10 +95,10 @@ public class RecorderContainer implements InitializingBean, ApplicationContextAw
                     backupRecorderMap.put(api, Recorder.getInstance(api, methodProfiler.mostTimeThreshold(), methodProfiler.outThresholdCount()));
                 }
             } catch (Exception e) {
-                System.err.println("RecorderContainer.initRecorderMap(): init Error!!!");
+                Logger.error("RecorderContainer.initRecorderMap(): init Error!!!");
             }
         }
-        System.out.println("RecorderContainer.initRecorderMap() cost:" + (System.currentTimeMillis() - startMills) + "ms");
+        Logger.info("RecorderContainer.initRecorderMap() cost:" + (System.currentTimeMillis() - startMills) + "ms");
     }
 
     @Override
@@ -153,7 +151,7 @@ public class RecorderContainer implements InitializingBean, ApplicationContextAw
                     Map<String, AbstractRecorder> tmpMap = recorderMap;
                     recorderMap = backupRecorderMap;
                     backupRecorderMap = tmpMap;
-                    System.out.println("Time=" + new Date(currentMills) + ", roundRobinExecutor finished!!!!");
+                    Logger.info("roundRobinExecutor finished!!!!");
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
@@ -181,7 +179,7 @@ public class RecorderContainer implements InitializingBean, ApplicationContextAw
                         perfStatsProcessor.process(perfStatsList, recorder.getStartMilliTime(), recorder.getStopMilliTime());
                     }
 
-                    System.out.println("Time=" + new Date() + ", backgroundExecutor finished!!!!");
+                    Logger.info("backgroundExecutor finished!!!!");
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {

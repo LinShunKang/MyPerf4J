@@ -1,5 +1,6 @@
 package cn.perf4j;
 
+import cn.perf4j.util.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -38,7 +39,7 @@ public class ShutdownHook implements InitializingBean {
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
             public void run() {
-                System.out.println("ENTER ShutdownHook...");
+                Logger.info("ENTER ShutdownHook...");
                 try {
                     Map<String, AbstractRecorder> recorderMap = recorderContainer.getRecorderMap();
                     List<PerfStats> perfStatsList = new ArrayList<>(recorderMap.size());
@@ -58,7 +59,7 @@ public class ShutdownHook implements InitializingBean {
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
-                    System.out.println("EXIT ShutdownHook...");
+                    Logger.info("EXIT ShutdownHook...");
                 }
             }
         }));

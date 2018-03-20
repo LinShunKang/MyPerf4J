@@ -15,7 +15,7 @@ public class MyPerfStatsProcessor implements PerfStatsProcessor {
     public void process(List<PerfStats> perfStatsList, long startMillis, long stopMillis) {
         //You can do anything you want to do :)
         StringBuilder sb = new StringBuilder((perfStatsList.size() + 1) * 128);
-        sb.append("MyPerf4J Performance Statistics [").append(DateUtils.getDateStr(startMillis)).append(", ").append(DateUtils.getDateStr(stopMillis)).append("]").append("\n");
+        sb.append("MyPerf4J Performance Statistics [").append(DateUtils.getStr(startMillis)).append(", ").append(DateUtils.getStr(stopMillis)).append("]").append("\n");
         if (perfStatsList.isEmpty()) {
             System.out.println(sb.toString());
             return;

@@ -2,6 +2,7 @@ package cn.perf4j.aop;
 
 import cn.perf4j.AbstractRecorder;
 import cn.perf4j.RecorderContainer;
+import cn.perf4j.util.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.beans.factory.InitializingBean;
@@ -15,11 +16,10 @@ import org.springframework.util.Assert;
 /**
  * 该类利用切面对应用程序接口的响应时间进行统计
  * 为何只对拥有cn.perf4j.aop.Profiler注解的类和方法进行监控？
- * 因为为了保证运行时的性能，会在recorderContainer初始化的时候就把所有api对应的Recorder初始化完成，
- * 保证所有执行到doProfiling()方法的接口一定有对应的AbstractRecorder，而不用先判断不存在然后再插入，避免同步，简化代码逻辑。
+ * 1、内存更加可控，添加Profiler注解的人比程序更加了解接口的响应时间，可以更好的设置Profiler中的mostTimeThreshold和outThresholdCount。
  */
 @Aspect
-public class ProfilerAspect implements InitializingBean {
+public class ProfilerAspect implements InitializingBean/*, MethodInterceptor*/ {
 
     private RecorderContainer recorderContainer;
 
@@ -31,14 +31,14 @@ public class ProfilerAspect implements InitializingBean {
             api = getApi(joinPoint);
             return joinPoint.proceed(joinPoint.getArgs());
         } catch (Throwable throwable) {
-            System.err.println("ProfilerAspect.doProfiling(): api=" + api);
+            Logger.error("ProfilerAspect.doProfiling(): api=" + api);
             throw throwable;
         } finally {
             AbstractRecorder recorder = recorderContainer.getRecorder(api);
             if (recorder != null) {
                 recorder.recordTime(startNano, System.nanoTime());
             } else {
-                System.err.println("ProfilerAspect.doProfile(): UnKnown api=" + api);
+                Logger.error("ProfilerAspect.doProfile(): UnKnown api=" + api);
             }
         }
     }
@@ -48,6 +48,33 @@ public class ProfilerAspect implements InitializingBean {
         Class<?> clazz = joinPoint.getTarget().getClass();
         return clazz.getSimpleName().concat(".").concat(joinPoint.getSignature().getName());
     }
+
+//
+//    @Override
+//    public Object invoke(MethodInvocation methodInvocation) throws Throwable {
+//        long startNano = System.nanoTime();
+//        String api = null;
+//        try {
+//            api = getApi(methodInvocation);
+//            return methodInvocation.proceed();
+//        } catch (Throwable throwable) {
+//            System.err.println("ProfilerAspect.invoke(): api=" + api);
+//            throw throwable;
+//        } finally {
+//            AbstractRecorder recorder = recorderContainer.getRecorder(api);
+//            if (recorder != null) {
+//                recorder.recordTime(startNano, System.nanoTime());
+//            } else {
+//                System.err.println("ProfilerAspect.invoke(): UnKnown api=" + api);
+//            }
+//        }
+//    }
+//
+//    //从性能角度考虑，只用类名+方法名，不去组装方法的参数类型！！！
+//    private String getApi(MethodInvocation methodInvocation) {
+//        Class<?> clazz = methodInvocation.getThis().getClass();
+//        return clazz.getSimpleName().concat(".").concat(methodInvocation.getMethod().getName());
+//    }
 
     public void setRecorderContainer(RecorderContainer recorderContainer) {
         this.recorderContainer = recorderContainer;

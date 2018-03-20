@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class AsyncPerfStatsProcessor implements PerfStatsProcessor, InitializingBean {
 
-    private static final ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 2, 5, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>(2000), ThreadUtils.newThreadFactory("MyPerf4J-AsyncRecordProcessor_"), new ThreadPoolExecutor.DiscardPolicy());
+    private static final ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 2, 5, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>(500), ThreadUtils.newThreadFactory("MyPerf4J-AsyncPerfStatsProcessor_"), new ThreadPoolExecutor.DiscardPolicy());
 
     private final PerfStatsProcessor target;
 

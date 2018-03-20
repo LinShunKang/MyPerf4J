@@ -23,6 +23,11 @@
         <property name="recorderContainer" ref="recorderContainer"/>
     </bean>
 
+    <!--<aop:config>-->
+        <!--<aop:advisor id="apiAdvisor" advice-ref="profilerAspect"-->
+                     <!--pointcut="@within(cn.perf4j.aop.Profiler) || @annotation(cn.perf4j.aop.Profiler)"/>-->
+    <!--</aop:config>-->
+
     <bean id="shutdownHook" class="cn.perf4j.ShutdownHook">
         <property name="asyncPerfStatsProcessor" ref="asyncPerfStatsProcessor"/>
         <property name="recorderContainer" ref="recorderContainer"/>
