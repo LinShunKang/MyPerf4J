@@ -95,7 +95,7 @@ public class RecorderContainer implements InitializingBean, ApplicationContextAw
                     backupRecorderMap.put(api, Recorder.getInstance(api, methodProfiler.mostTimeThreshold(), methodProfiler.outThresholdCount()));
                 }
             } catch (Exception e) {
-                Logger.error("RecorderContainer.initRecorderMap(): init Error!!!");
+                Logger.error("RecorderContainer.initRecorderMap(): init Error!!!", e);
             }
         }
         Logger.info("RecorderContainer.initRecorderMap() cost:" + (System.currentTimeMillis() - startMills) + "ms");

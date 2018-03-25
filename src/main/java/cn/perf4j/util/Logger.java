@@ -19,4 +19,10 @@ public final class Logger {
         System.err.println(getPrefix() + msg);
     }
 
+    public static void error(String msg, Throwable throwable) {
+        synchronized (System.err) {
+            System.err.println(getPrefix() + msg);
+            throwable.printStackTrace();
+        }
+    }
 }

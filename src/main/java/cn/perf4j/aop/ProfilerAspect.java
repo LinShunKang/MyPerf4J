@@ -31,7 +31,7 @@ public class ProfilerAspect implements InitializingBean/*, MethodInterceptor*/ {
             api = getApi(joinPoint);
             return joinPoint.proceed(joinPoint.getArgs());
         } catch (Throwable throwable) {
-            Logger.error("ProfilerAspect.doProfiling(): api=" + api);
+            Logger.error("ProfilerAspect.doProfiling(): api=" + api, throwable);
             throw throwable;
         } finally {
             AbstractRecorder recorder = recorderContainer.getRecorder(api);
