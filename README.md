@@ -80,6 +80,36 @@ A Simple and Fast Performance Monitoring and Statistics for Java Code. Inspired 
     </dependency>
 ```
 * 在你想要分析性能的类或方法明上加上 @Profiler注解
+
+```
+package cn.perf4j.test.profiler;
+
+import cn.perf4j.aop.Profiler;
+
+/**
+ * Created by LinShunkang on 2018/3/11
+ */
+@Profiler(mostTimeThreshold = 10)
+public class ProfilerTestApiImpl implements ProfilerTestApi {
+
+    @Override
+    @Profiler(mostTimeThreshold = 20)
+    public String test1(String aaa) {
+        return null;
+    }
+
+    @Override
+    @Profiler(mostTimeThreshold = 10)
+    public int test2() {
+        return 0;
+    }
+
+    @Override
+    public void test3(String aaa, String bbb) {
+    }
+}
+
+```
 * 新建一个MyRecordProcessor类
 
 ``` 
@@ -147,3 +177,4 @@ PerfStats{api=ProfilerTestApiImpl.test3, RPS=0, TP50=-1, TP90=-1, TP95=-1, TP99=
 * 建议
     - 对于内存敏感或精度要求不是特别高的应用，推荐使用rough模式
     - 对于内存不敏感且精度要求特别高的应用，推荐使用accurate模式
+
