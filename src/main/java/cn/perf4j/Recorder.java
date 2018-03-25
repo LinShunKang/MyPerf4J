@@ -13,8 +13,9 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
 
 /**
  * 该类用于存储某一个api在指定时间片内的响应时间
- * 为了减小内存占用，利用数组+Map的方式，将小于mostTimeThreshold的响应时间记录在数组中，
- * 将大于等于mostTimeThreshold的响应时间记录到Map中;
+ * 为了减小内存占用，利用数组+Map的方式:
+ * 1、将小于mostTimeThreshold的响应时间记录在数组中；
+ * 2、将大于等于mostTimeThreshold的响应时间记录到Map中。
  */
 public class Recorder extends AbstractRecorder {
 
@@ -55,33 +56,50 @@ public class Recorder extends AbstractRecorder {
     }
 
     @Override
-    public List<Record> getSortedTimingRecords() {
-        List<Record> result = new ArrayList<>(timingArr.length() + timingMap.size());
+    public int[] getSortedTimingRecords() {
+        int idx = 0;
+        int[] result = new int[getEffectiveRecordCount() * 2];
         for (int i = 0; i < timingArr.length(); ++i) {
             int count = timingArr.get(i);
             if (count > 0) {
-                result.add(Record.getInstance(i, count));
+                result[idx++] = i;
+                result[idx++] = count;
             }
         }
-        result.addAll(getSortedMapRecords());
+        fillMapRecord(result, idx);
         return result;
     }
 
-    private List<Record> getSortedMapRecords() {
-        List<Record> mapRecords = new ArrayList<>(timingMap.size());
-        for (Map.Entry<Integer, AtomicInteger> entry : timingMap.entrySet()) {
-            if (entry.getValue().get() > 0) {
-                mapRecords.add(Record.getInstance(entry.getKey(), entry.getValue().get()));
+    private int getEffectiveRecordCount() {
+        int result = 0;
+        for (int i = 0; i < timingArr.length(); ++i) {
+            int count = timingArr.get(i);
+            if (count > 0) {
+                result++;
             }
         }
 
-        Collections.sort(mapRecords, new Comparator<Record>() {
-            @Override
-            public int compare(Record o1, Record o2) {
-                return o1.getTime() - o2.getTime();
+        for (Map.Entry<Integer, AtomicInteger> entry : timingMap.entrySet()) {
+            if (entry.getValue().get() > 0) {
+                result++;
             }
-        });
-        return mapRecords;
+        }
+        return result;
+    }
+
+    private void fillMapRecord(int[] arr, int offset) {
+        int idx = offset;
+        for (Map.Entry<Integer, AtomicInteger> entry : timingMap.entrySet()) {
+            if (entry.getValue().get() > 0) {
+                arr[idx++] = entry.getKey();
+            }
+        }
+
+        Arrays.sort(arr, offset, idx);
+        for (int i = idx - 1; i >= offset; --i) {
+            arr[2 * i - offset] = arr[i];
+            arr[2 * i + 1 - offset] = timingMap.get(arr[i]).get();
+        }
     }
 
     @Override

@@ -1,19 +1,25 @@
 package cn.perf4j;
 
-import java.util.List;
-
-
 /**
  * Created by LinShunkang on 2018/3/11
  */
 public final class PerfStatsCalculator {
 
+    //由于调用PerfStatsCalculator.calPerfStats()方法的线程只有一个，
+    // 并且PerfStats.getPercentiles().length是一定的，所以可以用ThreadLocal进行复用
+    private static final ThreadLocal<int[]> threadLocalIntArr = new ThreadLocal<int[]>() {
+        @Override
+        protected int[] initialValue() {
+            return new int[PerfStats.getPercentiles().length];
+        }
+    };
+
     public static PerfStats calPerfStats(AbstractRecorder recorder) {
-        List<Record> sortedRecords = recorder.getSortedTimingRecords();
+        int[] sortedRecords = recorder.getSortedTimingRecords();
         return calPerfStats(recorder.getApi(), recorder.getStartMilliTime(), recorder.getStopMilliTime(), sortedRecords);
     }
 
-    public static PerfStats calPerfStats(String api, long startMilliTime, long stopMillTime, List<Record> sortedRecords) {
+    public static PerfStats calPerfStats(String api, long startMilliTime, long stopMillTime, int[] sortedRecords) {
         int totalCount = getTotalCount(sortedRecords);
         PerfStats result = PerfStats.getInstance(api);
         result.setTotalCount(totalCount);
@@ -24,32 +30,31 @@ public final class PerfStatsCalculator {
             return result;
         }
 
-        result.setMinTime(sortedRecords.get(0).getTime());
-        result.setMaxTime(sortedRecords.get(sortedRecords.size() - 1).getTime());
+        result.setMinTime(sortedRecords[1]);
+        result.setMaxTime(sortedRecords[sortedRecords.length - 1]);
 
-        int[] topPerIndexArr = getTopPercentileIndexArr(totalCount, PerfStats.getPercentiles());
+        int[] topPerIndexArr = getTopPercentileIndexArr(totalCount);
         int[] topPerArr = result.getTPArr();
         int countMile = 0, perIndex = 0;
-        for (int i = 0; i < sortedRecords.size(); ++i) {
-            Record record = sortedRecords.get(i);
-            countMile += record.getCount();
+        for (int i = 0, length = sortedRecords.length; i < length; i = i + 2) {
+            countMile += sortedRecords[i + 1];
             int index = topPerIndexArr[perIndex];
             if (countMile >= index) {
-                topPerArr[perIndex] = record.getTime();
+                topPerArr[perIndex] = sortedRecords[i];
                 perIndex++;
             }
         }
         return reviseStatistic(result);
     }
 
-    private static int getTotalCount(List<Record> sortedRecords) {
-        if (sortedRecords == null || sortedRecords.isEmpty()) {
+    private static int getTotalCount(int[] sortedRecords) {
+        if (sortedRecords == null || sortedRecords.length == 0) {
             return 0;
         }
 
         int totalCount = 0;
-        for (int i = 0, size = sortedRecords.size(); i < size; ++i) {
-            totalCount += sortedRecords.get(i).getCount();
+        for (int i = 0, length = sortedRecords.length; i < length; i = i + 2) {
+            totalCount += sortedRecords[i + 1];
         }
         return totalCount;
     }
@@ -66,15 +71,16 @@ public final class PerfStatsCalculator {
         return perfStats;
     }
 
-    private static int getIndex(int totalCount, double percentile) {
-        return (int) Math.ceil(totalCount * percentile);
-    }
-
-    private static int[] getTopPercentileIndexArr(int totalCount, double... percentiles) {
-        int[] result = new int[percentiles.length];
+    private static int[] getTopPercentileIndexArr(int totalCount) {
+        int[] result = threadLocalIntArr.get();
+        double[] percentiles = PerfStats.getPercentiles();
         for (int i = 0; i < percentiles.length; ++i) {
             result[i] = getIndex(totalCount, percentiles[i]);
         }
         return result;
+    }
+
+    private static int getIndex(int totalCount, double percentile) {
+        return (int) Math.ceil(totalCount * percentile);
     }
 }
