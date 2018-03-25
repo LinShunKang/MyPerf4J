@@ -12,21 +12,19 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
  */
 
 /**
- * 该类用于存储某一个api在指定时间片内的响应时间
+ * MyPerf4J默认使用的是RoughRecorder，如果需要使用AccurateRecorder，则在启动参数里加上-DMyPerf4J.recorder.mode=accurate
+ * 该类用于精确存储某一个api在指定时间片内的响应时间
  * 为了减小内存占用，利用数组+Map的方式:
  * 1、将小于mostTimeThreshold的响应时间记录在数组中；
  * 2、将大于等于mostTimeThreshold的响应时间记录到Map中。
  */
-public class Recorder extends AbstractRecorder {
-
-    private final int mostTimeThreshold;
+public class AccurateRecorder extends AbstractRecorder {
 
     private final AtomicIntegerArray timingArr;
 
     private final ConcurrentHashMap<Integer, AtomicInteger> timingMap;
 
-    private Recorder(int mostTimeThreshold, int outThresholdCount) {
-        this.mostTimeThreshold = mostTimeThreshold;
+    private AccurateRecorder(int mostTimeThreshold, int outThresholdCount) {
         this.timingArr = new AtomicIntegerArray(mostTimeThreshold);
         this.timingMap = new ConcurrentHashMap<>(MapUtils.getFitCapacity(outThresholdCount));
     }
@@ -38,7 +36,7 @@ public class Recorder extends AbstractRecorder {
         }
 
         int elapsedTime = (int) ((endNanoTime - startNanoTime) / 1000000);
-        if (elapsedTime < mostTimeThreshold) {
+        if (elapsedTime < timingArr.length()) {
             timingArr.incrementAndGet(elapsedTime);
             return;
         }
@@ -111,7 +109,8 @@ public class Recorder extends AbstractRecorder {
         Iterator<Map.Entry<Integer, AtomicInteger>> iterator = timingMap.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<Integer, AtomicInteger> entry = iterator.next();
-            if (entry.getKey() > (1.5 * mostTimeThreshold)) {
+            if ((entry.getKey() > 1.5 * timingArr.length())
+                    || entry.getValue().get() <= 0) {
                 iterator.remove();
             } else {
                 entry.getValue().set(0);
@@ -122,8 +121,13 @@ public class Recorder extends AbstractRecorder {
         setStopMilliTime(0L);
     }
 
-    public static Recorder getInstance(String api, int mostTimeThreshold, int outThresholdCount) {
-        Recorder recorder = new Recorder(mostTimeThreshold, outThresholdCount);
+    @Override
+    public int getOutThresholdCount() {
+        return timingMap.size();//粗略估计
+    }
+
+    public static AccurateRecorder getInstance(String api, int mostTimeThreshold, int outThresholdCount) {
+        AccurateRecorder recorder = new AccurateRecorder(mostTimeThreshold, outThresholdCount);
         recorder.setApi(api);
         return recorder;
     }

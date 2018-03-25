@@ -19,8 +19,8 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD, ElementType.TYPE})
 public @interface Profiler {
 
-    int mostTimeThreshold() default 50;
+    int mostTimeThreshold() default 1000;//单位:ms
 
-    int outThresholdCount() default 50;
+    int outThresholdCount() default 10;
 
 }

@@ -39,6 +39,8 @@ public class RecorderContainer implements InitializingBean, ApplicationContextAw
 
     private static final ScheduledThreadPoolExecutor backgroundExecutor = new ScheduledThreadPoolExecutor(1, ThreadUtils.newThreadFactory("MyPerf4J-BackgroundExecutor_"), new ThreadPoolExecutor.DiscardPolicy());
 
+    private static final boolean accurateMode = "accurate".equalsIgnoreCase(System.getProperty("MyPerf4J.recorder.mode"));
+
     private volatile long nextMilliTimeSlice = ((System.currentTimeMillis() / millTimeSlice) * millTimeSlice) + millTimeSlice;
 
     private volatile boolean backupRecorderReady = false;
@@ -91,14 +93,21 @@ public class RecorderContainer implements InitializingBean, ApplicationContextAw
 
                     //从性能角度考虑，只用类名+方法名，不去组装方法的参数类型！！！
                     String api = clazz.getSimpleName() + "." + method.getName();
-                    recorderMap.put(api, Recorder.getInstance(api, methodProfiler.mostTimeThreshold(), methodProfiler.outThresholdCount()));
-                    backupRecorderMap.put(api, Recorder.getInstance(api, methodProfiler.mostTimeThreshold(), methodProfiler.outThresholdCount()));
+                    recorderMap.put(api, getRecorder(api, methodProfiler));
+                    backupRecorderMap.put(api, getRecorder(api, methodProfiler));
                 }
             } catch (Exception e) {
                 Logger.error("RecorderContainer.initRecorderMap(): init Error!!!", e);
             }
         }
         Logger.info("RecorderContainer.initRecorderMap() cost:" + (System.currentTimeMillis() - startMills) + "ms");
+    }
+
+    private AbstractRecorder getRecorder(String api, Profiler profiler) {
+        if (accurateMode) {
+            return AccurateRecorder.getInstance(api, profiler.mostTimeThreshold(), profiler.outThresholdCount());
+        }
+        return RoughRecorder.getInstance(api, profiler.mostTimeThreshold());
     }
 
     @Override
@@ -114,6 +123,8 @@ public class RecorderContainer implements InitializingBean, ApplicationContextAw
     public void afterPropertiesSet() {
         Assert.notNull(applicationContext, "applicationContext is required!!!");
         Assert.notNull(perfStatsProcessor, "perfStatsProcessor is required!!!");
+
+        Logger.info("MyPerf4J run as " + (accurateMode ? "[accurateMode]" : "[roughMode]"));
 
         initRecorderMap();
 

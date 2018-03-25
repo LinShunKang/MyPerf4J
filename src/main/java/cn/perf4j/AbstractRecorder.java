@@ -46,4 +46,6 @@ public abstract class AbstractRecorder {
 
     public abstract void resetRecord();
 
+    public abstract int getOutThresholdCount();
+
 }

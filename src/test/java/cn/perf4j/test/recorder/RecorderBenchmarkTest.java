@@ -10,7 +10,7 @@ import java.util.concurrent.*;
 public class RecorderBenchmarkTest {
 
     public static void main(String[] args) {
-        AbstractRecorder recorder = Recorder.getInstance("RecorderBenchmarkTest", 100, 50);
+        AbstractRecorder recorder = AccurateRecorder.getInstance("RecorderBenchmarkTest", 100, 50);
 
         int times = 100000000;
         singleThreadBenchmark(recorder, times / 10);//warm up
