@@ -23,6 +23,19 @@ A Simple and Fast Performance Monitoring and Statistics for Java Code. Inspired 
 * 通过异步的方式处理采集结果，避免影响接口的响应时间
 * 把处理采集的结果的接口暴露出来，方便进行自定义的处理
 
+## 内存
+* 前提条件
+    - 服务上有1024个需要监控的接口
+    - 每个接口的绝大部分响应时间在300ms以内，并且有100个不相同的大于300ms的响应时间
+    - 不开启指针压缩
+    - 非核心数据结构占用2MB
+* rough模式
+    - 只记录响应时间小于1000ms的请求
+    - 2 * 1024 * (1000 * 4B) + 2MB ≈ 10MB
+* accurate模式
+    - 记录所有的响应时间
+    - 2 * 1024 * (300 * 4B + 100 * 90B) + 2MB ≈ 22MB 
+
 ## 压测
 * 配置说明
     - 操作系统 macOS High Sierra 10.13.3
@@ -66,7 +79,7 @@ A Simple and Fast Performance Monitoring and Statistics for Java Code. Inspired 
         <version>1.0-SNAPSHOT</version>
     </dependency>
 ```
-* 在你想要分析性能的类或方法明上加上 @Profiler
+* 在你想要分析性能的类或方法明上加上 @Profiler注解
 * 新建一个MyRecordProcessor类
 
 ``` 
@@ -118,4 +131,19 @@ PerfStats{api=ProfilerTestApiImpl.test2, RPS=0, TP50=-1, TP90=-1, TP95=-1, TP99=
 PerfStats{api=ProfilerTestApiImpl.test3, RPS=0, TP50=-1, TP90=-1, TP95=-1, TP99=-1, TP999=-1, TP9999=-1, TP99999=-1, TP100=-1, minTime=-1, maxTime=-1, totalCount=0}
 ```
 
+## 关于rough模式与accurate模式
+* rough模式
+    - 精度略差，会丢弃响应时间超过指定阈值的记录
+    - 更加节省内存，只使用数组来记录响应时间
+    - 速度略快一些
+    - 默认
 
+* accurate模式
+    - 精度高，会记录所有的响应时间
+    - 相对耗费内存，使用数组+Map来记录响应时间
+    - 速度略慢一些
+    - 需要加入启动参数-DMyPerf4J.recorder.mode=accurate
+
+* 建议
+    - 对于内存敏感或精度要求不是特别高的应用，推荐使用rough模式
+    - 对于内存不敏感且精度要求特别高的应用，推荐使用accurate模式
