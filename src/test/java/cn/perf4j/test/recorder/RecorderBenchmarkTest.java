@@ -1,6 +1,7 @@
 package cn.perf4j.test.recorder;
 
 import cn.perf4j.*;
+import cn.perf4j.util.PerfStatsCalculator;
 
 import java.util.concurrent.*;
 

@@ -34,6 +34,14 @@ public class PerfStats {
         this.api = api;
     }
 
+    public String getApi() {
+        return api;
+    }
+
+    public void setApi(String api) {
+        this.api = api;
+    }
+
     public int getMinTime() {
         return minTime;
     }
@@ -151,7 +159,6 @@ public class PerfStats {
     public String toString() {
         return "PerfStats{" +
                 "api=" + api +
-//                ", [" + dateFormat.format(new Date(startMillTime)) + ", " + dateFormat.format(new Date(stopMillTime)) + "]" +
                 ", RPS=" + getRPS() +
                 ", TP50=" + getTP50() +
                 ", TP90=" + getTP90() +

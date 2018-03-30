@@ -1,4 +1,7 @@
-package cn.perf4j;
+package cn.perf4j.util;
+
+import cn.perf4j.AbstractRecorder;
+import cn.perf4j.PerfStats;
 
 /**
  * Created by LinShunkang on 2018/3/11
@@ -30,8 +33,8 @@ public final class PerfStatsCalculator {
             return result;
         }
 
-        result.setMinTime(sortedRecords[1]);
-        result.setMaxTime(sortedRecords[sortedRecords.length - 1]);
+        result.setMinTime(sortedRecords[0]);
+        result.setMaxTime(sortedRecords[sortedRecords.length - 2]);
 
         int[] topPerIndexArr = getTopPercentileIndexArr(totalCount);
         int[] topPerArr = result.getTPArr();

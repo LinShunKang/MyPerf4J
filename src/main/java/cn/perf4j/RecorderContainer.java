@@ -1,10 +1,7 @@
 package cn.perf4j;
 
-import cn.perf4j.util.AopTargetUtils;
+import cn.perf4j.util.*;
 import cn.perf4j.aop.Profiler;
-import cn.perf4j.util.Logger;
-import cn.perf4j.util.MapUtils;
-import cn.perf4j.util.ThreadUtils;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
@@ -124,7 +121,7 @@ public class RecorderContainer implements InitializingBean, ApplicationContextAw
         Assert.notNull(applicationContext, "applicationContext is required!!!");
         Assert.notNull(perfStatsProcessor, "perfStatsProcessor is required!!!");
 
-        Logger.info("MyPerf4J run as " + (accurateMode ? "[accurateMode]" : "[roughMode]"));
+        Logger.info("MyPerf4J Run AS " + (accurateMode ? "[AccurateMode]" : "[RoughMode]"));
 
         initRecorderMap();
 
@@ -184,6 +181,7 @@ public class RecorderContainer implements InitializingBean, ApplicationContextAw
                     for (Map.Entry<String, AbstractRecorder> entry : backupRecorderMap.entrySet()) {
                         recorder = entry.getValue();
                         perfStatsList.add(PerfStatsCalculator.calPerfStats(recorder));
+//                        Logger.info(entry.getKey() + ":" + Arrays.toString(recorder.getSortedTimingRecords()));
                     }
 
                     if (recorder != null) {
