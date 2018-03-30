@@ -117,7 +117,7 @@ package cn.perf4j.test.profiler;
 
 import cn.perf4j.PerfStats;
 import cn.perf4j.PerfStatsProcessor;
-import cn.perf4j.util.DateUtils;
+import cn.perf4j.util.PerfStatsFormatter;
 
 import java.util.List;
 
@@ -129,18 +129,9 @@ public class MyPerfStatsProcessor implements PerfStatsProcessor {
     @Override
     public void process(List<PerfStats> perfStatsList, long startMillis, long stopMillis) {
         //You can do anything you want to do :)
-        StringBuilder sb = new StringBuilder((perfStatsList.size() + 1) * 128);
-        sb.append("MyPerf4J Performance Statistics [").append(DateUtils.getDateStr(startMillis)).append(", ").append(DateUtils.getDateStr(stopMillis)).append("]").append("\n");
-        if (perfStatsList.isEmpty()) {
-            System.out.println(sb.toString());
-            return;
-        }
-
-        for (int i = 0; i < perfStatsList.size(); ++i) {
-            sb.append(perfStatsList.get(i).toString()).append("\n");
-        }
-        System.out.println(sb);
+        System.out.println(PerfStatsFormatter.getFormatStr(perfStatsList, startMillis, stopMillis));
     }
+
 }
 ```
 * 在Spring配置文件中加入
@@ -155,10 +146,11 @@ public class MyPerfStatsProcessor implements PerfStatsProcessor {
 * 输出结果
 
 ```
-MyPerf4J Performance Statistics [2018-03-18 23:52:00, 2018-03-18 23:53:00]
-PerfStats{api=ProfilerTestApiImpl.test1, RPS=762053, TP50=0, TP90=1, TP95=2, TP99=5, TP999=6, TP9999=6, TP99999=6, TP100=6, minTime=0, maxTime=6, totalCount=46485246}
-PerfStats{api=ProfilerTestApiImpl.test2, RPS=0, TP50=-1, TP90=-1, TP95=-1, TP99=-1, TP999=-1, TP9999=-1, TP99999=-1, TP100=-1, minTime=-1, maxTime=-1, totalCount=0}
-PerfStats{api=ProfilerTestApiImpl.test3, RPS=0, TP50=-1, TP90=-1, TP95=-1, TP99=-1, TP999=-1, TP9999=-1, TP99999=-1, TP100=-1, minTime=-1, maxTime=-1, totalCount=0}
+MyPerf4J Performance Statistics [2018-03-31 00:27:00, 2018-03-31 00:28:00]
+Api                            RPS  Min(ms)  Max(ms)     TP50     TP90     TP95     TP99    TP999   TP9999  TP99999    TP100
+ProfilerTestApiImpl.test1  1282653        0        1        0        1        1        1        1        1        1        1
+ProfilerTestApiImpl.test2        0       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1
+ProfilerTestApiImpl.test3        0       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1
 ```
 
 ## 关于rough模式与accurate模式

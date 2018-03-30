@@ -84,7 +84,7 @@ public class RecorderContainer implements InitializingBean, ApplicationContextAw
                     }
 
                     Profiler methodProfiler = AnnotationUtils.findAnnotation(method, Profiler.class);
-                    if (methodProfiler == null || (methodProfiler = classProfiler) == null) {
+                    if (methodProfiler == null && (methodProfiler = classProfiler) == null) {
                         continue;
                     }
 
