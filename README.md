@@ -1,76 +1,73 @@
 # MyPerf4J
-A Simple and Fast Performance Monitoring and Statistics for Java Code. Inspired by [perf4j](https://github.com/perf4j/perf4j).
+A Simple Fast Performance Monitoring and Statistics for Java Code. Inspired by [perf4j](https://github.com/perf4j/perf4j).
 
-## 背景
-* 我需要一个能统计接口响应时间的程序
-* perf4j现有的统计结果不能满足我的需求
+## Background
+* I need a program that can measure the response time of interfaces.
+* The existing statistics of [perf4j](https://github.com/perf4j/perf4j) cannot meet my needs.
 
-## 需求
-* 能统计出接口的RPS、TP50、TP90、TP95、TP99、TP999、TP9999等性能指标
-* 可以通过注解进行配置，注解可以配置到类和/或接口上
-* 尽量不占用过多的内存、不影响程序的正常响应
-* 性能指标的处理可以定制化，例如：日志收集、上报给日志收集服务等
+## Requirements
+* Statistics on the performance indicators of the interface such as RPS, TP50, TP90, TP95, TP99, TP999, and TP9999, etc.
+* It can be configured by annotations, and annotations can be configured to class and / or method.
+* Try not to take up too much memory, does not affect the normal response of the program.
+* The processing of performance indicators can be customized, for example: log collection, reporting to log collection services, etc.
 
-## 设计
-* 通过把所有的响应时间记录下来，便可以进行所有可能的分析，包括RPS、TP99等，那么如何高效的存储这些数据呢？
-    - 采用K-V的形式即可，K为响应时间，V为对应的次数，这样内存的占用只和不同响应时间的个数有关，而和总请求次数无关
-    - 如果单纯的使用Map来存储数据，必然会占用大量不必要的内存
-    - 根据二八定律，绝大多数的接口响应时间在很小的范围内，这个很小的范围特别适合使用数组来存储，数组下标即为响应时间，对应元素即为该响应时间对应的数量；而少数的接口响应时间分布的范围则会比较大，适合用Map来存储；
-    - 综上所述，核心数据结构为：数组+Map，将小于某一阈值的响应时间记录在数组中，将大于等于该阈值的响应时间记录到Map中
-* 利用AOP进行响应时间的采集
-* 通过注解的方式进行配置，并可以通过参数配置调优核心数据结构的内存占用
-* 通过同步的方式采集响应时间，避免创建过多的Runnable对象影响程序的GC
-* 通过异步的方式处理采集结果，避免影响接口的响应时间
-* 把处理采集的结果的接口暴露出来，方便进行自定义的处理
+## Design
+* By recording all response times, all possible analyses can be performed, including RPS, TP99, etc. How can we store these data efficiently?
+    - In the form of K-V, K is the response time, and V is the corresponding number of times, so the memory occupancy is only related to the number of different response times, regardless of the total number of requests.
+    - If we simply use Map to store data, it will take up a lot of unnecessary memory.
+    - According to Pareto principle, most of the of interface response time is in a very small range. This small range is particularly suitable for storage using arrays. The array subscript is the response time, and the corresponding element is the number corresponding to the response time. A small number of interface response time distribution will be relatively large, suitable for storage with Map;
+    - In summary, the core data structure is: array + Map, the response time less than a certain threshold is recorded in the array, and the response time greater than or equal to the threshold is recorded in the Map.
+* Using AOP for response time acquisition
+* Configuration through annotations and tuning of memory usage of core data structures through parameter configuration.
+* It can collect response time by synchronous way, avoid creating too many Runnable objects, and affect GC of program.
+* Acquire the collection result asynchronously to avoid affecting the response time of the interface.
+* Expose the interface for processing the collected results to facilitate customized processing.
 
-## 内存
-* 前提条件
-    - 服务上有1024个需要监控的接口
-    - 每个接口的绝大部分响应时间在300ms以内，并且有100个不相同的大于300ms的响应时间
-    - 不开启指针压缩
-    - 非核心数据结构占用2MB
-* rough模式
-    - 只记录响应时间小于1000ms的请求
+## Memory
+* Prerequisites
+    - There are 1024 interfaces on the service that need to be monitored.
+    - Most of the response time of each interface is within 300ms, and there are 100 different response times larger than 300ms.
+    - Non-core data structures occupy 2MB.
+* Rough Mode
+    - Only record requests with response time less than 1000ms.
     - 2 * 1024 * (1000 * 4B) + 2MB ≈ 10MB
-* accurate模式
-    - 记录所有的响应时间
+* Accurate Mode
+    - Record all response times.
     - 2 * 1024 * (300 * 4B + 100 * 90B) + 2MB ≈ 22MB 
 
-## 压测
-* 配置说明
-    - 操作系统 macOS High Sierra 10.13.3
-    - JDK 1.8.0_161
-    - JVM参数 -server -Xmx4G -Xms4G -Xmn2G
-    - 机器配置 
-        - CPU Intel(R) Core(TM) i7-7920HQ CPU@3.10GHz
-        - RAM 16GB 2133MHz LPDDR3
-* 核心数据结构压测
+## Benchmark
+* Test Platform
+    - OS: macOS High Sierra 10.13.3
+    - JDK: 1.8.0_161
+    - JVM options: -server -Xmx4G -Xms4G -Xmn2G
+    - CPU: Intel(R) Core(TM) i7-7920HQ CPU@3.10GHz
+    
+* The core data structure benchmark
 
-| 线程数 | 每线程循环数| RPS |
+| Threads | Number of loops per thread | RPS |
 |-------|-----|------|
 |1|100000000|16666666|
 |2|100000000|18181818|
 |4|100000000|22222222|
 |8|100000000|29629629|
 
+* Overall benchmark
+    - Measure only one interface and the implementation of the pressure measurement interface is an empty method.
+    - The time slice is 10s, each press pauses for 20s, and executes `System.gc();`
 
-* 整体压测 - 包括AOP
-    - 只压测一个接口并且被压测接口的实现为空方法
-    - 时间片为10s，每次压测中间停顿20s，并且执行`System.gc();`
-
-| 线程数 | 每线程循环数| RPS |
+| Threads | Number of loops per thread | RPS |
 |-------|-----|------|
 |1|100000000|1431983|
 |2|100000000|2400973|
 |4|100000000|4569964|
 |8|100000000|5843866|
 
-* 压测结论
-    - 从整体压测结果来看，在单线程下每秒可支持143万次的方法调用，平均每次方法调用耗时1.43us，能够满足绝大部分人的要求，不会对程序本身的响应时间造成影响
-    - 通过对比核心数结构和整体压测的结果，核心数据结构本身并不是瓶颈，瓶颈在于切面及反射所带来的耗时
+* Summary
+    - From the overall benchmark results, we can support 1.43 million method calls per second in a single thread. The average time per method call is 1.43 us, which can meet the requirements of most people, and does not affect the response time of the program itself.
+    - By comparing the core data structure and the overall pressure measurement results, the core data structure itself is not a bottleneck. The bottleneck is the time taken by the AOP and reflection.
 
-## 使用
-* 引入Maven依赖
+## Usage
+* Add maven dependency
 
 ```
     <dependency>
@@ -79,7 +76,7 @@ A Simple and Fast Performance Monitoring and Statistics for Java Code. Inspired 
         <version>1.0-SNAPSHOT</version>
     </dependency>
 ```
-* 在你想要分析性能的类或方法明上加上 @Profiler注解
+* Add @Profiler annotation to the class or method you want to analyze performance
 
 ```
 package cn.perf4j.test.profiler;
@@ -110,7 +107,7 @@ public class ProfilerTestApiImpl implements ProfilerTestApi {
 }
 
 ```
-* 新建一个MyRecordProcessor类
+* Create a new class and implements PerfStatsProcessor
 
 ``` 
 package cn.perf4j.test.profiler;
@@ -134,7 +131,7 @@ public class MyPerfStatsProcessor implements PerfStatsProcessor {
 
 }
 ```
-* 在Spring配置文件中加入
+* Add these beans in your Spring configuration file
 
 ```
     <bean id="myPerfStatsProcessor" class="cn.perf4j.test.profiler.MyPerfStatsProcessor"/>
@@ -143,7 +140,7 @@ public class MyPerfStatsProcessor implements PerfStatsProcessor {
         <constructor-arg index="0" ref="myPerfStatsProcessor"/>
     </bean>
 ```
-* 输出结果
+* Performance Statistics
 
 ```
 MyPerf4J Performance Statistics [2018-03-31 00:27:00, 2018-03-31 00:28:00]
@@ -153,20 +150,20 @@ ProfilerTestApiImpl.test2        0       -1       -1       -1       -1       -1 
 ProfilerTestApiImpl.test3        0       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1
 ```
 
-## 关于rough模式与accurate模式
-* rough模式
-    - 精度略差，会丢弃响应时间超过指定阈值的记录
-    - 更加节省内存，只使用数组来记录响应时间
-    - 速度略快一些
-    - 默认
+## About Rough Mode and Accurate Mode
+* Rough Mode
+    - The accuracy is slightly worse, and it will discard the record whose response time exceeds the specified threshold.
+    - It saves more memory, and only uses array to record response time.
+    - The speed is a little faster.
+    - Default mode.
 
-* accurate模式
-    - 精度高，会记录所有的响应时间
-    - 相对耗费内存，使用数组+Map来记录响应时间
-    - 速度略慢一些
-    - 需要加入启动参数-DMyPerf4J.recorder.mode=accurate
+* Accurate Mode
+    - High accuracy, records all response times.
+    - It consumes relatively memory and uses array +Map to record response time.
+    - The speed is slightly slower.
+    - Need to add startup parameters -DMyPerf4J.recorder.mode=accurate.
 
-* 建议
-    - 对于内存敏感或精度要求不是特别高的应用，推荐使用rough模式
-    - 对于内存不敏感且精度要求特别高的应用，推荐使用accurate模式
+* Suggests
+    - For memory-sensitive or precision applications that are not particularly demanding, Rough Mode is recommended.
+    - The Accurate Mode is recommended for applications that are insensitive to memory and require high accuracy.
 
