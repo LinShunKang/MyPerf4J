@@ -163,7 +163,7 @@ ProfilerTestApiImpl.test3        0       -1       -1       -1       -1       -1 
     - The speed is slightly slower.
     - Need to add startup parameters -DMyPerf4J.recorder.mode=accurate.
 
-* Suggests
+* Suggestions
     - For memory-sensitive or precision applications that are not particularly demanding, Rough Mode is recommended.
     - The Accurate Mode is recommended for applications that are insensitive to memory and require high accuracy.
 

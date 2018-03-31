@@ -1,9 +1,9 @@
 # MyPerf4J
-A Simple and Fast Performance Monitoring and Statistics for Java Code. Inspired by [perf4j](https://github.com/perf4j/perf4j).
+一个简单快速的Java接口性能监控和统计工具。受到[perf4j](https://github.com/perf4j/perf4j)启发而开发。
 
 ## 背景
 * 我需要一个能统计接口响应时间的程序
-* perf4j现有的统计结果不能满足我的需求
+* [perf4j](https://github.com/perf4j/perf4j)现有的统计结果不能满足我的需求
 
 ## 需求
 * 能统计出接口的RPS、TP50、TP90、TP95、TP99、TP999、TP9999等性能指标
