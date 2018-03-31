@@ -9,6 +9,8 @@
 
     <bean id="profilerTestApi" class="cn.perf4j.test.profiler.ProfilerTestApiImpl"/>
 
+    <bean id="profilerTestApiV2" class="cn.perf4j.test.profiler.ProfilerTestApiImplV2"/>
+
     <bean id="myPerfStatsProcessor" class="cn.perf4j.test.profiler.MyPerfStatsProcessor"/>
 
     <bean id="asyncPerfStatsProcessor" class="cn.perf4j.AsyncPerfStatsProcessor">

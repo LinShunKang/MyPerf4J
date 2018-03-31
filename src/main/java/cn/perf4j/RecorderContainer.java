@@ -1,5 +1,6 @@
 package cn.perf4j;
 
+import cn.perf4j.aop.NonProfiler;
 import cn.perf4j.util.*;
 import cn.perf4j.aop.Profiler;
 import org.springframework.aop.support.AopUtils;
@@ -75,11 +76,21 @@ public class RecorderContainer implements InitializingBean, ApplicationContextAw
                 }
 
                 Class<?> clazz = bean.getClass();
+                NonProfiler nonProfiler = AnnotationUtils.findAnnotation(clazz, NonProfiler.class);
+                if (nonProfiler != null) {
+                    continue;
+                }
+
                 Profiler classProfiler = clazz.getAnnotation(Profiler.class);
                 Method[] methodArray = clazz.getMethods();
                 for (int k = 0, length = methodArray.length; k < length; ++k) {
                     Method method = methodArray[k];
-                    if (!clazz.equals(method.getDeclaringClass())) {
+                    if (!clazz.equals(method.getDeclaringClass()) || clazz.getName().startsWith("org.springframework")) {
+                        continue;
+                    }
+
+                    NonProfiler methodNonProfiler = AnnotationUtils.findAnnotation(method, NonProfiler.class);
+                    if (methodNonProfiler != null) {
                         continue;
                     }
 

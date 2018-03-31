@@ -7,8 +7,9 @@ import org.springframework.beans.factory.InitializingBean;
 /**
  * Created by LinShunkang on 2018/3/11
  */
-@Profiler(mostTimeThreshold = 10)
-public class ProfilerTestApiImpl implements ProfilerTestApi, InitializingBean {
+//@Profiler(mostTimeThreshold = 10)
+@NonProfiler
+public class ProfilerTestApiImplV2 implements ProfilerTestApi, InitializingBean {
 
     @Override
     @Profiler(mostTimeThreshold = 20)
