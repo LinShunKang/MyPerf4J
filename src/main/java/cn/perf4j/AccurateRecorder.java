@@ -54,21 +54,20 @@ public class AccurateRecorder extends AbstractRecorder {
     }
 
     @Override
-    public int[] getSortedTimingRecords() {
+    public void fillSortedRecords(int[] arr) {
         int idx = 0;
-        int[] result = new int[getEffectiveRecordCount() * 2];
         for (int i = 0; i < timingArr.length(); ++i) {
             int count = timingArr.get(i);
             if (count > 0) {
-                result[idx++] = i;
-                result[idx++] = count;
+                arr[idx++] = i;
+                arr[idx++] = count;
             }
         }
-        fillMapRecord(result, idx);
-        return result;
+        fillMapRecord(arr, idx);
     }
 
-    private int getEffectiveRecordCount() {
+    @Override
+    public int getEffectiveCount() {
         int result = 0;
         for (int i = 0; i < timingArr.length(); ++i) {
             int count = timingArr.get(i);
@@ -117,8 +116,8 @@ public class AccurateRecorder extends AbstractRecorder {
             }
         }
 
-        setStartMilliTime(0L);
-        setStopMilliTime(0L);
+        setStartTime(0L);
+        setStopTime(0L);
     }
 
     @Override
@@ -128,7 +127,7 @@ public class AccurateRecorder extends AbstractRecorder {
 
     public static AccurateRecorder getInstance(String api, int mostTimeThreshold, int outThresholdCount) {
         AccurateRecorder recorder = new AccurateRecorder(mostTimeThreshold, outThresholdCount);
-        recorder.setApi(api);
+        recorder.setTag(api);
         return recorder;
     }
 }

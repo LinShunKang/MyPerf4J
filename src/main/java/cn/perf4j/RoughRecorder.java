@@ -46,20 +46,19 @@ public class RoughRecorder extends AbstractRecorder {
     }
 
     @Override
-    public int[] getSortedTimingRecords() {
+    public void fillSortedRecords(int[] arr) {
         int idx = 0;
-        int[] result = new int[getEffectiveRecordCount() * 2];
         for (int i = 0; i < timingArr.length(); ++i) {
             int count = timingArr.get(i);
             if (count > 0) {
-                result[idx++] = i;
-                result[idx++] = count;
+                arr[idx++] = i;
+                arr[idx++] = count;
             }
         }
-        return result;
     }
 
-    private int getEffectiveRecordCount() {
+    @Override
+    public int getEffectiveCount() {
         int result = 0;
         for (int i = 0; i < timingArr.length(); ++i) {
             int count = timingArr.get(i);
@@ -76,8 +75,8 @@ public class RoughRecorder extends AbstractRecorder {
             timingArr.set(i, 0);
         }
 
-        setStartMilliTime(0L);
-        setStopMilliTime(0L);
+        setStartTime(0L);
+        setStopTime(0L);
     }
 
     @Override
@@ -87,7 +86,7 @@ public class RoughRecorder extends AbstractRecorder {
 
     public static RoughRecorder getInstance(String api, int mostTimeThreshold) {
         RoughRecorder recorder = new RoughRecorder(mostTimeThreshold);
-        recorder.setApi(api);
+        recorder.setTag(api);
         return recorder;
     }
 }

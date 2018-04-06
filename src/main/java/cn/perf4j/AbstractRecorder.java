@@ -5,34 +5,34 @@ package cn.perf4j;
  */
 public abstract class AbstractRecorder {
 
-    private String api;
+    private String tag;
 
-    private long startMilliTime;
+    private long startTime;//ms
 
-    private long stopMilliTime;
+    private long stopTime;//ms
 
-    public String getApi() {
-        return api;
+    public String getTag() {
+        return tag;
     }
 
-    public void setApi(String api) {
-        this.api = api;
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 
-    public long getStartMilliTime() {
-        return startMilliTime;
+    public long getStartTime() {
+        return startTime;
     }
 
-    public void setStartMilliTime(long startMilliTime) {
-        this.startMilliTime = startMilliTime;
+    public void setStartTime(long startMilliTime) {
+        this.startTime = startMilliTime;
     }
 
-    public long getStopMilliTime() {
-        return stopMilliTime;
+    public long getStopTime() {
+        return stopTime;
     }
 
-    public void setStopMilliTime(long stopMilliTime) {
-        this.stopMilliTime = stopMilliTime;
+    public void setStopTime(long stopTime) {
+        this.stopTime = stopTime;
     }
 
     public abstract void recordTime(long startNanoTime, long endNanoTime);
@@ -40,9 +40,14 @@ public abstract class AbstractRecorder {
     /**
      * 为了节省内存的使用，利用int[]作为返回结果
      *
-     * @return :第0位存timeCost，第1位存count，第2位存timeCost，第3位存count，以此类推
+     * @param arr : arr.length为effectiveRecordCount的两倍!!! 其中，第0位存timeCost，第1位存count，第2位存timeCost，第3位存count，以此类推
      */
-    public abstract int[] getSortedTimingRecords();
+    public abstract void fillSortedRecords(int[] arr);
+
+    /**
+     * 获取有效的记录的个数
+     */
+    public abstract int getEffectiveCount();
 
     public abstract void resetRecord();
 

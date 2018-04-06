@@ -46,12 +46,12 @@ public class ProfilerBenchmark {
 
     private static void singleThread(ProfilerTestApi profilerTestApi, int times) throws InterruptedException {
         System.out.println("singleThread(" + profilerTestApi + ", " + times + ") start!!!");
-        StopWatch stopWatch = new StopWatch();
+//        StopWatch stopWatch = new StopWatch();
         for (int i = 0; i < times; ++i) {
             profilerTestApi.test1(EMPTY_STR);
             profilerTestApi.test2();
         }
-        System.out.println(stopWatch.lap("ProfilerBenchmark.test3(String, String)", String.valueOf(times)));
+//        System.out.println(stopWatch.lap("ProfilerBenchmark.test3(String, String)", String.valueOf(times)));
 
         System.out.println("singleThread(" + profilerTestApi + ", " + times + ") done!!!");
     }

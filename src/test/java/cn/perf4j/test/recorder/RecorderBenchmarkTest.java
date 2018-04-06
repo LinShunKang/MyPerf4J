@@ -35,9 +35,9 @@ public class RecorderBenchmarkTest {
     }
 
     private static void singleThreadBenchmark(AbstractRecorder recorder, int times) {
-        recorder.setStartMilliTime(System.currentTimeMillis());
+        recorder.setStartTime(System.currentTimeMillis());
         benchmark(recorder, times);
-        recorder.setStopMilliTime(System.currentTimeMillis());
+        recorder.setStopTime(System.currentTimeMillis());
     }
 
     private static void benchmark(AbstractRecorder recorder, int times) {
@@ -50,7 +50,7 @@ public class RecorderBenchmarkTest {
     private static void multiThreadBenchmark(final AbstractRecorder recorder, final int times, int threadCount) {
         ThreadPoolExecutor executor = new ThreadPoolExecutor(threadCount, threadCount, 1, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>(1));
         final CountDownLatch countDownLatch = new CountDownLatch(threadCount);
-        recorder.setStartMilliTime(System.currentTimeMillis());
+        recorder.setStartTime(System.currentTimeMillis());
         for (int i = 0; i < threadCount; ++i) {
             executor.execute(new Runnable() {
                 @Override
@@ -69,7 +69,7 @@ public class RecorderBenchmarkTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        recorder.setStopMilliTime(System.currentTimeMillis());
+        recorder.setStopTime(System.currentTimeMillis());
 
         executor.shutdownNow();
     }

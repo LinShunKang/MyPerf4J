@@ -154,17 +154,17 @@ public class RecorderContainer implements InitializingBean, ApplicationContextAw
                 try {
                     for (Map.Entry<String, AbstractRecorder> entry : recorderMap.entrySet()) {
                         AbstractRecorder curRecorder = entry.getValue();
-                        if (curRecorder.getStartMilliTime() <= 0L || curRecorder.getStopMilliTime() <= 0L) {
-                            curRecorder.setStartMilliTime(currentMills - millTimeSlice);
-                            curRecorder.setStopMilliTime(currentMills);
+                        if (curRecorder.getStartTime() <= 0L || curRecorder.getStopTime() <= 0L) {
+                            curRecorder.setStartTime(currentMills - millTimeSlice);
+                            curRecorder.setStopTime(currentMills);
                         }
                     }
 
                     for (Map.Entry<String, AbstractRecorder> entry : backupRecorderMap.entrySet()) {
                         AbstractRecorder backupRecorder = entry.getValue();
                         backupRecorder.resetRecord();
-                        backupRecorder.setStartMilliTime(currentMills);
-                        backupRecorder.setStopMilliTime(currentMills + millTimeSlice);
+                        backupRecorder.setStartTime(currentMills);
+                        backupRecorder.setStopTime(currentMills + millTimeSlice);
                     }
 
                     Map<String, AbstractRecorder> tmpMap = recorderMap;
@@ -192,11 +192,10 @@ public class RecorderContainer implements InitializingBean, ApplicationContextAw
                     for (Map.Entry<String, AbstractRecorder> entry : backupRecorderMap.entrySet()) {
                         recorder = entry.getValue();
                         perfStatsList.add(PerfStatsCalculator.calPerfStats(recorder));
-//                        Logger.info(entry.getKey() + ":" + Arrays.toString(recorder.getSortedTimingRecords()));
                     }
 
                     if (recorder != null) {
-                        perfStatsProcessor.process(perfStatsList, recorder.getStartMilliTime(), recorder.getStopMilliTime());
+                        perfStatsProcessor.process(perfStatsList, recorder.getStartTime(), recorder.getStopTime());
                     }
 
                     Logger.info("backgroundExecutor finished!!!!");

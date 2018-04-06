@@ -7,21 +7,33 @@ import java.util.Date;
  */
 public final class Logger {
 
+    private static final String PREFIX = " [MyPerf4J] ";
+
+    private static final String INFO_LEVEL = "INFO ";
+
+    private static final String WARN_LEVEL = "WARN ";
+
+    private static final String ERROR_LEVEL = "ERROR ";
+
     public static void info(String msg) {
-        System.out.println(getPrefix() + msg);
+        System.out.println(getPrefix(INFO_LEVEL) + msg);
     }
 
-    private static String getPrefix() {
-        return DateUtils.getToMillisStr(new Date()) + " [MyPerf4J] ";
+    private static String getPrefix(String logLevel) {
+        return DateUtils.getToMillisStr(new Date()) + PREFIX + logLevel;
+    }
+
+    public static void warn(String msg) {
+        System.out.println(getPrefix(WARN_LEVEL) + msg);
     }
 
     public static void error(String msg) {
-        System.err.println(getPrefix() + msg);
+        System.err.println(getPrefix(ERROR_LEVEL) + msg);
     }
 
     public static void error(String msg, Throwable throwable) {
         synchronized (System.err) {
-            System.err.println(getPrefix() + msg);
+            System.err.println(getPrefix(ERROR_LEVEL) + msg);
             throwable.printStackTrace();
         }
     }

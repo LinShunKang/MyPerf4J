@@ -1,6 +1,7 @@
 package cn.perf4j.test.recorder;
 
 import cn.perf4j.AccurateRecorder;
+import cn.perf4j.util.ChunkPool;
 import cn.perf4j.util.PerfStatsCalculator;
 
 import java.util.Arrays;
@@ -17,8 +18,13 @@ public class RecorderTest {
         for (long i = 1; i <= mostTimeThreshold + outThresholdCount; ++i) {
             recorder.recordTime(startNano, startNano + i * 1000 * 1000);
         }
-        System.out.println(Arrays.toString(recorder.getSortedTimingRecords()));
+
+        int length = recorder.getEffectiveCount();
+        int[] sortedRecords = ChunkPool.getInstance().getChunk(length * 2);
+        recorder.fillSortedRecords(sortedRecords);
+        System.out.println(Arrays.toString(sortedRecords));
         System.out.println(PerfStatsCalculator.calPerfStats(recorder));
+        ChunkPool.getInstance().returnChunk(sortedRecords);
 
     }
 }

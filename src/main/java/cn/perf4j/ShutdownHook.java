@@ -51,7 +51,7 @@ public class ShutdownHook implements InitializingBean {
                     }
 
                     if (recorder != null) {
-                        asyncPerfStatsProcessor.process(perfStatsList, recorder.getStartMilliTime(), recorder.getStopMilliTime());
+                        asyncPerfStatsProcessor.process(perfStatsList, recorder.getStartTime(), recorder.getStopTime());
                     }
 
                     ThreadPoolExecutor executor = asyncPerfStatsProcessor.getExecutor();

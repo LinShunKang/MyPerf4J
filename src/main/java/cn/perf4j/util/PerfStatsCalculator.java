@@ -18,28 +18,42 @@ public final class PerfStatsCalculator {
     };
 
     public static PerfStats calPerfStats(AbstractRecorder recorder) {
-        int[] sortedRecords = recorder.getSortedTimingRecords();
-        return calPerfStats(recorder.getApi(), recorder.getStartMilliTime(), recorder.getStopMilliTime(), sortedRecords);
+        int[] sortedRecords = null;
+        try {
+            int effectiveCount = recorder.getEffectiveCount();
+            sortedRecords = ChunkPool.getInstance().getChunk(effectiveCount * 2);
+            recorder.fillSortedRecords(sortedRecords);
+            return calPerfStats(recorder.getTag(), recorder.getStartTime(), recorder.getStopTime(), sortedRecords, effectiveCount);
+        } catch (Exception e) {
+            Logger.error("PerfStatsCalculator.calPerfStats(" + recorder + ")", e);
+        } finally {
+            ChunkPool.getInstance().returnChunk(sortedRecords);
+        }
+        return PerfStats.getInstance(recorder.getTag(), recorder.getStartTime(), recorder.getStopTime());
     }
 
-    public static PerfStats calPerfStats(String api, long startMilliTime, long stopMillTime, int[] sortedRecords) {
+    private static PerfStats calPerfStats(String api, long startTime, long stopTime, int[] sortedRecords, int effectiveCount) {
         int totalCount = getTotalCount(sortedRecords);
         PerfStats result = PerfStats.getInstance(api);
         result.setTotalCount(totalCount);
-        result.setStartMillTime(startMilliTime);
-        result.setStopMillTime(stopMillTime);
+        result.setStartMillTime(startTime);
+        result.setStopMillTime(stopTime);
 
         if (totalCount <= 0) {
             return result;
         }
 
         result.setMinTime(sortedRecords[0]);
-        result.setMaxTime(sortedRecords[sortedRecords.length - 2]);
+        result.setMaxTime(sortedRecords[(effectiveCount - 1) * 2]);
 
         int[] topPerIndexArr = getTopPercentileIndexArr(totalCount);
         int[] topPerArr = result.getTPArr();
         int countMile = 0, perIndex = 0;
         for (int i = 0, length = sortedRecords.length; i < length; i = i + 2) {
+            if (i > 0 && sortedRecords[i] <= 0) {
+                break;
+            }
+
             countMile += sortedRecords[i + 1];
             int index = topPerIndexArr[perIndex];
             if (countMile >= index) {
@@ -57,6 +71,10 @@ public final class PerfStatsCalculator {
 
         int totalCount = 0;
         for (int i = 0, length = sortedRecords.length; i < length; i = i + 2) {
+            if (i > 0 && sortedRecords[i] <= 0) {
+                break;
+            }
+
             totalCount += sortedRecords[i + 1];
         }
         return totalCount;

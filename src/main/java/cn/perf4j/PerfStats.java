@@ -178,6 +178,13 @@ public class PerfStats {
         return new PerfStats(api);
     }
 
+    public static PerfStats getInstance(String api, long startMillTime, long stopMillTime) {
+        PerfStats result = new PerfStats(api);
+        result.setStartMillTime(startMillTime);
+        result.setStopMillTime(stopMillTime);
+        return result;
+    }
+
     public static double[] getPercentiles() {
         return TOP_PERCENTILE_ARR;
     }
