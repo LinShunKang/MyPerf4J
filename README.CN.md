@@ -1,5 +1,5 @@
 # MyPerf4J
-一个简单快速的Java接口性能监控和统计工具。受到[perf4j](https://github.com/perf4j/perf4j)启发而开发。
+一个简单快速的Java接口性能监控和统计工具。受[perf4j](https://github.com/perf4j/perf4j)启发而来。
 
 ## 背景
 * 我需要一个能统计接口响应时间的程序
@@ -79,11 +79,12 @@
         <version>1.0-SNAPSHOT</version>
     </dependency>
 ```
-* 在你想要分析性能的类或方法明上加上 @Profiler注解
+* 在你想要分析性能的类或方法明上加上 @Profiler注解，同时对于不想进行性能分析的接口上加上 @NonProfiler
 
 ```
 package cn.perf4j.test.profiler;
 
+import cn.perf4j.aop.NonProfiler;
 import cn.perf4j.aop.Profiler;
 
 /**
@@ -99,7 +100,7 @@ public class ProfilerTestApiImpl implements ProfilerTestApi {
     }
 
     @Override
-    @Profiler(mostTimeThreshold = 10)
+    @NonProfiler
     public int test2() {
         return 0;
     }
@@ -108,7 +109,6 @@ public class ProfilerTestApiImpl implements ProfilerTestApi {
     public void test3(String aaa, String bbb) {
     }
 }
-
 ```
 * 新建一个MyRecordProcessor类
 
@@ -146,10 +146,9 @@ public class MyPerfStatsProcessor implements PerfStatsProcessor {
 * 输出结果
 
 ```
-MyPerf4J Performance Statistics [2018-03-31 00:27:00, 2018-03-31 00:28:00]
+MyPerf4J Performance Statistics [2018-04-06 11:08:00, 2018-04-06 11:09:00]
 Api                            RPS  Min(ms)  Max(ms)     TP50     TP90     TP95     TP99    TP999   TP9999  TP99999    TP100
-ProfilerTestApiImpl.test1  1282653        0        1        0        1        1        1        1        1        1        1
-ProfilerTestApiImpl.test2        0       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1
+ProfilerTestApiImpl.test1  1473961        0        4        0        1        2        3        4        4        4        4
 ProfilerTestApiImpl.test3        0       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1
 ```
 
@@ -169,4 +168,3 @@ ProfilerTestApiImpl.test3        0       -1       -1       -1       -1       -1 
 * 建议
     - 对于内存敏感或精度要求不是特别高的应用，推荐使用rough模式
     - 对于内存不敏感且精度要求特别高的应用，推荐使用accurate模式
-

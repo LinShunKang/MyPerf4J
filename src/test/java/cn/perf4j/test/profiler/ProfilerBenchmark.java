@@ -19,6 +19,7 @@ public class ProfilerBenchmark {
     public static void main(String[] args) throws InterruptedException {
         ApplicationContext ctx = new ClassPathXmlApplicationContext("*.xml");
         ProfilerTestApi profilerTestApi = ctx.getBean("profilerTestApi", ProfilerTestApi.class);
+//        ProfilerTestApi profilerTestApi = ctx.getBean("profilerTestApiV2", ProfilerTestApi.class);
 
         int times = 100000000;
         singleThread(profilerTestApi, times / 10);
@@ -48,18 +49,10 @@ public class ProfilerBenchmark {
         StopWatch stopWatch = new StopWatch();
         for (int i = 0; i < times; ++i) {
             profilerTestApi.test1(EMPTY_STR);
-//            profilerTestApi.test3(EMPTY_STR, EMPTY_STR);
+            profilerTestApi.test2();
         }
         System.out.println(stopWatch.lap("ProfilerBenchmark.test3(String, String)", String.valueOf(times)));
 
-//        TimeUnit.SECONDS.sleep(30);
-//
-//        stopWatch.start();
-//        for (int i = 0; i < times; ++i) {
-//            profilerTestApi.test1(EMPTY_STR);
-//            profilerTestApi.test2();
-//        }
-//        System.out.println(stopWatch.lap("ProfilerBenchmark.test1(String)2", String.valueOf(times)));
         System.out.println("singleThread(" + profilerTestApi + ", " + times + ") done!!!");
     }
 

@@ -23,7 +23,7 @@ public class ProfilerAspect implements InitializingBean/*, MethodInterceptor*/ {
 
     private RecorderContainer recorderContainer;
 
-    @Around("@within(cn.perf4j.aop.Profiler) || @annotation(cn.perf4j.aop.Profiler)")
+    @Around("(@within(cn.perf4j.aop.Profiler) || @annotation(cn.perf4j.aop.Profiler)) && !(@within(cn.perf4j.aop.NonProfiler) || @annotation(cn.perf4j.aop.NonProfiler))")
     public Object doProfiling(ProceedingJoinPoint joinPoint) throws Throwable {
         long startNano = System.nanoTime();
         String api = null;

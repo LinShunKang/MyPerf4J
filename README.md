@@ -76,11 +76,12 @@ A Simple Fast Performance Monitoring and Statistics for Java Code. Inspired by [
         <version>1.0-SNAPSHOT</version>
     </dependency>
 ```
-* Add @Profiler annotation to the class or method you want to analyze performance
+* Add @Profiler annotation to the class or method you want to analyze performance, and add @NonProfiler annotation to the method you do not want to analyze
 
 ```
 package cn.perf4j.test.profiler;
 
+import cn.perf4j.aop.NonProfiler;
 import cn.perf4j.aop.Profiler;
 
 /**
@@ -96,7 +97,7 @@ public class ProfilerTestApiImpl implements ProfilerTestApi {
     }
 
     @Override
-    @Profiler(mostTimeThreshold = 10)
+    @NonProfiler
     public int test2() {
         return 0;
     }
@@ -105,7 +106,6 @@ public class ProfilerTestApiImpl implements ProfilerTestApi {
     public void test3(String aaa, String bbb) {
     }
 }
-
 ```
 * Create a new class and implements PerfStatsProcessor
 
@@ -128,7 +128,6 @@ public class MyPerfStatsProcessor implements PerfStatsProcessor {
         //You can do anything you want to do :)
         System.out.println(PerfStatsFormatter.getFormatStr(perfStatsList, startMillis, stopMillis));
     }
-
 }
 ```
 * Add these beans in your Spring configuration file
@@ -143,10 +142,9 @@ public class MyPerfStatsProcessor implements PerfStatsProcessor {
 * Performance Statistics
 
 ```
-MyPerf4J Performance Statistics [2018-03-31 00:27:00, 2018-03-31 00:28:00]
+MyPerf4J Performance Statistics [2018-04-06 11:08:00, 2018-04-06 11:09:00]
 Api                            RPS  Min(ms)  Max(ms)     TP50     TP90     TP95     TP99    TP999   TP9999  TP99999    TP100
-ProfilerTestApiImpl.test1  1282653        0        1        0        1        1        1        1        1        1        1
-ProfilerTestApiImpl.test2        0       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1
+ProfilerTestApiImpl.test1  1473961        0        4        0        1        2        3        4        4        4        4
 ProfilerTestApiImpl.test3        0       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1
 ```
 
@@ -166,4 +164,3 @@ ProfilerTestApiImpl.test3        0       -1       -1       -1       -1       -1 
 * Suggestions
     - For memory-sensitive or precision applications that are not particularly demanding, Rough Mode is recommended.
     - The Accurate Mode is recommended for applications that are insensitive to memory and require high accuracy.
-
