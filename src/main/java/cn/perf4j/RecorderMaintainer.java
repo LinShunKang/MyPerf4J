@@ -18,114 +18,121 @@ import java.util.concurrent.TimeUnit;
  */
 
 /**
- * 该类用于存储所有添加了注解的接口对应的Recorder
+ * 该类用于存储及维护所有添加了@Profiler注解的接口对应的Recorder
  * 该类的实现原因：
  * 1.为了保证运行时的性能和简化编程，在程序启动时就把recorderMap和backupRecorderMap初始化完成，可以避免判断，并且通过减小loadFactor来优化Map的get()性能；
  * 2.为了避免影响程序的响应时间，利用roundRobinExecutor定时去对recorderMap和backupRecorderMap进行轮转；
  * 3.为了避免recordProcessor处理时间过长影响roundRobinExecutor的处理逻辑，增加一个backgroundExecutor来定时执行recordProcessor
  */
-public final class RecorderContainer {
+public final class RecorderMaintainer {
 
-    //    private static final long millTimeSlice = 60 * 1000L;//60s
-    private static final long millTimeSlice = 10 * 1000L;//10s
+    private static final long MIN_MILL_TIME_SLICE = 10 * 1000L;//10s
+
+    private static final long DEFAULT_MILL_TIME_SLICE = 60 * 1000L;//60s
+
+    private static final long MILL_TIME_SLICE = MyProperties.getLong(PropConstants.MILL_TIME_SLICE, DEFAULT_MILL_TIME_SLICE, MIN_MILL_TIME_SLICE);
 
     private static final ScheduledThreadPoolExecutor roundRobinExecutor = new ScheduledThreadPoolExecutor(1, ThreadUtils.newThreadFactory("MyPerf4J-RoundRobinExecutor_"), new ThreadPoolExecutor.DiscardPolicy());
 
     private static final ScheduledThreadPoolExecutor backgroundExecutor = new ScheduledThreadPoolExecutor(1, ThreadUtils.newThreadFactory("MyPerf4J-BackgroundExecutor_"), new ThreadPoolExecutor.DiscardPolicy());
 
-    private static final boolean accurateMode = "accurate".equalsIgnoreCase(System.getProperty("MyPerf4J.recorder.mode"));
+    private static PerfStatsProcessor perfStatsProcessor = AsyncPerfStatsProcessor.getInstance();
 
-    private static volatile long nextMilliTimeSlice = ((System.currentTimeMillis() / millTimeSlice) * millTimeSlice) + millTimeSlice;
+    private static final boolean needRunning = MyProperties.isSame(PropConstants.RUNNING_STATUS, PropConstants.RUNNING_STATUS_YES);
+
+    private static final boolean accurateMode = MyProperties.isSame(PropConstants.RECORDER_MODE, PropConstants.RECORDER_MODE_ACCURATE);
+
+    private static volatile long nextTimeSliceEndTime = 0L;
 
     private static volatile boolean backupRecorderReady = false;
 
-    private static PerfStatsProcessor perfStatsProcessor = AsyncPerfStatsProcessor.getInstance();
-
     //为了让recorderMap.get()更加快速，减小loadFactor->减少碰撞的概率->加快get()的执行速度
-    private static volatile Map<String, AbstractRecorder> recorderMap = MapUtils.createHashMap(128, 0.2F);
+    private static volatile Map<String, AbstractRecorder> recorderMap = MapUtils.createHashMap(256, 0.2F);
 
-    private static volatile Map<String, AbstractRecorder> backupRecorderMap = MapUtils.createHashMap(128, 0.2F);
+    private static volatile Map<String, AbstractRecorder> backupRecorderMap = MapUtils.createHashMap(256, 0.2F);
 
     static {
         initRecorderMap();
 
-        roundRobinExecutor.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                long currentMills = System.currentTimeMillis();
-                if (nextMilliTimeSlice == 0L) {
-                    nextMilliTimeSlice = ((currentMills / millTimeSlice) * millTimeSlice) + millTimeSlice;
-                }
-
-                //还在当前的时间片里
-                if (nextMilliTimeSlice > currentMills) {
-                    return;
-                }
-                nextMilliTimeSlice = ((currentMills / millTimeSlice) * millTimeSlice) + millTimeSlice;
-
-                backupRecorderReady = false;
-                try {
-                    for (Map.Entry<String, AbstractRecorder> entry : recorderMap.entrySet()) {
-                        AbstractRecorder curRecorder = entry.getValue();
-                        if (curRecorder.getStartTime() <= 0L || curRecorder.getStopTime() <= 0L) {
-                            curRecorder.setStartTime(currentMills - millTimeSlice);
-                            curRecorder.setStopTime(currentMills);
-                        }
+        if (needRunning) {
+            roundRobinExecutor.scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    long currentMills = System.currentTimeMillis();
+                    if (nextTimeSliceEndTime == 0L) {
+                        nextTimeSliceEndTime = ((currentMills / MILL_TIME_SLICE) * MILL_TIME_SLICE) + MILL_TIME_SLICE;
                     }
 
-                    for (Map.Entry<String, AbstractRecorder> entry : backupRecorderMap.entrySet()) {
-                        AbstractRecorder backupRecorder = entry.getValue();
-                        backupRecorder.resetRecord();
-                        backupRecorder.setStartTime(currentMills);
-                        backupRecorder.setStopTime(currentMills + millTimeSlice);
+                    //还在当前的时间片里
+                    if (nextTimeSliceEndTime > currentMills) {
+                        return;
                     }
+                    nextTimeSliceEndTime = ((currentMills / MILL_TIME_SLICE) * MILL_TIME_SLICE) + MILL_TIME_SLICE;
 
-                    Map<String, AbstractRecorder> tmpMap = recorderMap;
-                    recorderMap = backupRecorderMap;
-                    backupRecorderMap = tmpMap;
-                    Logger.info("roundRobinExecutor finished!!!!");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    backupRecorderReady = true;
-                }
-            }
-        }, 0, 500, TimeUnit.MILLISECONDS);
-
-        backgroundExecutor.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                if (!backupRecorderReady) {
-                    return;
-                }
-
-                try {
-                    AbstractRecorder recorder = null;
-                    List<PerfStats> perfStatsList = new ArrayList<>(backupRecorderMap.size());
-                    for (Map.Entry<String, AbstractRecorder> entry : backupRecorderMap.entrySet()) {
-                        recorder = entry.getValue();
-                        perfStatsList.add(PerfStatsCalculator.calPerfStats(recorder));
-                    }
-
-                    if (recorder != null) {
-                        perfStatsProcessor.process(perfStatsList, recorder.getStartTime(), recorder.getStopTime());
-                    }
-
-                    Logger.info("backgroundExecutor finished!!!!");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
                     backupRecorderReady = false;
+                    try {
+                        for (Map.Entry<String, AbstractRecorder> entry : recorderMap.entrySet()) {
+                            AbstractRecorder curRecorder = entry.getValue();
+                            if (curRecorder.getStartTime() <= 0L || curRecorder.getStopTime() <= 0L) {
+                                curRecorder.setStartTime(currentMills - MILL_TIME_SLICE);
+                                curRecorder.setStopTime(currentMills);
+                            }
+                        }
+
+                        for (Map.Entry<String, AbstractRecorder> entry : backupRecorderMap.entrySet()) {
+                            AbstractRecorder backupRecorder = entry.getValue();
+                            backupRecorder.resetRecord();
+                            backupRecorder.setStartTime(currentMills);
+                            backupRecorder.setStopTime(currentMills + MILL_TIME_SLICE);
+                        }
+
+                        Map<String, AbstractRecorder> tmpMap = recorderMap;
+                        recorderMap = backupRecorderMap;
+                        backupRecorderMap = tmpMap;
+                        Logger.info("roundRobinExecutor finished!!!!");
+                    } catch (Exception e) {
+                      Logger.error("RecorderMaintainer.roundRobinExecutor error", e);
+                    } finally {
+                        backupRecorderReady = true;
+                    }
                 }
-            }
-        }, 0, 1, TimeUnit.SECONDS);
+            }, 0, 500, TimeUnit.MILLISECONDS);
+
+            backgroundExecutor.scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    if (!backupRecorderReady) {
+                        return;
+                    }
+
+                    try {
+                        AbstractRecorder recorder = null;
+                        List<PerfStats> perfStatsList = new ArrayList<>(backupRecorderMap.size());
+                        for (Map.Entry<String, AbstractRecorder> entry : backupRecorderMap.entrySet()) {
+                            recorder = entry.getValue();
+                            perfStatsList.add(PerfStatsCalculator.calPerfStats(recorder));
+                        }
+
+                        if (recorder != null) {
+                            perfStatsProcessor.process(perfStatsList, recorder.getStartTime(), recorder.getStopTime());
+                        }
+
+                        Logger.info("backgroundExecutor finished!!!!");
+                    } catch (Exception e) {
+                        Logger.error("RecorderMaintainer.backgroundExecutor error", e);
+                    } finally {
+                        backupRecorderReady = false;
+                    }
+                }
+            }, 0, 1, TimeUnit.SECONDS);
+        }
     }
 
 
     private static void initRecorderMap() {
         long start = System.currentTimeMillis();
         try {
-            URL enumeration = RecorderContainer.class.getClassLoader().getResource("");
+            URL enumeration = RecorderMaintainer.class.getClassLoader().getResource("");
             if (enumeration == null) {
                 return;
             }
@@ -151,9 +158,9 @@ public final class RecorderContainer {
                 processAnnotations(getClasses(f.getName()));
             }
         } catch (Exception e) {
-            Logger.error("RecorderContainer.initRecorderMap()", e);
+            Logger.error("RecorderMaintainer.initRecorderMap()", e);
         }
-        Logger.info("RecorderContainer.initRecorderMap() cost:" + (System.currentTimeMillis() - start) + "ms");
+        Logger.info("RecorderMaintainer.initRecorderMap() cost:" + (System.currentTimeMillis() - start) + "ms");
     }
 
     private static Set<Class<?>> getClasses(String packageName) {
@@ -198,7 +205,7 @@ public final class RecorderContainer {
                 Logger.error("processAnnotations(classSet): " + throwable.getMessage());
             }
         }
-        Logger.info("RecorderContainer.processAnnotations() cost:" + (System.currentTimeMillis() - startMills) + "ms");
+        Logger.info("RecorderMaintainer.processAnnotations() cost:" + (System.currentTimeMillis() - startMills) + "ms");
     }
 
     private static AbstractRecorder getRecorder(String api, Profiler profiler) {

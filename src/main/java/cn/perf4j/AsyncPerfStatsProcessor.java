@@ -1,13 +1,10 @@
 package cn.perf4j;
 
-import cn.perf4j.util.IOUtils;
 import cn.perf4j.util.Logger;
+import cn.perf4j.util.MyProperties;
 import cn.perf4j.util.ThreadUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -24,33 +21,25 @@ public class AsyncPerfStatsProcessor implements PerfStatsProcessor {
     private static PerfStatsProcessor target = null;
 
     static {
-        Properties properties = new Properties();
-        InputStream in = null;
         try {
-            in = AsyncPerfStatsProcessor.class.getClassLoader().getResourceAsStream("config/myPerf4J.properties");
-            properties.load(in);
-        } catch (IOException e) {
-            Logger.error("AsyncPerfStatsProcessor load config/myPerf4J.properties", e);
-        } finally {
-            IOUtils.closeQuietly(in);
-        }
-
-        String pspStr = properties.getProperty("MyPerf4J.PSP");
-        if (pspStr == null || pspStr.isEmpty()) {
-            Logger.error("MyPerf4J.PSP NOT FOUND!!!");
-            throw new IllegalArgumentException("MyPerf4J.PSP NOT FOUND!!!");
-        }
-
-        try {
-            Class<?> clazz = AsyncPerfStatsProcessor.class.getClassLoader().loadClass(pspStr);
-            Object obj = clazz.newInstance();
-            if (obj instanceof PerfStatsProcessor) {
-                target = (PerfStatsProcessor) obj;
+            String className = MyProperties.getStr(PropConstants.PERF_STATS_PROCESSOR);
+            if (className == null || className.isEmpty()) {
+                Logger.error("MyPerf4J.PSP NOT FOUND, MyPerf4J not running!!!");
+                MyProperties.setStr(PropConstants.RUNNING_STATUS, PropConstants.RUNNING_STATUS_NO);
             } else {
-                Logger.error("AsyncPerfStatsProcessor pspName is not correct!!!");
+                Class<?> clazz = AsyncPerfStatsProcessor.class.getClassLoader().loadClass(className);
+                Object obj = clazz.newInstance();
+                if (obj instanceof PerfStatsProcessor) {
+                    target = (PerfStatsProcessor) obj;
+                    MyProperties.setStr(PropConstants.RUNNING_STATUS, PropConstants.RUNNING_STATUS_YES);
+                    ShutdownHook.init();
+                } else {
+                    Logger.error("AsyncPerfStatsProcessor className is not correct!!! MyPerf4J not running!!!");
+                    MyProperties.setStr(PropConstants.RUNNING_STATUS, PropConstants.RUNNING_STATUS_NO);
+                }
             }
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
-            Logger.error("AsyncPerfStatsProcessor", e);
+            Logger.error("AsyncPerfStatsProcessor static block error!!! MyPerf4J will not running!!!", e);
         }
     }
 
@@ -66,7 +55,7 @@ public class AsyncPerfStatsProcessor implements PerfStatsProcessor {
                 }
             });
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.error("AsyncPerfStatsProcessor.process(" + perfStatsList + ", " + startMillis + ", " + startMillis + "", e);
         }
     }
 

@@ -20,13 +20,17 @@ public final class ShutdownHook {
 
     private static AsyncPerfStatsProcessor asyncPerfStatsProcessor = AsyncPerfStatsProcessor.getInstance();
 
+    public static void init() {
+        //empty
+    }
+
     static {
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
             public void run() {
                 Logger.info("ENTER ShutdownHook...");
                 try {
-                    Map<String, AbstractRecorder> recorderMap = RecorderContainer.getRecorderMap();
+                    Map<String, AbstractRecorder> recorderMap = RecorderMaintainer.getRecorderMap();
                     List<PerfStats> perfStatsList = new ArrayList<>(recorderMap.size());
                     AbstractRecorder recorder = null;
                     for (Map.Entry<String, AbstractRecorder> entry : recorderMap.entrySet()) {

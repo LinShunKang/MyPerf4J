@@ -1,7 +1,7 @@
 package cn.perf4j.aop;
 
 import cn.perf4j.AbstractRecorder;
-import cn.perf4j.RecorderContainer;
+import cn.perf4j.RecorderMaintainer;
 import cn.perf4j.util.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
@@ -24,27 +24,27 @@ public class ProfilerAspect {
     @Around("(@within(cn.perf4j.aop.Profiler) || @annotation(cn.perf4j.aop.Profiler)) && !(@within(cn.perf4j.aop.NonProfiler) || @annotation(cn.perf4j.aop.NonProfiler))")
     public Object doProfiling(ProceedingJoinPoint joinPoint) throws Throwable {
         long startNano = System.nanoTime();
-        String api = null;
+        String tag = null;
         try {
-            api = getApi(joinPoint);
+            tag = getTag(joinPoint);
             return joinPoint.proceed(joinPoint.getArgs());
         } catch (Throwable throwable) {
-            Logger.error("ProfilerAspect.doProfiling(): api=" + api, throwable);
+            Logger.error("ProfilerAspect.doProfiling() tag: " + tag, throwable);
             throw throwable;
         } finally {
-            AbstractRecorder recorder = RecorderContainer.getRecorder(api);
+            AbstractRecorder recorder = RecorderMaintainer.getRecorder(tag);
             if (recorder != null) {
                 recorder.recordTime(startNano, System.nanoTime());
             } else {
-//                Logger.error("ProfilerAspect.doProfile(): UnKnown api=" + api);
+                Logger.warn("ProfilerAspect.doProfile(): UNKNOWN tag: " + tag);
             }
         }
     }
 
     //从性能角度考虑，只用类名+方法名，不去组装方法的参数类型！！！
-    private String getApi(ProceedingJoinPoint joinPoint) {
+    private String getTag(ProceedingJoinPoint joinPoint) {
         if (joinPoint.getStaticPart() == null || !JOIN_POINT_KIND_METHOD_EXE.equals(joinPoint.getStaticPart().getKind())) {
-            Logger.error("joinPoint.getStaticPart().getKind(): " + joinPoint.getStaticPart().getKind());
+            Logger.warn("joinPoint.getStaticPart().getKind(): " + joinPoint.getStaticPart());
             return "";
         }
 
