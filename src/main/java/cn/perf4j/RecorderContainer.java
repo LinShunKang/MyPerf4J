@@ -3,15 +3,11 @@ package cn.perf4j;
 import cn.perf4j.aop.NonProfiler;
 import cn.perf4j.util.*;
 import cn.perf4j.aop.Profiler;
-import org.springframework.aop.support.AopUtils;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.util.Assert;
 
+import java.io.File;
+import java.io.FileFilter;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -28,10 +24,10 @@ import java.util.concurrent.TimeUnit;
  * 2.为了避免影响程序的响应时间，利用roundRobinExecutor定时去对recorderMap和backupRecorderMap进行轮转；
  * 3.为了避免recordProcessor处理时间过长影响roundRobinExecutor的处理逻辑，增加一个backgroundExecutor来定时执行recordProcessor
  */
-public class RecorderContainer implements InitializingBean, ApplicationContextAware {
+public final class RecorderContainer {
 
-    private static final long millTimeSlice = 60 * 1000L;//60s
-//    private static final long millTimeSlice = 10 * 1000L;//10s
+    //    private static final long millTimeSlice = 60 * 1000L;//60s
+    private static final long millTimeSlice = 10 * 1000L;//10s
 
     private static final ScheduledThreadPoolExecutor roundRobinExecutor = new ScheduledThreadPoolExecutor(1, ThreadUtils.newThreadFactory("MyPerf4J-RoundRobinExecutor_"), new ThreadPoolExecutor.DiscardPolicy());
 
@@ -39,101 +35,18 @@ public class RecorderContainer implements InitializingBean, ApplicationContextAw
 
     private static final boolean accurateMode = "accurate".equalsIgnoreCase(System.getProperty("MyPerf4J.recorder.mode"));
 
-    private volatile long nextMilliTimeSlice = ((System.currentTimeMillis() / millTimeSlice) * millTimeSlice) + millTimeSlice;
+    private static volatile long nextMilliTimeSlice = ((System.currentTimeMillis() / millTimeSlice) * millTimeSlice) + millTimeSlice;
 
-    private volatile boolean backupRecorderReady = false;
+    private static volatile boolean backupRecorderReady = false;
 
-    private ApplicationContext applicationContext;
-
-    private PerfStatsProcessor perfStatsProcessor;
+    private static PerfStatsProcessor perfStatsProcessor = AsyncPerfStatsProcessor.getInstance();
 
     //为了让recorderMap.get()更加快速，减小loadFactor->减少碰撞的概率->加快get()的执行速度
-    private volatile Map<String, AbstractRecorder> recorderMap = MapUtils.createHashMap(128, 0.2F);
+    private static volatile Map<String, AbstractRecorder> recorderMap = MapUtils.createHashMap(128, 0.2F);
 
-    private volatile Map<String, AbstractRecorder> backupRecorderMap = MapUtils.createHashMap(128, 0.2F);
+    private static volatile Map<String, AbstractRecorder> backupRecorderMap = MapUtils.createHashMap(128, 0.2F);
 
-    public AbstractRecorder getRecorder(String api) {
-        return recorderMap.get(api);
-    }
-
-    public Map<String, AbstractRecorder> getRecorderMap() {
-        return new HashMap<>(recorderMap);
-    }
-
-    private void initRecorderMap() {
-        if (applicationContext == null) {
-            Logger.error("RecorderContainer.initRecorderMap(): applicationContext is null!!!");
-            return;
-        }
-
-        long startMills = System.currentTimeMillis();
-        String[] beanNames = applicationContext.getBeanDefinitionNames();
-        for (int i = 0; i < beanNames.length; ++i) {
-            try {
-                Object bean = applicationContext.getBean(beanNames[i]);
-                if (AopUtils.isAopProxy(bean)) {
-                    bean = AopTargetUtils.getTarget(bean);
-                }
-
-                Class<?> clazz = bean.getClass();
-                NonProfiler nonProfiler = AnnotationUtils.findAnnotation(clazz, NonProfiler.class);
-                if (nonProfiler != null) {
-                    continue;
-                }
-
-                Profiler classProfiler = clazz.getAnnotation(Profiler.class);
-                Method[] methodArray = clazz.getMethods();
-                for (int k = 0, length = methodArray.length; k < length; ++k) {
-                    Method method = methodArray[k];
-                    if (!clazz.equals(method.getDeclaringClass()) || clazz.getName().startsWith("org.springframework")) {
-                        continue;
-                    }
-
-                    NonProfiler methodNonProfiler = AnnotationUtils.findAnnotation(method, NonProfiler.class);
-                    if (methodNonProfiler != null) {
-                        continue;
-                    }
-
-                    Profiler methodProfiler = AnnotationUtils.findAnnotation(method, Profiler.class);
-                    if (methodProfiler == null && (methodProfiler = classProfiler) == null) {
-                        continue;
-                    }
-
-                    //从性能角度考虑，只用类名+方法名，不去组装方法的参数类型！！！
-                    String api = clazz.getSimpleName() + "." + method.getName();
-                    recorderMap.put(api, getRecorder(api, methodProfiler));
-                    backupRecorderMap.put(api, getRecorder(api, methodProfiler));
-                }
-            } catch (Exception e) {
-                Logger.error("RecorderContainer.initRecorderMap(): init Error!!!", e);
-            }
-        }
-        Logger.info("RecorderContainer.initRecorderMap() cost:" + (System.currentTimeMillis() - startMills) + "ms");
-    }
-
-    private AbstractRecorder getRecorder(String api, Profiler profiler) {
-        if (accurateMode) {
-            return AccurateRecorder.getInstance(api, profiler.mostTimeThreshold(), profiler.outThresholdCount());
-        }
-        return RoughRecorder.getInstance(api, profiler.mostTimeThreshold());
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
-
-    public void setPerfStatsProcessor(PerfStatsProcessor perfStatsProcessor) {
-        this.perfStatsProcessor = perfStatsProcessor;
-    }
-
-    @Override
-    public void afterPropertiesSet() {
-        Assert.notNull(applicationContext, "applicationContext is required!!!");
-        Assert.notNull(perfStatsProcessor, "perfStatsProcessor is required!!!");
-
-        Logger.info("MyPerf4J Run AS " + (accurateMode ? "[AccurateMode]" : "[RoughMode]"));
-
+    static {
         initRecorderMap();
 
         roundRobinExecutor.scheduleAtFixedRate(new Runnable() {
@@ -207,4 +120,100 @@ public class RecorderContainer implements InitializingBean, ApplicationContextAw
             }
         }, 0, 1, TimeUnit.SECONDS);
     }
+
+
+    private static void initRecorderMap() {
+        long start = System.currentTimeMillis();
+        try {
+            URL enumeration = RecorderContainer.class.getClassLoader().getResource("");
+            if (enumeration == null) {
+                return;
+            }
+
+            File file = new File(enumeration.getPath());
+            if (!file.exists() || !file.isDirectory()) {
+                return;
+            }
+
+            File[] dirFiles = file.listFiles(new FileFilter() {
+                // 自定义过滤规则 如果可以循环(包含子目录) 或则是以.class结尾的文件(编译好的java类文件)
+                public boolean accept(File file) {
+                    return file.isDirectory() || file.getName().endsWith(".class");
+                }
+            });
+
+            if (dirFiles == null || dirFiles.length <= 0) {
+                return;
+            }
+
+            for (int i = 0; i < dirFiles.length; ++i) {
+                File f = dirFiles[i];
+                processAnnotations(getClasses(f.getName()));
+            }
+        } catch (Exception e) {
+            Logger.error("RecorderContainer.initRecorderMap()", e);
+        }
+        Logger.info("RecorderContainer.initRecorderMap() cost:" + (System.currentTimeMillis() - start) + "ms");
+    }
+
+    private static Set<Class<?>> getClasses(String packageName) {
+        Logger.info("Begin scanning " + packageName + "...");
+        ClassScanner handler = new ClassScanner(true, true);
+        return handler.getClasses(packageName, true);
+    }
+
+    private static void processAnnotations(Set<Class<?>> classSet) {
+        long startMills = System.currentTimeMillis();
+        for (Class<?> clazz : classSet) {
+            try {
+                NonProfiler nonProfiler = clazz.getAnnotation(NonProfiler.class);
+                if (nonProfiler != null) {
+                    continue;
+                }
+
+                Profiler classProfiler = clazz.getAnnotation(Profiler.class);
+                Method[] methodArray = clazz.getMethods();
+                for (int k = 0, length = methodArray.length; k < length; ++k) {
+                    Method method = methodArray[k];
+                    if (!clazz.equals(method.getDeclaringClass()) || clazz.getName().startsWith("org.springframework")) {
+                        continue;
+                    }
+
+                    NonProfiler methodNonProfiler = method.getAnnotation(NonProfiler.class);
+                    if (methodNonProfiler != null) {
+                        continue;
+                    }
+
+                    Profiler methodProfiler = method.getAnnotation(Profiler.class);
+                    if (methodProfiler == null && (methodProfiler = classProfiler) == null) {
+                        continue;
+                    }
+
+                    //从性能角度考虑，只用类名+方法名，不去组装方法的参数类型！！！
+                    String api = clazz.getSimpleName() + "." + method.getName();
+                    recorderMap.put(api, getRecorder(api, methodProfiler));
+                    backupRecorderMap.put(api, getRecorder(api, methodProfiler));
+                }
+            } catch (Throwable throwable) {
+                Logger.error("processAnnotations(classSet): " + throwable.getMessage());
+            }
+        }
+        Logger.info("RecorderContainer.processAnnotations() cost:" + (System.currentTimeMillis() - startMills) + "ms");
+    }
+
+    private static AbstractRecorder getRecorder(String api, Profiler profiler) {
+        if (accurateMode) {
+            return AccurateRecorder.getInstance(api, profiler.mostTimeThreshold(), profiler.outThresholdCount());
+        }
+        return RoughRecorder.getInstance(api, profiler.mostTimeThreshold());
+    }
+
+    public static AbstractRecorder getRecorder(String api) {
+        return recorderMap.get(api);
+    }
+
+    public static Map<String, AbstractRecorder> getRecorderMap() {
+        return Collections.unmodifiableMap(recorderMap);
+    }
+
 }

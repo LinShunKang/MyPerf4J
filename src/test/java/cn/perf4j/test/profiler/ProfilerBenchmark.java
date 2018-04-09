@@ -1,9 +1,5 @@
 package cn.perf4j.test.profiler;
 
-import cn.perf4j.util.StopWatch;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -17,11 +13,14 @@ public class ProfilerBenchmark {
     private static final String EMPTY_STR = "";
 
     public static void main(String[] args) throws InterruptedException {
-        ApplicationContext ctx = new ClassPathXmlApplicationContext("*.xml");
-        ProfilerTestApi profilerTestApi = ctx.getBean("profilerTestApi", ProfilerTestApi.class);
+//        ApplicationContext ctx = new ClassPathXmlApplicationContext("*.xml");
+//        ProfilerTestApi profilerTestApi = ctx.getBean("profilerTestApi", ProfilerTestApi.class);
 //        ProfilerTestApi profilerTestApi = ctx.getBean("profilerTestApiV2", ProfilerTestApi.class);
 
-        int times = 100000000;
+
+        ProfilerTestApi profilerTestApi = new ProfilerTestApiImpl();
+
+        int times = 200000000;
         singleThread(profilerTestApi, times / 10);
         System.gc();
         TimeUnit.SECONDS.sleep(20);
@@ -49,7 +48,8 @@ public class ProfilerBenchmark {
 //        StopWatch stopWatch = new StopWatch();
         for (int i = 0; i < times; ++i) {
             profilerTestApi.test1(EMPTY_STR);
-            profilerTestApi.test2();
+//            profilerTestApi.test2();
+//            profilerTestApi.test3(EMPTY_STR, EMPTY_STR);
         }
 //        System.out.println(stopWatch.lap("ProfilerBenchmark.test3(String, String)", String.valueOf(times)));
 

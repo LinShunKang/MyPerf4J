@@ -5,8 +5,6 @@ import cn.perf4j.RecorderContainer;
 import cn.perf4j.util.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.util.Assert;
 
 
 /**
@@ -19,9 +17,9 @@ import org.springframework.util.Assert;
  * 1、内存更加可控，添加Profiler注解的人比程序更加了解接口的响应时间，可以更好的设置Profiler中的mostTimeThreshold和outThresholdCount。
  */
 @Aspect
-public class ProfilerAspect implements InitializingBean/*, MethodInterceptor*/ {
+public class ProfilerAspect {
 
-    private RecorderContainer recorderContainer;
+    private static final String JOIN_POINT_KIND_METHOD_EXE = "method-execution";
 
     @Around("(@within(cn.perf4j.aop.Profiler) || @annotation(cn.perf4j.aop.Profiler)) && !(@within(cn.perf4j.aop.NonProfiler) || @annotation(cn.perf4j.aop.NonProfiler))")
     public Object doProfiling(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -34,54 +32,24 @@ public class ProfilerAspect implements InitializingBean/*, MethodInterceptor*/ {
             Logger.error("ProfilerAspect.doProfiling(): api=" + api, throwable);
             throw throwable;
         } finally {
-            AbstractRecorder recorder = recorderContainer.getRecorder(api);
+            AbstractRecorder recorder = RecorderContainer.getRecorder(api);
             if (recorder != null) {
                 recorder.recordTime(startNano, System.nanoTime());
             } else {
-                Logger.error("ProfilerAspect.doProfile(): UnKnown api=" + api);
+//                Logger.error("ProfilerAspect.doProfile(): UnKnown api=" + api);
             }
         }
     }
 
     //从性能角度考虑，只用类名+方法名，不去组装方法的参数类型！！！
     private String getApi(ProceedingJoinPoint joinPoint) {
+        if (joinPoint.getStaticPart() == null || !JOIN_POINT_KIND_METHOD_EXE.equals(joinPoint.getStaticPart().getKind())) {
+            Logger.error("joinPoint.getStaticPart().getKind(): " + joinPoint.getStaticPart().getKind());
+            return "";
+        }
+
         Class<?> clazz = joinPoint.getTarget().getClass();
         return clazz.getSimpleName().concat(".").concat(joinPoint.getSignature().getName());
     }
 
-//
-//    @Override
-//    public Object invoke(MethodInvocation methodInvocation) throws Throwable {
-//        long startNano = System.nanoTime();
-//        String api = null;
-//        try {
-//            api = getApi(methodInvocation);
-//            return methodInvocation.proceed();
-//        } catch (Throwable throwable) {
-//            System.err.println("ProfilerAspect.invoke(): api=" + api);
-//            throw throwable;
-//        } finally {
-//            AbstractRecorder recorder = recorderContainer.getRecorder(api);
-//            if (recorder != null) {
-//                recorder.recordTime(startNano, System.nanoTime());
-//            } else {
-//                System.err.println("ProfilerAspect.invoke(): UnKnown api=" + api);
-//            }
-//        }
-//    }
-//
-//    //从性能角度考虑，只用类名+方法名，不去组装方法的参数类型！！！
-//    private String getApi(MethodInvocation methodInvocation) {
-//        Class<?> clazz = methodInvocation.getThis().getClass();
-//        return clazz.getSimpleName().concat(".").concat(methodInvocation.getMethod().getName());
-//    }
-
-    public void setRecorderContainer(RecorderContainer recorderContainer) {
-        this.recorderContainer = recorderContainer;
-    }
-
-    @Override
-    public void afterPropertiesSet() {
-        Assert.notNull(recorderContainer, "recorderContainer is required!!!");
-    }
 }

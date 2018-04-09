@@ -1,13 +1,12 @@
 package cn.perf4j.test.profiler;
 
-import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Created by LinShunkang on 2018/3/11
  */
 //@Profiler(mostTimeThreshold = 10)
 //@NonProfiler
-public class ProfilerTestApiImplV2 implements ProfilerTestApi, InitializingBean {
+public class ProfilerTestApiImplV2 implements ProfilerTestApi {
 
     @Override
 //    @Profiler(mostTimeThreshold = 20)
@@ -25,9 +24,4 @@ public class ProfilerTestApiImplV2 implements ProfilerTestApi, InitializingBean 
     public void test3(String aaa, String bbb) {
     }
 
-    @Override
-//    @NonProfiler
-    public void afterPropertiesSet() throws Exception {
-
-    }
 }

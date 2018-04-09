@@ -2,8 +2,6 @@ package cn.perf4j;
 
 import cn.perf4j.util.Logger;
 import cn.perf4j.util.PerfStatsCalculator;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,31 +16,17 @@ import java.util.concurrent.TimeUnit;
 /**
  * 该类用于在JVM关闭前通过调用asyncRecordProcessor把内存中的数据处理完，保证尽量不丢失采集的数据
  */
-public class ShutdownHook implements InitializingBean {
+public final class ShutdownHook {
 
-    private RecorderContainer recorderContainer;
+    private static AsyncPerfStatsProcessor asyncPerfStatsProcessor = AsyncPerfStatsProcessor.getInstance();
 
-    private AsyncPerfStatsProcessor asyncPerfStatsProcessor;
-
-    public void setRecorderContainer(RecorderContainer recorderContainer) {
-        this.recorderContainer = recorderContainer;
-    }
-
-    public void setAsyncPerfStatsProcessor(AsyncPerfStatsProcessor asyncPerfStatsProcessor) {
-        this.asyncPerfStatsProcessor = asyncPerfStatsProcessor;
-    }
-
-    @Override
-    public void afterPropertiesSet() {
-        Assert.notNull(recorderContainer, "recorderContainer is required!!!");
-        Assert.notNull(asyncPerfStatsProcessor, "asyncPerfStatsProcessor is required!!!");
-
+    static {
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
             public void run() {
                 Logger.info("ENTER ShutdownHook...");
                 try {
-                    Map<String, AbstractRecorder> recorderMap = recorderContainer.getRecorderMap();
+                    Map<String, AbstractRecorder> recorderMap = RecorderContainer.getRecorderMap();
                     List<PerfStats> perfStatsList = new ArrayList<>(recorderMap.size());
                     AbstractRecorder recorder = null;
                     for (Map.Entry<String, AbstractRecorder> entry : recorderMap.entrySet()) {
