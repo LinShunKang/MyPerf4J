@@ -53,24 +53,23 @@
 |4|100000000|22222222|
 |8|100000000|29629629|
 
-
 * 整体压测 - 包括AOP
     - 只压测一个接口并且被压测接口的实现为空方法
     - 时间片为10s，每次压测中间停顿20s，并且执行`System.gc();`
 
 | 线程数 | 每线程循环数| RPS |
 |-------|-----|------|
-|1|100000000|1431983|
-|2|100000000|2400973|
-|4|100000000|4569964|
-|8|100000000|5843866|
+|1|100000000|3550396|
+|2|100000000|5177145|
+|4|100000000|9153783|
+|8|100000000|11994302|
 
 * 压测结论
     - 从整体压测结果来看，在单线程下每秒可支持143万次的方法调用，平均每次方法调用耗时1.43us，能够满足绝大部分人的要求，不会对程序本身的响应时间造成影响
     - 通过对比核心数结构和整体压测的结果，核心数据结构本身并不是瓶颈，瓶颈在于切面及反射所带来的耗时
 
 ## 使用
-* 引入Maven依赖
+* 在`pom.xml`引入Maven依赖
 
 ```
     <dependency>
@@ -79,7 +78,39 @@
         <version>1.0-SNAPSHOT</version>
     </dependency>
 ```
-* 在你想要分析性能的类或方法明上加上 @Profiler注解，同时对于不想进行性能分析的接口上加上 @NonProfiler
+
+* 在`pom.xml`加入build plugin
+
+```
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>aspectj-maven-plugin</artifactId>
+                <version>1.10</version>
+                <configuration>
+                    <complianceLevel>1.7</complianceLevel>
+                    <source>1.7</source>
+                    <aspectLibraries>
+                        <aspectLibrary>
+                            <groupId>MyPerf4J</groupId>
+                            <artifactId>MyPerf4J</artifactId>
+                        </aspectLibrary>
+                    </aspectLibraries>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+```
+
+* 在你想要分析性能的类或方法明上加上 `@Profiler`注解，同时对于不想进行性能分析的接口上加上 `@NonProfiler`
 
 ```
 package cn.perf4j.test.profiler;
@@ -110,7 +141,8 @@ public class ProfilerTestApiImpl implements ProfilerTestApi {
     }
 }
 ```
-* 新建一个MyRecordProcessor类
+
+* 新建一个MyRecordProcessor类并声明PerfStatsProcessor接口
 
 ``` 
 package cn.perf4j.test.profiler;
@@ -134,15 +166,17 @@ public class MyPerfStatsProcessor implements PerfStatsProcessor {
 
 }
 ```
-* 在Spring配置文件中加入
+
+* 在配置文件`config/myPerf4J.properties`中加入以下几个配置项
 
 ```
-    <bean id="myPerfStatsProcessor" class="cn.perf4j.test.profiler.MyPerfStatsProcessor"/>
-
-    <bean id="asyncPerfStatsProcessor" class="cn.perf4j.AsyncPerfStatsProcessor">
-        <constructor-arg index="0" ref="myPerfStatsProcessor"/>
-    </bean>
+MyPerf4J.PSP=cn.perf4j.test.profiler.MyPerfStatsProcessor
+MyPerf4J.RecMode=accurate
+MyPerf4J.MillTimeSlice=60000
 ```
+
+* 执行命令 `mvn clean package`
+
 * 输出结果
 
 ```
@@ -152,19 +186,20 @@ ProfilerTestApiImpl.test1  1473961        0        4        0        1        2 
 ProfilerTestApiImpl.test3        0       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1
 ```
 
-## 关于rough模式与accurate模式
-* rough模式
+## 关于Rough模式与Accurate模式
+* Rough模式
     - 精度略差，会丢弃响应时间超过指定阈值的记录
     - 更加节省内存，只使用数组来记录响应时间
     - 速度略快一些
     - 默认
 
-* accurate模式
+* Accurate模式
     - 精度高，会记录所有的响应时间
     - 相对耗费内存，使用数组+Map来记录响应时间
     - 速度略慢一些
     - 需要加入启动参数-DMyPerf4J.recorder.mode=accurate
 
 * 建议
-    - 对于内存敏感或精度要求不是特别高的应用，推荐使用rough模式
-    - 对于内存不敏感且精度要求特别高的应用，推荐使用accurate模式
+    - 对于内存敏感或精度要求不是特别高的应用，推荐使用Rough模式
+    - 对于内存不敏感且精度要求特别高的应用，推荐使用Accurate模式
+

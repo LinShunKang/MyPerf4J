@@ -57,17 +57,17 @@ A Simple Fast Performance Monitoring and Statistics for Java Code. Inspired by [
 
 | Threads | Number of loops per thread | RPS |
 |-------|-----|------|
-|1|100000000|1431983|
-|2|100000000|2400973|
-|4|100000000|4569964|
-|8|100000000|5843866|
+|1|100000000|3550396|
+|2|100000000|5177145|
+|4|100000000|9153783|
+|8|100000000|11994302|
 
 * Summary
-    - From the overall benchmark results, we can support 1.43 million method calls per second in a single thread. The average time per method call is 1.43 us, which can meet the requirements of most people, and does not affect the response time of the program itself.
+    - From the overall benchmark results, we can support 3.55 million method calls per second in a single thread. The average time per method call is 0.28us, which can meet the requirements of most people, and does not affect the response time of the program itself.
     - By comparing the core data structure and the overall pressure measurement results, the core data structure itself is not a bottleneck. The bottleneck is the time taken by the AOP and reflection.
 
 ## Usage
-* Add maven dependency
+* Add maven dependency in `pom.xml`
 
 ```
     <dependency>
@@ -76,7 +76,39 @@ A Simple Fast Performance Monitoring and Statistics for Java Code. Inspired by [
         <version>1.0-SNAPSHOT</version>
     </dependency>
 ```
-* Add @Profiler annotation to the class or method you want to analyze performance, and add @NonProfiler annotation to the method you do not want to analyze
+
+* Add maven build plugin in `pom.xml`
+
+```
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>aspectj-maven-plugin</artifactId>
+                <version>1.10</version>
+                <configuration>
+                    <complianceLevel>1.7</complianceLevel>
+                    <source>1.7</source>
+                    <aspectLibraries>
+                        <aspectLibrary>
+                            <groupId>MyPerf4J</groupId>
+                            <artifactId>MyPerf4J</artifactId>
+                        </aspectLibrary>
+                    </aspectLibraries>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+```
+
+* Add `@Profiler` annotation to the class or method you want to analyze performance, and add `@NonProfiler` annotation to the method you do not want to analyze
 
 ```
 package cn.perf4j.test.profiler;
@@ -107,7 +139,8 @@ public class ProfilerTestApiImpl implements ProfilerTestApi {
     }
 }
 ```
-* Create a new class and implements PerfStatsProcessor
+
+* Create a new class and implements `PerfStatsProcessor`
 
 ``` 
 package cn.perf4j.test.profiler;
@@ -130,15 +163,17 @@ public class MyPerfStatsProcessor implements PerfStatsProcessor {
     }
 }
 ```
-* Add these beans in your Spring configuration file
+
+* Add these properties in `config/myPerf4J.properties`
 
 ```
-    <bean id="myPerfStatsProcessor" class="cn.perf4j.test.profiler.MyPerfStatsProcessor"/>
-
-    <bean id="asyncPerfStatsProcessor" class="cn.perf4j.AsyncPerfStatsProcessor">
-        <constructor-arg index="0" ref="myPerfStatsProcessor"/>
-    </bean>
+MyPerf4J.PSP=cn.perf4j.test.profiler.MyPerfStatsProcessor
+MyPerf4J.RecMode=accurate
+MyPerf4J.MillTimeSlice=60000
 ```
+
+* Execute command `mvn clean package`
+
 * Performance Statistics
 
 ```
@@ -159,7 +194,7 @@ ProfilerTestApiImpl.test3        0       -1       -1       -1       -1       -1 
     - High accuracy, records all response times.
     - It consumes relatively memory and uses array +Map to record response time.
     - The speed is slightly slower.
-    - Need to add startup parameters -DMyPerf4J.recorder.mode=accurate.
+    - Need to add property MyPerf4J.RecMode=accurate in config/myPerf4J.properties.
 
 * Suggestions
     - For memory-sensitive or precision applications that are not particularly demanding, Rough Mode is recommended.
