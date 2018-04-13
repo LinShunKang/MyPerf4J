@@ -66,6 +66,21 @@ public class AccurateRecorder extends AbstractRecorder {
         fillMapRecord(arr, idx);
     }
 
+    private void fillMapRecord(int[] arr, int offset) {
+        int idx = offset;
+        for (Map.Entry<Integer, AtomicInteger> entry : timingMap.entrySet()) {
+            if (entry.getValue().get() > 0) {
+                arr[idx++] = entry.getKey();
+            }
+        }
+
+        Arrays.sort(arr, offset, idx);
+        for (int i = idx - 1; i >= offset; --i) {
+            arr[2 * i - offset] = arr[i];
+            arr[2 * i + 1 - offset] = timingMap.get(arr[i]).get();
+        }
+    }
+
     @Override
     public int getEffectiveCount() {
         int result = 0;
@@ -82,21 +97,6 @@ public class AccurateRecorder extends AbstractRecorder {
             }
         }
         return result;
-    }
-
-    private void fillMapRecord(int[] arr, int offset) {
-        int idx = offset;
-        for (Map.Entry<Integer, AtomicInteger> entry : timingMap.entrySet()) {
-            if (entry.getValue().get() > 0) {
-                arr[idx++] = entry.getKey();
-            }
-        }
-
-        Arrays.sort(arr, offset, idx);
-        for (int i = idx - 1; i >= offset; --i) {
-            arr[2 * i - offset] = arr[i];
-            arr[2 * i + 1 - offset] = timingMap.get(arr[i]).get();
-        }
     }
 
     @Override

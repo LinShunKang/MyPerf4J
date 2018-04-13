@@ -21,9 +21,21 @@ public class ProfilerAspect {
 
     private static final String JOIN_POINT_KIND_METHOD_EXE = "method-execution";
 
+    private static RecorderMaintainer recorderMaintainer;
+
+    private static boolean running = false;
+
+    static {
+        try {
+            Class.forName("cn.perf4j.MyBootstrap");
+        } catch (Throwable e) {
+            Logger.error("ProfilerAspect: loadClass cn.perf4j.MyBootstrap failure!!!", e);
+        }
+    }
+
     @Around("(@within(cn.perf4j.aop.Profiler) || @annotation(cn.perf4j.aop.Profiler)) && !(@within(cn.perf4j.aop.NonProfiler) || @annotation(cn.perf4j.aop.NonProfiler))")
     public Object doProfiling(ProceedingJoinPoint joinPoint) throws Throwable {
-        long startNano = System.nanoTime();
+        long startNano = running ? System.nanoTime() : 0L;
         String tag = null;
         try {
             tag = getTag(joinPoint);
@@ -32,10 +44,10 @@ public class ProfilerAspect {
             Logger.error("ProfilerAspect.doProfiling() tag: " + tag, throwable);
             throw throwable;
         } finally {
-            AbstractRecorder recorder = RecorderMaintainer.getRecorder(tag);
-            if (recorder != null) {
+            AbstractRecorder recorder;
+            if (running && (recorder = recorderMaintainer.getRecorder(tag)) != null) {
                 recorder.recordTime(startNano, System.nanoTime());
-            } else {
+            } else if (running) {
                 Logger.warn("ProfilerAspect.doProfile(): UNKNOWN tag: " + tag);
             }
         }
@@ -52,4 +64,12 @@ public class ProfilerAspect {
         return clazz.getSimpleName().concat(".").concat(joinPoint.getSignature().getName());
     }
 
+
+    public static void setRecorderMaintainer(RecorderMaintainer recorderMaintainer) {
+        ProfilerAspect.recorderMaintainer = recorderMaintainer;
+    }
+
+    public static void setRunning(boolean running) {
+        ProfilerAspect.running = running;
+    }
 }

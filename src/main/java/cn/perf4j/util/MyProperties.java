@@ -1,10 +1,5 @@
 package cn.perf4j.util;
 
-import cn.perf4j.AsyncPerfStatsProcessor;
-import cn.perf4j.PropConstants;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
 
 /**
@@ -12,23 +7,20 @@ import java.util.Properties;
  */
 public final class MyProperties {
 
-    private static Properties properties = new Properties();
+    private static Properties properties;
 
-    static {
-        InputStream in = null;
-        try {
-            in = AsyncPerfStatsProcessor.class.getClassLoader().getResourceAsStream(PropConstants.PRO_FILE_NAME);
-            if (in != null) {
-                properties.load(in);
-            }
-        } catch (IOException e) {
-            Logger.error("MyProperties load config/myPerf4J.properties error!!!", e);
-        } finally {
-            IOUtils.closeQuietly(in);
+    public static synchronized boolean initial(Properties prop) {
+        if (properties != null || prop == null) {
+            return false;
         }
+
+        properties = prop;
+        return true;
     }
 
     public static String getStr(String key) {
+        checkState();
+
         String value = System.getProperty(key);
         if (value != null) {
             return value;
@@ -36,12 +28,22 @@ public final class MyProperties {
         return properties.getProperty(key);
     }
 
+    private static void checkState() {
+        if (properties == null) {
+            throw new IllegalStateException("MyProperties is not initial yet!!!");
+        }
+    }
+
     public static void setStr(String key, String value) {
+        checkState();
+
         System.setProperty(key, value);
         properties.setProperty(key, value);
     }
 
     public static String getStr(String key, String defaultValue) {
+        checkState();
+
         String result = getStr(key);
         if (result != null) {
             return result;
@@ -50,6 +52,8 @@ public final class MyProperties {
     }
 
     public static long getLong(String key, long defaultValue) {
+        checkState();
+
         String result = getStr(key);
         if (result == null) {
             return defaultValue;
@@ -64,6 +68,8 @@ public final class MyProperties {
     }
 
     public static long getLong(String key, long defaultValue, long minValue) {
+        checkState();
+
         long result = getLong(key, defaultValue);
         if (result <= minValue) {
             return minValue;
@@ -72,6 +78,8 @@ public final class MyProperties {
     }
 
     public static boolean isSame(String key, String expectValue) {
+        checkState();
+
         if (expectValue == null) {
             throw new IllegalArgumentException("isSame(" + key + ", null): expectValue must not null!!!");
         }

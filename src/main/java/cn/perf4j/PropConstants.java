@@ -15,6 +15,12 @@ public interface PropConstants {
 
     String MILL_TIME_SLICE = "MyPerf4J.MillTimeSlice";
 
+    long DEFAULT_TIME_SLICE = 60 * 1000L;
+
+    long MIN_TIME_SLICE = 10 * 1000L;
+
+    long MAX_TIME_SLICE = 10 * 60 * 1000L;
+
     String RUNNING_STATUS = "RUNNING";
 
     String RUNNING_STATUS_YES = "YES";
