@@ -3,8 +3,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>MyPerf4J</groupId>
     <artifactId>MyPerf4J</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>MyPerf4J-Core</module>
+        <module>MyPerf4J-AspectJ</module>
+        <module>MyPerf4J-ASM</module>
+    </modules>
     <name>MyPerf4J</name>
     <url>http://maven.apache.org</url>
 
@@ -13,19 +18,14 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjrt</artifactId>
-            <version>1.9.0</version>
-        </dependency>
     </dependencies>
 
     <build>
-        <finalName>MyPerf4J</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
@@ -90,24 +90,6 @@
                         <phase>package</phase>
                         <goals>
                             <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>aspectj-maven-plugin</artifactId>
-                <version>1.10</version>
-                <configuration>
-                    <complianceLevel>1.7</complianceLevel>
-                    <source>1.7</source>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                            <goal>test-compile</goal>
                         </goals>
                     </execution>
                 </executions>

@@ -113,8 +113,8 @@ A Simple Fast Performance Monitoring and Statistics for Java Code. Inspired by [
 ```
 package cn.perf4j.test.profiler;
 
-import cn.perf4j.aop.NonProfiler;
-import cn.perf4j.aop.Profiler;
+import cn.myperf4j.core.annotation.NonProfiler;
+import cn.myperf4j.core.annotation.Profiler;
 
 /**
  * Created by LinShunkang on 2018/3/11
@@ -145,9 +145,9 @@ public class ProfilerTestApiImpl implements ProfilerTestApi {
 ``` 
 package cn.perf4j.test.profiler;
 
-import cn.perf4j.PerfStats;
-import cn.perf4j.PerfStatsProcessor;
-import cn.perf4j.util.PerfStatsFormatter;
+import cn.myperf4j.core.PerfStats;
+import cn.myperf4j.core.PerfStatsProcessor;
+import cn.myperf4j.core.util.PerfStatsFormatter;
 
 import java.util.List;
 
