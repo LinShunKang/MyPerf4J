@@ -9,18 +9,17 @@ import static org.objectweb.asm.Opcodes.*;
 /**
  * Created by LinShunkang on 2018/4/15
  */
-//TODO:优化: 通过插入try-catch块来保证即使方法内抛异常了，仍然能记录下响应时间
-public class AOPMethodVisitor extends LocalVariablesSorter {
+public class SimpleMethodVisitor extends LocalVariablesSorter {
 
     private String tag;
 
     private int startTimeIdentifier;
 
-    public AOPMethodVisitor(int access,
-                            String name,
-                            String desc,
-                            MethodVisitor mv,
-                            String className) {
+    public SimpleMethodVisitor(int access,
+                               String name,
+                               String desc,
+                               MethodVisitor mv,
+                               String className) {
         super(ASM5, access, desc, mv);
         this.tag = className + "." + name;
     }

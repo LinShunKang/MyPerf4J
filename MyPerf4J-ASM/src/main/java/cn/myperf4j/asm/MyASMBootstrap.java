@@ -1,27 +1,39 @@
 package cn.myperf4j.asm;
 
 import cn.myperf4j.asm.aop.ProfilerAspect;
+import cn.myperf4j.asm.aop.ProfilerTransformer;
 import cn.myperf4j.core.MyBootstrap;
 import cn.myperf4j.core.PropConstants;
 import cn.myperf4j.core.util.Logger;
 import cn.myperf4j.core.util.MyProperties;
+
+import java.lang.instrument.Instrumentation;
 
 /**
  * Created by LinShunkang on 2018/4/19
  */
 public class MyASMBootstrap {
 
-    static {
+    public static void premain(String options, Instrumentation ins) {
+//        ins.addTransformer(new ProfilerTransformer());
+
         if (!MyBootstrap.initial()) {
             MyProperties.setStr(PropConstants.RUNNING_STATUS, PropConstants.RUNNING_STATUS_NO);
             Logger.error("MyBootstrap initial failure!!!");
-        } else if (!initial()) {
+            return;
+        }
+
+        if (!initial()) {
             MyProperties.setStr(PropConstants.RUNNING_STATUS, PropConstants.RUNNING_STATUS_NO);
             Logger.error("MyASMBootstrap initial failure!!!");
-        } else {
-            MyProperties.setStr(PropConstants.RUNNING_STATUS, PropConstants.RUNNING_STATUS_YES);
-            Logger.info("MyASMBootstrap initial success!!!");
+            return;
         }
+
+        MyProperties.setStr(PropConstants.RUNNING_STATUS, PropConstants.RUNNING_STATUS_YES);
+        Logger.info("MyASMBootstrap initial success!!!");
+
+        ins.addTransformer(new ProfilerTransformer());
+
     }
 
     private static boolean initial() {

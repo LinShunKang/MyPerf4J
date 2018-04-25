@@ -1,19 +1,19 @@
-package cn.myperf4j.asm.aop;
+package MyPerf4J.test1;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 /**
- * Created by LinShunkang on 2018/4/15
+ * Created by LinShunkang on 2018/4/23
  */
-public class AOPClassAdapter extends ClassVisitor implements Opcodes {
+public class MyClassAdapter extends ClassVisitor implements Opcodes {
 
     private Class<?> analysisClass;
 
     private boolean isInterface;
 
-    public AOPClassAdapter(final ClassVisitor cv, Class<?> clazz) {
+    public MyClassAdapter(final ClassVisitor cv, Class<?> clazz) {
         super(ASM5, cv);
         this.analysisClass = clazz;
     }
@@ -35,6 +35,10 @@ public class AOPClassAdapter extends ClassVisitor implements Opcodes {
             return mv;
         }
 
-        return new AOPMethodVisitor(access, name, desc, mv, analysisClass.getSimpleName()); //访问需要修改的方法
+//        return new EnteringAdapter(mv, access, name, desc); //访问需要修改的方法
+//        return new ExitingAdapter(mv, access, name, desc); //访问需要修改的方法
+
+        MethodVisitor enteringMV = new EnteringAdapter(mv, access, name, desc); //访问需要修改的方法
+        return new FinallyAdapter(enteringMV, access, name, desc); //访问需要修改的方法
     }
 }
