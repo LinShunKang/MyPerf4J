@@ -85,4 +85,14 @@ public final class MyProperties {
         }
         return expectValue.equals(getStr(key));
     }
+
+    public static boolean getBoolean(String key, boolean defaultValue) {
+        checkState();
+
+        String result = getStr(key);
+        if (result != null) {
+            return result.equalsIgnoreCase("true");
+        }
+        return defaultValue;
+    }
 }

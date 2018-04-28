@@ -1,5 +1,6 @@
 package MyPerf4J.test2;
 
+import cn.myperf4j.core.annotation.NonProfiler;
 import cn.myperf4j.core.annotation.Profiler;
 
 import java.util.concurrent.TimeUnit;
@@ -7,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by LinShunkang on 2018/4/23
  */
+@Profiler
 public class Foo2 {
 
 
@@ -15,7 +17,7 @@ public class Foo2 {
         System.out.println("Foo2.test1()");
     }
 
-    @Profiler
+    @Profiler(mostTimeThreshold = 200, outThresholdCount = 20)
     public static void test2() {
         try {
             System.out.println("Foo2.test2().try");
@@ -25,6 +27,7 @@ public class Foo2 {
         }
     }
 
+    @NonProfiler
     public static void test3() {
         try {
             System.out.println("Foo2.test3().try");
@@ -33,6 +36,8 @@ public class Foo2 {
         }
     }
 
+    @Profiler
+    @NonProfiler
     public static void test4() {
         try {
             TimeUnit.SECONDS.sleep(1);
@@ -45,6 +50,8 @@ public class Foo2 {
         }
     }
 
+    @NonProfiler
+    @Profiler
     public static String test5(int i) {
         try {
             if (i == 1) {

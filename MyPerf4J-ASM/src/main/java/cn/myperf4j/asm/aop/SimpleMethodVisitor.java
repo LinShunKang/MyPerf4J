@@ -1,5 +1,11 @@
 package cn.myperf4j.asm.aop;
 
+import cn.myperf4j.asm.ASMRecorderMaintainer;
+import cn.myperf4j.core.AbstractRecorderMaintainer;
+import cn.myperf4j.core.ProfilerParams;
+import cn.myperf4j.core.annotation.NonProfiler;
+import cn.myperf4j.core.annotation.Profiler;
+import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.LocalVariablesSorter;
@@ -11,6 +17,22 @@ import static org.objectweb.asm.Opcodes.*;
  */
 public class SimpleMethodVisitor extends LocalVariablesSorter {
 
+    private static final String PROFILER_INNER_NAME = Type.getDescriptor(Profiler.class);
+
+    private static final String NON_PROFILER_INNER_NAME = Type.getDescriptor(NonProfiler.class);
+
+    private static final ProfilerAntVisitor DEFAULT_AV = new ProfilerAntVisitor(ASM5, null, null);
+
+    private ProfilerAntVisitor profilerAV = DEFAULT_AV;
+
+    private AbstractRecorderMaintainer maintainer = ASMRecorderMaintainer.getInstance();
+
+    private boolean hasProfiler = false;
+
+    private boolean hasNonProfiler = false;
+
+    private ProfilerParams classProfilerParams;
+
     private String tag;
 
     private int startTimeIdentifier;
@@ -19,10 +41,39 @@ public class SimpleMethodVisitor extends LocalVariablesSorter {
                                String name,
                                String desc,
                                MethodVisitor mv,
-                               String className) {
+                               String className,
+                               ProfilerParams classProfilerParams) {
         super(ASM5, access, desc, mv);
         this.tag = className + "." + name;
+        this.classProfilerParams = classProfilerParams;
+        this.hasProfiler = classProfilerParams.hasProfiler();
     }
+
+    @Override
+    public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+        AnnotationVisitor av = super.visitAnnotation(desc, visible);
+        if (av == null) {
+            return null;
+        }
+
+        if (PROFILER_INNER_NAME.equals(desc)) {
+            hasProfiler = true;
+        }
+
+        if (NON_PROFILER_INNER_NAME.equals(desc)) {
+            hasNonProfiler = true;
+        }
+
+        if (profiling()) {
+            return profilerAV = new ProfilerAntVisitor(ASM5, av, classProfilerParams);
+        }
+        return av;
+    }
+
+    private boolean profiling() {
+        return hasProfiler && !hasNonProfiler;
+    }
+
 
     /**
      * 此方法在访问方法的头部时被访问到，仅被访问一次
@@ -30,9 +81,14 @@ public class SimpleMethodVisitor extends LocalVariablesSorter {
     @Override
     public void visitCode() {
         super.visitCode();
-        mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "nanoTime", "()J", false);
-        startTimeIdentifier = newLocal(Type.LONG_TYPE);
-        mv.visitVarInsn(LSTORE, startTimeIdentifier);
+
+        if (profiling()) {
+            maintainer.addRecorder(tag, profilerAV.getProfilerParams());
+
+            mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "nanoTime", "()J", false);
+            startTimeIdentifier = newLocal(Type.LONG_TYPE);
+            mv.visitVarInsn(LSTORE, startTimeIdentifier);
+        }
     }
 
     /**
@@ -41,7 +97,7 @@ public class SimpleMethodVisitor extends LocalVariablesSorter {
      */
     @Override
     public void visitInsn(int opcode) {
-        if ((IRETURN <= opcode && opcode <= RETURN) || opcode == ATHROW) {
+        if (profiling() && ((IRETURN <= opcode && opcode <= RETURN) || opcode == ATHROW)) {
             mv.visitVarInsn(LLOAD, startTimeIdentifier);
             mv.visitLdcInsn(tag);
             mv.visitMethodInsn(INVOKESTATIC, ProfilerAspect.class.getName().replace(".", "/"), "profiling", "(JLjava/lang/String;)V", false);

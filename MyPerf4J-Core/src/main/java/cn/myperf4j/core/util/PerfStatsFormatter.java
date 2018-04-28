@@ -11,11 +11,11 @@ public final class PerfStatsFormatter {
 
     public static String getFormatStr(List<PerfStats> perfStatsList, long startMillis, long stopMillis) {
         int maxApiLength = getMaxApiLength(perfStatsList);
-        String dataFormat = "%-" + maxApiLength + "s%9s%9s%9s%9s%9s%9s%9s%9s%9s%9s%9s%n";
+        String dataFormat = "%-" + maxApiLength + "s%9s%9s%9s%10s%9s%9s%9s%9s%9s%9s%9s%9s%n";
 
         StringBuilder sb = new StringBuilder((perfStatsList.size() + 2) * (9 * 11 + 1 + maxApiLength));
         sb.append("MyPerf4J Performance Statistics [").append(DateUtils.getStr(startMillis)).append(", ").append(DateUtils.getStr(stopMillis)).append("]").append(String.format("%n"));
-        sb.append(String.format(dataFormat, "Api", "RPS", "Min(ms)", "Max(ms)", "TP50", "TP90", "TP95", "TP99", "TP999", "TP9999", "TP99999", "TP100"));
+        sb.append(String.format(dataFormat, "Api", "RPS", "Min(ms)", "Max(ms)", "Count", "TP50", "TP90", "TP95", "TP99", "TP999", "TP9999", "TP99999", "TP100"));
         if (perfStatsList.isEmpty()) {
             return sb.toString();
         }
@@ -27,6 +27,7 @@ public final class PerfStatsFormatter {
                     perfStats.getRPS(),
                     perfStats.getMinTime(),
                     perfStats.getMaxTime(),
+                    perfStats.getTotalCount(),
                     perfStats.getTP50(),
                     perfStats.getTP90(),
                     perfStats.getTP95(),

@@ -1,4 +1,4 @@
-package cn.myperf4j.asm.aop;
+package cn.myperf4j.core;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,12 +16,12 @@ public class ProfilerFilter {
     /**
      * 需要注入的Package集合
      */
-    protected static Set<String> includePackage = new HashSet<String>();
+    private static Set<String> includePackage = new HashSet<>();
 
     static {
         // 默认不注入的Package
-        excludePackage.add("java/");// 包含javax
-        excludePackage.add("sun/");// 包含sunw
+        excludePackage.add("java/");
+        excludePackage.add("sun/");
         excludePackage.add("com/sun/");
         excludePackage.add("org/");
         excludePackage.add("com/intellij");
@@ -29,8 +29,6 @@ public class ProfilerFilter {
         // 不注入profiler本身
         excludePackage.add("cn/myperf4j");
 
-
-        includePackage.add("cn/perf4j");//TODO: DEL
     }
 
     public static boolean isNotNeedInject(String className) {
@@ -43,13 +41,22 @@ public class ProfilerFilter {
         return false;
     }
 
+    public static void addNotNeedInjectPackage(String pkg) {
+        excludePackage.add(pkg.replace('.', '/'));
+    }
+
     public static boolean isNeedInject(String className) {
         String clazzName = className.toLowerCase().replace('.', '/');
-        for (String v : includePackage) {
-            if (clazzName.startsWith(v)) {
+        for (String prefix : includePackage) {
+            if (clazzName.startsWith(prefix)) {
                 return true;
             }
         }
         return false;
     }
+
+    public static void addNeedInjectPackage(String pkg) {
+        includePackage.add(pkg.replace('.', '/'));
+    }
+
 }

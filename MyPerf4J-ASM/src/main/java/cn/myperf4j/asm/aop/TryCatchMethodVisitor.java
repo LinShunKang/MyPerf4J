@@ -1,5 +1,9 @@
 package cn.myperf4j.asm.aop;
 
+import cn.myperf4j.asm.ASMRecorderMaintainer;
+import cn.myperf4j.core.AbstractRecorderMaintainer;
+import cn.myperf4j.core.ProfilerParams;
+import cn.myperf4j.core.annotation.NonProfiler;
 import cn.myperf4j.core.annotation.Profiler;
 import cn.myperf4j.core.util.Logger;
 import org.objectweb.asm.AnnotationVisitor;
@@ -13,24 +17,66 @@ import org.objectweb.asm.commons.AdviceAdapter;
  */
 public class TryCatchMethodVisitor extends AdviceAdapter {
 
-    private static final String PROFILER_I_NAME = Type.getDescriptor(Profiler.class);
+    private static final String PROFILER_INNER_NAME = Type.getDescriptor(Profiler.class);
 
-    private boolean needProfiling = false;
+    private static final String NON_PROFILER_INNER_NAME = Type.getDescriptor(NonProfiler.class);
+
+    private static final ProfilerAntVisitor DEFAULT_AV = new ProfilerAntVisitor(ASM5, null, null);
+
+    private ProfilerAntVisitor profilerAV = DEFAULT_AV;
+
+    private AbstractRecorderMaintainer maintainer = ASMRecorderMaintainer.getInstance();
+
+    private boolean hasProfiler = false;
+
+    private boolean hasNonProfiler = false;
+
+    private ProfilerParams classProfilerParams;
 
     private String tag;
 
     private int startTimeIdentifier;
 
-    private Label startFinally = new Label();//
+    private Label startFinally = new Label();
 
 
     public TryCatchMethodVisitor(int access,
                                  String name,
                                  String desc,
                                  MethodVisitor mv,
-                                 String className) {
+                                 String className,
+                                 ProfilerParams classProfilerParams) {
         super(ASM5, mv, access, name, desc);
         this.tag = className + "." + name;
+        this.classProfilerParams = classProfilerParams;
+        this.hasProfiler = classProfilerParams.hasProfiler();
+    }
+
+    @Override
+    public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+        Logger.debug("TryCatchMethodVisitor.visitAnnotation(" + desc + ", " + visible + "): tag=" + tag);
+
+        AnnotationVisitor av = super.visitAnnotation(desc, visible);
+        if (av == null) {
+            return null;
+        }
+
+        if (PROFILER_INNER_NAME.equals(desc)) {
+            hasProfiler = true;
+        }
+
+        if (NON_PROFILER_INNER_NAME.equals(desc)) {
+            hasNonProfiler = true;
+        }
+
+        if (profiling()) {
+            return profilerAV = new ProfilerAntVisitor(ASM5, av, classProfilerParams);
+        }
+        return av;
+    }
+
+    private boolean profiling() {
+        return hasProfiler && !hasNonProfiler;
     }
 
     /**
@@ -38,22 +84,24 @@ public class TryCatchMethodVisitor extends AdviceAdapter {
      */
     @Override
     public void visitCode() {
-        Logger.info("TryCatchMethodVisitor.visitMethod(): tag=" + tag);
-
+        Logger.debug("TryCatchMethodVisitor.visitMethod(): tag=" + tag);
         super.visitCode();
 
-        if (needProfiling) {
+        if (profiling()) {
+            maintainer.addRecorder(tag, profilerAV.getProfilerParams());
+
             mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "nanoTime", "()J", false);
             startTimeIdentifier = newLocal(Type.LONG_TYPE);
             mv.visitVarInsn(LSTORE, startTimeIdentifier);
-
-            mv.visitLabel(startFinally);//
+            mv.visitLabel(startFinally);
         }
     }
 
     @Override
     public void visitMaxs(int maxStack, int maxLocals) {
-        if (needProfiling) {
+        Logger.debug("TryCatchMethodVisitor.visitMaxs(" + maxStack + ", " + maxLocals + "): tag=" + tag);
+
+        if (profiling()) {
             Label endFinally = new Label();
             mv.visitTryCatchBlock(startFinally, endFinally, endFinally, null);
             mv.visitLabel(endFinally);
@@ -65,8 +113,9 @@ public class TryCatchMethodVisitor extends AdviceAdapter {
 
     @Override
     public void onMethodExit(int opcode) {
-        Logger.info("TryCatchMethodVisitor.onMethodExit(" + opcode + "): tag=" + tag);
-        if (opcode != ATHROW && needProfiling) {
+        Logger.debug("TryCatchMethodVisitor.onMethodExit(" + opcode + "): tag=" + tag);
+
+        if (opcode != ATHROW && profiling()) {
             onFinally(opcode);
         }
     }
@@ -78,14 +127,8 @@ public class TryCatchMethodVisitor extends AdviceAdapter {
     }
 
     @Override
-    public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-        needProfiling = PROFILER_I_NAME.equals(desc);
-        return super.visitAnnotation(desc, visible);
-    }
-
-    @Override
     public void visitEnd() {
-        Logger.info("TryCatchMethodVisitor.visitEnd(): tag=" + tag);
+        Logger.debug("TryCatchMethodVisitor.visitEnd(): tag=" + tag);
         super.visitEnd();
     }
 }

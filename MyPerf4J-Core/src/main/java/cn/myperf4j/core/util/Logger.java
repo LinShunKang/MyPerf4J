@@ -7,13 +7,21 @@ import java.util.Date;
  */
 public final class Logger {
 
+    private static boolean debugEnable = false;
+
     private static final String PREFIX = " [MyPerf4J] ";
 
     private static final String INFO_LEVEL = "INFO ";
 
+    private static final String DEBUG_LEVEL = "DEBUG ";
+
     private static final String WARN_LEVEL = "WARN ";
 
     private static final String ERROR_LEVEL = "ERROR ";
+
+    public static void setDebugEnable(boolean debugEnable) {
+        Logger.debugEnable = debugEnable;
+    }
 
     public static void info(String msg) {
         System.out.println(getPrefix(INFO_LEVEL) + msg);
@@ -21,6 +29,12 @@ public final class Logger {
 
     private static String getPrefix(String logLevel) {
         return DateUtils.getToMillisStr(new Date()) + PREFIX + logLevel;
+    }
+
+    public static void debug(String msg) {
+        if (debugEnable) {
+            System.out.println(getPrefix(DEBUG_LEVEL) + msg);
+        }
     }
 
     public static void warn(String msg) {

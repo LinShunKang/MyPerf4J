@@ -1,7 +1,8 @@
 package cn.myperf4j.aspectj.aop;
 
+import cn.myperf4j.aspectj.AspectJBootstrap;
 import cn.myperf4j.core.AbstractRecorder;
-import cn.myperf4j.core.RecorderMaintainer;
+import cn.myperf4j.core.AbstractRecorderMaintainer;
 import cn.myperf4j.core.util.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
@@ -20,19 +21,15 @@ public class ProfilerAspect {
 
     private static final String JOIN_POINT_KIND_METHOD_EXE = "method-execution";
 
-    private static RecorderMaintainer recorderMaintainer;
+    private static AbstractRecorderMaintainer recorderMaintainer;
 
     private static boolean running = false;
 
     static {
-        try {
-            Class.forName("cn.myperf4j.aspectj.MyAspectJBootstrap");
-        } catch (Throwable e) {
-            Logger.error("ProfilerAspect: loadClass cn.myperf4j.aspectj.MyAspectJBootstrap failure!!!", e);
-        }
+        AspectJBootstrap.getInstance().initial();
     }
 
-    @Around("(@within(cn.myperf4j.core.annotation.Profiler) || @annotation(cn.myperf4j.core.annotation.Profiler)) && !(@within(cn.myperf4j.core.annotation.NonProfiler) || @annotation(cn.myperf4j.core.annotation.NonProfiler))")
+    @Around("(@within(cn.myperf4j.core.annotation.Profiler) || @annotation(cn.myperf4j.core.annotation.Profiler)) && !(@annotation(cn.myperf4j.core.annotation.NonProfiler))")
     public Object doProfiling(ProceedingJoinPoint joinPoint) throws Throwable {
         long startNano = running ? System.nanoTime() : 0L;
         String tag = null;
@@ -63,8 +60,7 @@ public class ProfilerAspect {
         return clazz.getSimpleName().concat(".").concat(joinPoint.getSignature().getName());
     }
 
-
-    public static void setRecorderMaintainer(RecorderMaintainer recorderMaintainer) {
+    public static void setRecorderMaintainer(AbstractRecorderMaintainer recorderMaintainer) {
         ProfilerAspect.recorderMaintainer = recorderMaintainer;
     }
 

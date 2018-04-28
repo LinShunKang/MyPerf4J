@@ -1,12 +1,11 @@
 package cn.myperf4j.asm.aop;
 
+import cn.myperf4j.core.ProfilerFilter;
 import cn.myperf4j.core.util.Logger;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Type;
 
 import java.lang.instrument.ClassFileTransformer;
-import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 
 /**
@@ -19,25 +18,22 @@ public class ProfilerTransformer implements ClassFileTransformer {
                             String className,
                             Class<?> classBeingRedefined,
                             ProtectionDomain protectionDomain,
-                            byte[] classFileBuffer) throws IllegalClassFormatException {
+                            byte[] classFileBuffer) {
         try {
             if (ProfilerFilter.isNotNeedInject(className)) {
-                Logger.warn("ProfilerTransformer.transform(" + loader + ", " + className + ",classBeingRedefined, protectionDomain, " + classFileBuffer.length + ") skip!!!");
+                Logger.debug("ProfilerTransformer.transform(" + loader + ", " + className + ", classBeingRedefined, protectionDomain, " + classFileBuffer.length + ") skip!!!");
                 return classFileBuffer;
             }
 
             if (!ProfilerFilter.isNeedInject(className)) {
-                Logger.warn("ProfilerTransformer.transform(" + loader + ", " + className + ",classBeingRedefined, protectionDomain, " + classFileBuffer.length + ") skip!!!");
+                Logger.debug("ProfilerTransformer.transform(" + loader + ", " + className + ", classBeingRedefined, protectionDomain, " + classFileBuffer.length + ") skip!!!");
                 return classFileBuffer;
             }
 
-
-
-            Logger.info("ProfilerTransformer.transform(" + loader + ", " + className + ",classBeingRedefined, protectionDomain, " + classFileBuffer.length + ") begin...");
+            Logger.info("ProfilerTransformer.transform(" + loader + ", " + className + ", classBeingRedefined, protectionDomain, " + classFileBuffer.length + ")...");
             ClassReader cr = new ClassReader(classFileBuffer);
-
             ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_FRAMES);
-            MyClassAdapter cv = new MyClassAdapter(cw, className, true);
+            ProfilerClassAdapter cv = new ProfilerClassAdapter(cw, className, true);
             cr.accept(cv, ClassReader.EXPAND_FRAMES);
 
             return cw.toByteArray();

@@ -1,7 +1,8 @@
 package cn.myperf4j.asm.aop;
 
+import cn.myperf4j.asm.ASMBootstrap;
 import cn.myperf4j.core.AbstractRecorder;
-import cn.myperf4j.core.RecorderMaintainer;
+import cn.myperf4j.core.AbstractRecorderMaintainer;
 import cn.myperf4j.core.util.Logger;
 
 /**
@@ -9,16 +10,12 @@ import cn.myperf4j.core.util.Logger;
  */
 public final class ProfilerAspect {
 
-    private static RecorderMaintainer recorderMaintainer;
+    private static AbstractRecorderMaintainer recorderMaintainer;
 
     private static boolean running = false;
 
     static {
-        try {
-            Class.forName("cn.myperf4j.asm.MyASMBootstrap");
-        } catch (Throwable e) {
-            Logger.error("ProfilerAspect: loadClass cn.myperf4j.asm.MyASMBootstrap failure!!!", e);
-        }
+        ASMBootstrap.getInstance().initial();
     }
 
     public static void profiling(long startNanos, String tag) {
@@ -42,7 +39,7 @@ public final class ProfilerAspect {
         }
     }
 
-    public static void setRecorderMaintainer(RecorderMaintainer recorderMaintainer) {
+    public static void setRecorderMaintainer(AbstractRecorderMaintainer recorderMaintainer) {
         ProfilerAspect.recorderMaintainer = recorderMaintainer;
     }
 
