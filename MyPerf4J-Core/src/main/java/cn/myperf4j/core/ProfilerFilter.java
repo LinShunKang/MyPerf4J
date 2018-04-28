@@ -20,19 +20,24 @@ public class ProfilerFilter {
 
     static {
         // 默认不注入的Package
-        excludePackage.add("java/");
-        excludePackage.add("sun/");
-        excludePackage.add("com/sun/");
-        excludePackage.add("org/");
-        excludePackage.add("com/intellij");
+        excludePackage.add("java.");
+        excludePackage.add("javax.");
+        excludePackage.add("sun.");
+        excludePackage.add("com.sun.");
+        excludePackage.add("org.");
+        excludePackage.add("com.intellij.");
 
         // 不注入profiler本身
-        excludePackage.add("cn/myperf4j");
+        excludePackage.add("cn.myperf4j.");
 
     }
 
+    /**
+     * @param className : 形如: cn.myperf4j.core.ProfilerFilter
+     * @return
+     */
     public static boolean isNotNeedInject(String className) {
-        String clazzName = className.toLowerCase().replace('.', '/');
+        String clazzName = className.replace('/', '.');
         for (String prefix : excludePackage) {
             if (clazzName.startsWith(prefix)) {
                 return true;
@@ -42,11 +47,15 @@ public class ProfilerFilter {
     }
 
     public static void addNotNeedInjectPackage(String pkg) {
-        excludePackage.add(pkg.replace('.', '/'));
+        excludePackage.add(pkg.replace('/', '.'));
     }
 
+    /**
+     * @param className : 形如: cn.myperf4j.core.ProfilerFilter
+     * @return
+     */
     public static boolean isNeedInject(String className) {
-        String clazzName = className.toLowerCase().replace('.', '/');
+        String clazzName = className.replace('/', '.');
         for (String prefix : includePackage) {
             if (clazzName.startsWith(prefix)) {
                 return true;
@@ -56,7 +65,14 @@ public class ProfilerFilter {
     }
 
     public static void addNeedInjectPackage(String pkg) {
-        includePackage.add(pkg.replace('.', '/'));
+        includePackage.add(pkg.replace('/', '.'));
     }
 
+    public static Set<String> getExcludePackage() {
+        return new HashSet<>(excludePackage);
+    }
+
+    public static Set<String> getIncludePackage() {
+        return new HashSet<>(includePackage);
+    }
 }

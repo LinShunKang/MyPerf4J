@@ -46,6 +46,11 @@ public final class ClassScanner {
         this.classFilters = classFilters;
     }
 
+    /**
+     * @param basePackage : 形如:cn.myperf4j
+     * @param recursive   : 是否递归扫描
+     * @return
+     */
     public Set<Class<?>> getClasses(String basePackage, boolean recursive) {
         Set<Class<?>> classes = new LinkedHashSet<>(1024);
         String packageName = basePackage;
@@ -60,11 +65,11 @@ public final class ClassScanner {
                 URL url = dirs.nextElement();
                 String protocol = url.getProtocol();
                 if ("file".equals(protocol)) {
-                    Logger.info("ClassScanner scanning file type class....");
+                    Logger.debug("ClassScanner scanning file type class....");
                     String filePath = URLDecoder.decode(url.getFile(), "UTF-8");
                     scanByFile(classes, packageName, filePath, recursive);
                 } else if (!excludeJar && "jar".equals(protocol)) {
-                    Logger.info("ClassScanner scanning jar type class....");
+                    Logger.debug("ClassScanner scanning jar type class....");
                     scanByJar(packageName, url, recursive, classes);
                 }
             }
@@ -96,7 +101,7 @@ public final class ClassScanner {
 
                 // 判断是否过滤 inner class
                 if (excludeInner && name.contains("$")) {
-                    Logger.info("ClassScanner exclude inner class with name:" + name);
+                    Logger.debug("ClassScanner exclude inner class with name:" + name);
                     continue;
                 }
 
@@ -135,7 +140,7 @@ public final class ClassScanner {
 
                 String filename = file.getName();
                 if (excludeInner && filename.contains("$")) {
-                    Logger.info("ClassScanner exclude inner class with name:" + filename);
+                    Logger.debug("ClassScanner exclude inner class with name:" + filename);
                     return false;
                 }
                 return filterClassName(filename);

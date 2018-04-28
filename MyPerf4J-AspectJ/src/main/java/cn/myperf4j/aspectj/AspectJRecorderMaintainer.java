@@ -7,11 +7,9 @@ import cn.myperf4j.core.util.ClassScanner;
 import cn.myperf4j.core.util.Logger;
 import cn.myperf4j.core.util.MapUtils;
 
-import java.io.File;
-import java.io.FileFilter;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -36,37 +34,37 @@ public class AspectJRecorderMaintainer extends AbstractRecorderMaintainer {
     public boolean initRecorderMap() {
         long start = System.currentTimeMillis();
         try {
-
-
-            URL enumeration = AspectJRecorderMaintainer.class.getClassLoader().getResource("");
-            if (enumeration == null) {
-                return false;
-            }
-
-            File file = new File(enumeration.getPath());
-            if (!file.exists() || !file.isDirectory()) {
-                return false;
-            }
-
-            File[] dirFiles = file.listFiles(new FileFilter() {
-                // 自定义过滤规则 如果可以循环(包含子目录) 或则是以.class结尾的文件(编译好的java类文件)
-                public boolean accept(File file) {
-                    return file.isDirectory() || file.getName().endsWith(".class");
+            Set<String> packages = ProfilerFilter.getIncludePackage();
+            for (String pkg : packages) {
+                if (!processPackage(pkg)) {
+                    Logger.warn("AspectJRecorderMaintainer.processPackage(" + pkg + "): FAILURE!!!");
                 }
-            });
-
-            if (dirFiles == null || dirFiles.length <= 0) {
-                return false;
             }
 
-            for (int i = 0; i < dirFiles.length; ++i) {
-                File f = dirFiles[i];
-                processAnnotations(getClasses(f.getName()));
-            }
-            Logger.info("RecorderMaintainer.initRecorderMap() cost:" + (System.currentTimeMillis() - start) + "ms");
             return true;
         } catch (Exception e) {
-            Logger.error("RecorderMaintainer.initRecorderMap()", e);
+            Logger.error("AspectJRecorderMaintainer.initRecorderMap()", e);
+        } finally {
+            Logger.info("AspectJRecorderMaintainer.initRecorderMap() cost:" + (System.currentTimeMillis() - start) + "ms");
+        }
+        return false;
+    }
+
+    private boolean processPackage(String pkg) {
+        try {
+            Set<Class<?>> classSet = getClasses(pkg.replace('/', '.'));
+            Iterator<Class<?>> iterator = classSet.iterator();
+            while (iterator.hasNext()) {
+                Class<?> clazz = iterator.next();
+                if (ProfilerFilter.isNotNeedInject(clazz.getName())) {
+                    iterator.remove();
+                }
+            }
+            processAnnotations(classSet);
+
+            return true;
+        } catch (Exception e) {
+            Logger.error("AspectJRecorderMaintainer.processPackage(" + pkg + ")", e);
         }
         return false;
     }
@@ -105,10 +103,10 @@ public class AspectJRecorderMaintainer extends AbstractRecorderMaintainer {
                     backupRecorderMap.put(api, createRecorder(api, methodProfiler));
                 }
             } catch (Throwable throwable) {
-                Logger.error("processAnnotations(classSet): " + throwable.getMessage());
+                Logger.error("AspectJRecorderMaintainer.processAnnotations(classSet): " + throwable.getMessage());
             }
         }
-        Logger.info("RecorderMaintainer.processAnnotations() cost:" + (System.currentTimeMillis() - startMills) + "ms");
+        Logger.info("AspectJRecorderMaintainer.processAnnotations() cost:" + (System.currentTimeMillis() - startMills) + "ms");
     }
 
     @Override
