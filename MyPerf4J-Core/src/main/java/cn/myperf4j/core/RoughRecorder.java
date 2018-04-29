@@ -39,6 +39,7 @@ public class RoughRecorder extends AbstractRecorder {
         int elapsedTime = (int) ((endNanoTime - startNanoTime) / 1000000);
         if (elapsedTime < timingArr.length()) {
             timingArr.incrementAndGet(elapsedTime);
+            return;
         }
 
         //丢弃timingArr无法存储的记录！！！

@@ -43,7 +43,7 @@ public class ASMBootstrap extends AbstractBootstrap {
 
     private boolean initProfilerAspect() {
         try {
-            ProfilerAspect.setRecorderMaintainer(maintainer);
+            ProfilerAspect.setRecorderMaintainer((ASMRecorderMaintainer) maintainer);
             ProfilerAspect.setRunning(true);
             return true;
         } catch (Exception e) {

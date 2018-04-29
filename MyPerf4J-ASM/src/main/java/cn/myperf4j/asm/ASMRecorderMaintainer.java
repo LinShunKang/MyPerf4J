@@ -1,5 +1,6 @@
 package cn.myperf4j.asm;
 
+import cn.myperf4j.core.AbstractRecorder;
 import cn.myperf4j.core.AbstractRecorderMaintainer;
 import cn.myperf4j.core.ProfilerParams;
 import cn.myperf4j.core.util.MapUtils;
@@ -29,6 +30,11 @@ public class ASMRecorderMaintainer extends AbstractRecorderMaintainer {
     @Override
     public boolean initOther() {
         return true;
+    }
+
+    @Override
+    public AbstractRecorder getRecorder(String api) {
+        return recorderMap.get(api);
     }
 
     @Override

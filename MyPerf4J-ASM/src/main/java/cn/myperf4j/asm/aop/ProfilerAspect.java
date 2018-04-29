@@ -1,8 +1,7 @@
 package cn.myperf4j.asm.aop;
 
-import cn.myperf4j.asm.ASMBootstrap;
+import cn.myperf4j.asm.ASMRecorderMaintainer;
 import cn.myperf4j.core.AbstractRecorder;
-import cn.myperf4j.core.AbstractRecorderMaintainer;
 import cn.myperf4j.core.util.Logger;
 
 /**
@@ -10,13 +9,9 @@ import cn.myperf4j.core.util.Logger;
  */
 public final class ProfilerAspect {
 
-    private static AbstractRecorderMaintainer recorderMaintainer;
+    private static ASMRecorderMaintainer recorderMaintainer;
 
     private static boolean running = false;
-
-    static {
-        ASMBootstrap.getInstance().initial();
-    }
 
     public static void profiling(long startNanos, String tag) {
         try {
@@ -33,13 +28,12 @@ public final class ProfilerAspect {
 
             long stopNanos = System.nanoTime();
             recorder.recordTime(startNanos, stopNanos);
-//            Logger.info("ProfilerAspect.doProfiling(): tag=" + tag + ", cost: " + (stopNanos - startNanos) + "ns, RECORDED!!!");
         } catch (Exception e) {
             Logger.error("ProfilerAspect.doProfiling(" + startNanos + ", " + tag + ")", e);
         }
     }
 
-    public static void setRecorderMaintainer(AbstractRecorderMaintainer recorderMaintainer) {
+    public static void setRecorderMaintainer(ASMRecorderMaintainer recorderMaintainer) {
         ProfilerAspect.recorderMaintainer = recorderMaintainer;
     }
 
