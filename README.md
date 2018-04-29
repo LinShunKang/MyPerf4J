@@ -21,7 +21,7 @@ A Extremely Fast Performance Monitoring and Statistics for Java Code. Inspired b
     - In the form of K-V, K is the response time, and V is the corresponding number of times, so the memory occupancy is only related to the number of different response times, regardless of the total number of requests.
     - If we simply use Map to store data, it will take up a lot of unnecessary memory.
     - According to Pareto principle, most of the of interface response time is in a very small range. This small range is particularly suitable for storage using arrays. The array subscript is the response time, and the corresponding element is the number corresponding to the response time. A small number of interface response time distribution will be relatively large, suitable for storage with Map;
-    - In summary, the core data structure is: array + Map, the response time less than a certain threshold is recorded in the array, and the response time greater than or equal to the threshold is recorded in the Map.
+    - In summary, the core data structure is: array & Map, the response time less than a certain threshold is recorded in the array, and the response time greater than or equal to the threshold is recorded in the Map.
 * Using AOP for response time acquisition, including [AspectJ](https://github.com/eclipse/org.aspectj) and [ASM](http://asm.ow2.io/)
 * Configuration through annotations and tuning of memory usage of core data structures through parameter configuration.
 * It can collect response time by synchronous way, avoid creating too many Runnable objects, and affect GC of program.
@@ -223,7 +223,7 @@ ProfilerTestApiImpl.test3        0       -1       -1       -1       -1       -1 
 
 * Accurate Mode
     - High accuracy, records all response times.
-    - It consumes relatively memory and uses array +Map to record response time.
+    - It consumes relatively memory and uses array & Map to record response time.
     - The speed is slightly slower.
     - Need to add property MyPerf4J.RecMode=accurate in config/myPerf4J.properties.
 
