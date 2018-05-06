@@ -15,4 +15,8 @@ public interface PropertyValues {
 
     String FILTER_PACKAGES_SPLIT = ";";
 
+    String ASM_PROFILING_TYPE_PROFILER = "byProfiler";
+
+    String ASM_PROFILING_TYPE_PACKAGE = "byPackage";
+
 }

@@ -1,7 +1,5 @@
-package cn.myperf4j.asm.aop;
+package cn.myperf4j.asm.aop.any;
 
-import cn.myperf4j.core.ProfilerParams;
-import cn.myperf4j.core.annotation.Profiler;
 import cn.myperf4j.core.util.Logger;
 import org.objectweb.asm.*;
 
@@ -10,13 +8,7 @@ import java.util.Arrays;
 /**
  * Created by LinShunkang on 2018/4/15
  */
-public class ProfilerClassAdapter extends ClassVisitor implements Opcodes {
-
-    private static final String PROFILER_INNER_NAME = Type.getDescriptor(Profiler.class);
-
-    private static final ProfilerAntVisitor DEFAULT_AV = new ProfilerAntVisitor(ASM5, null, null);
-
-    private ProfilerAntVisitor profilerAV = DEFAULT_AV;
+public class PackageClassAdapter extends ClassVisitor implements Opcodes {
 
     private String targetClassName;
 
@@ -27,14 +19,14 @@ public class ProfilerClassAdapter extends ClassVisitor implements Opcodes {
 
     private boolean isInterface;
 
-    public ProfilerClassAdapter(final ClassVisitor cv, String targetClassName, boolean addTryCatch) {
+    public PackageClassAdapter(final ClassVisitor cv, String targetClassName, boolean addTryCatch) {
         super(ASM5, cv);
         int idx = targetClassName.replace('/', '.').lastIndexOf('.');
         this.targetClassName = targetClassName.substring(idx + 1, targetClassName.length());
         this.addTryCatch = addTryCatch;
     }
 
-    public ProfilerClassAdapter(final ClassVisitor cv, String targetClassName) {
+    public PackageClassAdapter(final ClassVisitor cv, String targetClassName) {
         this(cv, targetClassName, false);
     }
 
@@ -60,20 +52,9 @@ public class ProfilerClassAdapter extends ClassVisitor implements Opcodes {
         }
 
         if (addTryCatch) {
-            return new TryCatchMethodVisitor(access, name, desc, mv, targetClassName, profilerAV.getProfilerParams());
+            return new PackageTryCatchMethodVisitor(access, name, desc, mv, targetClassName);
         } else {
-            return new SimpleMethodVisitor(access, name, desc, mv, targetClassName, profilerAV.getProfilerParams());
+            return new PackageSimpleMethodVisitor(access, name, desc, mv, targetClassName);
         }
-    }
-
-    @Override
-    public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-        Logger.debug("ProfilerClassAdapter.visitAnnotation(" + desc + ", " + visible + ")");
-
-        AnnotationVisitor av = super.visitAnnotation(desc, visible);
-        if (PROFILER_INNER_NAME.equals(desc) && av != null) {
-            return profilerAV = new ProfilerAntVisitor(ASM5, av, ProfilerParams.of(true));
-        }
-        return av;
     }
 }

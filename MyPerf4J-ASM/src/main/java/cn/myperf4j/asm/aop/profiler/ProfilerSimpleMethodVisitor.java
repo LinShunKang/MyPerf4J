@@ -1,6 +1,7 @@
-package cn.myperf4j.asm.aop;
+package cn.myperf4j.asm.aop.profiler;
 
 import cn.myperf4j.asm.ASMRecorderMaintainer;
+import cn.myperf4j.asm.aop.ProfilingAspect;
 import cn.myperf4j.core.AbstractRecorderMaintainer;
 import cn.myperf4j.core.ProfilerParams;
 import cn.myperf4j.core.annotation.NonProfiler;
@@ -15,7 +16,7 @@ import static org.objectweb.asm.Opcodes.*;
 /**
  * Created by LinShunkang on 2018/4/15
  */
-public class SimpleMethodVisitor extends LocalVariablesSorter {
+public class ProfilerSimpleMethodVisitor extends LocalVariablesSorter {
 
     private static final String PROFILER_INNER_NAME = Type.getDescriptor(Profiler.class);
 
@@ -37,12 +38,12 @@ public class SimpleMethodVisitor extends LocalVariablesSorter {
 
     private int startTimeIdentifier;
 
-    public SimpleMethodVisitor(int access,
-                               String name,
-                               String desc,
-                               MethodVisitor mv,
-                               String className,
-                               ProfilerParams classProfilerParams) {
+    public ProfilerSimpleMethodVisitor(int access,
+                                       String name,
+                                       String desc,
+                                       MethodVisitor mv,
+                                       String className,
+                                       ProfilerParams classProfilerParams) {
         super(ASM5, access, desc, mv);
         this.tag = className + "." + name;
         this.classProfilerParams = classProfilerParams;
@@ -100,7 +101,7 @@ public class SimpleMethodVisitor extends LocalVariablesSorter {
         if (profiling() && ((IRETURN <= opcode && opcode <= RETURN) || opcode == ATHROW)) {
             mv.visitVarInsn(LLOAD, startTimeIdentifier);
             mv.visitLdcInsn(tag);
-            mv.visitMethodInsn(INVOKESTATIC, ProfilerAspect.class.getName().replace(".", "/"), "profiling", "(JLjava/lang/String;)V", false);
+            mv.visitMethodInsn(INVOKESTATIC, ProfilingAspect.class.getName().replace(".", "/"), "profiling", "(JLjava/lang/String;)V", false);
         }
         super.visitInsn(opcode);
     }

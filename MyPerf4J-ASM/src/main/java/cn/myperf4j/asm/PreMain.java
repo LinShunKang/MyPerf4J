@@ -1,6 +1,6 @@
 package cn.myperf4j.asm;
 
-import cn.myperf4j.asm.aop.ProfilerTransformer;
+import cn.myperf4j.asm.aop.ProfilingTransformer;
 
 import java.lang.instrument.Instrumentation;
 
@@ -11,7 +11,7 @@ public class PreMain {
 
     public static void premain(String options, Instrumentation ins) {
         ASMBootstrap.getInstance().initial();
-        ins.addTransformer(new ProfilerTransformer());
+        ins.addTransformer(new ProfilingTransformer());
     }
 
 }

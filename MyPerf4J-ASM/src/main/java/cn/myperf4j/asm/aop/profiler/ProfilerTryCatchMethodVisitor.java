@@ -1,6 +1,7 @@
-package cn.myperf4j.asm.aop;
+package cn.myperf4j.asm.aop.profiler;
 
 import cn.myperf4j.asm.ASMRecorderMaintainer;
+import cn.myperf4j.asm.aop.ProfilingAspect;
 import cn.myperf4j.core.AbstractRecorderMaintainer;
 import cn.myperf4j.core.ProfilerParams;
 import cn.myperf4j.core.annotation.NonProfiler;
@@ -15,7 +16,7 @@ import org.objectweb.asm.commons.AdviceAdapter;
 /**
  * Created by LinShunkang on 2018/4/15
  */
-public class TryCatchMethodVisitor extends AdviceAdapter {
+public class ProfilerTryCatchMethodVisitor extends AdviceAdapter {
 
     private static final String PROFILER_INNER_NAME = Type.getDescriptor(Profiler.class);
 
@@ -40,12 +41,12 @@ public class TryCatchMethodVisitor extends AdviceAdapter {
     private Label startFinally = new Label();
 
 
-    public TryCatchMethodVisitor(int access,
-                                 String name,
-                                 String desc,
-                                 MethodVisitor mv,
-                                 String className,
-                                 ProfilerParams classProfilerParams) {
+    public ProfilerTryCatchMethodVisitor(int access,
+                                         String name,
+                                         String desc,
+                                         MethodVisitor mv,
+                                         String className,
+                                         ProfilerParams classProfilerParams) {
         super(ASM5, mv, access, name, desc);
         this.tag = className + "." + name;
         this.classProfilerParams = classProfilerParams;
@@ -54,7 +55,7 @@ public class TryCatchMethodVisitor extends AdviceAdapter {
 
     @Override
     public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-        Logger.debug("TryCatchMethodVisitor.visitAnnotation(" + desc + ", " + visible + "): tag=" + tag);
+        Logger.debug("ProfilerTryCatchMethodVisitor.visitAnnotation(" + desc + ", " + visible + "): tag=" + tag);
 
         AnnotationVisitor av = super.visitAnnotation(desc, visible);
         if (av == null) {
@@ -84,7 +85,7 @@ public class TryCatchMethodVisitor extends AdviceAdapter {
      */
     @Override
     public void visitCode() {
-        Logger.debug("TryCatchMethodVisitor.visitMethod(): tag=" + tag);
+        Logger.debug("ProfilerTryCatchMethodVisitor.visitMethod(): tag=" + tag);
         super.visitCode();
 
         if (profiling()) {
@@ -99,7 +100,7 @@ public class TryCatchMethodVisitor extends AdviceAdapter {
 
     @Override
     public void visitMaxs(int maxStack, int maxLocals) {
-        Logger.debug("TryCatchMethodVisitor.visitMaxs(" + maxStack + ", " + maxLocals + "): tag=" + tag);
+        Logger.debug("ProfilerTryCatchMethodVisitor.visitMaxs(" + maxStack + ", " + maxLocals + "): tag=" + tag);
 
         if (profiling()) {
             Label endFinally = new Label();
@@ -113,7 +114,7 @@ public class TryCatchMethodVisitor extends AdviceAdapter {
 
     @Override
     public void onMethodExit(int opcode) {
-        Logger.debug("TryCatchMethodVisitor.onMethodExit(" + opcode + "): tag=" + tag);
+        Logger.debug("ProfilerTryCatchMethodVisitor.onMethodExit(" + opcode + "): tag=" + tag);
 
         if (opcode != ATHROW && profiling()) {
             onFinally(opcode);
@@ -123,12 +124,12 @@ public class TryCatchMethodVisitor extends AdviceAdapter {
     private void onFinally(int opcode) {
         mv.visitVarInsn(LLOAD, startTimeIdentifier);
         mv.visitLdcInsn(tag);
-        mv.visitMethodInsn(INVOKESTATIC, ProfilerAspect.class.getName().replace(".", "/"), "profiling", "(JLjava/lang/String;)V", false);
+        mv.visitMethodInsn(INVOKESTATIC, ProfilingAspect.class.getName().replace(".", "/"), "profiling", "(JLjava/lang/String;)V", false);
     }
 
     @Override
     public void visitEnd() {
-        Logger.debug("TryCatchMethodVisitor.visitEnd(): tag=" + tag);
+        Logger.debug("ProfilerTryCatchMethodVisitor.visitEnd(): tag=" + tag);
         super.visitEnd();
     }
 }

@@ -46,10 +46,13 @@ A Extremely Fast Performance Monitoring and Statistics for Java Code. Inspired b
     - JDK: 1.8.0_161
     - JVM options: -server -Xmx4G -Xms4G -Xmn2G
     - CPU: Intel(R) Core(TM) i7-7920HQ CPU@3.10GHz
-    
-* MyPerf4J-AspectJ
+
+* Test way
+    - Run empty methods.
     - In order to avoid the performance degradation caused by the high competition of multiple threads due to the high execution speed of the empty method, eight empty methods are executed by polling, and then the RPS of the eight methods is added to obtain the result.
-    - The time slice is 10s, each press pauses for 20s, and executes `System.gc();`
+    - The time slice is 10s, each press pauses for 20s, and executes `System.gc();`  
+
+* MyPerf4J-AspectJ
 
 | Threads | Number of loops per thread | RPS |
 |-------|-----|------|
@@ -59,8 +62,6 @@ A Extremely Fast Performance Monitoring and Statistics for Java Code. Inspired b
 |8|500000000|11682240|
 
 * MyPerf4J-ASM
-    - In order to avoid the performance degradation caused by the high competition of multiple threads due to the high execution speed of the empty method, eight empty methods are executed by polling, and then the RPS of the eight methods is added to obtain the result.    
-    - The time slice is 10s, each press pauses for 20s, and executes `System.gc();`
 
 | Threads | Number of loops per thread | RPS |
 |-------|-----|------|
@@ -72,7 +73,7 @@ A Extremely Fast Performance Monitoring and Statistics for Java Code. Inspired b
 * Summary
     - From the benchmark results
         - MyPerf4J-AspectJ can support 3.11 million method calls per second in a single thread. The average time per method call is 321ns, which can meet the requirements of most people, and does not affect the response time of the program itself.
-        - MyPerf4J-ASM can support 11.76 million method calls per second in a single thread. The average time per method call is 84ns, which can meet the requirements of most people, and does not affect the response time of the program itself.
+        - MyPerf4J-ASM can support 11.76 million method calls per second in a single thread. The average time per method call is 85ns, which can meet the requirements of most people, and does not affect the response time of the program itself.
     - Reason for performance difference
         - MyPerf4J-AspectJ generates a JoinPoint object every time the method invocation. With the increase of the number of calls, JVM will trigger YoungGC continuously.
         - MyPerf4J-ASM modifies the bytecode of the class through the ASM framework, inserting two lines of methods before and after the method, without generating redundant objects, and not triggering any GC in the whole process of the benchmark (except for the `System.gc();` executed in the code).
@@ -225,7 +226,7 @@ ProfilerTestApiImpl.test3        0       -1       -1       -1       -1       -1 
     - High accuracy, records all response times.
     - It consumes relatively memory and uses array & Map to record response time.
     - The speed is slightly slower.
-    - Need to add property MyPerf4J.RecMode=accurate in config/myPerf4J.properties.
+    - Need to add property MyPerf4J.RecMode=accurate in `config/myPerf4J.properties`.
 
 * Suggestions
     - For memory-sensitive or precision applications that are not particularly demanding, Rough Mode is recommended.
@@ -237,7 +238,7 @@ ProfilerTestApiImpl.test3        0       -1       -1       -1       -1       -1 
     * More mature from a technical point of view.
     * The speed is slightly slower，and will produce unnecessary objects that affect the program's own GC.
 * MyPerf4J-ASM
-    * Implement aspect weaving using[ASM](http://asm.ow2.io/)
+    * Implement aspect weaving using [ASM](http://asm.ow2.io/)
     * From a technical perspective, it is not mature enough,
     * Extremely fast! Does not produce any unnecessary objects, does not affect the program's own GC.
 

@@ -7,7 +7,7 @@ import cn.myperf4j.core.util.Logger;
 /**
  * Created by LinShunkang on 2018/4/15
  */
-public final class ProfilerAspect {
+public final class ProfilingAspect {
 
     private static ASMRecorderMaintainer recorderMaintainer;
 
@@ -16,28 +16,28 @@ public final class ProfilerAspect {
     public static void profiling(long startNanos, String tag) {
         try {
             if (!running) {
-                Logger.warn("ProfilerAspect.doProfiling(): tag=" + tag + ", startNanos: " + startNanos + ", IGNORED!!!");
+                Logger.warn("ProfilingAspect.doProfiling(): tag=" + tag + ", startNanos: " + startNanos + ", IGNORED!!!");
                 return;
             }
 
             AbstractRecorder recorder = recorderMaintainer.getRecorder(tag);
             if (recorder == null) {
-                Logger.warn("ProfilerAspect.doProfiling(): tag=" + tag + ", startNanos: " + startNanos + ", recorder is null IGNORED!!!");
+                Logger.warn("ProfilingAspect.doProfiling(): tag=" + tag + ", startNanos: " + startNanos + ", recorder is null IGNORED!!!");
                 return;
             }
 
             long stopNanos = System.nanoTime();
             recorder.recordTime(startNanos, stopNanos);
         } catch (Exception e) {
-            Logger.error("ProfilerAspect.doProfiling(" + startNanos + ", " + tag + ")", e);
+            Logger.error("ProfilingAspect.doProfiling(" + startNanos + ", " + tag + ")", e);
         }
     }
 
     public static void setRecorderMaintainer(ASMRecorderMaintainer recorderMaintainer) {
-        ProfilerAspect.recorderMaintainer = recorderMaintainer;
+        ProfilingAspect.recorderMaintainer = recorderMaintainer;
     }
 
     public static void setRunning(boolean running) {
-        ProfilerAspect.running = running;
+        ProfilingAspect.running = running;
     }
 }

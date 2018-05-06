@@ -1,4 +1,4 @@
-package cn.myperf4j.asm.aop;
+package cn.myperf4j.asm.aop.profiler;
 
 import cn.myperf4j.core.ProfilerParams;
 import org.objectweb.asm.AnnotationVisitor;

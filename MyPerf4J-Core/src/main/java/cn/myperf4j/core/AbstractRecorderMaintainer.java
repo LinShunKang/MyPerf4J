@@ -130,22 +130,22 @@ public abstract class AbstractRecorderMaintainer {
 
             backupRecorderReady = false;
             try {
-                for (Map.Entry<String, AbstractRecorder> entry : recorderMap.entrySet()) {
-                    AbstractRecorder curRecorder = entry.getValue();
-                    if (curRecorder.getStartTime() <= 0L || curRecorder.getStopTime() <= 0L) {
-                        curRecorder.setStartTime(currentMills - millTimeSlice);
-                        curRecorder.setStopTime(currentMills);
-                    }
-                }
-
-                for (Map.Entry<String, AbstractRecorder> entry : backupRecorderMap.entrySet()) {
-                    AbstractRecorder backupRecorder = entry.getValue();
-                    backupRecorder.resetRecord();
-                    backupRecorder.setStartTime(currentMills);
-                    backupRecorder.setStopTime(currentMills + millTimeSlice);
-                }
-
                 synchronized (locker) {
+                    for (Map.Entry<String, AbstractRecorder> entry : recorderMap.entrySet()) {
+                        AbstractRecorder curRecorder = entry.getValue();
+                        if (curRecorder.getStartTime() <= 0L || curRecorder.getStopTime() <= 0L) {
+                            curRecorder.setStartTime(currentMills - millTimeSlice);
+                            curRecorder.setStopTime(currentMills);
+                        }
+                    }
+
+                    for (Map.Entry<String, AbstractRecorder> entry : backupRecorderMap.entrySet()) {
+                        AbstractRecorder backupRecorder = entry.getValue();
+                        backupRecorder.resetRecord();
+                        backupRecorder.setStartTime(currentMills);
+                        backupRecorder.setStopTime(currentMills + millTimeSlice);
+                    }
+
                     Map<String, AbstractRecorder> tmpMap = recorderMap;
                     recorderMap = backupRecorderMap;
                     backupRecorderMap = tmpMap;
@@ -168,10 +168,15 @@ public abstract class AbstractRecorderMaintainer {
             }
 
             try {
+                List<AbstractRecorder> tmpRecorderList;
+                synchronized (locker) {
+                    tmpRecorderList = new ArrayList<>(backupRecorderMap.values());
+                }
+
                 AbstractRecorder recorder = null;
                 List<PerfStats> perfStatsList = new ArrayList<>(backupRecorderMap.size());
-                for (Map.Entry<String, AbstractRecorder> entry : backupRecorderMap.entrySet()) {
-                    recorder = entry.getValue();
+                for (int i = 0; i < tmpRecorderList.size(); ++i) {
+                    recorder = tmpRecorderList.get(i);
                     perfStatsList.add(PerfStatsCalculator.calPerfStats(recorder));
                 }
 

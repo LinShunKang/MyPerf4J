@@ -1,6 +1,6 @@
 package cn.myperf4j.asm;
 
-import cn.myperf4j.asm.aop.ProfilerAspect;
+import cn.myperf4j.asm.aop.ProfilingAspect;
 import cn.myperf4j.core.AbstractBootstrap;
 import cn.myperf4j.core.AbstractRecorderMaintainer;
 import cn.myperf4j.core.constant.PropertyKeys;
@@ -43,8 +43,8 @@ public class ASMBootstrap extends AbstractBootstrap {
 
     private boolean initProfilerAspect() {
         try {
-            ProfilerAspect.setRecorderMaintainer((ASMRecorderMaintainer) maintainer);
-            ProfilerAspect.setRunning(true);
+            ProfilingAspect.setRecorderMaintainer((ASMRecorderMaintainer) maintainer);
+            ProfilingAspect.setRunning(true);
             return true;
         } catch (Exception e) {
             Logger.error("ASMBootstrap.initProfilerAspect()", e);

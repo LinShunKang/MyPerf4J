@@ -8,9 +8,11 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by LinShunkang on 2018/4/23
  */
-@Profiler
 public class Foo2 {
 
+    private static void test0() {
+        System.out.println("Foo2.test0()");
+    }
 
     @Profiler
     public static void test1() {

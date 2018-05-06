@@ -19,4 +19,6 @@ public interface PropertyKeys {
 
     String LOG_DEBUG = "MyPerf4J.Debug";
 
+    String ASM_PROFILING_TYPE = "MyPerf4J.ASM.ProfilingType";
+
 }
