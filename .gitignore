@@ -6,3 +6,5 @@ target
 .idea
 .idea/*.xml
 *.versionsBackup
+.DS_Store
+*/.DS_Store

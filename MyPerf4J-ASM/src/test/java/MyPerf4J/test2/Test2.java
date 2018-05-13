@@ -1,6 +1,5 @@
 package MyPerf4J.test2;
 
-//import cn.myperf4j.asm.aop.any.PackageClassAdapter;
 import cn.myperf4j.asm.aop.profiler.ProfilerClassAdapter;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;

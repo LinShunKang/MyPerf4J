@@ -3,6 +3,8 @@ package cn.myperf4j.aspectj;
 import cn.myperf4j.core.*;
 import cn.myperf4j.core.annotation.NonProfiler;
 import cn.myperf4j.core.annotation.Profiler;
+import cn.myperf4j.core.config.ProfilerParams;
+import cn.myperf4j.core.config.ProfilingFilter;
 import cn.myperf4j.core.util.ClassScanner;
 import cn.myperf4j.core.util.Logger;
 import cn.myperf4j.core.util.MapUtils;
@@ -34,7 +36,7 @@ public class AspectJRecorderMaintainer extends AbstractRecorderMaintainer {
     public boolean initRecorderMap() {
         long start = System.currentTimeMillis();
         try {
-            Set<String> packages = ProfilerFilter.getIncludePackage();
+            Set<String> packages = ProfilingFilter.getIncludePackage();
             for (String pkg : packages) {
                 if (!processPackage(pkg)) {
                     Logger.warn("AspectJRecorderMaintainer.processPackage(" + pkg + "): FAILURE!!!");
@@ -56,7 +58,7 @@ public class AspectJRecorderMaintainer extends AbstractRecorderMaintainer {
             Iterator<Class<?>> iterator = classSet.iterator();
             while (iterator.hasNext()) {
                 Class<?> clazz = iterator.next();
-                if (ProfilerFilter.isNotNeedInject(clazz.getName())) {
+                if (ProfilingFilter.isNotNeedInject(clazz.getName())) {
                     iterator.remove();
                 }
             }

@@ -1,5 +1,5 @@
 # MyPerf4J
-一个极快的Java接口性能监控和统计工具。受[perf4j](https://github.com/perf4j/perf4j)启发而来。
+一个极快的Java接口性能监控和统计工具。受[perf4j](https://github.com/perf4j/perf4j)和[TProfiler](https://github.com/alibaba/TProfiler)启发而来。
 
 ## 多语言文档
 * English [README.md](https://github.com/ThinkpadNC5/MyPerf4J/blob/develop/README.md)

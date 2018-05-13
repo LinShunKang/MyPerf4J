@@ -3,7 +3,7 @@ package cn.myperf4j.asm.aop.profiler;
 import cn.myperf4j.asm.ASMRecorderMaintainer;
 import cn.myperf4j.asm.aop.ProfilingAspect;
 import cn.myperf4j.core.AbstractRecorderMaintainer;
-import cn.myperf4j.core.ProfilerParams;
+import cn.myperf4j.core.config.ProfilerParams;
 import cn.myperf4j.core.annotation.NonProfiler;
 import cn.myperf4j.core.annotation.Profiler;
 import cn.myperf4j.core.util.Logger;

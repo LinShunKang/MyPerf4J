@@ -1,6 +1,7 @@
 package cn.myperf4j.core;
 
 import cn.myperf4j.core.annotation.Profiler;
+import cn.myperf4j.core.config.ProfilerParams;
 import cn.myperf4j.core.constant.PropertyValues;
 import cn.myperf4j.core.util.Logger;
 import cn.myperf4j.core.util.PerfStatsCalculator;
@@ -20,6 +21,8 @@ import java.util.concurrent.TimeUnit;
 public abstract class AbstractRecorderMaintainer {
 
     protected final Object locker = new Object();
+
+    private List<AbstractRecorder> tempRecorderList = new ArrayList<>(1024);//内存复用，避免每一次轮转都生成一个大对象
 
     protected volatile Map<String, AbstractRecorder> recorderMap;
 
@@ -72,7 +75,7 @@ public abstract class AbstractRecorderMaintainer {
 
     private boolean initRoundRobinTask() {
         try {
-            roundRobinExecutor.scheduleAtFixedRate(new RoundRobin(), 0, 500, TimeUnit.MILLISECONDS);
+            roundRobinExecutor.scheduleAtFixedRate(new RoundRobinProcessor(), 0, 500, TimeUnit.MILLISECONDS);
             return true;
         } catch (Exception e) {
             Logger.error("RecorderMaintainer.initRoundRobinTask()", e);
@@ -113,7 +116,7 @@ public abstract class AbstractRecorderMaintainer {
         return Collections.unmodifiableMap(recorderMap);
     }
 
-    private class RoundRobin implements Runnable {
+    private class RoundRobinProcessor implements Runnable {
 
         @Override
         public void run() {
@@ -150,7 +153,7 @@ public abstract class AbstractRecorderMaintainer {
                     recorderMap = backupRecorderMap;
                     backupRecorderMap = tmpMap;
                 }
-                Logger.info("roundRobinExecutor finished!!!!");
+                Logger.info("RoundRobinProcessor finished!!!!");
             } catch (Exception e) {
                 Logger.error("RecorderMaintainer.roundRobinExecutor error", e);
             } finally {
@@ -168,15 +171,14 @@ public abstract class AbstractRecorderMaintainer {
             }
 
             try {
-                List<AbstractRecorder> tmpRecorderList;
                 synchronized (locker) {
-                    tmpRecorderList = new ArrayList<>(backupRecorderMap.values());
+                    tempRecorderList.addAll(backupRecorderMap.values());
                 }
 
                 AbstractRecorder recorder = null;
-                List<PerfStats> perfStatsList = new ArrayList<>(backupRecorderMap.size());
-                for (int i = 0; i < tmpRecorderList.size(); ++i) {
-                    recorder = tmpRecorderList.get(i);
+                List<PerfStats> perfStatsList = new ArrayList<>(tempRecorderList.size());
+                for (int i = 0; i < tempRecorderList.size(); ++i) {
+                    recorder = tempRecorderList.get(i);
                     perfStatsList.add(PerfStatsCalculator.calPerfStats(recorder));
                 }
 
@@ -184,11 +186,12 @@ public abstract class AbstractRecorderMaintainer {
                     perfStatsProcessor.process(perfStatsList, recorder.getStartTime(), recorder.getStopTime());
                 }
 
-                Logger.info("backgroundExecutor finished!!!!");
+                Logger.info("BackgroundProcessor finished!!!!");
             } catch (Exception e) {
                 Logger.error("RecorderMaintainer.backgroundExecutor error", e);
             } finally {
                 backupRecorderReady = false;
+                tempRecorderList.clear();
             }
         }
     }

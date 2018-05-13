@@ -1,4 +1,4 @@
-package cn.myperf4j.core;
+package cn.myperf4j.core.config;
 
 /**
  * Created by LinShunkang on 2018/4/28

@@ -1,4 +1,6 @@
-package cn.myperf4j.core.util;
+package cn.myperf4j.core.config;
+
+import cn.myperf4j.core.util.Logger;
 
 import java.util.Properties;
 

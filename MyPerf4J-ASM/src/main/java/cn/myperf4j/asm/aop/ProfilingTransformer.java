@@ -1,12 +1,10 @@
 package cn.myperf4j.asm.aop;
 
-import cn.myperf4j.asm.aop.any.PackageClassAdapter;
+import cn.myperf4j.asm.aop.pkg.PackageClassAdapter;
 import cn.myperf4j.asm.aop.profiler.ProfilerClassAdapter;
-import cn.myperf4j.core.ProfilerFilter;
-import cn.myperf4j.core.constant.PropertyKeys;
-import cn.myperf4j.core.constant.PropertyValues;
+import cn.myperf4j.core.config.ProfilingConfig;
+import cn.myperf4j.core.config.ProfilingFilter;
 import cn.myperf4j.core.util.Logger;
-import cn.myperf4j.core.util.MyProperties;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -19,7 +17,7 @@ import java.security.ProtectionDomain;
  */
 public class ProfilingTransformer implements ClassFileTransformer {
 
-    private boolean profilingByProfiler = MyProperties.isSame(PropertyKeys.ASM_PROFILING_TYPE, PropertyValues.ASM_PROFILING_TYPE_PROFILER);
+    private boolean profilingByProfiler = ProfilingConfig.getInstance().profilingByProfiler();
 
     @Override
     public byte[] transform(ClassLoader loader,
@@ -28,12 +26,12 @@ public class ProfilingTransformer implements ClassFileTransformer {
                             ProtectionDomain protectionDomain,
                             byte[] classFileBuffer) {
         try {
-            if (ProfilerFilter.isNotNeedInject(className)) {
+            if (ProfilingFilter.isNotNeedInject(className)) {
                 Logger.debug("ProfilingTransformer.transform(" + loader + ", " + className + ", classBeingRedefined, protectionDomain, " + classFileBuffer.length + ") skip!!!");
                 return classFileBuffer;
             }
 
-            if (!ProfilerFilter.isNeedInject(className)) {
+            if (!ProfilingFilter.isNeedInject(className)) {
                 Logger.debug("ProfilingTransformer.transform(" + loader + ", " + className + ", classBeingRedefined, protectionDomain, " + classFileBuffer.length + ") skip!!!");
                 return classFileBuffer;
             }

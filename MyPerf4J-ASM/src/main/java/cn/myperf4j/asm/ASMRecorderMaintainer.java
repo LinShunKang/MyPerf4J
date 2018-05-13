@@ -2,7 +2,7 @@ package cn.myperf4j.asm;
 
 import cn.myperf4j.core.AbstractRecorder;
 import cn.myperf4j.core.AbstractRecorderMaintainer;
-import cn.myperf4j.core.ProfilerParams;
+import cn.myperf4j.core.config.ProfilerParams;
 import cn.myperf4j.core.util.MapUtils;
 
 /**

@@ -1,11 +1,15 @@
 package cn.myperf4j.asm.aop.profiler;
 
-import cn.myperf4j.core.ProfilerParams;
+import cn.myperf4j.core.config.ProfilerParams;
+import cn.myperf4j.core.config.ProfilingConfig;
+import cn.myperf4j.core.config.ProfilingFilter;
 import cn.myperf4j.core.annotation.Profiler;
 import cn.myperf4j.core.util.Logger;
 import org.objectweb.asm.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by LinShunkang on 2018/4/15
@@ -27,9 +31,11 @@ public class ProfilerClassAdapter extends ClassVisitor implements Opcodes {
 
     private boolean isInterface;
 
+    private List<String> fieldNameList = new ArrayList<>();
+
     public ProfilerClassAdapter(final ClassVisitor cv, String targetClassName, boolean addTryCatch) {
         super(ASM5, cv);
-        int idx = targetClassName.replace('/', '.').lastIndexOf('.');
+        int idx = targetClassName.replace('.', '/').lastIndexOf('/');
         this.targetClassName = targetClassName.substring(idx + 1, targetClassName.length());
         this.addTryCatch = addTryCatch;
     }
@@ -47,16 +53,29 @@ public class ProfilerClassAdapter extends ClassVisitor implements Opcodes {
     }
 
     @Override
+    public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
+        String upFieldName = name.substring(0, 1).toUpperCase() + name.substring(1, name.length());
+        fieldNameList.add("set" + upFieldName);
+        fieldNameList.add("get" + upFieldName);
+        fieldNameList.add("is" + upFieldName);
+
+        return super.visitField(access, name, desc, signature, value);
+    }
+
+    @Override
     public MethodVisitor visitMethod(int access,
                                      String name,
                                      String desc,
                                      String signature,
                                      String[] exceptions) {
         Logger.debug("ProfilerClassAdapter.visitMethod(" + access + ", " + name + ", " + desc + ", " + signature + ", " + Arrays.toString(exceptions) + ")");
+        if (isInterface || isNeedVisit(access, name)) {
+            return super.visitMethod(access, name, desc, signature, exceptions);
+        }
 
         MethodVisitor mv = cv.visitMethod(access, name, desc, signature, exceptions);
-        if (isInterface || mv == null || "<init>".equals(name) || "<clinit>".equals(name)) {
-            return mv;
+        if (mv == null) {
+            return null;
         }
 
         if (addTryCatch) {
@@ -64,6 +83,22 @@ public class ProfilerClassAdapter extends ClassVisitor implements Opcodes {
         } else {
             return new ProfilerSimpleMethodVisitor(access, name, desc, mv, targetClassName, profilerAV.getProfilerParams());
         }
+    }
+
+    private boolean isNeedVisit(int access, String name) {
+        if ((access & ACC_PRIVATE) != 0 && ProfilingConfig.getInstance().isAsmExcludePrivateMethod()) {
+            return false;
+        }
+
+        if ("<init>".equals(name) || "<clinit>".equals(name)) {
+            return false;
+        }
+
+        if (fieldNameList.contains(name) || ProfilingFilter.isNotNeedInjectMethod(name)) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override

@@ -17,8 +17,15 @@ public interface PropertyKeys {
 
     String FILTER_EXCLUDE_PACKAGES = "MyPerf4J.ExcludePackages";
 
-    String LOG_DEBUG = "MyPerf4J.Debug";
+    String DEBUG_PRINT_DEBUG_LOG = "MyPerf4J.Debug.PrintDebugLog";
+
+
+    //--------------------------MyPerf4J-ASM独有的属性--------------------------
 
     String ASM_PROFILING_TYPE = "MyPerf4J.ASM.ProfilingType";
+
+    String ASM_FILTER_EXCLUDE_METHODS = "MyPerf4J.ExcludeMethods";
+
+    String ASM_EXCLUDE_PRIVATE_METHODS = "MyPerf4J.ExcludePrivateMethod";
 
 }

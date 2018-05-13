@@ -1,11 +1,13 @@
 package cn.myperf4j.core;
 
 
+import cn.myperf4j.core.config.ProfilingConfig;
+import cn.myperf4j.core.config.ProfilingFilter;
 import cn.myperf4j.core.constant.PropertyKeys;
 import cn.myperf4j.core.constant.PropertyValues;
 import cn.myperf4j.core.util.IOUtils;
 import cn.myperf4j.core.util.Logger;
-import cn.myperf4j.core.util.MyProperties;
+import cn.myperf4j.core.config.MyProperties;
 import cn.myperf4j.core.util.PerfStatsCalculator;
 
 import java.io.IOException;
@@ -47,6 +49,11 @@ public abstract class AbstractBootstrap {
             return false;
         }
 
+        if (!initProfilingConfig()) {
+            Logger.error("AbstractBootstrap initProfilingConfig() FAILURE!!!");
+            return false;
+        }
+
         if (!initLogger()) {
             Logger.error("AbstractBootstrap initLogger() FAILURE!!!");
             return false;
@@ -54,6 +61,11 @@ public abstract class AbstractBootstrap {
 
         if (!initPackageFilter()) {
             Logger.error("AbstractBootstrap initPackageFilter() FAILURE!!!");
+            return false;
+        }
+
+        if (!initMethodFilter()) {
+            Logger.error("AbstractBootstrap initMethodFilter() FAILURE!!!");
             return false;
         }
 
@@ -98,10 +110,28 @@ public abstract class AbstractBootstrap {
         return false;
     }
 
+    private boolean initProfilingConfig() {
+        try {
+            ProfilingConfig config = ProfilingConfig.getInstance();
+            config.setPerStatsProcessor(MyProperties.getStr(PropertyKeys.PERF_STATS_PROCESSOR, PropertyValues.DEFAULT_PERF_STATS_PROCESSOR));
+            config.setRecorderMode(MyProperties.getStr(PropertyKeys.RECORDER_MODE, PropertyValues.RECORDER_MODE_ROUGH));
+            config.setMilliTimeSlice(MyProperties.getLong(PropertyKeys.MILL_TIME_SLICE, PropertyValues.DEFAULT_TIME_SLICE));
+            config.setFilterExcludePackages(MyProperties.getStr(PropertyKeys.FILTER_EXCLUDE_PACKAGES, ""));
+            config.setFilterIncludePackages(MyProperties.getStr(PropertyKeys.FILTER_INCLUDE_PACKAGES, ""));
+            config.setPrintDebugLog(MyProperties.getBoolean(PropertyKeys.DEBUG_PRINT_DEBUG_LOG, false));
+            config.setAsmProfilingType(MyProperties.getStr(PropertyKeys.ASM_PROFILING_TYPE, PropertyValues.ASM_PROFILING_TYPE_PACKAGE));
+            config.setAsmExcludeMethods(MyProperties.getStr(PropertyKeys.ASM_FILTER_EXCLUDE_METHODS, ""));
+            config.setAsmExcludePrivateMethod(MyProperties.getBoolean(PropertyKeys.ASM_EXCLUDE_PRIVATE_METHODS, true));
+            return true;
+        } catch (Exception e) {
+            Logger.error("AbstractBootstrap.initProfilingConfig()", e);
+        }
+        return false;
+    }
+
     private boolean initLogger() {
         try {
-            boolean debug = MyProperties.getBoolean(PropertyKeys.LOG_DEBUG, false);
-            Logger.setDebugEnable(debug);
+            Logger.setDebugEnable(ProfilingConfig.getInstance().isPrintDebugLog());
             return true;
         } catch (Exception e) {
             Logger.error("AbstractBootstrap.initLogger()", e);
@@ -111,19 +141,19 @@ public abstract class AbstractBootstrap {
 
     private boolean initPackageFilter() {
         try {
-            String includePackages = MyProperties.getStr(PropertyKeys.FILTER_INCLUDE_PACKAGES, "");
-            String[] includeArr = includePackages.split(PropertyValues.FILTER_PACKAGES_SPLIT);
+            String includePackages = ProfilingConfig.getInstance().getFilterIncludePackages();
+            String[] includeArr = includePackages.split(PropertyValues.FILTER_SEPARATOR);
             if (includeArr.length > 0) {
                 for (String pkg : includeArr) {
-                    ProfilerFilter.addNeedInjectPackage(pkg);
+                    ProfilingFilter.addNeedInjectPackage(pkg);
                 }
             }
 
-            String excludePackages = MyProperties.getStr(PropertyKeys.FILTER_EXCLUDE_PACKAGES, "");
-            String[] excludeArr = excludePackages.split(PropertyValues.FILTER_PACKAGES_SPLIT);
+            String excludePackages = ProfilingConfig.getInstance().getFilterExcludePackages();
+            String[] excludeArr = excludePackages.split(PropertyValues.FILTER_SEPARATOR);
             if (excludeArr.length > 0) {
                 for (String pkg : excludeArr) {
-                    ProfilerFilter.addNotNeedInjectPackage(pkg);
+                    ProfilingFilter.addNotNeedInjectPackage(pkg);
                 }
             }
             return true;
@@ -133,15 +163,31 @@ public abstract class AbstractBootstrap {
         return false;
     }
 
+    private boolean initMethodFilter() {
+        try {
+            String includePackages = ProfilingConfig.getInstance().getAsmExcludeMethods();
+            String[] excludeArr = includePackages.split(PropertyValues.FILTER_SEPARATOR);
+            if (excludeArr.length > 0) {
+                for (String method : excludeArr) {
+                    ProfilingFilter.addNotNeedInjectMethods(method);
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            Logger.error("AbstractBootstrap.initMethodFilter()", e);
+        }
+        return false;
+    }
+
     private boolean initPerfStatsProcessor() {
         try {
-            String className = MyProperties.getStr(PropertyKeys.PERF_STATS_PROCESSOR);
+            String className = ProfilingConfig.getInstance().getPerStatsProcessor();
             if (className == null || className.isEmpty()) {
                 Logger.error("AbstractBootstrap.initPerfStatsProcessor() MyPerf4J.PSP NOT FOUND!!!");
                 return false;
             }
 
-            Class<?> clazz = AsyncPerfStatsProcessor.class.getClassLoader().loadClass(className);
+            Class<?> clazz = AbstractBootstrap.class.getClassLoader().loadClass(className);
             Object obj = clazz.newInstance();
             if (!(obj instanceof PerfStatsProcessor)) {
                 Logger.error("AbstractBootstrap.initPerfStatsProcessor() className is not correct!!!");

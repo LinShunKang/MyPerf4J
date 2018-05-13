@@ -3,10 +3,8 @@ package cn.myperf4j.aspectj;
 import cn.myperf4j.aspectj.aop.ProfilerAspect;
 import cn.myperf4j.core.AbstractBootstrap;
 import cn.myperf4j.core.AbstractRecorderMaintainer;
-import cn.myperf4j.core.constant.PropertyKeys;
-import cn.myperf4j.core.constant.PropertyValues;
+import cn.myperf4j.core.config.ProfilingConfig;
 import cn.myperf4j.core.util.Logger;
-import cn.myperf4j.core.util.MyProperties;
 
 /**
  * Created by LinShunkang on 2018/4/19
@@ -25,8 +23,8 @@ public class AspectJBootstrap extends AbstractBootstrap {
 
     @Override
     public AbstractRecorderMaintainer doInitRecorderMaintainer() {
-        boolean accurateMode = MyProperties.isSame(PropertyKeys.RECORDER_MODE, PropertyValues.RECORDER_MODE_ACCURATE);
-        long milliTimeSlice = MyProperties.getLong(PropertyKeys.MILL_TIME_SLICE, PropertyValues.DEFAULT_TIME_SLICE);
+        boolean accurateMode = ProfilingConfig.getInstance().isAccurateMode();
+        long milliTimeSlice = ProfilingConfig.getInstance().getMilliTimeSlice();
 
         AbstractRecorderMaintainer maintainer = AspectJRecorderMaintainer.getInstance();
         if (maintainer.initial(processor, accurateMode, milliTimeSlice)) {
