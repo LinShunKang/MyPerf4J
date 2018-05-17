@@ -27,18 +27,23 @@ public class ProfilingTransformer implements ClassFileTransformer {
                             byte[] classFileBuffer) {
         try {
             if (ProfilingFilter.isNotNeedInject(className)) {
-                Logger.debug("ProfilingTransformer.transform(" + loader + ", " + className + ", classBeingRedefined, protectionDomain, " + classFileBuffer.length + ") skip!!!");
+                Logger.debug("ProfilingTransformer.transform(" + loader + ", " + className + ", classBeingRedefined, protectionDomain, " + classFileBuffer.length + ") skip1!!!");
                 return classFileBuffer;
             }
 
             if (!ProfilingFilter.isNeedInject(className)) {
-                Logger.debug("ProfilingTransformer.transform(" + loader + ", " + className + ", classBeingRedefined, protectionDomain, " + classFileBuffer.length + ") skip!!!");
+                Logger.debug("ProfilingTransformer.transform(" + loader + ", " + className + ", classBeingRedefined, protectionDomain, " + classFileBuffer.length + ") skip2!!!");
+                return classFileBuffer;
+            }
+
+            if (loader != null && ProfilingFilter.isNotNeedInjectClassLoader(loader.getClass().getName())) {
+                Logger.debug("ProfilingTransformer.transform(" + loader + ", " + className + ", classBeingRedefined, protectionDomain, " + classFileBuffer.length + ") skip3!!!");
                 return classFileBuffer;
             }
 
             Logger.info("ProfilingTransformer.transform(" + loader + ", " + className + ", classBeingRedefined, protectionDomain, " + classFileBuffer.length + ")...");
             ClassReader cr = new ClassReader(classFileBuffer);
-            ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_FRAMES);
+            ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);
             ClassVisitor cv = getClassVisitor(cw, className);
             cr.accept(cv, ClassReader.EXPAND_FRAMES);
 
@@ -51,9 +56,9 @@ public class ProfilingTransformer implements ClassFileTransformer {
 
     private ClassVisitor getClassVisitor(ClassWriter cw, String className) {
         if (profilingByProfiler) {
-            return new ProfilerClassAdapter(cw, className, true);
+            return new ProfilerClassAdapter(cw, className, false);
         } else {
-            return new PackageClassAdapter(cw, className, true);
+            return new PackageClassAdapter(cw, className, false);
         }
     }
 }

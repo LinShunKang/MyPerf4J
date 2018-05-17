@@ -10,6 +10,7 @@ import cn.myperf4j.core.util.Logger;
 import cn.myperf4j.core.config.MyProperties;
 import cn.myperf4j.core.util.PerfStatsCalculator;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -64,6 +65,11 @@ public abstract class AbstractBootstrap {
             return false;
         }
 
+        if (!initClassLoaderFilter()) {
+            Logger.error("AbstractBootstrap initClassLoaderFilter() FAILURE!!!");
+            return false;
+        }
+
         if (!initMethodFilter()) {
             Logger.error("AbstractBootstrap initMethodFilter() FAILURE!!!");
             return false;
@@ -94,10 +100,8 @@ public abstract class AbstractBootstrap {
     private boolean initProperties() {
         InputStream in = null;
         try {
-            in = AsyncPerfStatsProcessor.class.getClassLoader().getResourceAsStream(PropertyKeys.PRO_FILE_NAME);
-            if (in == null) {
-                return false;
-            }
+            String configFilePath = System.getProperty(PropertyKeys.PRO_FILE_NAME, PropertyValues.DEFAULT_PRO_FILE);
+            in = new FileInputStream(configFilePath);
 
             Properties properties = new Properties();
             properties.load(in);
@@ -116,12 +120,13 @@ public abstract class AbstractBootstrap {
             config.setPerStatsProcessor(MyProperties.getStr(PropertyKeys.PERF_STATS_PROCESSOR, PropertyValues.DEFAULT_PERF_STATS_PROCESSOR));
             config.setRecorderMode(MyProperties.getStr(PropertyKeys.RECORDER_MODE, PropertyValues.RECORDER_MODE_ROUGH));
             config.setMilliTimeSlice(MyProperties.getLong(PropertyKeys.MILL_TIME_SLICE, PropertyValues.DEFAULT_TIME_SLICE));
-            config.setFilterExcludePackages(MyProperties.getStr(PropertyKeys.FILTER_EXCLUDE_PACKAGES, ""));
-            config.setFilterIncludePackages(MyProperties.getStr(PropertyKeys.FILTER_INCLUDE_PACKAGES, ""));
+            config.setExcludePackages(MyProperties.getStr(PropertyKeys.FILTER_EXCLUDE_PACKAGES, ""));
+            config.setIncludePackages(MyProperties.getStr(PropertyKeys.FILTER_INCLUDE_PACKAGES, ""));
             config.setPrintDebugLog(MyProperties.getBoolean(PropertyKeys.DEBUG_PRINT_DEBUG_LOG, false));
             config.setAsmProfilingType(MyProperties.getStr(PropertyKeys.ASM_PROFILING_TYPE, PropertyValues.ASM_PROFILING_TYPE_PACKAGE));
             config.setAsmExcludeMethods(MyProperties.getStr(PropertyKeys.ASM_FILTER_EXCLUDE_METHODS, ""));
             config.setAsmExcludePrivateMethod(MyProperties.getBoolean(PropertyKeys.ASM_EXCLUDE_PRIVATE_METHODS, true));
+            config.setAsmExcludeClassLoaders(MyProperties.getStr(PropertyKeys.ASM_FILTER_INCLUDE_CLASS_LOADERS, ""));
             return true;
         } catch (Exception e) {
             Logger.error("AbstractBootstrap.initProfilingConfig()", e);
@@ -141,24 +146,40 @@ public abstract class AbstractBootstrap {
 
     private boolean initPackageFilter() {
         try {
-            String includePackages = ProfilingConfig.getInstance().getFilterIncludePackages();
+            String includePackages = ProfilingConfig.getInstance().getIncludePackages();
             String[] includeArr = includePackages.split(PropertyValues.FILTER_SEPARATOR);
             if (includeArr.length > 0) {
                 for (String pkg : includeArr) {
-                    ProfilingFilter.addNeedInjectPackage(pkg);
+                    ProfilingFilter.addIncludePackage(pkg);
                 }
             }
 
-            String excludePackages = ProfilingConfig.getInstance().getFilterExcludePackages();
+            String excludePackages = ProfilingConfig.getInstance().getExcludePackages();
             String[] excludeArr = excludePackages.split(PropertyValues.FILTER_SEPARATOR);
             if (excludeArr.length > 0) {
                 for (String pkg : excludeArr) {
-                    ProfilingFilter.addNotNeedInjectPackage(pkg);
+                    ProfilingFilter.addExcludePackage(pkg);
                 }
             }
             return true;
         } catch (Exception e) {
             Logger.error("AbstractBootstrap.initPackageFilter()", e);
+        }
+        return false;
+    }
+
+    private boolean initClassLoaderFilter() {
+        try {
+            String excludeClassLoaders = ProfilingConfig.getInstance().getAsmExcludeClassLoaders();
+            String[] excludeArr = excludeClassLoaders.split(PropertyValues.FILTER_SEPARATOR);
+            if (excludeArr.length > 0) {
+                for (String classLoader : excludeArr) {
+                    ProfilingFilter.addExcludeClassLoader(classLoader);
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            Logger.error("AbstractBootstrap.initClassLoaderFilter()", e);
         }
         return false;
     }
@@ -169,7 +190,7 @@ public abstract class AbstractBootstrap {
             String[] excludeArr = includePackages.split(PropertyValues.FILTER_SEPARATOR);
             if (excludeArr.length > 0) {
                 for (String method : excludeArr) {
-                    ProfilingFilter.addNotNeedInjectMethods(method);
+                    ProfilingFilter.addExcludeMethods(method);
                 }
             }
             return true;

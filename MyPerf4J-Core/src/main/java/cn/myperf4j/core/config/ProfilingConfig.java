@@ -15,9 +15,11 @@ public class ProfilingConfig {
 
     private long milliTimeSlice;
 
-    private String filterIncludePackages;
+    private String includePackages;
 
-    private String filterExcludePackages;
+    private String excludePackages;
+
+    private String asmExcludeClassLoaders;
 
     private boolean printDebugLog;
 
@@ -62,20 +64,28 @@ public class ProfilingConfig {
         this.milliTimeSlice = milliTimeSlice;
     }
 
-    public String getFilterIncludePackages() {
-        return filterIncludePackages;
+    public String getIncludePackages() {
+        return includePackages;
     }
 
-    public void setFilterIncludePackages(String filterIncludePackages) {
-        this.filterIncludePackages = filterIncludePackages;
+    public void setIncludePackages(String includePackages) {
+        this.includePackages = includePackages;
     }
 
-    public String getFilterExcludePackages() {
-        return filterExcludePackages;
+    public String getExcludePackages() {
+        return excludePackages;
     }
 
-    public void setFilterExcludePackages(String filterExcludePackages) {
-        this.filterExcludePackages = filterExcludePackages;
+    public void setExcludePackages(String excludePackages) {
+        this.excludePackages = excludePackages;
+    }
+
+    public String getAsmExcludeClassLoaders() {
+        return asmExcludeClassLoaders;
+    }
+
+    public void setAsmExcludeClassLoaders(String asmExcludeClassLoaders) {
+        this.asmExcludeClassLoaders = asmExcludeClassLoaders;
     }
 
     public boolean isPrintDebugLog() {
@@ -120,8 +130,9 @@ public class ProfilingConfig {
                 "perStatsProcessor='" + perStatsProcessor + '\'' +
                 ", recorderMode='" + recorderMode + '\'' +
                 ", milliTimeSlice=" + milliTimeSlice +
-                ", filterIncludePackages='" + filterIncludePackages + '\'' +
-                ", filterExcludePackages='" + filterExcludePackages + '\'' +
+                ", includePackages='" + includePackages + '\'' +
+                ", excludePackages='" + excludePackages + '\'' +
+                ", asmExcludeClassLoaders='" + asmExcludeClassLoaders + '\'' +
                 ", printDebugLog=" + printDebugLog +
                 ", asmProfilingType='" + asmProfilingType + '\'' +
                 ", asmExcludeMethods='" + asmExcludeMethods + '\'' +

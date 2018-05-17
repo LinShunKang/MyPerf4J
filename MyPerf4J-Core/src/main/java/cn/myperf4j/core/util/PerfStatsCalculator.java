@@ -34,7 +34,9 @@ public final class PerfStatsCalculator {
     }
 
     private static PerfStats calPerfStats(String api, long startTime, long stopTime, int[] sortedRecords, int effectiveCount) {
-        int totalCount = getTotalCount(sortedRecords);
+        int[] pair = getTotalTimeAndTotalCount(sortedRecords);
+        int totalTime = pair[0];
+        int totalCount = pair[1];
         PerfStats result = PerfStats.getInstance(api);
         result.setTotalCount(totalCount);
         result.setStartMillTime(startTime);
@@ -44,41 +46,60 @@ public final class PerfStatsCalculator {
             return result;
         }
 
+        double avgTime = ((double) totalTime) / totalCount;
+        result.setAvgTime(avgTime);
         result.setMinTime(sortedRecords[0]);
         result.setMaxTime(sortedRecords[(effectiveCount - 1) * 2]);
 
         int[] topPerIndexArr = getTopPercentileIndexArr(totalCount);
         int[] topPerArr = result.getTPArr();
         int countMile = 0, perIndex = 0;
+        double sigma = 0.0D;//∑
         for (int i = 0, length = sortedRecords.length; i < length; i = i + 2) {
-            if (i > 0 && sortedRecords[i] <= 0) {
+            int timeCost = sortedRecords[i];
+            int count = sortedRecords[i + 1];
+
+            //sortedRecords中只有第0位的响应时间可以为0
+            if (i > 0 && timeCost <= 0) {
                 break;
             }
 
-            countMile += sortedRecords[i + 1];
+            countMile += count;
             int index = topPerIndexArr[perIndex];
             if (countMile >= index) {
-                topPerArr[perIndex] = sortedRecords[i];
+                topPerArr[perIndex] = timeCost;
                 perIndex++;
             }
+
+            sigma += Math.pow(timeCost - avgTime, 2.0);
         }
+        result.setStdDev(Math.sqrt(sigma / totalCount));
+
         return reviseStatistic(result);
     }
 
-    private static int getTotalCount(int[] sortedRecords) {
+    /**
+     * @param sortedRecords
+     * @return : int[]: int[0]代表totalTimeCost, int[1]代表totalCount
+     */
+    private static int[] getTotalTimeAndTotalCount(int[] sortedRecords) {
+        int[] result = {0, 0};
         if (sortedRecords == null || sortedRecords.length == 0) {
-            return 0;
+            return result;
         }
 
-        int totalCount = 0;
         for (int i = 0, length = sortedRecords.length; i < length; i = i + 2) {
-            if (i > 0 && sortedRecords[i] <= 0) {
+            int timeCost = sortedRecords[i];
+
+            //sortedRecords中只有第0位的响应时间可以为0
+            if (i > 0 && timeCost <= 0) {
                 break;
             }
 
-            totalCount += sortedRecords[i + 1];
+            result[0] += timeCost;
+            result[1] += sortedRecords[i + 1];//count
         }
-        return totalCount;
+        return result;
     }
 
     private static PerfStats reviseStatistic(PerfStats perfStats) {

@@ -5,7 +5,7 @@ package cn.myperf4j.core.constant;
  */
 public interface PropertyKeys {
 
-    String PRO_FILE_NAME = "config/myPerf4J.properties";
+    String PRO_FILE_NAME = "MyPerf4JPropFile";
 
     String PERF_STATS_PROCESSOR = "MyPerf4J.PSP";
 
@@ -27,5 +27,8 @@ public interface PropertyKeys {
     String ASM_FILTER_EXCLUDE_METHODS = "MyPerf4J.ExcludeMethods";
 
     String ASM_EXCLUDE_PRIVATE_METHODS = "MyPerf4J.ExcludePrivateMethod";
+
+    String ASM_FILTER_INCLUDE_CLASS_LOADERS = "MyPerf4J.ASM.ExcludeClassLoaders";
+
 
 }

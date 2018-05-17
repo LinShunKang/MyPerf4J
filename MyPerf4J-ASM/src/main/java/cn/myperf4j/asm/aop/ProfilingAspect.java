@@ -33,11 +33,11 @@ public final class ProfilingAspect {
         }
     }
 
-    public static void setRecorderMaintainer(ASMRecorderMaintainer recorderMaintainer) {
-        ProfilingAspect.recorderMaintainer = recorderMaintainer;
+    public static void setRecorderMaintainer(ASMRecorderMaintainer maintainer) {
+        recorderMaintainer = maintainer;
     }
 
-    public static void setRunning(boolean running) {
-        ProfilingAspect.running = running;
+    public static void setRunning(boolean run) {
+        running = run;
     }
 }

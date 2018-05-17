@@ -7,6 +7,8 @@ import cn.myperf4j.core.util.MyPerfStatsProcessor;
  */
 public interface PropertyValues {
 
+    String DEFAULT_PRO_FILE = "/data/MyPerf4J/MyPerf4J.properties";
+
     String RECORDER_MODE_ACCURATE = "accurate";
 
     String RECORDER_MODE_ROUGH = "rough";

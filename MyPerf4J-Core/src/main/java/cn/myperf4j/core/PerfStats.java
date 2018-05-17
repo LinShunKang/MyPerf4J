@@ -22,7 +22,11 @@ public class PerfStats {
 
     private int minTime = -1;//ms
 
+    private double avgTime = -1.0F;//ms
+
     private int maxTime = -1;//ms
+
+    private double stdDev = 0.0D;//Standard Deviation
 
     private int totalCount = -1;//ms
 
@@ -50,12 +54,28 @@ public class PerfStats {
         this.minTime = minTime;
     }
 
+    public double getAvgTime() {
+        return avgTime;
+    }
+
+    public void setAvgTime(double avgTime) {
+        this.avgTime = avgTime;
+    }
+
     public int getMaxTime() {
         return maxTime;
     }
 
     public void setMaxTime(int maxTime) {
         this.maxTime = maxTime;
+    }
+
+    public double getStdDev() {
+        return stdDev;
+    }
+
+    public void setStdDev(double stdDev) {
+        this.stdDev = stdDev;
     }
 
     public int getTotalCount() {
@@ -169,7 +189,9 @@ public class PerfStats {
                 ", TP99999=" + getTP99999() +
                 ", TP100=" + getTP100() +
                 ", minTime=" + minTime +
+                ", avgTime=" + avgTime +
                 ", maxTime=" + maxTime +
+                ", stdDev=" + stdDev +
                 ", totalCount=" + totalCount +
                 '}';
     }

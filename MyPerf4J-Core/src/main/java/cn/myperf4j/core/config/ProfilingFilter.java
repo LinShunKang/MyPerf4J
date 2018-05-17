@@ -24,6 +24,12 @@ public class ProfilingFilter {
      */
     private static Set<String> excludeMethods = new HashSet<>();
 
+
+    /**
+     * 不注入的ClassLoader集合
+     */
+    private static Set<String> excludeClassLoader = new HashSet<>();
+
     static {
         // 默认不注入的package
         excludePackage.add("java/");
@@ -71,7 +77,7 @@ public class ProfilingFilter {
         return false;
     }
 
-    public static void addNotNeedInjectPackage(String pkg) {
+    public static void addExcludePackage(String pkg) {
         if (pkg == null) {
             return;
         }
@@ -96,7 +102,7 @@ public class ProfilingFilter {
         return false;
     }
 
-    public static void addNeedInjectPackage(String pkg) {
+    public static void addIncludePackage(String pkg) {
         if (pkg == null) {
             return;
         }
@@ -129,7 +135,7 @@ public class ProfilingFilter {
         return excludeMethods.contains(methodName);
     }
 
-    public static void addNotNeedInjectMethods(String method) {
+    public static void addExcludeMethods(String method) {
         if (method == null) {
             return;
         }
@@ -139,5 +145,24 @@ public class ProfilingFilter {
 
     public static Set<String> getExcludeMethods() {
         return new HashSet<>(excludeMethods);
+    }
+
+
+    /**
+     * @param classLoader
+     */
+    public static void addExcludeClassLoader(String classLoader) {
+        excludeClassLoader.add(classLoader);
+    }
+
+
+    /**
+     * 是否是不需要注入的类加载器
+     *
+     * @param classLoader
+     * @return : true->需要修改字节码  false->不需要修改字节码
+     */
+    public static boolean isNotNeedInjectClassLoader(String classLoader) {
+        return excludeClassLoader.contains(classLoader);
     }
 }

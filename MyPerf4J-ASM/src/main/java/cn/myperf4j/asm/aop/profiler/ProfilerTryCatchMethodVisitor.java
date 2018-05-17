@@ -18,6 +18,8 @@ import org.objectweb.asm.commons.AdviceAdapter;
  */
 public class ProfilerTryCatchMethodVisitor extends AdviceAdapter {
 
+    private static final String PROFILING_ASPECT_INNER_NAME = Type.getInternalName(ProfilingAspect.class);
+
     private static final String PROFILER_INNER_NAME = Type.getDescriptor(Profiler.class);
 
     private static final String NON_PROFILER_INNER_NAME = Type.getDescriptor(NonProfiler.class);
@@ -124,7 +126,7 @@ public class ProfilerTryCatchMethodVisitor extends AdviceAdapter {
     private void onFinally(int opcode) {
         mv.visitVarInsn(LLOAD, startTimeIdentifier);
         mv.visitLdcInsn(tag);
-        mv.visitMethodInsn(INVOKESTATIC, ProfilingAspect.class.getName().replace(".", "/"), "profiling", "(JLjava/lang/String;)V", false);
+        mv.visitMethodInsn(INVOKESTATIC, PROFILING_ASPECT_INNER_NAME, "profiling", "(JLjava/lang/String;)V", false);
     }
 
     @Override

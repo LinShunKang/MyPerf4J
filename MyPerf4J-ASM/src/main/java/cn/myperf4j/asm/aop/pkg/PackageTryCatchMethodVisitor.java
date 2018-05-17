@@ -15,6 +15,8 @@ import org.objectweb.asm.commons.AdviceAdapter;
  */
 public class PackageTryCatchMethodVisitor extends AdviceAdapter {
 
+    private static final String PROFILING_ASPECT_INNER_NAME = Type.getInternalName(ProfilingAspect.class);
+
     private AbstractRecorderMaintainer maintainer = ASMRecorderMaintainer.getInstance();
 
     private String tag;
@@ -73,7 +75,7 @@ public class PackageTryCatchMethodVisitor extends AdviceAdapter {
     private void onFinally(int opcode) {
         mv.visitVarInsn(LLOAD, startTimeIdentifier);
         mv.visitLdcInsn(tag);
-        mv.visitMethodInsn(INVOKESTATIC, ProfilingAspect.class.getName().replace(".", "/"), "profiling", "(JLjava/lang/String;)V", false);
+        mv.visitMethodInsn(INVOKESTATIC, PROFILING_ASPECT_INNER_NAME, "profiling", "(JLjava/lang/String;)V", false);
     }
 
     @Override
