@@ -7,28 +7,28 @@ public interface PropertyKeys {
 
     String PRO_FILE_NAME = "MyPerf4JPropFile";
 
-    String PERF_STATS_PROCESSOR = "MyPerf4J.PSP";
+    String PERF_STATS_PROCESSOR = "PerfStatsProcessor";
 
-    String RECORDER_MODE = "MyPerf4J.RecMode";
+    String RECORDER_MODE = "RecorderMode";
 
-    String MILL_TIME_SLICE = "MyPerf4J.MillTimeSlice";
+    String MILL_TIME_SLICE = "MillTimeSlice";
 
-    String FILTER_INCLUDE_PACKAGES = "MyPerf4J.IncludePackages";
+    String FILTER_INCLUDE_PACKAGES = "IncludePackages";
 
-    String FILTER_EXCLUDE_PACKAGES = "MyPerf4J.ExcludePackages";
+    String FILTER_EXCLUDE_PACKAGES = "ExcludePackages";
 
-    String DEBUG_PRINT_DEBUG_LOG = "MyPerf4J.Debug.PrintDebugLog";
+    String DEBUG_PRINT_DEBUG_LOG = "Debug.PrintDebugLog";
 
 
     //--------------------------MyPerf4J-ASM独有的属性--------------------------
 
-    String ASM_PROFILING_TYPE = "MyPerf4J.ASM.ProfilingType";
+    String ASM_PROFILING_TYPE = "ASM.ProfilingType";
 
-    String ASM_FILTER_EXCLUDE_METHODS = "MyPerf4J.ExcludeMethods";
+    String ASM_FILTER_EXCLUDE_METHODS = "ASM.ExcludeMethods";
 
-    String ASM_EXCLUDE_PRIVATE_METHODS = "MyPerf4J.ExcludePrivateMethod";
+    String ASM_EXCLUDE_PRIVATE_METHODS = "ASM.ExcludePrivateMethod";
 
-    String ASM_FILTER_INCLUDE_CLASS_LOADERS = "MyPerf4J.ASM.ExcludeClassLoaders";
+    String ASM_FILTER_INCLUDE_CLASS_LOADERS = "ASM.ExcludeClassLoaders";
 
 
 }
