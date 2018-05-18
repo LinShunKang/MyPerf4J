@@ -243,7 +243,7 @@ ProfilerTestApiImpl.test3        0       -1       -1       -1       -1       -1 
     - 精度高，会记录所有的响应时间
     - 相对耗费内存，使用数组+Map来记录响应时间
     - 速度略慢一些
-    - 需要在`config/myPerf4J.properties`加入配置：MyPerf4J.recorder.mode=accurate
+    - 需要在`/your/path/to/myPerf4J.properties`加入配置：RecorderMode=accurate 
 
 * 建议
     - 对于内存敏感或精度要求不是特别高的应用，推荐使用Rough模式

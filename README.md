@@ -238,7 +238,7 @@ ProfilerTestApiImpl.test3        0       -1       -1       -1       -1       -1 
     - High accuracy, records all response times.
     - It consumes relatively memory and uses array & Map to record response time.
     - The speed is slightly slower.
-    - Need to add property MyPerf4J.RecMode=accurate in `config/myPerf4J.properties`.
+    - Need to add property RecorderMode=accurate in `/your/path/to/myPerf4J.properties`.
 
 * Suggestions
     - For memory-sensitive or precision applications that are not particularly demanding, Rough Mode is recommended.
