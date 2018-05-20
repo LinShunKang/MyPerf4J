@@ -223,7 +223,7 @@ UserServiceImpl.getId2       47     0.00        0        0     0.00      1475   
     - For memory-sensitive or precision applications that are not particularly demanding, Rough Mode is recommended.
     - The Accurate Mode is recommended for applications that are insensitive to memory and require high accuracy.
 
-## About MyPerf4J-AspectJ and MyPerf4J-ASM
+## About MyPerf4J-ASM
 * MyPerf4J-ASM
     * Implement aspect weaving using [ASM](http://asm.ow2.io/)
     * From a technical perspective, it is not mature enough,
