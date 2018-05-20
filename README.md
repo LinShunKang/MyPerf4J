@@ -11,7 +11,7 @@ A Extremely Fast Performance Monitoring and Statistics for Java Code. Inspired b
 * The existing statistics of [perf4j](https://github.com/perf4j/perf4j) cannot meet my needs.
 
 ## Requirements
-* Statistics on the performance indicators of the method such as RPS, TP50, TP90, TP95, TP99, TP999, and TP9999, etc.
+* Statistics on the performance indicators of the method such as RPS, Avg, Min, Max, StdDev, TP50, TP90, TP95, TP99, TP999 and TP9999, etc.
 * It can be configured by annotations, and annotations can be configured to class and / or method.
 * Try not to take up too much memory, does not affect the normal response of the program.
 * The processing of performance indicators can be customized, for example: log collection, reporting to log collection services, etc.
@@ -80,17 +80,7 @@ A Extremely Fast Performance Monitoring and Statistics for Java Code. Inspired b
 
 ## Usage
 * Use MyPerf4J-ASM
-    * Add maven dependency in `pom.xml`
-    
-    ```
-        <dependency>
-            <groupId>MyPerf4J</groupId>
-            <artifactId>MyPerf4J-ASM</artifactId>
-            <version>1.2</version>
-        </dependency>
-    ```
-    
-    * Add VM options: -javaagent:/your/path/to/MyPerf4J-ASM-1.2.jar
+    * Add VM options: -javaagent:/your/path/to/MyPerf4J-ASM.jar
 
 * Use MyPerf4J-AspectJ    
     * Add maven dependency in `pom.xml`
@@ -134,6 +124,39 @@ A Extremely Fast Performance Monitoring and Statistics for Java Code. Inspired b
             </plugins>
         </build>
     ```
+* Add VM options: -DMyPerf4JPropFile=/your/path/to/myPerf4J.properties，and add config items in `/your/path/to/myPerf4J.properties`
+
+```
+#configure PerfStatsProcessor
+PerfStatsProcessor=cn.perf4j.test.profiler.MyPerfStatsProcessor
+
+#configure RecordMode，accurate/rough
+RecorderMode=accurate
+
+#configure TimeSlice片，time unit: ms，min:30s，max:600s
+MillTimeSlice=60000
+
+#configure packages，separated with ';'
+IncludePackages=cn.perf4j;org.myperf4j
+
+#configure packages，separated with ';'
+ExcludePackages=org.spring;
+
+#print debug，true/false
+Debug.PrintDebugLog=true
+
+#configure byPorfiler/byPackage, only for MyPerf4J-ASM
+ASM.ProfilingType=byProfiler
+
+#configure methods，separated with ';', only for MyPerf4J-ASM
+ASM.ExcludeMethods=equals;hash
+
+#true/false, only for MyPerf4J-ASM
+ASM.ExcludePrivateMethod=true
+
+#separated with ';', only for MyPerf4J-ASM
+ASM.ExcludeClassLoaders=
+```
 
 * Add `@Profiler` annotation to the class or method you want to analyze performance, and add `@NonProfiler` annotation to the method you do not want to analyze
 
@@ -191,17 +214,6 @@ public class MyPerfStatsProcessor implements PerfStatsProcessor {
 }
 ```
 
-* Add these properties in `config/myPerf4J.properties`
-
-```
-MyPerf4J.PSP=cn.perf4j.test.profiler.MyPerfStatsProcessor
-MyPerf4J.RecMode=accurate
-MyPerf4J.MillTimeSlice=60000
-MyPerf4J.IncludePackages=cn.perf4j;org.myperf4j
-MyPerf4J.ExcludePackages=org.spring;
-MyPerf4J.Debug=true
-```
-
 * Execute command `mvn clean package`
 
 * Run your application
@@ -226,7 +238,7 @@ ProfilerTestApiImpl.test3        0       -1       -1       -1       -1       -1 
     - High accuracy, records all response times.
     - It consumes relatively memory and uses array & Map to record response time.
     - The speed is slightly slower.
-    - Need to add property MyPerf4J.RecMode=accurate in `config/myPerf4J.properties`.
+    - Need to add property RecorderMode=accurate in `/your/path/to/myPerf4J.properties`.
 
 * Suggestions
     - For memory-sensitive or precision applications that are not particularly demanding, Rough Mode is recommended.

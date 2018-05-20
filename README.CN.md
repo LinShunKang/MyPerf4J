@@ -10,7 +10,7 @@
 * [perf4j](https://github.com/perf4j/perf4j)现有的统计结果不能满足我的需求
 
 ## 需求
-* 能统计出接口的RPS、TP50、TP90、TP95、TP99、TP999、TP9999等性能指标
+* 能统计出接口的RPS、Avg、Min、Max、StdDev、TP90、TP95、TP99、TP999等性能指标
 * 可以通过注解进行配置，注解可以配置到类和/或方法上
 * 尽量不占用过多的内存、不影响程序的正常响应
 * 性能指标的处理可以定制化，例如：日志收集、上报给日志收集服务等
@@ -82,15 +82,6 @@
 
 ## 使用
 * 使用MyPerf4J-ASM
-    * 在`pom.xml`引入Maven依赖
-    
-    ```
-        <dependency>
-            <groupId>MyPerf4J</groupId>
-            <artifactId>MyPerf4J-ASM</artifactId>
-            <version>1.2</version>
-        </dependency>
-    ```
     
     * 在JVM启动参数里加上： -javaagent:/your/path/to/MyPerf4J-ASM-1.2.jar
 
@@ -136,6 +127,40 @@
             </plugins>
         </build>
     ```
+
+* 在JVM启动参数里加上：-DMyPerf4JPropFile=/your/path/to/myPerf4J.properties，并在`/your/path/to/myPerf4J.properties`中加入以下几个配置项
+
+```
+#配置PerfStatsProcessor，可不配置
+PerfStatsProcessor=cn.perf4j.test.profiler.MyPerfStatsProcessor
+
+#配置Record模式，可配置为accurate/rough
+RecorderMode=accurate
+
+#配置时间片，单位为ms，最小30s，最大600s
+MillTimeSlice=60000
+
+#需要监控的package，可配置多个，用英文';'分隔
+IncludePackages=cn.perf4j;org.myperf4j
+
+#不需要监控的package，可配置多个，用英文';'分隔
+ExcludePackages=org.spring;
+
+#是否开启debug日志，可配置为true/false
+Debug.PrintDebugLog=true
+
+#可配置为byPorfiler/byPackage，仅针对MyPerf4J-ASM
+ASM.ProfilingType=byProfiler
+
+#可配置多个方法名，用英文';'分隔，仅针对MyPerf4J-ASM
+ASM.ExcludeMethods=equals;hash
+
+#是否排除私有方法，true/false，仅针对MyPerf4J-ASM
+ASM.ExcludePrivateMethod=true
+
+#可配置多个ClassLoader，用英文';'分隔，仅针对MyPerf4J-ASM
+ASM.ExcludeClassLoaders=
+```
 
 * 在你想要分析性能的类或方法明上加上 `@Profiler`注解，同时对于不想进行性能分析的方法上加上 `@NonProfiler`
 
@@ -194,17 +219,6 @@ public class MyPerfStatsProcessor implements PerfStatsProcessor {
 }
 ```
 
-* 在配置文件`config/myPerf4J.properties`中加入以下几个配置项
-
-```
-MyPerf4J.PSP=cn.perf4j.test.profiler.MyPerfStatsProcessor
-MyPerf4J.RecMode=accurate
-MyPerf4J.MillTimeSlice=60000
-MyPerf4J.IncludePackages=cn.perf4j;org.myperf4j
-MyPerf4J.ExcludePackages=org.spring;
-MyPerf4J.Debug=true
-```
-
 * 执行命令 `mvn clean package`
 
 * 运行你的程序
@@ -229,7 +243,7 @@ ProfilerTestApiImpl.test3        0       -1       -1       -1       -1       -1 
     - 精度高，会记录所有的响应时间
     - 相对耗费内存，使用数组+Map来记录响应时间
     - 速度略慢一些
-    - 需要在`config/myPerf4J.properties`加入配置：MyPerf4J.recorder.mode=accurate
+    - 需要在`/your/path/to/myPerf4J.properties`加入配置：RecorderMode=accurate 
 
 * 建议
     - 对于内存敏感或精度要求不是特别高的应用，推荐使用Rough模式
