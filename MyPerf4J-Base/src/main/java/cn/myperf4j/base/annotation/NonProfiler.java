@@ -1,4 +1,4 @@
-package cn.myperf4j.core.annotation;
+package cn.myperf4j.base.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,4 +1,4 @@
-package cn.myperf4j.core.util;
+package cn.myperf4j.base.util;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

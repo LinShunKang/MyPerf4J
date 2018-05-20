@@ -1,8 +1,8 @@
 package cn.myperf4j.core.util;
 
 
+import cn.myperf4j.base.PerfStats;
 import cn.myperf4j.core.AbstractRecorder;
-import cn.myperf4j.core.PerfStats;
 
 /**
  * Created by LinShunkang on 2018/3/11

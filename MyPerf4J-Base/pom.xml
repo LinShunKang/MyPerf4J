@@ -9,9 +9,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>MyPerf4J-Core</artifactId>
+    <artifactId>MyPerf4J-Base</artifactId>
 
-    <name>MyPerf4J-Core</name>
+    <name>MyPerf4J-Base</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -25,12 +25,6 @@
             <artifactId>junit</artifactId>
             <version>4.11</version>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>MyPerf4J</groupId>
-            <artifactId>MyPerf4J-Base</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

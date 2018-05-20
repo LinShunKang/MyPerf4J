@@ -1,4 +1,4 @@
-package cn.myperf4j.core;
+package cn.myperf4j.base;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import java.util.List;
  */
 
 /**
- * 该接口用于处理MyPerf4J收集到的性能统计信息，MyPerf4J默认提供了 {@link cn.myperf4j.core.util.MyPerfStatsProcessor}
+ * 该接口用于处理MyPerf4J收集到的性能统计信息，MyPerf4J默认提供了 MyPerfStatsProcessor
  * 如果需要特殊处理，可以自行实现PerfStatsProcessor接口，并自定义对perfStatsList的处理
  */
 public interface PerfStatsProcessor {

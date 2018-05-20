@@ -1,6 +1,8 @@
 package cn.myperf4j.core;
 
 
+import cn.myperf4j.base.PerfStats;
+import cn.myperf4j.base.PerfStatsProcessor;
 import cn.myperf4j.core.config.ProfilingConfig;
 import cn.myperf4j.core.config.ProfilingFilter;
 import cn.myperf4j.core.constant.PropertyKeys;

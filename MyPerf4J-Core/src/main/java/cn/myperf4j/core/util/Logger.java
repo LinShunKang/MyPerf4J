@@ -1,5 +1,7 @@
 package cn.myperf4j.core.util;
 
+import cn.myperf4j.base.util.DateUtils;
+
 import java.util.Date;
 
 /**

@@ -3,7 +3,7 @@ package cn.myperf4j.asm.aop.profiler;
 import cn.myperf4j.core.config.ProfilerParams;
 import cn.myperf4j.core.config.ProfilingConfig;
 import cn.myperf4j.core.config.ProfilingFilter;
-import cn.myperf4j.core.annotation.Profiler;
+import cn.myperf4j.base.annotation.Profiler;
 import cn.myperf4j.core.util.Logger;
 import org.objectweb.asm.*;
 

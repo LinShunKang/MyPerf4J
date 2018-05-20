@@ -1,7 +1,7 @@
 package MyPerf4J.test2;
 
-import cn.myperf4j.core.annotation.NonProfiler;
-import cn.myperf4j.core.annotation.Profiler;
+import cn.myperf4j.base.annotation.NonProfiler;
+import cn.myperf4j.base.annotation.Profiler;
 
 import java.util.concurrent.TimeUnit;
 

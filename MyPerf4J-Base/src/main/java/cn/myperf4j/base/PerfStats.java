@@ -1,4 +1,4 @@
-package cn.myperf4j.core;
+package cn.myperf4j.base;
 
 /**
  * Created by LinShunkang on 2018/3/11

@@ -142,8 +142,8 @@
 ```
 package cn.perf4j.test.profiler;
 
-import cn.myperf4j.core.annotation.NonProfiler;
-import cn.myperf4j.core.annotation.Profiler;
+import cn.myperf4j.base.annotation.NonProfiler;
+import cn.myperf4j.base.annotation.Profiler;
 
 /**
  * Created by LinShunkang on 2018/3/11
@@ -174,9 +174,9 @@ public class ProfilerTestApiImpl implements ProfilerTestApi {
 ``` 
 package cn.perf4j.test.profiler;
 
-import cn.myperf4j.core.PerfStats;
-import cn.myperf4j.core.PerfStatsProcessor;
-import cn.myperf4j.core.util.PerfStatsFormatter;
+import cn.myperf4j.base.PerfStats;
+import cn.myperf4j.base.PerfStatsProcessor;
+import cn.myperf4j.base.PerfStatsFormatter;
 
 import java.util.List;
 

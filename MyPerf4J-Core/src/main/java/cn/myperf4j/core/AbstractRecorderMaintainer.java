@@ -1,6 +1,8 @@
 package cn.myperf4j.core;
 
-import cn.myperf4j.core.annotation.Profiler;
+import cn.myperf4j.base.PerfStats;
+import cn.myperf4j.base.PerfStatsProcessor;
+import cn.myperf4j.base.annotation.Profiler;
 import cn.myperf4j.core.config.ProfilerParams;
 import cn.myperf4j.core.constant.PropertyValues;
 import cn.myperf4j.core.util.Logger;

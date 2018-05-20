@@ -1,5 +1,7 @@
 package cn.myperf4j.core;
 
+import cn.myperf4j.base.PerfStats;
+import cn.myperf4j.base.PerfStatsProcessor;
 import cn.myperf4j.core.util.Logger;
 import cn.myperf4j.core.util.ThreadUtils;
 
