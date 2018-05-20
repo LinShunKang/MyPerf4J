@@ -69,7 +69,7 @@ public class ProfilerClassAdapter extends ClassVisitor implements Opcodes {
                                      String signature,
                                      String[] exceptions) {
         Logger.debug("ProfilerClassAdapter.visitMethod(" + access + ", " + name + ", " + desc + ", " + signature + ", " + Arrays.toString(exceptions) + ")");
-        if (isInterface || isNeedVisit(access, name)) {
+        if (isInterface || !isNeedVisit(access, name)) {
             return super.visitMethod(access, name, desc, signature, exceptions);
         }
 
@@ -86,7 +86,7 @@ public class ProfilerClassAdapter extends ClassVisitor implements Opcodes {
     }
 
     private boolean isNeedVisit(int access, String name) {
-        if ((access & ACC_PRIVATE) != 0 && ProfilingConfig.getInstance().isAsmExcludePrivateMethod()) {
+        if ((access & ACC_PRIVATE) != 0 && ProfilingConfig.getInstance().isExcludePrivateMethod()) {
             return false;
         }
 

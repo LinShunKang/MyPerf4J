@@ -90,14 +90,15 @@ public final class PerfStatsCalculator {
 
         for (int i = 0, length = sortedRecords.length; i < length; i = i + 2) {
             int timeCost = sortedRecords[i];
+            int count = sortedRecords[i + 1];
 
             //sortedRecords中只有第0位的响应时间可以为0
             if (i > 0 && timeCost <= 0) {
                 break;
             }
 
-            result[0] += timeCost;
-            result[1] += sortedRecords[i + 1];//count
+            result[0] += timeCost * count;
+            result[1] += count;
         }
         return result;
     }

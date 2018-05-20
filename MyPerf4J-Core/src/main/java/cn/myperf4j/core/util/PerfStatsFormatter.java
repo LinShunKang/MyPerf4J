@@ -1,7 +1,7 @@
-package cn.myperf4j.base;
+package cn.myperf4j.core.util;
 
 
-import cn.myperf4j.base.util.DateUtils;
+import cn.myperf4j.base.PerfStats;
 
 import java.util.List;
 

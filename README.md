@@ -1,5 +1,6 @@
 # MyPerf4J
 A Extremely Fast Performance Monitoring and Statistics for Java Code. Inspired by [perf4j](https://github.com/perf4j/perf4j) and [TProfiler](https://github.com/alibaba/TProfiler).
+Committed to becoming a performance monitoring and statistics tool that can be used for a long time in a production environment!
 
 
 ## Multilingual document
@@ -22,8 +23,8 @@ A Extremely Fast Performance Monitoring and Statistics for Java Code. Inspired b
     - If we simply use Map to store data, it will take up a lot of unnecessary memory.
     - According to Pareto principle, most of the of interface response time is in a very small range. This small range is particularly suitable for storage using arrays. The array subscript is the response time, and the corresponding element is the number corresponding to the response time. A small number of interface response time distribution will be relatively large, suitable for storage with Map;
     - In summary, the core data structure is: array & Map, the response time less than a certain threshold is recorded in the array, and the response time greater than or equal to the threshold is recorded in the Map.
-* Using AOP for response time acquisition, including [AspectJ](https://github.com/eclipse/org.aspectj) and [ASM](http://asm.ow2.io/)
-* Configuration through annotations and tuning of memory usage of core data structures through parameter configuration.
+* Using AOP for response time acquisition, using [ASM](http://asm.ow2.io/) to implement AOP and improve performance
+* Configuration through annotations / properties and tuning of memory usage of core data structures through parameter configuration.
 * It can collect response time by synchronous way, avoid creating too many Runnable objects, and affect GC of program.
 * Acquire the collection result asynchronously to avoid affecting the response time of the interface.
 * Expose the interface for processing the collected results to facilitate customized processing.
@@ -52,15 +53,6 @@ A Extremely Fast Performance Monitoring and Statistics for Java Code. Inspired b
     - In order to avoid the performance degradation caused by the high competition of multiple threads due to the high execution speed of the empty method, eight empty methods are executed by polling, and then the RPS of the eight methods is added to obtain the result.
     - The time slice is 10s, each press pauses for 20s, and executes `System.gc();`  
 
-* MyPerf4J-AspectJ
-
-| Threads | Number of loops per thread | RPS |
-|-------|-----|------|
-|1|500000000|3114928|
-|2|500000000|5407560|
-|4|500000000|9620888|
-|8|500000000|11682240|
-
 * MyPerf4J-ASM
 
 | Threads | Number of loops per thread | RPS |
@@ -72,59 +64,14 @@ A Extremely Fast Performance Monitoring and Statistics for Java Code. Inspired b
 
 * Summary
     - From the benchmark results
-        - MyPerf4J-AspectJ can support 3.11 million method calls per second in a single thread. The average time per method call is 321ns, which can meet the requirements of most people, and does not affect the response time of the program itself.
         - MyPerf4J-ASM can support 11.76 million method calls per second in a single thread. The average time per method call is 85ns, which can meet the requirements of most people, and does not affect the response time of the program itself.
-    - Reason for performance difference
-        - MyPerf4J-AspectJ generates a JoinPoint object every time the method invocation. With the increase of the number of calls, JVM will trigger YoungGC continuously.
+    - Reason for high performance
         - MyPerf4J-ASM modifies the bytecode of the class through the ASM framework, inserting two lines of methods before and after the method, without generating redundant objects, and not triggering any GC in the whole process of the benchmark (except for the `System.gc();` executed in the code).
 
 ## Usage
-* Use MyPerf4J-ASM
-    * Add VM options: -javaagent:/your/path/to/MyPerf4J-ASM.jar
 
-* Use MyPerf4J-AspectJ    
-    * Add maven dependency in `pom.xml`
-    
-    ```
-        <dependency>
-            <groupId>MyPerf4J</groupId>
-            <artifactId>MyPerf4J-AspectJ</artifactId>
-            <version>1.2</version>
-        </dependency>
-    ```
-    
-    * Add maven build plugin in `pom.xml`
-    
-    ```
-        <build>
-            <plugins>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>aspectj-maven-plugin</artifactId>
-                    <version>1.10</version>
-                    <configuration>
-                        <complianceLevel>1.7</complianceLevel>
-                        <source>1.7</source>
-                        <aspectLibraries>
-                            <aspectLibrary>
-                                <groupId>MyPerf4J</groupId>
-                                <artifactId>MyPerf4J-AspectJ</artifactId>
-                            </aspectLibrary>
-                        </aspectLibraries>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>compile</goal>
-                                <goal>test-compile</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-            </plugins>
-        </build>
-    ```
-* Add VM options: -DMyPerf4JPropFile=/your/path/to/myPerf4J.properties，and add config items in `/your/path/to/myPerf4J.properties`
+* Add VM options:  -javaagent:/your/path/to/MyPerf4J-ASM-${MyPerf4J-version}.jar
+* Add VM options: -DMyPerf4JPropFile=/your/path/to/myPerf4J.properties, and add properties in `/your/path/to/myPerf4J.properties`
 
 ```
 #configure PerfStatsProcessor
@@ -145,64 +92,95 @@ ExcludePackages=org.spring;
 #print debug，true/false
 Debug.PrintDebugLog=true
 
-#configure byPorfiler/byPackage, only for MyPerf4J-ASM
-ASM.ProfilingType=byProfiler
+#configure byPorfiler/byPackage
+ProfilingType=byProfiler
 
-#configure methods，separated with ';', only for MyPerf4J-ASM
-ASM.ExcludeMethods=equals;hash
+#configure methods，separated with ';'
+ExcludeMethods=equals;hash
 
-#true/false, only for MyPerf4J-ASM
-ASM.ExcludePrivateMethod=true
+#true/false
+ExcludePrivateMethod=true
 
-#separated with ';', only for MyPerf4J-ASM
-ASM.ExcludeClassLoaders=
+#separated with ';'
+ExcludeClassLoaders=
 ```
+
+* Add maven dependency in `pom.xml`
+    
+    ```
+    <dependencies>
+        <dependency>
+            <groupId>MyPerf4J</groupId>
+            <artifactId>MyPerf4J-Base</artifactId>
+            <version>${MyPerf4J-version}</version>
+        </dependency>
+    </dependencies>
+    ```
 
 * Add `@Profiler` annotation to the class or method you want to analyze performance, and add `@NonProfiler` annotation to the method you do not want to analyze
 
 ```
-package cn.perf4j.test.profiler;
+package cn.perf4j.demo;
 
 import cn.myperf4j.base.annotation.NonProfiler;
 import cn.myperf4j.base.annotation.Profiler;
 
+import java.util.concurrent.TimeUnit;
+
 /**
- * Created by LinShunkang on 2018/3/11
+ * Created by LinShunkang on 2018/4/7
  */
-@Profiler(mostTimeThreshold = 10)
-public class ProfilerTestApiImpl implements ProfilerTestApi {
+@Profiler(mostTimeThreshold = 2000, outThresholdCount = 200)
+public class UserServiceImpl implements UserService {
+
+    private long f1;
 
     @Override
-    @Profiler(mostTimeThreshold = 20)
-    public String test1(String aaa) {
-        return null;
+    @Profiler(mostTimeThreshold = 3000, outThresholdCount = 300)
+    public long getId1(long id) throws InterruptedException {
+        TimeUnit.MILLISECONDS.sleep(4);
+        return id + 100;
+    }
+
+    private long privateGetId1() {
+        return 1L;
+    }
+
+    @Override
+    public long getId2(long id) {
+        return id + 2;
     }
 
     @Override
     @NonProfiler
-    public int test2() {
+    public long getId3(long id) {
         return 0;
     }
 
-    @Override
-    public void test3(String aaa, String bbb) {
+    public long getF1() {
+        return f1;
+    }
+
+    public void setF1(long f1) {
+        this.f1 = f1;
     }
 }
 ```
 
-* Create a new class and implements `PerfStatsProcessor`
+* If you need to customize the performance statistics, create a new class and implements `PerfStatsProcessor`
 
 ``` 
-package cn.perf4j.test.profiler;
+package cn.perf4j.demo;
+
 
 import cn.myperf4j.base.PerfStats;
+import cn.myperf4j.core.util.PerfStatsFormatter;
 import cn.myperf4j.base.PerfStatsProcessor;
-import cn.myperf4j.base.PerfStatsFormatter;
 
 import java.util.List;
 
 /**
- * Created by LinShunkang on 2018/3/16
+ * Created by LinShunkang on 2018/4/9
  */
 public class MyPerfStatsProcessor implements PerfStatsProcessor {
 
@@ -211,6 +189,7 @@ public class MyPerfStatsProcessor implements PerfStatsProcessor {
         //You can do anything you want to do :)
         System.out.println(PerfStatsFormatter.getFormatStr(perfStatsList, startMillis, stopMillis));
     }
+
 }
 ```
 
@@ -221,10 +200,10 @@ public class MyPerfStatsProcessor implements PerfStatsProcessor {
 * Performance Statistics
 
 ```
-MyPerf4J Performance Statistics [2018-04-06 11:08:00, 2018-04-06 11:09:00]
-Api                            RPS  Min(ms)  Max(ms)     TP50     TP90     TP95     TP99    TP999   TP9999  TP99999    TP100
-ProfilerTestApiImpl.test1  1473961        0        4        0        1        2        3        4        4        4        4
-ProfilerTestApiImpl.test3        0       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1
+MyPerf4J Performance Statistics [2018-05-20 12:33:00, 2018-05-20 12:33:30]
+Api                         RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count     TP50     TP90     TP95     TP99    TP999   TP9999  TP99999    TP100
+UserServiceImpl.getId1       47     4.47        4        7     0.07      1475        4        5        7        7        7        7        7        7
+UserServiceImpl.getId2       47     0.00        0        0     0.00      1475        0        0        0        0        0        0        0        0
 ```
 
 ## About Rough Mode and Accurate Mode
@@ -245,12 +224,8 @@ ProfilerTestApiImpl.test3        0       -1       -1       -1       -1       -1 
     - The Accurate Mode is recommended for applications that are insensitive to memory and require high accuracy.
 
 ## About MyPerf4J-AspectJ and MyPerf4J-ASM
-* MyPerf4J-AspectJ
-    * Implement aspect weaving using [AspectJ](https://github.com/eclipse/org.aspectj)
-    * More mature from a technical point of view.
-    * The speed is slightly slower，and will produce unnecessary objects that affect the program's own GC.
 * MyPerf4J-ASM
     * Implement aspect weaving using [ASM](http://asm.ow2.io/)
     * From a technical perspective, it is not mature enough,
-    * Extremely fast! Does not produce any unnecessary objects, does not affect the program's own GC.
-
+    * Extremely fast! 
+    * Does not produce any unnecessary objects, does not affect the program's own GC.

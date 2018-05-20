@@ -1,7 +1,7 @@
 package MyPerf4J.test2;
 
 import cn.myperf4j.base.PerfStats;
-import cn.myperf4j.base.PerfStatsFormatter;
+import cn.myperf4j.core.util.PerfStatsFormatter;
 import cn.myperf4j.base.PerfStatsProcessor;
 
 import java.util.List;

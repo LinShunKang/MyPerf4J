@@ -125,10 +125,10 @@ public abstract class AbstractBootstrap {
             config.setExcludePackages(MyProperties.getStr(PropertyKeys.FILTER_EXCLUDE_PACKAGES, ""));
             config.setIncludePackages(MyProperties.getStr(PropertyKeys.FILTER_INCLUDE_PACKAGES, ""));
             config.setPrintDebugLog(MyProperties.getBoolean(PropertyKeys.DEBUG_PRINT_DEBUG_LOG, false));
-            config.setAsmProfilingType(MyProperties.getStr(PropertyKeys.ASM_PROFILING_TYPE, PropertyValues.ASM_PROFILING_TYPE_PACKAGE));
-            config.setAsmExcludeMethods(MyProperties.getStr(PropertyKeys.ASM_FILTER_EXCLUDE_METHODS, ""));
-            config.setAsmExcludePrivateMethod(MyProperties.getBoolean(PropertyKeys.ASM_EXCLUDE_PRIVATE_METHODS, true));
-            config.setAsmExcludeClassLoaders(MyProperties.getStr(PropertyKeys.ASM_FILTER_INCLUDE_CLASS_LOADERS, ""));
+            config.setProfilingType(MyProperties.getStr(PropertyKeys.PROFILING_TYPE, PropertyValues.ASM_PROFILING_TYPE_PACKAGE));
+            config.setExcludeMethods(MyProperties.getStr(PropertyKeys.FILTER_EXCLUDE_METHODS, ""));
+            config.setExcludePrivateMethod(MyProperties.getBoolean(PropertyKeys.EXCLUDE_PRIVATE_METHODS, true));
+            config.setExcludeClassLoaders(MyProperties.getStr(PropertyKeys.FILTER_INCLUDE_CLASS_LOADERS, ""));
             return true;
         } catch (Exception e) {
             Logger.error("AbstractBootstrap.initProfilingConfig()", e);
@@ -172,7 +172,7 @@ public abstract class AbstractBootstrap {
 
     private boolean initClassLoaderFilter() {
         try {
-            String excludeClassLoaders = ProfilingConfig.getInstance().getAsmExcludeClassLoaders();
+            String excludeClassLoaders = ProfilingConfig.getInstance().getExcludeClassLoaders();
             String[] excludeArr = excludeClassLoaders.split(PropertyValues.FILTER_SEPARATOR);
             if (excludeArr.length > 0) {
                 for (String classLoader : excludeArr) {
@@ -188,7 +188,7 @@ public abstract class AbstractBootstrap {
 
     private boolean initMethodFilter() {
         try {
-            String includePackages = ProfilingConfig.getInstance().getAsmExcludeMethods();
+            String includePackages = ProfilingConfig.getInstance().getExcludeMethods();
             String[] excludeArr = includePackages.split(PropertyValues.FILTER_SEPARATOR);
             if (excludeArr.length > 0) {
                 for (String method : excludeArr) {

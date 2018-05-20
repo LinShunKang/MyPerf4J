@@ -78,7 +78,7 @@ public class PackageClassAdapter extends ClassVisitor implements Opcodes {
     }
 
     private boolean isNeedVisit(int access, String name) {
-        if ((access & ACC_PRIVATE) != 0 && ProfilingConfig.getInstance().isAsmExcludePrivateMethod()) {
+        if ((access & ACC_PRIVATE) != 0 && ProfilingConfig.getInstance().isExcludePrivateMethod()) {
             return false;
         }
 

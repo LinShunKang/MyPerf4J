@@ -19,15 +19,15 @@ public class ProfilingConfig {
 
     private String excludePackages;
 
-    private String asmExcludeClassLoaders;
+    private String excludeClassLoaders;
 
     private boolean printDebugLog;
 
-    private String asmProfilingType;
+    private String profilingType;
 
-    private String asmExcludeMethods;
+    private String excludeMethods;
 
-    private boolean asmExcludePrivateMethod;
+    private boolean excludePrivateMethod;
 
     /**
      * singleton pattern
@@ -80,12 +80,12 @@ public class ProfilingConfig {
         this.excludePackages = excludePackages;
     }
 
-    public String getAsmExcludeClassLoaders() {
-        return asmExcludeClassLoaders;
+    public String getExcludeClassLoaders() {
+        return excludeClassLoaders;
     }
 
-    public void setAsmExcludeClassLoaders(String asmExcludeClassLoaders) {
-        this.asmExcludeClassLoaders = asmExcludeClassLoaders;
+    public void setExcludeClassLoaders(String excludeClassLoaders) {
+        this.excludeClassLoaders = excludeClassLoaders;
     }
 
     public boolean isPrintDebugLog() {
@@ -96,32 +96,32 @@ public class ProfilingConfig {
         this.printDebugLog = printDebugLog;
     }
 
-    public String getAsmProfilingType() {
-        return asmProfilingType;
+    public String getProfilingType() {
+        return profilingType;
     }
 
     public boolean profilingByProfiler() {
-        return asmProfilingType.equals(PropertyValues.ASM_PROFILING_TYPE_PROFILER);
+        return profilingType.equals(PropertyValues.ASM_PROFILING_TYPE_PROFILER);
     }
 
-    public void setAsmProfilingType(String asmProfilingType) {
-        this.asmProfilingType = asmProfilingType;
+    public void setProfilingType(String profilingType) {
+        this.profilingType = profilingType;
     }
 
-    public String getAsmExcludeMethods() {
-        return asmExcludeMethods;
+    public String getExcludeMethods() {
+        return excludeMethods;
     }
 
-    public void setAsmExcludeMethods(String asmExcludeMethods) {
-        this.asmExcludeMethods = asmExcludeMethods;
+    public void setExcludeMethods(String excludeMethods) {
+        this.excludeMethods = excludeMethods;
     }
 
-    public boolean isAsmExcludePrivateMethod() {
-        return asmExcludePrivateMethod;
+    public boolean isExcludePrivateMethod() {
+        return excludePrivateMethod;
     }
 
-    public void setAsmExcludePrivateMethod(boolean asmExcludePrivateMethod) {
-        this.asmExcludePrivateMethod = asmExcludePrivateMethod;
+    public void setExcludePrivateMethod(boolean excludePrivateMethod) {
+        this.excludePrivateMethod = excludePrivateMethod;
     }
 
     @Override
@@ -132,11 +132,11 @@ public class ProfilingConfig {
                 ", milliTimeSlice=" + milliTimeSlice +
                 ", includePackages='" + includePackages + '\'' +
                 ", excludePackages='" + excludePackages + '\'' +
-                ", asmExcludeClassLoaders='" + asmExcludeClassLoaders + '\'' +
+                ", excludeClassLoaders='" + excludeClassLoaders + '\'' +
                 ", printDebugLog=" + printDebugLog +
-                ", asmProfilingType='" + asmProfilingType + '\'' +
-                ", asmExcludeMethods='" + asmExcludeMethods + '\'' +
-                ", asmExcludePrivateMethod=" + asmExcludePrivateMethod +
+                ", profilingType='" + profilingType + '\'' +
+                ", excludeMethods='" + excludeMethods + '\'' +
+                ", excludePrivateMethod=" + excludePrivateMethod +
                 '}';
     }
 }

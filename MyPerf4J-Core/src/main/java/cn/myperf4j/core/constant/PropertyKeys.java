@@ -19,16 +19,12 @@ public interface PropertyKeys {
 
     String DEBUG_PRINT_DEBUG_LOG = "Debug.PrintDebugLog";
 
+    String PROFILING_TYPE = "ProfilingType";
 
-    //--------------------------MyPerf4J-ASM独有的属性--------------------------
+    String FILTER_EXCLUDE_METHODS = "ExcludeMethods";
 
-    String ASM_PROFILING_TYPE = "ASM.ProfilingType";
+    String EXCLUDE_PRIVATE_METHODS = "ExcludePrivateMethod";
 
-    String ASM_FILTER_EXCLUDE_METHODS = "ASM.ExcludeMethods";
-
-    String ASM_EXCLUDE_PRIVATE_METHODS = "ASM.ExcludePrivateMethod";
-
-    String ASM_FILTER_INCLUDE_CLASS_LOADERS = "ASM.ExcludeClassLoaders";
-
+    String FILTER_INCLUDE_CLASS_LOADERS = "ExcludeClassLoaders";
 
 }
