@@ -1,9 +1,10 @@
 package cn.myperf4j.asm;
 
-import cn.myperf4j.core.AbstractRecorder;
 import cn.myperf4j.core.AbstractRecorderMaintainer;
+import cn.myperf4j.core.TagMaintainer;
 import cn.myperf4j.core.config.ProfilerParams;
-import cn.myperf4j.core.util.MapUtils;
+
+import java.util.concurrent.atomic.AtomicReferenceArray;
 
 /**
  * Created by LinShunkang on 2018/4/26
@@ -13,9 +14,8 @@ public class ASMRecorderMaintainer extends AbstractRecorderMaintainer {
     private static final ASMRecorderMaintainer instance = new ASMRecorderMaintainer();
 
     private ASMRecorderMaintainer() {
-        //为了让recorderMap.get()更加快速，减小loadFactor->减少碰撞的概率->加快get()的执行速度
-        recorderMap = MapUtils.createHashMap(10240, 0.2F);
-        backupRecorderMap = MapUtils.createHashMap(10240, 0.2F);
+        recorders = new AtomicReferenceArray<>(TagMaintainer.MAX_NUM);
+        backupRecorders = new AtomicReferenceArray<>(TagMaintainer.MAX_NUM);
     }
 
     public static ASMRecorderMaintainer getInstance() {
@@ -32,23 +32,10 @@ public class ASMRecorderMaintainer extends AbstractRecorderMaintainer {
         return true;
     }
 
-    @Override
-    public AbstractRecorder getRecorder(String api) {
-        return recorderMap.get(api);
-    }
-
-    @Override
-    public void addRecorder(String tag, ProfilerParams params) {
+    public void addRecorder(int tagId, String tag, ProfilerParams params) {
         synchronized (locker) {
-            if (!recorderMap.containsKey(tag)) {
-                recorderMap.put(tag, createRecorder(tag, params.getMostTimeThreshold(), params.getOutThresholdCount()));
-            }
-
-            if (!backupRecorderMap.containsKey(tag)) {
-                backupRecorderMap.put(tag, createRecorder(tag, params.getMostTimeThreshold(), params.getOutThresholdCount()));
-            }
+            recorders.set(tagId, createRecorder(tag, params.getMostTimeThreshold(), params.getOutThresholdCount()));
+            backupRecorders.set(tagId, createRecorder(tag, params.getMostTimeThreshold(), params.getOutThresholdCount()));
         }
     }
-
-
 }

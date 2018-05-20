@@ -3,6 +3,7 @@ package cn.myperf4j.asm.aop.profiler;
 import cn.myperf4j.asm.ASMRecorderMaintainer;
 import cn.myperf4j.asm.aop.ProfilingAspect;
 import cn.myperf4j.core.AbstractRecorderMaintainer;
+import cn.myperf4j.core.TagMaintainer;
 import cn.myperf4j.core.config.ProfilerParams;
 import cn.myperf4j.base.annotation.NonProfiler;
 import cn.myperf4j.base.annotation.Profiler;
@@ -38,6 +39,8 @@ public class ProfilerSimpleMethodVisitor extends LocalVariablesSorter {
 
     private String tag;
 
+    private int tagId;
+
     private int startTimeIdentifier;
 
     public ProfilerSimpleMethodVisitor(int access,
@@ -48,6 +51,7 @@ public class ProfilerSimpleMethodVisitor extends LocalVariablesSorter {
                                        ProfilerParams classProfilerParams) {
         super(ASM5, access, desc, mv);
         this.tag = className + "." + name;
+        this.tagId = TagMaintainer.getInstance().addTag(tag);
         this.classProfilerParams = classProfilerParams;
         this.hasProfiler = classProfilerParams.hasProfiler();
     }
@@ -74,7 +78,7 @@ public class ProfilerSimpleMethodVisitor extends LocalVariablesSorter {
     }
 
     private boolean profiling() {
-        return hasProfiler && !hasNonProfiler;
+        return tagId >= 0 && hasProfiler && !hasNonProfiler;
     }
 
 
@@ -86,7 +90,7 @@ public class ProfilerSimpleMethodVisitor extends LocalVariablesSorter {
         super.visitCode();
 
         if (profiling()) {
-            maintainer.addRecorder(tag, profilerAV.getProfilerParams());
+            maintainer.addRecorder(tagId, tag, profilerAV.getProfilerParams());
 
             mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "nanoTime", "()J", false);
             startTimeIdentifier = newLocal(Type.LONG_TYPE);
@@ -102,8 +106,8 @@ public class ProfilerSimpleMethodVisitor extends LocalVariablesSorter {
     public void visitInsn(int opcode) {
         if (profiling() && ((IRETURN <= opcode && opcode <= RETURN) || opcode == ATHROW)) {
             mv.visitVarInsn(LLOAD, startTimeIdentifier);
-            mv.visitLdcInsn(tag);
-            mv.visitMethodInsn(INVOKESTATIC, PROFILING_ASPECT_INNER_NAME, "profiling", "(JLjava/lang/String;)V", false);
+            mv.visitLdcInsn(tagId);
+            mv.visitMethodInsn(INVOKESTATIC, PROFILING_ASPECT_INNER_NAME, "profiling", "(JI)V", false);
         }
         super.visitInsn(opcode);
     }

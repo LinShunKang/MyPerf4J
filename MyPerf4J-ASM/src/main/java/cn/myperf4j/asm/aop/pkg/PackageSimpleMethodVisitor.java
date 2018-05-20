@@ -3,6 +3,7 @@ package cn.myperf4j.asm.aop.pkg;
 import cn.myperf4j.asm.ASMRecorderMaintainer;
 import cn.myperf4j.asm.aop.ProfilingAspect;
 import cn.myperf4j.core.AbstractRecorderMaintainer;
+import cn.myperf4j.core.TagMaintainer;
 import cn.myperf4j.core.config.ProfilerParams;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
@@ -21,6 +22,8 @@ public class PackageSimpleMethodVisitor extends LocalVariablesSorter {
 
     private String tag;
 
+    private int tagId;
+
     private int startTimeIdentifier;
 
     public PackageSimpleMethodVisitor(int access,
@@ -30,6 +33,7 @@ public class PackageSimpleMethodVisitor extends LocalVariablesSorter {
                                       String className) {
         super(ASM5, access, desc, mv);
         this.tag = className + "." + name;
+        this.tagId = TagMaintainer.getInstance().addTag(tag);
     }
 
     /**
@@ -38,11 +42,17 @@ public class PackageSimpleMethodVisitor extends LocalVariablesSorter {
     @Override
     public void visitCode() {
         super.visitCode();
-        maintainer.addRecorder(tag, ProfilerParams.of(false, 300, 10));
+        if (profiling()) {
+            maintainer.addRecorder(tagId, tag, ProfilerParams.of(false, 300, 10));
 
-        mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "nanoTime", "()J", false);
-        startTimeIdentifier = newLocal(Type.LONG_TYPE);
-        mv.visitVarInsn(LSTORE, startTimeIdentifier);
+            mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "nanoTime", "()J", false);
+            startTimeIdentifier = newLocal(Type.LONG_TYPE);
+            mv.visitVarInsn(LSTORE, startTimeIdentifier);
+        }
+    }
+
+    private boolean profiling() {
+        return tagId >= 0;
     }
 
     /**
@@ -51,10 +61,10 @@ public class PackageSimpleMethodVisitor extends LocalVariablesSorter {
      */
     @Override
     public void visitInsn(int opcode) {
-        if ((IRETURN <= opcode && opcode <= RETURN) || opcode == ATHROW) {
+        if (profiling() && ((IRETURN <= opcode && opcode <= RETURN) || opcode == ATHROW)) {
             mv.visitVarInsn(LLOAD, startTimeIdentifier);
-            mv.visitLdcInsn(tag);
-            mv.visitMethodInsn(INVOKESTATIC, PROFILING_ASPECT_INNER_NAME, "profiling", "(JLjava/lang/String;)V", false);
+            mv.visitLdcInsn(tagId);
+            mv.visitMethodInsn(INVOKESTATIC, PROFILING_ASPECT_INNER_NAME, "profiling", "(JI)V", false);
         }
         super.visitInsn(opcode);
     }

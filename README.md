@@ -57,14 +57,14 @@ Committed to becoming a performance monitoring and statistics tool that can be u
 
 | Threads | Number of loops per thread | RPS |
 |-------|-----|------|
-|1|500000000|11767056|
-|2|500000000|14972208|
-|4|500000000|28561824|
-|8|500000000|45966888|
+|1|1000000000|13815816|
+|2|1000000000|16199712|
+|4|1000000000|33060632|
+|8|1000000000|55981416|
 
 * Summary
     - From the benchmark results
-        - MyPerf4J-ASM can support 11.76 million method calls per second in a single thread. The average time per method call is 85ns, which can meet the requirements of most people, and does not affect the response time of the program itself.
+        - MyPerf4J-ASM can support 13.81 million method calls per second in a single thread. The average time per method call is 72.3ns, which can meet the requirements of most people, and does not affect the response time of the program itself.
     - Reason for high performance
         - MyPerf4J-ASM modifies the bytecode of the class through the ASM framework, inserting two lines of methods before and after the method, without generating redundant objects, and not triggering any GC in the whole process of the benchmark (except for the `System.gc();` executed in the code).
 
@@ -92,7 +92,7 @@ ExcludePackages=org.spring;
 #print debug，true/false
 Debug.PrintDebugLog=true
 
-#configure byPorfiler/byPackage
+#configure byProfiler/byPackage
 ProfilingType=byProfiler
 
 #configure methods，separated with ';'

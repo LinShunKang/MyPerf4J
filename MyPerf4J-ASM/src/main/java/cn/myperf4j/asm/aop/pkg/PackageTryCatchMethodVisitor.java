@@ -3,6 +3,7 @@ package cn.myperf4j.asm.aop.pkg;
 import cn.myperf4j.asm.ASMRecorderMaintainer;
 import cn.myperf4j.asm.aop.ProfilingAspect;
 import cn.myperf4j.core.AbstractRecorderMaintainer;
+import cn.myperf4j.core.TagMaintainer;
 import cn.myperf4j.core.config.ProfilerParams;
 import cn.myperf4j.core.util.Logger;
 import org.objectweb.asm.Label;
@@ -21,6 +22,8 @@ public class PackageTryCatchMethodVisitor extends AdviceAdapter {
 
     private String tag;
 
+    private int tagId;
+
     private int startTimeIdentifier;
 
     private Label startFinally = new Label();
@@ -33,6 +36,7 @@ public class PackageTryCatchMethodVisitor extends AdviceAdapter {
                                         String className) {
         super(ASM5, mv, access, name, desc);
         this.tag = className + "." + name;
+        this.tagId = TagMaintainer.getInstance().addTag(tag);
     }
 
     /**
@@ -40,47 +44,52 @@ public class PackageTryCatchMethodVisitor extends AdviceAdapter {
      */
     @Override
     public void visitCode() {
-        Logger.debug("PackageTryCatchMethodVisitor.visitMethod(): tag=" + tag);
         super.visitCode();
 
-        maintainer.addRecorder(tag, ProfilerParams.of(false, 300, 10));
+        if (profiling()) {
+            Logger.debug("PackageTryCatchMethodVisitor.visitMethod(): tag=" + tag);
 
-        mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "nanoTime", "()J", false);
-        startTimeIdentifier = newLocal(Type.LONG_TYPE);
-        mv.visitVarInsn(LSTORE, startTimeIdentifier);
-        mv.visitLabel(startFinally);
+            maintainer.addRecorder(tagId, tag, ProfilerParams.of(false, 300, 10));
+
+            mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "nanoTime", "()J", false);
+            startTimeIdentifier = newLocal(Type.LONG_TYPE);
+            mv.visitVarInsn(LSTORE, startTimeIdentifier);
+            mv.visitLabel(startFinally);
+        }
+    }
+
+    private boolean profiling() {
+        return tagId >= 0;
     }
 
     @Override
     public void visitMaxs(int maxStack, int maxLocals) {
-        Logger.debug("PackageTryCatchMethodVisitor.visitMaxs(" + maxStack + ", " + maxLocals + "): tag=" + tag);
+        if (profiling()) {
+            Logger.debug("PackageTryCatchMethodVisitor.visitMaxs(" + maxStack + ", " + maxLocals + "): tag=" + tag);
+            Label endFinally = new Label();
+            mv.visitTryCatchBlock(startFinally, endFinally, endFinally, null);
+            mv.visitLabel(endFinally);
+            onFinally(ATHROW);
+            mv.visitInsn(ATHROW);
+        }
 
-        Label endFinally = new Label();
-        mv.visitTryCatchBlock(startFinally, endFinally, endFinally, null);
-        mv.visitLabel(endFinally);
-        onFinally(ATHROW);
-        mv.visitInsn(ATHROW);
         mv.visitMaxs(maxStack, maxLocals);
     }
 
     @Override
     public void onMethodExit(int opcode) {
-        Logger.debug("PackageTryCatchMethodVisitor.onMethodExit(" + opcode + "): tag=" + tag);
-
-        if (opcode != ATHROW) {
-            onFinally(opcode);
+        if (profiling()) {
+            Logger.debug("PackageTryCatchMethodVisitor.onMethodExit(" + opcode + "): tag=" + tag);
+            if (opcode != ATHROW) {
+                onFinally(opcode);
+            }
         }
     }
 
     private void onFinally(int opcode) {
         mv.visitVarInsn(LLOAD, startTimeIdentifier);
-        mv.visitLdcInsn(tag);
-        mv.visitMethodInsn(INVOKESTATIC, PROFILING_ASPECT_INNER_NAME, "profiling", "(JLjava/lang/String;)V", false);
+        mv.visitLdcInsn(tagId);
+        mv.visitMethodInsn(INVOKESTATIC, PROFILING_ASPECT_INNER_NAME, "profiling", "(JI)V", false);
     }
 
-    @Override
-    public void visitEnd() {
-        Logger.debug("PackageTryCatchMethodVisitor.visitEnd(): tag=" + tag);
-        super.visitEnd();
-    }
 }

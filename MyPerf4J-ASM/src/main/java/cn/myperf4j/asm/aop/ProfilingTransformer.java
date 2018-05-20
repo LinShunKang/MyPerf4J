@@ -27,17 +27,14 @@ public class ProfilingTransformer implements ClassFileTransformer {
                             byte[] classFileBuffer) {
         try {
             if (ProfilingFilter.isNotNeedInject(className)) {
-                Logger.debug("ProfilingTransformer.transform(" + loader + ", " + className + ", classBeingRedefined, protectionDomain, " + classFileBuffer.length + ") skip1!!!");
                 return classFileBuffer;
             }
 
             if (!ProfilingFilter.isNeedInject(className)) {
-                Logger.debug("ProfilingTransformer.transform(" + loader + ", " + className + ", classBeingRedefined, protectionDomain, " + classFileBuffer.length + ") skip2!!!");
                 return classFileBuffer;
             }
 
             if (loader != null && ProfilingFilter.isNotNeedInjectClassLoader(loader.getClass().getName())) {
-                Logger.debug("ProfilingTransformer.transform(" + loader + ", " + className + ", classBeingRedefined, protectionDomain, " + classFileBuffer.length + ") skip3!!!");
                 return classFileBuffer;
             }
 

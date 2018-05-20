@@ -238,11 +238,11 @@ public abstract class AbstractBootstrap {
                 public void run() {
                     Logger.info("ENTER ShutdownHook...");
                     try {
-                        Map<String, AbstractRecorder> recorderMap = maintainer.getRecorderMap();
-                        List<PerfStats> perfStatsList = new ArrayList<>(recorderMap.size());
+                        List<AbstractRecorder> recorders = maintainer.getRecorders();
+                        List<PerfStats> perfStatsList = new ArrayList<>(recorders.size());
                         AbstractRecorder recorder = null;
-                        for (Map.Entry<String, AbstractRecorder> entry : recorderMap.entrySet()) {
-                            recorder = entry.getValue();
+                        for (int i = 0; i < recorders.size(); ++i) {
+                            recorder = recorders.get(i);
                             perfStatsList.add(PerfStatsCalculator.calPerfStats(recorder));
                         }
 
