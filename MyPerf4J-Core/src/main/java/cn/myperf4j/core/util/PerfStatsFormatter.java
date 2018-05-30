@@ -11,10 +11,12 @@ import java.util.List;
 public final class PerfStatsFormatter {
 
     public static String getFormatStr(List<PerfStats> perfStatsList, long startMillis, long stopMillis) {
-        int maxApiLength = getMaxApiLength(perfStatsList);
+        int[] statisticsArr = getStatistics(perfStatsList);
+        int maxApiLength = statisticsArr[0];
+        int effectiveCount = statisticsArr[1];
 
         String dataTitleFormat = "%-" + maxApiLength + "s%9s%9s%9s%9s%9s%10s%9s%9s%9s%9s%9s%9s%9s%9s%n";
-        StringBuilder sb = new StringBuilder((perfStatsList.size() + 2) * (9 * 11 + 1 + maxApiLength));
+        StringBuilder sb = new StringBuilder((effectiveCount + 2) * (9 * 11 + 1 + maxApiLength));
         sb.append("MyPerf4J Performance Statistics [").append(DateUtils.getStr(startMillis)).append(", ").append(DateUtils.getStr(stopMillis)).append("]").append(String.format("%n"));
         sb.append(String.format(dataTitleFormat, "Api", "RPS", "Avg(ms)", "Min(ms)", "Max(ms)", "StdDev", "Count", "TP50", "TP90", "TP95", "TP99", "TP999", "TP9999", "TP99999", "TP100"));
         if (perfStatsList.isEmpty()) {
@@ -24,6 +26,10 @@ public final class PerfStatsFormatter {
         String dataFormat = "%-" + maxApiLength + "s%9d%9.2f%9d%9d%9.2f%10d%9d%9d%9d%9d%9d%9d%9d%9d%n";
         for (int i = 0; i < perfStatsList.size(); ++i) {
             PerfStats perfStats = perfStatsList.get(i);
+            if (perfStats.getTotalCount() <= 0) {
+                continue;
+            }
+
             sb.append(String.format(dataFormat,
                     perfStats.getApi(),
                     perfStats.getRPS(),
@@ -44,12 +50,26 @@ public final class PerfStatsFormatter {
         return sb.toString();
     }
 
-    private static int getMaxApiLength(List<PerfStats> perfStatsList) {
-        int max = 0;
+    /**
+     *
+     * @param perfStatsList
+     * @return : int[0]:max(api.length)  int[1]:effectiveStats
+     */
+    private static int[] getStatistics(List<PerfStats> perfStatsList) {
+        int[] result = new int[2];
         for (int i = 0; i < perfStatsList.size(); ++i) {
-            max = Math.max(max, perfStatsList.get(i).getApi().length());
+            PerfStats stats = perfStatsList.get(i);
+            if (stats == null || stats.getApi() == null) {
+                continue;
+            }
+
+            result[0] = Math.max(result[0], stats.getApi().length());
+
+            if (stats.getTotalCount() > 0) {
+                result[1] += 1;
+            }
         }
-        return max;
+        return result;
     }
 
 }

@@ -166,15 +166,15 @@ public abstract class AbstractRecorderMaintainer {
                         backupRecorder.setStopTime(currentMills + millTimeSlice);
                     }
 
-                    AtomicReferenceArray<AbstractRecorder>  tmpMap = recorders;
+                    AtomicReferenceArray<AbstractRecorder> tmpMap = recorders;
                     recorders = backupRecorders;
                     backupRecorders = tmpMap;
                 }
-                Logger.info("RoundRobinProcessor finished!!!!");
             } catch (Exception e) {
                 Logger.error("RecorderMaintainer.roundRobinExecutor error", e);
             } finally {
                 backupRecorderReady = true;
+                Logger.info("RoundRobinProcessor finished!!! cost: " + (System.currentTimeMillis() - currentMills) + "ms");
             }
         }
     }
@@ -187,6 +187,7 @@ public abstract class AbstractRecorderMaintainer {
                 return;
             }
 
+            long start = System.currentTimeMillis();
             try {
                 synchronized (locker) {
                     for (int i = 0; i < backupRecorders.length(); ++i) {
@@ -209,12 +210,12 @@ public abstract class AbstractRecorderMaintainer {
                     perfStatsProcessor.process(perfStatsList, recorder.getStartTime(), recorder.getStopTime());
                 }
 
-                Logger.info("BackgroundProcessor finished!!!!");
             } catch (Exception e) {
                 Logger.error("RecorderMaintainer.backgroundExecutor error", e);
             } finally {
                 backupRecorderReady = false;
                 tempRecorderList.clear();
+                Logger.info("BackgroundProcessor finished!!! cost: " + (System.currentTimeMillis() - start) + "ms");
             }
         }
     }
