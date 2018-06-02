@@ -7,14 +7,12 @@ import cn.myperf4j.core.TagMaintainer;
 import cn.myperf4j.core.config.ProfilerParams;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.commons.LocalVariablesSorter;
-
-import static org.objectweb.asm.Opcodes.*;
+import org.objectweb.asm.commons.AdviceAdapter;
 
 /**
  * Created by LinShunkang on 2018/4/15
  */
-public class PackageSimpleMethodVisitor extends LocalVariablesSorter {
+public class PackageSimpleMethodVisitor extends AdviceAdapter {
 
     private static final String PROFILING_ASPECT_INNER_NAME = Type.getInternalName(ProfilingAspect.class);
 
@@ -31,17 +29,14 @@ public class PackageSimpleMethodVisitor extends LocalVariablesSorter {
                                       String desc,
                                       MethodVisitor mv,
                                       String className) {
-        super(ASM5, access, desc, mv);
+        super(ASM5, mv, access, name, desc);
         this.tag = className + "." + name;
         this.tagId = TagMaintainer.getInstance().addTag(tag);
     }
 
-    /**
-     * 此方法在访问方法的头部时被访问到，仅被访问一次
-     */
+
     @Override
-    public void visitCode() {
-        super.visitCode();
+    protected void onMethodEnter() {
         if (profiling()) {
             maintainer.addRecorder(tagId, tag, ProfilerParams.of(false, 300, 10));
 
@@ -51,21 +46,16 @@ public class PackageSimpleMethodVisitor extends LocalVariablesSorter {
         }
     }
 
-    private boolean profiling() {
-        return tagId >= 0;
-    }
-
-    /**
-     * 此方法可以获取方法中每一条指令的操作类型，被访问多次
-     * 如应在方法结尾处添加新指令，则应判断opcode的类型
-     */
     @Override
-    public void visitInsn(int opcode) {
+    protected void onMethodExit(int opcode) {
         if (profiling() && ((IRETURN <= opcode && opcode <= RETURN) || opcode == ATHROW)) {
             mv.visitVarInsn(LLOAD, startTimeIdentifier);
             mv.visitLdcInsn(tagId);
             mv.visitMethodInsn(INVOKESTATIC, PROFILING_ASPECT_INNER_NAME, "profiling", "(JI)V", false);
         }
-        super.visitInsn(opcode);
+    }
+
+    private boolean profiling() {
+        return tagId >= 0;
     }
 }

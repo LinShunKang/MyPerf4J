@@ -40,7 +40,7 @@ public class ProfilingTransformer implements ClassFileTransformer {
 
             Logger.info("ProfilingTransformer.transform(" + loader + ", " + className + ", classBeingRedefined, protectionDomain, " + classFileBuffer.length + ")...");
             ClassReader cr = new ClassReader(classFileBuffer);
-            ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);
+            ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_FRAMES);
             ClassVisitor cv = getClassVisitor(cw, className);
             cr.accept(cv, ClassReader.EXPAND_FRAMES);
 
