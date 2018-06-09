@@ -22,10 +22,10 @@ public class Test2 {
 
     private static void test2() throws IOException {
         ClassReader cr = new ClassReader(Foo2.class.getName());
-        ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_FRAMES);
+        ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);
 //        ClassVisitor cv = new ProfilerClassAdapter(cw, Foo2.class.getName(), true);
         ClassVisitor cv = new PackageClassAdapter(cw, Foo2.class.getName(), false);
-        cr.accept(cv, ClassReader.EXPAND_FRAMES);
+        cr.accept(cv, ClassReader.SKIP_FRAMES);
 
         byte[] bytes = cw.toByteArray();
         rewriteClass(bytes);

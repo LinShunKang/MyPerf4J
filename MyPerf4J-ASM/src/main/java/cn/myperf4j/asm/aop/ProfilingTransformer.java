@@ -39,16 +39,29 @@ public class ProfilingTransformer implements ClassFileTransformer {
             }
 
             Logger.info("ProfilingTransformer.transform(" + loader + ", " + className + ", classBeingRedefined, protectionDomain, " + classFileBuffer.length + ")...");
-            ClassReader cr = new ClassReader(classFileBuffer);
-            ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_FRAMES);
-            ClassVisitor cv = getClassVisitor(cw, className);
-            cr.accept(cv, ClassReader.EXPAND_FRAMES);
-
-            return cw.toByteArray();
+            return getBytes(loader, className, classFileBuffer);
         } catch (Throwable e) {
             Logger.error("ProfilingTransformer.transform(" + loader + ", " + className + ", " + classBeingRedefined + ", " + protectionDomain + ", " + classFileBuffer.length + ")", e);
         }
         return classFileBuffer;
+    }
+
+    private byte[] getBytes(ClassLoader loader,
+                            String className,
+                            byte[] classFileBuffer) {
+        if (loader != null && loader.getClass().getName().equals("org.apache.catalina.loader.WebappClassLoader")) {
+            ClassReader cr = new ClassReader(classFileBuffer);
+            ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);
+            ClassVisitor cv = getClassVisitor(cw, className);
+            cr.accept(cv, ClassReader.EXPAND_FRAMES);
+            return cw.toByteArray();
+        } else {
+            ClassReader cr = new ClassReader(classFileBuffer);
+            ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_FRAMES);
+            ClassVisitor cv = getClassVisitor(cw, className);
+            cr.accept(cv, ClassReader.EXPAND_FRAMES);
+            return cw.toByteArray();
+        }
     }
 
     private ClassVisitor getClassVisitor(ClassWriter cw, String className) {
