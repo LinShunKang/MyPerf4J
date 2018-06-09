@@ -13,8 +13,8 @@ Committed to becoming a performance monitoring and statistics tool that can be u
 
 ## Requirements
 * Statistics on the performance indicators of the method such as RPS, Avg, Min, Max, StdDev, TP50, TP90, TP95, TP99, TP999 and TP9999, etc.
-* It can be configured by annotations, and annotations can be configured to class and / or method.
-* Try not to take up too much memory, does not affect the normal response of the program.
+* It can be configured by properties.
+* Does not take up too much memory, does not affect the normal response of the program.
 * The processing of performance indicators can be customized, for example: log collection, reporting to log collection services, etc.
 
 ## Design
@@ -24,7 +24,7 @@ Committed to becoming a performance monitoring and statistics tool that can be u
     - According to Pareto principle, most of the of interface response time is in a very small range. This small range is particularly suitable for storage using arrays. The array subscript is the response time, and the corresponding element is the number corresponding to the response time. A small number of interface response time distribution will be relatively large, suitable for storage with Map;
     - In summary, the core data structure is: array & Map, the response time less than a certain threshold is recorded in the array, and the response time greater than or equal to the threshold is recorded in the Map.
 * Using AOP for response time acquisition, using [ASM](http://asm.ow2.io/) to implement AOP and improve performance
-* Configuration through annotations / properties and tuning of memory usage of core data structures through parameter configuration.
+* Configuration through properties and tuning of memory usage of core data structures through parameter configuration.
 * It can collect response time by synchronous way, avoid creating too many Runnable objects, and affect GC of program.
 * Acquire the collection result asynchronously to avoid affecting the response time of the interface.
 * Expose the interface for processing the collected results to facilitate customized processing.
@@ -80,7 +80,7 @@ PerfStatsProcessor=cn.perf4j.test.profiler.MyPerfStatsProcessor
 #configure RecordMode，accurate/rough
 RecorderMode=accurate
 
-#configure TimeSlice片，time unit: ms，min:30s，max:600s
+#configure TimeSlice，time unit: ms，min:30s，max:600s
 MillTimeSlice=60000
 
 #configure packages，separated with ';'
@@ -92,9 +92,6 @@ ExcludePackages=org.spring;
 #print debug，true/false
 Debug.PrintDebugLog=true
 
-#configure byProfiler/byPackage
-ProfilingType=byProfiler
-
 #configure methods，separated with ';'
 ExcludeMethods=equals;hash
 
@@ -103,40 +100,80 @@ ExcludePrivateMethod=true
 
 #separated with ';'
 ExcludeClassLoaders=
+
+#The configuration file performs memory usage tuning by specifying certain method execution time thresholds
+ProfilingParamsFile=/your/path/to/myPerf4J.profilingParams
+
+#General method execution time threshold in ms
+ProfilingTimeThreshold=1000
+
+#The number of times the method execution time threshold is exceeded in a time slice, valid only when RecorderMode=accurate
+ProfilingOutThresholdCount=10
 ```
 
-* Add maven dependency in `pom.xml`
-    
-    ```
-    <dependencies>
-        <dependency>
-            <groupId>MyPerf4J</groupId>
-            <artifactId>MyPerf4J-Base</artifactId>
-            <version>${MyPerf4J-version}</version>
-        </dependency>
-    </dependencies>
-    ```
+* If you want to optimize the memory usage of MyPerf4J, you can specify ProfilingParamsFile in `/your/path/to/myPerf4J.properties` and specify the execution time threshold of the specific method in `/your/path/to/myPerf4J.profilingParams`:
 
-* Add `@Profiler` annotation to the class or method you want to analyze performance, and add `@NonProfiler` annotation to the method you do not want to analyze
+```
+#The format is: fullClassName.methodName=methodExecutionTimeThreshold:numberOfTimesTheMethodExecutionTimeThresholdIsExceeded
+cn.perf4j.demo.UserServiceImpl.getId1=10:10
+cn.perf4j.demo.UserServiceImpl.getId2=20:20
+```
+
+* If you need to customize performance statistics, you need to add dependencies in the `pom.xml` file and create a new class that implements the PerfStatsProcessor interface.
+    - Add maven dependency in `pom.xml`
+    
+        ```
+        <dependencies>
+            <dependency>
+                <groupId>MyPerf4J</groupId>
+                <artifactId>MyPerf4J-Base</artifactId>
+                <version>${MyPerf4J-version}</version>
+            </dependency>
+        </dependencies>
+        ```
+
+    - Create a new class that implements the PerfStatsProcessor interface.
+    
+        ``` 
+        package cn.perf4j.demo;
+        
+        import cn.myperf4j.base.PerfStats;
+        import cn.myperf4j.base.PerfStatsFormatter;
+        import cn.myperf4j.base.PerfStatsProcessor;
+        
+        import java.util.List;
+        
+        /**
+         * Created by LinShunkang on 2018/4/9
+         */
+        public class MyPerfStatsProcessor implements PerfStatsProcessor {
+        
+            @Override
+            public void process(List<PerfStats> perfStatsList, long startMillis, long stopMillis) {
+                //You can do anything you want to do :)
+                System.out.println(PerfStatsFormatter.getFormatStr(perfStatsList, startMillis, stopMillis));
+            }
+        
+        }
+        ```
+        
+
+* MyPerf4J will perform performance analysis on all classes of the `IncludePackages` specified package, and exclude `ExcludePackages` from specifying all classes of the package.
+
 
 ```
 package cn.perf4j.demo;
-
-import cn.myperf4j.base.annotation.NonProfiler;
-import cn.myperf4j.base.annotation.Profiler;
 
 import java.util.concurrent.TimeUnit;
 
 /**
  * Created by LinShunkang on 2018/4/7
  */
-@Profiler(mostTimeThreshold = 2000, outThresholdCount = 200)
 public class UserServiceImpl implements UserService {
 
     private long f1;
 
     @Override
-    @Profiler(mostTimeThreshold = 3000, outThresholdCount = 300)
     public long getId1(long id) throws InterruptedException {
         TimeUnit.MILLISECONDS.sleep(4);
         return id + 100;
@@ -152,7 +189,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @NonProfiler
     public long getId3(long id) {
         return 0;
     }
@@ -174,7 +210,7 @@ package cn.perf4j.demo;
 
 
 import cn.myperf4j.base.PerfStats;
-import cn.myperf4j.core.util.PerfStatsFormatter;
+import cn.myperf4j.base.PerfStatsFormatter;
 import cn.myperf4j.base.PerfStatsProcessor;
 
 import java.util.List;
@@ -200,10 +236,10 @@ public class MyPerfStatsProcessor implements PerfStatsProcessor {
 * Performance Statistics
 
 ```
-MyPerf4J Performance Statistics [2018-05-20 12:33:00, 2018-05-20 12:33:30]
+MyPerf4J Performance Statistics [2018-06-09 16:40:00, 2018-06-09 16:40:30]
 Api                         RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count     TP50     TP90     TP95     TP99    TP999   TP9999  TP99999    TP100
-UserServiceImpl.getId1       47     4.47        4        7     0.07      1475        4        5        7        7        7        7        7        7
-UserServiceImpl.getId2       47     0.00        0        0     0.00      1475        0        0        0        0        0        0        0        0
+UserServiceImpl.getId1       62     4.60        4        5     0.02      1922        5        5        5        5        5        5        5        5
+UserServiceImpl.getId2       62     0.00        0        0     0.00      1922        0        0        0        0        0        0        0        0
 ```
 
 ## About Rough Mode and Accurate Mode

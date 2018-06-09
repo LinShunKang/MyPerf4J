@@ -12,8 +12,8 @@
 
 ## 需求
 * 能统计出接口的RPS、Avg、Min、Max、StdDev、TP90、TP95、TP99、TP999等性能指标
-* 可以通过注解进行配置，注解可以配置到类和/或方法上
-* 尽量不占用过多的内存、不影响程序的正常响应
+* 可配置，可以指定统计某些类、某些方法，也可以指定不统计某些类、某些方法
+* 不占用过多的内存、不影响程序的正常响应
 * 性能指标的处理可以定制化，例如：日志收集、上报给日志收集服务等
 
 ## 设计
@@ -84,19 +84,16 @@ PerfStatsProcessor=cn.perf4j.demo.MyPerfStatsProcessor
 RecorderMode=accurate
 
 #配置时间片，单位为ms，最小30s，最大600s
-MillTimeSlice=30000
+MillTimeSlice=10000
 
 #需要监控的package，可配置多个，用英文';'分隔
-IncludePackages=cn.perf4j;org.myperf4j
+IncludePackages=cn.perf4j.demo
 
 #不需要监控的package，可配置多个，用英文';'分隔
 ExcludePackages=org.spring;
 
 #是否开启debug日志，可配置为true/false
 Debug.PrintDebugLog=true
-
-#可配置为byProfiler/byPackage
-ProfilingType=byProfiler
 
 #可配置多个方法名，用英文';'分隔
 ExcludeMethods=equals;hash
@@ -106,40 +103,40 @@ ExcludePrivateMethod=true
 
 #可配置多个ClassLoader，用英文';'分隔
 ExcludeClassLoaders=
+
+#该配置文件通过指定某些方法执行时间阈值来进行内存占用调优
+ProfilingParamsFile=/your/path/to/myPerf4J.profilingParams
+
+#通用的方法执行时间阈值，单位为ms
+ProfilingTimeThreshold=1000
+
+#在一个时间片内，超过方法执行时间阈值的次数，仅在RecorderMode=accurate时有效
+ProfilingOutThresholdCount=10
 ```
 
-* 在`pom.xml`文件中增加依赖
-    
-    ```
-    <dependencies>
-        <dependency>
-            <groupId>MyPerf4J</groupId>
-            <artifactId>MyPerf4J-Base</artifactId>
-            <version>${MyPerf4J-version}</version>
-        </dependency>
-    </dependencies>
-    ```
+* 如果想要优化MyPerf4J的内存占用，可以在`/your/path/to/myPerf4J.properties`中指定ProfilingParamsFile，并在`/your/path/to/myPerf4J.profilingParams`中指定具体方法的执行时间阈值：
 
-* 当配置`ProfilingType=byProfiler`时，在你想要分析性能的类或方法明上加上 `@Profiler`注解，同时对于不想进行性能分析的方法上加上 `@NonProfiler`；当配置`ProfilingType=byPackage`时，MyPerf4J会对`IncludePackages`指定package里排除`ExcludePackages`指定package的所有类进行性能分析。
+```
+#格式为：全路径类名.方法名=方法执行时间阈值:超过方法执行时间阈值的次数
+cn.perf4j.demo.UserServiceImpl.getId1=10:10
+cn.perf4j.demo.UserServiceImpl.getId2=20:20
+```
+
+* MyPerf4J会对`IncludePackages`指定package的所有类进行性能分析，并且排除`ExcludePackages`指定package的所有类。
 
 ```
 package cn.perf4j.demo;
-
-import cn.myperf4j.base.annotation.NonProfiler;
-import cn.myperf4j.base.annotation.Profiler;
 
 import java.util.concurrent.TimeUnit;
 
 /**
  * Created by LinShunkang on 2018/4/7
  */
-@Profiler(mostTimeThreshold = 2000, outThresholdCount = 200)
 public class UserServiceImpl implements UserService {
 
     private long f1;
 
     @Override
-    @Profiler(mostTimeThreshold = 3000, outThresholdCount = 300)
     public long getId1(long id) throws InterruptedException {
         TimeUnit.MILLISECONDS.sleep(4);
         return id + 100;
@@ -155,7 +152,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @NonProfiler
     public long getId3(long id) {
         return 0;
     }
@@ -170,14 +166,23 @@ public class UserServiceImpl implements UserService {
 }
 ```
 
-* 如果需要对性能统计结果进行自定义处理，可以新建一个声明PerfStatsProcessor接口的类
+* 如果需要对性能统计结果进行自定义处理，需要在`pom.xml`文件中增加依赖，并且新建一个实现PerfStatsProcessor接口的类
+
+```
+<dependencies>
+    <dependency>
+        <groupId>MyPerf4J</groupId>
+        <artifactId>MyPerf4J-Base</artifactId>
+        <version>${MyPerf4J-version}</version>
+    </dependency>
+</dependencies>
+```
 
 ``` 
 package cn.perf4j.demo;
 
-
 import cn.myperf4j.base.PerfStats;
-import cn.myperf4j.core.util.PerfStatsFormatter;
+import cn.myperf4j.base.PerfStatsFormatter;
 import cn.myperf4j.base.PerfStatsProcessor;
 
 import java.util.List;
@@ -203,10 +208,10 @@ public class MyPerfStatsProcessor implements PerfStatsProcessor {
 * 输出结果
 
 ```
-MyPerf4J Performance Statistics [2018-05-20 12:33:00, 2018-05-20 12:33:30]
+MyPerf4J Performance Statistics [2018-06-09 16:40:00, 2018-06-09 16:40:30]
 Api                         RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count     TP50     TP90     TP95     TP99    TP999   TP9999  TP99999    TP100
-UserServiceImpl.getId1       47     4.47        4        7     0.07      1475        4        5        7        7        7        7        7        7
-UserServiceImpl.getId2       47     0.00        0        0     0.00      1475        0        0        0        0        0        0        0        0
+UserServiceImpl.getId1       62     4.60        4        5     0.02      1922        5        5        5        5        5        5        5        5
+UserServiceImpl.getId2       62     0.00        0        0     0.00      1922        0        0        0        0        0        0        0        0
 ```
 
 ## 关于Rough模式与Accurate模式
@@ -231,5 +236,4 @@ UserServiceImpl.getId2       47     0.00        0        0     0.00      1475   
     * 利用[ASM](http://asm.ow2.io/)来实现切面的织入
     * 速度极快！
     * 在每次记录时间时不产生任何对象，只有在计算性能指标时会产生少量的临时对象，基本不影响程序本身的GC
-
 

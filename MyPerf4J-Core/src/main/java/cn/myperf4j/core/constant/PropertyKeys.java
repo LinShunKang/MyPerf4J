@@ -19,12 +19,16 @@ public interface PropertyKeys {
 
     String DEBUG_PRINT_DEBUG_LOG = "Debug.PrintDebugLog";
 
-    String PROFILING_TYPE = "ProfilingType";
-
     String FILTER_EXCLUDE_METHODS = "ExcludeMethods";
 
     String EXCLUDE_PRIVATE_METHODS = "ExcludePrivateMethod";
 
     String FILTER_INCLUDE_CLASS_LOADERS = "ExcludeClassLoaders";
+
+    String PROFILING_PARAMS_FILE_NAME = "ProfilingParamsFile";
+
+    String PROFILING_TIME_THRESHOLD = "ProfilingTimeThreshold";
+
+    String PROFILING_OUT_THRESHOLD_COUNT = "ProfilingOutThresholdCount";
 
 }

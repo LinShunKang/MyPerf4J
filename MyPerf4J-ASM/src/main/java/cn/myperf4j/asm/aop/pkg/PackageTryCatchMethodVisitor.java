@@ -4,8 +4,7 @@ import cn.myperf4j.asm.ASMRecorderMaintainer;
 import cn.myperf4j.asm.aop.ProfilingAspect;
 import cn.myperf4j.core.AbstractRecorderMaintainer;
 import cn.myperf4j.core.TagMaintainer;
-import cn.myperf4j.core.config.ProfilerParams;
-import cn.myperf4j.core.util.Logger;
+import cn.myperf4j.core.config.ProfilingConfig;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
@@ -20,6 +19,12 @@ public class PackageTryCatchMethodVisitor extends AdviceAdapter {
 
     private AbstractRecorderMaintainer maintainer = ASMRecorderMaintainer.getInstance();
 
+    private ProfilingConfig profilingConfig = ProfilingConfig.getInstance();
+
+    private String innerClassName;
+
+    private String methodName;
+
     private String tag;
 
     private int tagId;
@@ -33,10 +38,18 @@ public class PackageTryCatchMethodVisitor extends AdviceAdapter {
                                         String name,
                                         String desc,
                                         MethodVisitor mv,
-                                        String className) {
+                                        String innerClassName) {
         super(ASM5, mv, access, name, desc);
-        this.tag = className + "." + name;
+        this.methodName = name;
+        this.tag = getTag(innerClassName, name);
         this.tagId = TagMaintainer.getInstance().addTag(tag);
+        this.innerClassName = innerClassName;
+    }
+
+    private String getTag(String innerClassName, String methodName) {
+        int idx = innerClassName.replace('.', '/').lastIndexOf('/');
+        String simpleClassName = innerClassName.substring(idx + 1, innerClassName.length());
+        return simpleClassName + "." + methodName;
     }
 
     /**
@@ -47,9 +60,7 @@ public class PackageTryCatchMethodVisitor extends AdviceAdapter {
         super.visitCode();
 
         if (profiling()) {
-            Logger.debug("PackageTryCatchMethodVisitor.visitMethod(): tag=" + tag);
-
-            maintainer.addRecorder(tagId, tag, ProfilerParams.of(false, 300, 10));
+            maintainer.addRecorder(tagId, tag, profilingConfig.getProfilingParam(innerClassName + "/" + methodName));
 
             mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "nanoTime", "()J", false);
             startTimeIdentifier = newLocal(Type.LONG_TYPE);
@@ -65,7 +76,6 @@ public class PackageTryCatchMethodVisitor extends AdviceAdapter {
     @Override
     public void visitMaxs(int maxStack, int maxLocals) {
         if (profiling()) {
-            Logger.debug("PackageTryCatchMethodVisitor.visitMaxs(" + maxStack + ", " + maxLocals + "): tag=" + tag);
             Label endFinally = new Label();
             mv.visitTryCatchBlock(startFinally, endFinally, endFinally, null);
             mv.visitLabel(endFinally);
@@ -79,7 +89,6 @@ public class PackageTryCatchMethodVisitor extends AdviceAdapter {
     @Override
     public void onMethodExit(int opcode) {
         if (profiling()) {
-            Logger.debug("PackageTryCatchMethodVisitor.onMethodExit(" + opcode + "): tag=" + tag);
             if (opcode != ATHROW) {
                 onFinally(opcode);
             }

@@ -1,6 +1,6 @@
 package cn.myperf4j.core.constant;
 
-import cn.myperf4j.core.util.MyPerfStatsProcessor;
+import cn.myperf4j.core.util.DefaultPerfStatsProcessor;
 
 /**
  * Created by LinShunkang on 2018/4/27
@@ -13,7 +13,7 @@ public interface PropertyValues {
 
     String RECORDER_MODE_ROUGH = "rough";
 
-    String DEFAULT_PERF_STATS_PROCESSOR = MyPerfStatsProcessor.class.getName();
+    String DEFAULT_PERF_STATS_PROCESSOR = DefaultPerfStatsProcessor.class.getName();
 
     long DEFAULT_TIME_SLICE = 60 * 1000L;
 
@@ -22,9 +22,5 @@ public interface PropertyValues {
     long MAX_TIME_SLICE = 10 * 60 * 1000L;
 
     String FILTER_SEPARATOR = ";";
-
-    String ASM_PROFILING_TYPE_PROFILER = "byProfiler";
-
-    String ASM_PROFILING_TYPE_PACKAGE = "byPackage";
 
 }

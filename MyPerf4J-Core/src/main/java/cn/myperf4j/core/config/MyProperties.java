@@ -53,6 +53,22 @@ public final class MyProperties {
         return defaultValue;
     }
 
+    public static int getInt(String key, int defaultValue) {
+        checkState();
+
+        String result = getStr(key);
+        if (result == null) {
+            return defaultValue;
+        }
+
+        try {
+            return Integer.parseInt(result);
+        } catch (Exception e) {
+            Logger.error("MyProperties.getInt(" + key + ", " + defaultValue + ")", e);
+        }
+        return defaultValue;
+    }
+
     public static long getLong(String key, long defaultValue) {
         checkState();
 
@@ -64,7 +80,7 @@ public final class MyProperties {
         try {
             return Long.parseLong(result);
         } catch (Exception e) {
-            Logger.error("MyProperties.getProperty(" + key + ", " + defaultValue + ")", e);
+            Logger.error("MyProperties.getLong(" + key + ", " + defaultValue + ")", e);
         }
         return defaultValue;
     }

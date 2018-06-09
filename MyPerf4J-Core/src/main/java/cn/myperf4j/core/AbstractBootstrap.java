@@ -1,6 +1,5 @@
 package cn.myperf4j.core;
 
-
 import cn.myperf4j.base.PerfStats;
 import cn.myperf4j.base.PerfStatsProcessor;
 import cn.myperf4j.core.config.ProfilingConfig;
@@ -15,10 +14,7 @@ import cn.myperf4j.core.util.PerfStatsCalculator;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -82,6 +78,11 @@ public abstract class AbstractBootstrap {
             return false;
         }
 
+        if (!initProfilingParams()) {
+            Logger.error("AbstractBootstrap initProfilingParams() FAILURE!!!");
+            return false;
+        }
+
         if (!initRecorderMaintainer()) {
             Logger.error("AbstractBootstrap initRecorderMaintainer() FAILURE!!!");
             return false;
@@ -125,10 +126,11 @@ public abstract class AbstractBootstrap {
             config.setExcludePackages(MyProperties.getStr(PropertyKeys.FILTER_EXCLUDE_PACKAGES, ""));
             config.setIncludePackages(MyProperties.getStr(PropertyKeys.FILTER_INCLUDE_PACKAGES, ""));
             config.setPrintDebugLog(MyProperties.getBoolean(PropertyKeys.DEBUG_PRINT_DEBUG_LOG, false));
-            config.setProfilingType(MyProperties.getStr(PropertyKeys.PROFILING_TYPE, PropertyValues.ASM_PROFILING_TYPE_PACKAGE));
             config.setExcludeMethods(MyProperties.getStr(PropertyKeys.FILTER_EXCLUDE_METHODS, ""));
             config.setExcludePrivateMethod(MyProperties.getBoolean(PropertyKeys.EXCLUDE_PRIVATE_METHODS, true));
             config.setExcludeClassLoaders(MyProperties.getStr(PropertyKeys.FILTER_INCLUDE_CLASS_LOADERS, ""));
+            config.setProfilingParamsFile(MyProperties.getStr(PropertyKeys.PROFILING_PARAMS_FILE_NAME, ""));
+            config.setCommonProfilingParams(MyProperties.getInt(PropertyKeys.PROFILING_TIME_THRESHOLD, 500), MyProperties.getInt(PropertyKeys.PROFILING_OUT_THRESHOLD_COUNT, 50));
             return true;
         } catch (Exception e) {
             Logger.error("AbstractBootstrap.initProfilingConfig()", e);
@@ -223,6 +225,55 @@ public abstract class AbstractBootstrap {
             Logger.error("AbstractBootstrap.initPerfStatsProcessor()", e);
         }
         return false;
+    }
+
+    private boolean initProfilingParams() {
+        InputStream in = null;
+        try {
+            ProfilingConfig config = ProfilingConfig.getInstance();
+            String profilingParamFile = config.getProfilingParamsFile();
+            if (profilingParamFile == null || profilingParamFile.isEmpty()) {
+                Logger.warn("profilingParamFile is empty!");
+                return true;
+            }
+
+            in = new FileInputStream(profilingParamFile);
+            Properties properties = new Properties();
+            properties.load(in);
+
+            Set<String> keys = properties.stringPropertyNames();
+            for (String key : keys) {
+                String value = properties.getProperty(key);
+                if (value == null) {
+                    continue;
+                }
+
+                String[] strings = value.split(":");
+                if (strings.length != 2) {
+                    continue;
+                }
+
+                int timeThreshold = getInt(strings[0].trim(), 500);
+                int outThresholdCount = getInt(strings[1].trim(), 50);
+                config.addProfilingParam(key.replace('.', '/'), timeThreshold, outThresholdCount);
+            }
+
+            return true;
+        } catch (Exception e) {
+            Logger.error("AbstractBootstrap.initProfilingParams()", e);
+        } finally {
+            IOUtils.closeQuietly(in);
+        }
+        return false;
+    }
+
+    private int getInt(String str, int defaultValue) {
+        try {
+            return Integer.valueOf(str);
+        } catch (Exception e) {
+            Logger.error("AbstractBootstrap.getInt(" + str + ")", e);
+        }
+        return defaultValue;
     }
 
     private boolean initRecorderMaintainer() {

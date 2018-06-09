@@ -2,7 +2,7 @@ package cn.myperf4j.asm;
 
 import cn.myperf4j.core.AbstractRecorderMaintainer;
 import cn.myperf4j.core.TagMaintainer;
-import cn.myperf4j.core.config.ProfilerParams;
+import cn.myperf4j.core.config.ProfilingParams;
 
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
@@ -32,7 +32,7 @@ public class ASMRecorderMaintainer extends AbstractRecorderMaintainer {
         return true;
     }
 
-    public void addRecorder(int tagId, String tag, ProfilerParams params) {
+    public void addRecorder(int tagId, String tag, ProfilingParams params) {
         synchronized (locker) {
             recorders.set(tagId, createRecorder(tag, params.getMostTimeThreshold(), params.getOutThresholdCount()));
             backupRecorders.set(tagId, createRecorder(tag, params.getMostTimeThreshold(), params.getOutThresholdCount()));

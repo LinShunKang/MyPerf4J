@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class PackageClassAdapter extends ClassVisitor implements Opcodes {
 
-    private String targetClassName;
+    private String innerClassName;
 
     /**
      * 是否把方法体包进try-finally块；也就是当方法内抛异常的时候是否还记录响应时间；
@@ -25,15 +25,15 @@ public class PackageClassAdapter extends ClassVisitor implements Opcodes {
 
     private List<String> fieldNameList = new ArrayList<>();
 
-    public PackageClassAdapter(final ClassVisitor cv, String targetClassName, boolean addTryCatch) {
+    public PackageClassAdapter(final ClassVisitor cv, String innerClassName, boolean addTryCatch) {
         super(ASM5, cv);
-        int idx = targetClassName.replace('.', '/').lastIndexOf('/');
-        this.targetClassName = targetClassName.substring(idx + 1, targetClassName.length());
+
+        this.innerClassName = innerClassName;
         this.addTryCatch = addTryCatch;
     }
 
-    public PackageClassAdapter(final ClassVisitor cv, String targetClassName) {
-        this(cv, targetClassName, false);
+    public PackageClassAdapter(final ClassVisitor cv, String innerSimpleClassName) {
+        this(cv, innerSimpleClassName, false);
     }
 
     @Override
@@ -71,9 +71,9 @@ public class PackageClassAdapter extends ClassVisitor implements Opcodes {
         }
 
         if (addTryCatch) {
-            return new PackageTryCatchMethodVisitor(access, name, desc, mv, targetClassName);
+            return new PackageTryCatchMethodVisitor(access, name, desc, mv, innerClassName);
         } else {
-            return new PackageSimpleMethodVisitor(access, name, desc, mv, targetClassName);
+            return new PackageSimpleMethodVisitor(access, name, desc, mv, innerClassName);
         }
     }
 

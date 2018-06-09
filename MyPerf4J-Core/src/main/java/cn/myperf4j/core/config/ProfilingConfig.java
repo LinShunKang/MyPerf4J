@@ -1,6 +1,9 @@
 package cn.myperf4j.core.config;
 
 import cn.myperf4j.core.constant.PropertyValues;
+import cn.myperf4j.core.util.MapUtils;
+
+import java.util.Map;
 
 /**
  * Created by LinShunkang on 2018/5/12
@@ -23,11 +26,16 @@ public class ProfilingConfig {
 
     private boolean printDebugLog;
 
-    private String profilingType;
-
     private String excludeMethods;
 
     private boolean excludePrivateMethod;
+
+    private String profilingParamsFile;
+
+    private ProfilingParams commonProfilingParams;
+
+    private Map<String, ProfilingParams> profilingParamsMap = MapUtils.createHashMap(100);
+
 
     /**
      * singleton pattern
@@ -96,18 +104,6 @@ public class ProfilingConfig {
         this.printDebugLog = printDebugLog;
     }
 
-    public String getProfilingType() {
-        return profilingType;
-    }
-
-    public boolean profilingByProfiler() {
-        return profilingType.equals(PropertyValues.ASM_PROFILING_TYPE_PROFILER);
-    }
-
-    public void setProfilingType(String profilingType) {
-        this.profilingType = profilingType;
-    }
-
     public String getExcludeMethods() {
         return excludeMethods;
     }
@@ -124,6 +120,35 @@ public class ProfilingConfig {
         this.excludePrivateMethod = excludePrivateMethod;
     }
 
+    public String getProfilingParamsFile() {
+        return profilingParamsFile;
+    }
+
+    public void setProfilingParamsFile(String profilingParamsFile) {
+        this.profilingParamsFile = profilingParamsFile;
+    }
+
+    public void setCommonProfilingParams(int timeThreshold, int outThresholdCount) {
+        this.commonProfilingParams = ProfilingParams.of(timeThreshold, outThresholdCount);
+    }
+
+    public ProfilingParams getCommonProfilingParams() {
+        return commonProfilingParams;
+    }
+
+    public void addProfilingParam(String methodName, int timeThreshold, int outThresholdCount) {
+        profilingParamsMap.put(methodName, ProfilingParams.of(timeThreshold, outThresholdCount));
+    }
+
+    public ProfilingParams getProfilingParam(String methodName) {
+        ProfilingParams params = profilingParamsMap.get(methodName);
+        if (params != null) {
+            return params;
+        }
+
+        return commonProfilingParams;
+    }
+
     @Override
     public String toString() {
         return "ProfilingConfig{" +
@@ -134,9 +159,11 @@ public class ProfilingConfig {
                 ", excludePackages='" + excludePackages + '\'' +
                 ", excludeClassLoaders='" + excludeClassLoaders + '\'' +
                 ", printDebugLog=" + printDebugLog +
-                ", profilingType='" + profilingType + '\'' +
                 ", excludeMethods='" + excludeMethods + '\'' +
                 ", excludePrivateMethod=" + excludePrivateMethod +
+                ", profilingParamsFile='" + profilingParamsFile + '\'' +
+                ", commonProfilingParams=" + commonProfilingParams +
+                ", profilingParamsMap=" + profilingParamsMap +
                 '}';
     }
 }

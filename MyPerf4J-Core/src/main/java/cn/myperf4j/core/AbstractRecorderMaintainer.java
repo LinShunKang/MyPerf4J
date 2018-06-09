@@ -2,8 +2,7 @@ package cn.myperf4j.core;
 
 import cn.myperf4j.base.PerfStats;
 import cn.myperf4j.base.PerfStatsProcessor;
-import cn.myperf4j.base.annotation.Profiler;
-import cn.myperf4j.core.config.ProfilerParams;
+import cn.myperf4j.core.config.ProfilingParams;
 import cn.myperf4j.core.constant.PropertyValues;
 import cn.myperf4j.core.util.Logger;
 import cn.myperf4j.core.util.PerfStatsCalculator;
@@ -96,10 +95,6 @@ public abstract class AbstractRecorderMaintainer {
 
     public abstract boolean initOther();
 
-    protected AbstractRecorder createRecorder(String api, Profiler profiler) {
-        return createRecorder(api, profiler.mostTimeThreshold(), profiler.outThresholdCount());
-    }
-
     protected AbstractRecorder createRecorder(String api, int mostTimeThreshold, int outThresholdCount) {
         if (accurateMode) {
             return AccurateRecorder.getInstance(api, mostTimeThreshold, outThresholdCount);
@@ -119,7 +114,7 @@ public abstract class AbstractRecorderMaintainer {
         return tempRecorderList;
     }
 
-    public abstract void addRecorder(int tagId, String tag, ProfilerParams params);
+    public abstract void addRecorder(int tagId, String tag, ProfilingParams params);
 
     public AbstractRecorder getRecorder(int tagId) {
         return recorders.get(tagId);
