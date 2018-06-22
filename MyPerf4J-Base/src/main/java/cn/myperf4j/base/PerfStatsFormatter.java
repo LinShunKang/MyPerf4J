@@ -17,7 +17,7 @@ public final class PerfStatsFormatter {
         String dataTitleFormat = "%-" + maxApiLength + "s%9s%9s%9s%9s%9s%10s%9s%9s%9s%9s%9s%9s%9s%9s%n";
         StringBuilder sb = new StringBuilder((effectiveCount + 2) * (9 * 11 + 1 + maxApiLength));
         sb.append("MyPerf4J Performance Statistics [").append(DateUtils.getStr(startMillis)).append(", ").append(DateUtils.getStr(stopMillis)).append("]").append(String.format("%n"));
-        sb.append(String.format(dataTitleFormat, "Api", "RPS", "Avg(ms)", "Min(ms)", "Max(ms)", "StdDev", "Count", "TP50", "TP90", "TP95", "TP99", "TP999", "TP9999", "TP99999", "TP100"));
+        sb.append(String.format(dataTitleFormat, "Api[" + effectiveCount + "/" + perfStatsList.size() + "]", "RPS", "Avg(ms)", "Min(ms)", "Max(ms)", "StdDev", "Count", "TP50", "TP90", "TP95", "TP99", "TP999", "TP9999", "TP99999", "TP100"));
         if (perfStatsList.isEmpty()) {
             return sb.toString();
         }
@@ -50,7 +50,6 @@ public final class PerfStatsFormatter {
     }
 
     /**
-     *
      * @param perfStatsList
      * @return : int[0]:max(api.length)  int[1]:effectiveStats
      */
