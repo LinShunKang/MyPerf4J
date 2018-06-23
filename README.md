@@ -1,10 +1,9 @@
 # MyPerf4J
-A Extremely Fast Performance Monitoring and Statistics for Java Code. Inspired by [perf4j](https://github.com/perf4j/perf4j) and [TProfiler](https://github.com/alibaba/TProfiler).
+A extremely fast performance monitoring and statistics for Java code. Inspired by [perf4j](https://github.com/perf4j/perf4j) and [TProfiler](https://github.com/alibaba/TProfiler).
 Committed to becoming a performance monitoring and statistics tool that can be used for a long time in a production environment!
 
-
 ## Multilingual document
-* English 
+* English [WIKI](https://github.com/ThinkpadNC5/MyPerf4J/wiki)
 * 中文 [README.CN.md](https://github.com/ThinkpadNC5/MyPerf4J/blob/develop/README.CN.md)
 
 ## Background
@@ -16,18 +15,6 @@ Committed to becoming a performance monitoring and statistics tool that can be u
 * It can be configured by properties.
 * Does not take up too much memory, does not affect the normal response of the program.
 * The processing of performance indicators can be customized, for example: log collection, reporting to log collection services, etc.
-
-## Design
-* By recording all response times, all possible analyses can be performed, including RPS, TP99, etc. How can we store these data efficiently?
-    - In the form of K-V, K is the response time, and V is the corresponding number of times, so the memory occupancy is only related to the number of different response times, regardless of the total number of requests.
-    - If we simply use Map to store data, it will take up a lot of unnecessary memory.
-    - According to Pareto principle, most of the of interface response time is in a very small range. This small range is particularly suitable for storage using arrays. The array subscript is the response time, and the corresponding element is the number corresponding to the response time. A small number of interface response time distribution will be relatively large, suitable for storage with Map;
-    - In summary, the core data structure is: array & Map, the response time less than a certain threshold is recorded in the array, and the response time greater than or equal to the threshold is recorded in the Map.
-* Using AOP for response time acquisition, using [ASM](http://asm.ow2.io/) to implement AOP and improve performance
-* Configuration through properties and tuning of memory usage of core data structures through parameter configuration.
-* It can collect response time by synchronous way, avoid creating too many Runnable objects, and affect GC of program.
-* Acquire the collection result asynchronously to avoid affecting the response time of the interface.
-* Expose the interface for processing the collected results to facilitate customized processing.
 
 ## Memory
 * Prerequisites
@@ -54,13 +41,13 @@ Committed to becoming a performance monitoring and statistics tool that can be u
     - The time slice is 10s, each press pauses for 20s, and executes `System.gc();`  
 
 * MyPerf4J-ASM
-
-| Threads | Number of loops per thread | RPS |
-|-------|-----|------|
-|1|1000000000|13815816|
-|2|1000000000|16199712|
-|4|1000000000|33060632|
-|8|1000000000|55981416|
+    
+    | Threads | Number of loops per thread | RPS |
+    |-------|-----|------|
+    |1|1000000000|13815816|
+    |2|1000000000|16199712|
+    |4|1000000000|33060632|
+    |8|1000000000|55981416|
 
 * Summary
     - From the benchmark results
@@ -70,164 +57,34 @@ Committed to becoming a performance monitoring and statistics tool that can be u
 
 ## Usage
 
-* Add VM options:  -javaagent:/your/path/to/MyPerf4J-ASM-${MyPerf4J-version}.jar
-* Add VM options: -DMyPerf4JPropFile=/your/path/to/myPerf4J.properties, and add properties in `/your/path/to/myPerf4J.properties`
+* Add VM options:  `-javaagent:/your/path/to/MyPerf4J-ASM-${MyPerf4J-version}.jar`
+* Add VM options: `-DMyPerf4JPropFile=/your/path/to/myPerf4J.properties`, and add properties in `/your/path/to/myPerf4J.properties`
 
-```
-#configure PerfStatsProcessor
-PerfStatsProcessor=cn.perf4j.test.profiler.MyPerfStatsProcessor
-
-#configure RecordMode，accurate/rough
-RecorderMode=accurate
-
-#configure TimeSlice，time unit: ms，min:30s，max:600s
-MillTimeSlice=60000
-
-#configure packages，separated with ';'
-IncludePackages=cn.perf4j;org.myperf4j
-
-#configure packages，separated with ';'
-ExcludePackages=org.spring;
-
-#print debug，true/false
-Debug.PrintDebugLog=true
-
-#configure methods，separated with ';'
-ExcludeMethods=equals;hash
-
-#true/false
-ExcludePrivateMethod=true
-
-#separated with ';'
-ExcludeClassLoaders=
-
-#The configuration file performs memory usage tuning by specifying certain method execution time thresholds
-ProfilingParamsFile=/your/path/to/myPerf4J.profilingParams
-
-#General method execution time threshold in ms
-ProfilingTimeThreshold=1000
-
-#The number of times the method execution time threshold is exceeded in a time slice, valid only when RecorderMode=accurate
-ProfilingOutThresholdCount=10
-```
-
-* If you want to optimize the memory usage of MyPerf4J, you can specify ProfilingParamsFile in `/your/path/to/myPerf4J.properties` and specify the execution time threshold of the specific method in `/your/path/to/myPerf4J.profilingParams`:
-
-```
-#The format is: fullClassName.methodName=methodExecutionTimeThreshold:numberOfTimesTheMethodExecutionTimeThresholdIsExceeded
-cn.perf4j.demo.UserServiceImpl.getId1=10:10
-cn.perf4j.demo.UserServiceImpl.getId2=20:20
-```
-
-* If you need to customize performance statistics, you need to add dependencies in the `pom.xml` file and create a new class that implements the PerfStatsProcessor interface.
-    - Add maven dependency in `pom.xml`
+    ```
+    #configure RecordMode，accurate/rough
+    RecorderMode=accurate
     
-        ```
-        <dependencies>
-            <dependency>
-                <groupId>MyPerf4J</groupId>
-                <artifactId>MyPerf4J-Base</artifactId>
-                <version>${MyPerf4J-version}</version>
-            </dependency>
-        </dependencies>
-        ```
-
-    - Create a new class that implements the PerfStatsProcessor interface.
+    #configure TimeSlice，time unit: ms，min:30s，max:600s
+    MillTimeSlice=60000
     
-        ``` 
-        package cn.perf4j.demo;
-        
-        import cn.myperf4j.base.PerfStats;
-        import cn.myperf4j.base.PerfStatsFormatter;
-        import cn.myperf4j.base.PerfStatsProcessor;
-        
-        import java.util.List;
-        
-        /**
-         * Created by LinShunkang on 2018/4/9
-         */
-        public class MyPerfStatsProcessor implements PerfStatsProcessor {
-        
-            @Override
-            public void process(List<PerfStats> perfStatsList, long startMillis, long stopMillis) {
-                //You can do anything you want to do :)
-                System.out.println(PerfStatsFormatter.getFormatStr(perfStatsList, startMillis, stopMillis));
-            }
-        
-        }
-        ```
-        
-
-* MyPerf4J will perform performance analysis on all classes of the `IncludePackages` specified package, and exclude `ExcludePackages` from specifying all classes of the package.
-
-
-```
-package cn.perf4j.demo;
-
-import java.util.concurrent.TimeUnit;
-
-/**
- * Created by LinShunkang on 2018/4/7
- */
-public class UserServiceImpl implements UserService {
-
-    private long f1;
-
-    @Override
-    public long getId1(long id) throws InterruptedException {
-        TimeUnit.MILLISECONDS.sleep(4);
-        return id + 100;
-    }
-
-    private long privateGetId1() {
-        return 1L;
-    }
-
-    @Override
-    public long getId2(long id) {
-        return id + 2;
-    }
-
-    @Override
-    public long getId3(long id) {
-        return 0;
-    }
-
-    public long getF1() {
-        return f1;
-    }
-
-    public void setF1(long f1) {
-        this.f1 = f1;
-    }
-}
-```
-
-* If you need to customize the performance statistics, create a new class and implements `PerfStatsProcessor`
-
-``` 
-package cn.perf4j.demo;
-
-
-import cn.myperf4j.base.PerfStats;
-import cn.myperf4j.base.PerfStatsFormatter;
-import cn.myperf4j.base.PerfStatsProcessor;
-
-import java.util.List;
-
-/**
- * Created by LinShunkang on 2018/4/9
- */
-public class MyPerfStatsProcessor implements PerfStatsProcessor {
-
-    @Override
-    public void process(List<PerfStats> perfStatsList, long startMillis, long stopMillis) {
-        //You can do anything you want to do :)
-        System.out.println(PerfStatsFormatter.getFormatStr(perfStatsList, startMillis, stopMillis));
-    }
-
-}
-```
+    #configure packages，separated with ';'
+    IncludePackages=cn.perf4j;org.myperf4j
+    
+    #configure packages，separated with ';'
+    ExcludePackages=org.spring;
+    
+    #configure methods，separated with ';'
+    ExcludeMethods=equals;hash
+    
+    #true/false
+    ExcludePrivateMethod=true
+    
+    #General method execution time threshold in ms
+    ProfilingTimeThreshold=1000
+    
+    #The number of times the method execution time threshold is exceeded in a time slice, valid only when RecorderMode=accurate
+    ProfilingOutThresholdCount=10
+    ```
 
 * Execute command `mvn clean package`
 
@@ -241,27 +98,3 @@ Api[2/3]                    RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count   
 UserServiceImpl.getId1       90     4.31        4        8     0.08      2793        4        5        6        8        8        8        8        8
 UserServiceImpl.getId2       90     0.00        0        0     0.00      2793        0        0        0        0        0        0        0        0
 ```
-
-## About Rough Mode and Accurate Mode
-* Rough Mode
-    - The accuracy is slightly worse, and it will discard the record whose response time exceeds the specified threshold.
-    - It saves more memory, and only uses array to record response time.
-    - The speed is a little faster.
-    - Default mode.
-
-* Accurate Mode
-    - High accuracy, records all response times.
-    - It consumes relatively memory and uses array & Map to record response time.
-    - The speed is slightly slower.
-    - Need to add property RecorderMode=accurate in `/your/path/to/myPerf4J.properties`.
-
-* Suggestions
-    - For memory-sensitive or precision applications that are not particularly demanding, Rough Mode is recommended.
-    - The Accurate Mode is recommended for applications that are insensitive to memory and require high accuracy.
-
-## About MyPerf4J-ASM
-* MyPerf4J-ASM
-    * Implement aspect weaving using [ASM](http://asm.ow2.io/)
-    * From a technical perspective, it is not mature enough,
-    * Extremely fast! 
-    * Does not produce any unnecessary objects, does not affect the program's own GC.
