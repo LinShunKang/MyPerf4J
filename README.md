@@ -64,7 +64,7 @@ Committed to becoming a performance monitoring and statistics tool that can be u
     #configure RecordMode，accurate/rough
     RecorderMode=accurate
     
-    #configure TimeSlice，time unit: ms，min:30s，max:600s
+    #configure TimeSlice，time unit: ms，min:10s，max:600s
     MillTimeSlice=60000
     
     #configure packages，separated with ';'

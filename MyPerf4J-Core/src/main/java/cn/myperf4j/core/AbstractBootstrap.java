@@ -303,7 +303,7 @@ public abstract class AbstractBootstrap {
 
                         ThreadPoolExecutor executor = processor.getExecutor();
                         executor.shutdown();
-                        executor.awaitTermination(30, TimeUnit.SECONDS);
+                        executor.awaitTermination(5, TimeUnit.SECONDS);
                     } catch (Exception e) {
                         Logger.error("", e);
                     } finally {
