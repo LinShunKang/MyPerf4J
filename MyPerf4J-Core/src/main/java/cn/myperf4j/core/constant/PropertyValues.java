@@ -17,7 +17,7 @@ public interface PropertyValues {
 
     long DEFAULT_TIME_SLICE = 60 * 1000L;
 
-    long MIN_TIME_SLICE = 10 * 1000L;
+    long MIN_TIME_SLICE = 1000L;
 
     long MAX_TIME_SLICE = 10 * 60 * 1000L;
 

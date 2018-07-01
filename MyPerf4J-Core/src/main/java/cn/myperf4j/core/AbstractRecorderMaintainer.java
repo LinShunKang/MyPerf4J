@@ -10,6 +10,7 @@ import cn.myperf4j.core.util.ThreadUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +23,7 @@ public abstract class AbstractRecorderMaintainer {
 
     protected final Object locker = new Object();
 
-    private List<AbstractRecorder> tempRecorderList = new ArrayList<>(1024);//内存复用，避免每一次轮转都生成一个大对象
+    private List<AbstractRecorder> tempRecorderList = new ArrayList<>(2048);//内存复用，避免每一次轮转都生成一个大对象
 
     protected volatile AtomicReferenceArray<AbstractRecorder> recorders;
 
@@ -30,7 +31,7 @@ public abstract class AbstractRecorderMaintainer {
 
     private final ScheduledThreadPoolExecutor roundRobinExecutor = new ScheduledThreadPoolExecutor(1, ThreadUtils.newThreadFactory("MyPerf4J-RoundRobinExecutor_"), new ThreadPoolExecutor.DiscardPolicy());
 
-    private final ScheduledThreadPoolExecutor backgroundExecutor = new ScheduledThreadPoolExecutor(1, ThreadUtils.newThreadFactory("MyPerf4J-BackgroundExecutor_"), new ThreadPoolExecutor.DiscardPolicy());
+    private final ThreadPoolExecutor backgroundExecutor = new ThreadPoolExecutor(1, 1, 1, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>(100), ThreadUtils.newThreadFactory("MyPerf4J-BackgroundExecutor_"), new ThreadPoolExecutor.DiscardPolicy());
 
     private PerfStatsProcessor perfStatsProcessor;
 
@@ -75,7 +76,7 @@ public abstract class AbstractRecorderMaintainer {
 
     private boolean initRoundRobinTask() {
         try {
-            roundRobinExecutor.scheduleAtFixedRate(new RoundRobinProcessor(), 0, 500, TimeUnit.MILLISECONDS);
+            roundRobinExecutor.scheduleAtFixedRate(new RoundRobinProcessor(), 0, 10, TimeUnit.MILLISECONDS);
             return true;
         } catch (Exception e) {
             Logger.error("RecorderMaintainer.initRoundRobinTask()", e);
@@ -85,7 +86,7 @@ public abstract class AbstractRecorderMaintainer {
 
     private boolean initBackgroundTask() {
         try {
-            backgroundExecutor.scheduleAtFixedRate(new BackgroundProcessor(), 0, 1, TimeUnit.SECONDS);
+            backgroundExecutor.submit(new BackgroundProcessor());
             return true;
         } catch (Exception e) {
             Logger.error("RecorderMaintainer.initBackgroundTask()", e);
@@ -164,12 +165,14 @@ public abstract class AbstractRecorderMaintainer {
                     AtomicReferenceArray<AbstractRecorder> tmpMap = recorders;
                     recorders = backupRecorders;
                     backupRecorders = tmpMap;
+
+                    backupRecorderReady = true;
+                    locker.notify();
                 }
             } catch (Exception e) {
                 Logger.error("RecorderMaintainer.roundRobinExecutor error", e);
             } finally {
-                backupRecorderReady = true;
-                Logger.info("RoundRobinProcessor finished!!! cost: " + (System.currentTimeMillis() - currentMills) + "ms");
+                Logger.info("RecorderMaintainer.roundRobinProcessor finished!!! cost: " + (System.currentTimeMillis() - currentMills) + "ms");
             }
         }
     }
@@ -178,39 +181,45 @@ public abstract class AbstractRecorderMaintainer {
 
         @Override
         public void run() {
-            if (!backupRecorderReady) {
-                return;
-            }
-
-            long start = System.currentTimeMillis();
-            try {
-                synchronized (locker) {
-                    for (int i = 0; i < backupRecorders.length(); ++i) {
-                        AbstractRecorder recorder = backupRecorders.get(i);
-                        if (recorder == null) {
-                            break;
+            while (true) {
+                long start = 0L;
+                try {
+                    synchronized (locker) {
+                        while (!backupRecorderReady) {
+                            Logger.debug("RecorderMaintainer.backgroundExecutor locker.waiting...");
+                            locker.wait();
+                            Logger.debug("RecorderMaintainer.backgroundExecutor locker.waiting passed!!!");
                         }
-                        tempRecorderList.add(recorder);
+                        Logger.debug("RecorderMaintainer.backgroundExecutor backupRecorder ready!!!");
+
+                        start = System.currentTimeMillis();
+                        for (int i = 0; i < backupRecorders.length(); ++i) {
+                            AbstractRecorder recorder = backupRecorders.get(i);
+                            if (recorder == null) {
+                                break;
+                            }
+                            tempRecorderList.add(recorder);
+                        }
                     }
-                }
 
-                AbstractRecorder recorder = null;
-                List<PerfStats> perfStatsList = new ArrayList<>(tempRecorderList.size());
-                for (int i = 0; i < tempRecorderList.size(); ++i) {
-                    recorder = tempRecorderList.get(i);
-                    perfStatsList.add(PerfStatsCalculator.calPerfStats(recorder));
-                }
+                    AbstractRecorder recorder = null;
+                    List<PerfStats> perfStatsList = new ArrayList<>(tempRecorderList.size());
+                    for (int i = 0; i < tempRecorderList.size(); ++i) {
+                        recorder = tempRecorderList.get(i);
+                        perfStatsList.add(PerfStatsCalculator.calPerfStats(recorder));
+                    }
 
-                if (recorder != null) {
-                    perfStatsProcessor.process(perfStatsList, recorder.getStartTime(), recorder.getStopTime());
-                }
+                    if (recorder != null) {
+                        perfStatsProcessor.process(perfStatsList, recorder.getStartTime(), recorder.getStopTime());
+                    }
 
-            } catch (Exception e) {
-                Logger.error("RecorderMaintainer.backgroundExecutor error", e);
-            } finally {
-                backupRecorderReady = false;
-                tempRecorderList.clear();
-                Logger.info("BackgroundProcessor finished!!! cost: " + (System.currentTimeMillis() - start) + "ms");
+                } catch (Exception e) {
+                    Logger.error("RecorderMaintainer.backgroundExecutor error", e);
+                } finally {
+                    backupRecorderReady = false;
+                    tempRecorderList.clear();
+                    Logger.info("RecorderMaintainer.backgroundProcessor finished!!! cost: " + (System.currentTimeMillis() - start) + "ms");
+                }
             }
         }
     }

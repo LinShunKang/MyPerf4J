@@ -171,7 +171,8 @@ public class PerfStats {
     }
 
     public int getRPS() {
-        long seconds = (stopMillTime - startMillTime) / 1000 + 1;
+        long seconds = (stopMillTime - startMillTime) / 1000;
+        seconds = seconds <= 0L ? 1 : seconds;
         return (int) (totalCount / seconds);
     }
 

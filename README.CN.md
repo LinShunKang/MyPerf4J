@@ -97,8 +97,10 @@
 * 输出结果
     
     ```
-    MyPerf4J Performance Statistics [2018-06-22 20:37:30, 2018-06-22 20:38:00]
+    2018-07-01 23:40:24.2 [MyPerf4J] INFO RecorderMaintainer.roundRobinProcessor finished!!! cost: 0ms
+    2018-07-01 23:40:24.3 [MyPerf4J] INFO RecorderMaintainer.backgroundProcessor finished!!! cost: 1ms
+    MyPerf4J Performance Statistics [2018-07-01 23:40:23, 2018-07-01 23:40:24]
     Api[2/3]                    RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count     TP50     TP90     TP95     TP99    TP999   TP9999  TP99999    TP100
-    UserServiceImpl.getId1       90     4.31        4        8     0.08      2793        4        5        6        8        8        8        8        8
-    UserServiceImpl.getId2       90     0.00        0        0     0.00      2793        0        0        0        0        0        0        0        0
+    UserServiceImpl.getId1  7454181     0.00        0        0     0.00   7454181        0        0        0        0        0        0        0        0
+    UserServiceImpl.getId2  7454180     0.00        0        0     0.00   7454180        0        0        0        0        0        0        0        0
     ```

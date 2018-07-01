@@ -1,5 +1,7 @@
 package cn.myperf4j.core;
 
+import cn.myperf4j.core.util.Logger;
+
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
@@ -8,7 +10,7 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
  */
 public class TagMaintainer extends AbstractTagMaintainer {
 
-    public static final int MAX_NUM = 1024 * 512;
+    public static final int MAX_NUM = 1024 * 128;
 
     private final AtomicInteger tagIndex = new AtomicInteger(0);
 
@@ -28,6 +30,7 @@ public class TagMaintainer extends AbstractTagMaintainer {
     public int addTag(String tag) {
         int tagId = tagIndex.getAndIncrement();
         if (tagId > MAX_NUM) {
+            Logger.warn("TagMaintainer.addTag(" + tag + "): tagId > MAX_NUM: " + tagId + " > " + MAX_NUM + ", ignored!!!");
             return -1;
         }
 
