@@ -78,7 +78,13 @@ public class PackageClassAdapter extends ClassVisitor implements Opcodes {
     }
 
     private boolean isNeedVisit(int access, String name) {
+        //不对私有方法进行注入
         if ((access & ACC_PRIVATE) != 0 && ProfilingConfig.getInstance().isExcludePrivateMethod()) {
+            return false;
+        }
+
+        //不对抽象方法和native方法进行注入
+        if ((access & ACC_ABSTRACT) != 0 || (access & ACC_NATIVE) != 0) {
             return false;
         }
 
