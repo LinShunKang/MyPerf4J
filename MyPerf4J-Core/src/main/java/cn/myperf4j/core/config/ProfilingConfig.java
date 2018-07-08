@@ -16,6 +16,8 @@ public class ProfilingConfig {
 
     private String recorderMode;
 
+    private int backupRecorderCount;
+
     private long milliTimeSlice;
 
     private String includePackages;
@@ -62,6 +64,14 @@ public class ProfilingConfig {
 
     public void setRecorderMode(String recorderMode) {
         this.recorderMode = recorderMode;
+    }
+
+    public int getBackupRecorderCount() {
+        return backupRecorderCount;
+    }
+
+    public void setBackupRecorderCount(int backupRecorderCount) {
+        this.backupRecorderCount = backupRecorderCount;
     }
 
     public long getMilliTimeSlice() {

@@ -3,13 +3,11 @@ package cn.myperf4j.core;
 /**
  * Created by LinShunkang on 2018/3/13
  */
-public abstract class AbstractRecorder {
+public abstract class Recorder {
 
     private String tag;
 
-    private long startTime;//ms
-
-    private long stopTime;//ms
+    protected volatile boolean hasRecord;
 
     public String getTag() {
         return tag;
@@ -19,20 +17,12 @@ public abstract class AbstractRecorder {
         this.tag = tag;
     }
 
-    public long getStartTime() {
-        return startTime;
+    public boolean hasRecord() {
+        return hasRecord;
     }
 
-    public void setStartTime(long startMilliTime) {
-        this.startTime = startMilliTime;
-    }
-
-    public long getStopTime() {
-        return stopTime;
-    }
-
-    public void setStopTime(long stopTime) {
-        this.stopTime = stopTime;
+    public void setHasRecord(boolean hasRecord) {
+        this.hasRecord = hasRecord;
     }
 
     public abstract void recordTime(long startNanoTime, long endNanoTime);

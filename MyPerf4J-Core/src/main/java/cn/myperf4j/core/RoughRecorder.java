@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
  * 注意：由于该Recorder只记录小于mostTimeThreshold的响应时间，
  * 所以为了保证RoughRecorder记录的准确性，请把mostTimeThreshold设置的偏大一些。
  */
-public class RoughRecorder extends AbstractRecorder {
+public class RoughRecorder extends Recorder {
 
     private final AtomicIntegerArray timingArr;
 
@@ -35,6 +35,7 @@ public class RoughRecorder extends AbstractRecorder {
         if (startNanoTime > endNanoTime) {
             return;
         }
+        hasRecord = true;
 
         int elapsedTime = (int) ((endNanoTime - startNanoTime) / 1000000);
         if (elapsedTime < timingArr.length()) {
@@ -76,8 +77,7 @@ public class RoughRecorder extends AbstractRecorder {
             timingArr.set(i, 0);
         }
 
-        setStartTime(0L);
-        setStopTime(0L);
+        hasRecord = false;
     }
 
     @Override

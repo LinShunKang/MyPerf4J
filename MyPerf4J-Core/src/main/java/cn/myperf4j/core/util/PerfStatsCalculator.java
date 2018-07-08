@@ -2,15 +2,13 @@ package cn.myperf4j.core.util;
 
 
 import cn.myperf4j.base.PerfStats;
-import cn.myperf4j.core.AbstractRecorder;
+import cn.myperf4j.core.Recorder;
 
 /**
  * Created by LinShunkang on 2018/3/11
  */
 public final class PerfStatsCalculator {
 
-    //由于调用PerfStatsCalculator.calPerfStats()方法的线程只有一个，
-    // 并且PerfStats.getPercentiles().length是一定的，所以可以用ThreadLocal进行复用
     private static final ThreadLocal<int[]> threadLocalIntArr = new ThreadLocal<int[]>() {
         @Override
         protected int[] initialValue() {
@@ -18,25 +16,25 @@ public final class PerfStatsCalculator {
         }
     };
 
-    public static PerfStats calPerfStats(AbstractRecorder recorder) {
+    public static PerfStats calPerfStats(Recorder recorder, long startTime, long stopTime) {
         int[] sortedRecords = null;
         try {
             int effectiveCount = recorder.getEffectiveCount();
             sortedRecords = ChunkPool.getInstance().getChunk(effectiveCount * 2);
             recorder.fillSortedRecords(sortedRecords);
-            return calPerfStats(recorder.getTag(), recorder.getStartTime(), recorder.getStopTime(), sortedRecords, effectiveCount);
+            return calPerfStats(recorder.getTag(), startTime, stopTime, sortedRecords, effectiveCount);
         } catch (Exception e) {
-            Logger.error("PerfStatsCalculator.calPerfStats(" + recorder + ")", e);
+            Logger.error("PerfStatsCalculator.calPerfStats(" + recorder + ", " + startTime + ", " + stopTime + ")", e);
         } finally {
             ChunkPool.getInstance().returnChunk(sortedRecords);
         }
-        return PerfStats.getInstance(recorder.getTag(), recorder.getStartTime(), recorder.getStopTime());
+        return PerfStats.getInstance(recorder.getTag(), startTime, stopTime);
     }
 
     private static PerfStats calPerfStats(String api, long startTime, long stopTime, int[] sortedRecords, int effectiveCount) {
-        int[] pair = getTotalTimeAndTotalCount(sortedRecords);
-        int totalTime = pair[0];
-        int totalCount = pair[1];
+        long[] pair = getTotalTimeAndTotalCount(sortedRecords);
+        long totalTime = pair[0];
+        int totalCount = (int) pair[1];
         PerfStats result = PerfStats.getInstance(api);
         result.setTotalCount(totalCount);
         result.setStartMillTime(startTime);
@@ -80,10 +78,10 @@ public final class PerfStatsCalculator {
 
     /**
      * @param sortedRecords
-     * @return : int[]: int[0]代表totalTimeCost, int[1]代表totalCount
+     * @return : long[]: int[0]代表totalTimeCost, int[1]代表totalCount
      */
-    private static int[] getTotalTimeAndTotalCount(int[] sortedRecords) {
-        int[] result = {0, 0};
+    private static long[] getTotalTimeAndTotalCount(int[] sortedRecords) {
+        long[] result = {0L, 0L};
         if (sortedRecords == null || sortedRecords.length == 0) {
             return result;
         }

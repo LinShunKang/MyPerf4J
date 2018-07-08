@@ -122,6 +122,7 @@ public abstract class AbstractBootstrap {
             ProfilingConfig config = ProfilingConfig.getInstance();
             config.setPerStatsProcessor(MyProperties.getStr(PropertyKeys.PERF_STATS_PROCESSOR, PropertyValues.DEFAULT_PERF_STATS_PROCESSOR));
             config.setRecorderMode(MyProperties.getStr(PropertyKeys.RECORDER_MODE, PropertyValues.RECORDER_MODE_ROUGH));
+            config.setBackupRecorderCount(MyProperties.getInt(PropertyKeys.BACKUP_RECORDERS_COUNT, PropertyValues.MIN_BACKUP_RECORDERS_COUNT));
             config.setMilliTimeSlice(MyProperties.getLong(PropertyKeys.MILL_TIME_SLICE, PropertyValues.DEFAULT_TIME_SLICE));
             config.setExcludePackages(MyProperties.getStr(PropertyKeys.FILTER_EXCLUDE_PACKAGES, ""));
             config.setIncludePackages(MyProperties.getStr(PropertyKeys.FILTER_INCLUDE_PACKAGES, ""));
@@ -289,17 +290,18 @@ public abstract class AbstractBootstrap {
                 public void run() {
                     Logger.info("ENTER ShutdownHook...");
                     try {
-                        List<AbstractRecorder> recorders = maintainer.getRecorders();
+                        Recorders recorders = maintainer.getRecorders();
                         List<PerfStats> perfStatsList = new ArrayList<>(recorders.size());
-                        AbstractRecorder recorder = null;
-                        for (int i = 0; i < recorders.size(); ++i) {
-                            recorder = recorders.get(i);
-                            perfStatsList.add(PerfStatsCalculator.calPerfStats(recorder));
-                        }
+                        int actualSize = TagMaintainer.getInstance().getTagCount();
+                        for (int i = 0; i < actualSize; ++i) {
+                            Recorder recorder = recorders.getRecorder(i);
+                            if (recorder == null || !recorder.hasRecord()) {
+                                continue;
+                            }
 
-                        if (recorder != null) {
-                            processor.process(perfStatsList, recorder.getStartTime(), recorder.getStopTime());
+                            perfStatsList.add(PerfStatsCalculator.calPerfStats(recorder, recorders.getStartTime(), recorders.getStopTime()));
                         }
+                        processor.process(perfStatsList, actualSize, recorders.getStartTime(), recorders.getStopTime());
 
                         ThreadPoolExecutor executor = processor.getExecutor();
                         executor.shutdown();

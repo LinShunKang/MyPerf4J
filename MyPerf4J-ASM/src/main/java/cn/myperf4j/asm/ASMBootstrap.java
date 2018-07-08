@@ -26,9 +26,10 @@ public class ASMBootstrap extends AbstractBootstrap {
     public AbstractRecorderMaintainer doInitRecorderMaintainer() {
         boolean accurateMode = ProfilingConfig.getInstance().isAccurateMode();
         long milliTimeSlice = ProfilingConfig.getInstance().getMilliTimeSlice();
+        int backupRecorderCount = ProfilingConfig.getInstance().getBackupRecorderCount();
 
         ASMRecorderMaintainer maintainer = ASMRecorderMaintainer.getInstance();
-        if (maintainer.initial(processor, accurateMode, milliTimeSlice)) {
+        if (maintainer.initial(processor, accurateMode, backupRecorderCount, milliTimeSlice)) {
             return maintainer;
         }
         return null;

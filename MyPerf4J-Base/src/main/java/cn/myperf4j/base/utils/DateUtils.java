@@ -18,7 +18,7 @@ public final class DateUtils {
         }
     };
 
-    private static final String TO_MILLS_FORMAT = "yyyy-MM-dd HH:mm:ss.S";
+    private static final String TO_MILLS_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
 
     private static final ThreadLocal<DateFormat> TO_MILLS_DATE_FORMAT = new ThreadLocal<DateFormat>() {
         @Override

@@ -9,4 +9,6 @@ public abstract class AbstractTagMaintainer {
 
     public abstract String getTag(int tagId);
 
+    public abstract int getTagCount();
+
 }

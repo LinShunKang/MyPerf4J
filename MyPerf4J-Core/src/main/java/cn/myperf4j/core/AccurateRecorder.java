@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
  * 1、将小于mostTimeThreshold的响应时间记录在数组中；
  * 2、将大于等于mostTimeThreshold的响应时间记录到Map中。
  */
-public class AccurateRecorder extends AbstractRecorder {
+public class AccurateRecorder extends Recorder {
 
     private final AtomicIntegerArray timingArr;
 
@@ -34,6 +34,7 @@ public class AccurateRecorder extends AbstractRecorder {
         if (startNanoTime > endNanoTime) {
             return;
         }
+        hasRecord = true;
 
         int elapsedTime = (int) ((endNanoTime - startNanoTime) / 1000000);
         if (elapsedTime < timingArr.length()) {
@@ -116,8 +117,7 @@ public class AccurateRecorder extends AbstractRecorder {
             }
         }
 
-        setStartTime(0L);
-        setStopTime(0L);
+        hasRecord = false;
     }
 
     @Override

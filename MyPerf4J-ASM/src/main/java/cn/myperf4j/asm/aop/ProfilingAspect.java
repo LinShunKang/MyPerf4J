@@ -1,7 +1,7 @@
 package cn.myperf4j.asm.aop;
 
 import cn.myperf4j.asm.ASMRecorderMaintainer;
-import cn.myperf4j.core.AbstractRecorder;
+import cn.myperf4j.core.Recorder;
 import cn.myperf4j.core.TagMaintainer;
 import cn.myperf4j.core.util.Logger;
 
@@ -21,7 +21,7 @@ public final class ProfilingAspect {
                 return;
             }
 
-            AbstractRecorder recorder = recorderMaintainer.getRecorder(tagId);
+            Recorder recorder = recorderMaintainer.getRecorder(tagId);
             if (recorder == null) {
                 Logger.warn("ProfilingAspect.doProfiling(): tag=" + TagMaintainer.getInstance().getTag(tagId) + ", startNanos: " + startNanos + ", recorder is null IGNORED!!!");
                 return;

@@ -13,6 +13,10 @@ public interface PropertyValues {
 
     String RECORDER_MODE_ROUGH = "rough";
 
+    int MIN_BACKUP_RECORDERS_COUNT = 1;
+
+    int MAX_BACKUP_RECORDERS_COUNT = 8;
+
     String DEFAULT_PERF_STATS_PROCESSOR = DefaultPerfStatsProcessor.class.getName();
 
     long DEFAULT_TIME_SLICE = 60 * 1000L;

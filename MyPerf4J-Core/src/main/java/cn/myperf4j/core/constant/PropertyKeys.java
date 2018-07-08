@@ -11,6 +11,8 @@ public interface PropertyKeys {
 
     String RECORDER_MODE = "RecorderMode";
 
+    String BACKUP_RECORDERS_COUNT = "BackupRecordersCount";
+
     String MILL_TIME_SLICE = "MillTimeSlice";
 
     String FILTER_INCLUDE_PACKAGES = "IncludePackages";

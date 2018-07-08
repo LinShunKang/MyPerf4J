@@ -26,18 +26,22 @@ public class AsyncPerfStatsProcessor implements PerfStatsProcessor {
     }
 
     @Override
-    public void process(final List<PerfStats> perfStatsList, final long startMillis, final long stopMillis) {
+    public void process(final List<PerfStats> perfStatsList, final int injectMethodCount, final long startMillis, final long stopMillis) {
         try {
+            if (perfStatsList == null || perfStatsList.isEmpty()) {
+                return;
+            }
+
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
                     if (target != null) {
-                        target.process(perfStatsList, startMillis, stopMillis);
+                        target.process(perfStatsList, injectMethodCount, startMillis, stopMillis);
                     }
                 }
             });
         } catch (Exception e) {
-            Logger.error("AsyncPerfStatsProcessor.process(" + perfStatsList + ", " + startMillis + ", " + startMillis + "", e);
+            Logger.error("AsyncPerfStatsProcessor.process(" + perfStatsList + ", " + injectMethodCount + ", " + startMillis + ", " + startMillis + "", e);
         }
     }
 

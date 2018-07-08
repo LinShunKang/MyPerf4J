@@ -46,4 +46,8 @@ public class TagMaintainer extends AbstractTagMaintainer {
         return null;
     }
 
+    @Override
+    public int getTagCount() {
+        return tagIndex.get();
+    }
 }

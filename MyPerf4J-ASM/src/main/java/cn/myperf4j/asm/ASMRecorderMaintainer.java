@@ -1,10 +1,8 @@
 package cn.myperf4j.asm;
 
 import cn.myperf4j.core.AbstractRecorderMaintainer;
-import cn.myperf4j.core.TagMaintainer;
+import cn.myperf4j.core.Recorders;
 import cn.myperf4j.core.config.ProfilingParams;
-
-import java.util.concurrent.atomic.AtomicReferenceArray;
 
 /**
  * Created by LinShunkang on 2018/4/26
@@ -13,19 +11,10 @@ public class ASMRecorderMaintainer extends AbstractRecorderMaintainer {
 
     private static final ASMRecorderMaintainer instance = new ASMRecorderMaintainer();
 
-    private ASMRecorderMaintainer() {
-        recorders = new AtomicReferenceArray<>(TagMaintainer.MAX_NUM);
-        backupRecorders = new AtomicReferenceArray<>(TagMaintainer.MAX_NUM);
-    }
-
     public static ASMRecorderMaintainer getInstance() {
         return instance;
     }
 
-    @Override
-    public boolean initRecorderMap() {
-        return true;
-    }
 
     @Override
     public boolean initOther() {
@@ -33,9 +22,9 @@ public class ASMRecorderMaintainer extends AbstractRecorderMaintainer {
     }
 
     public void addRecorder(int tagId, String tag, ProfilingParams params) {
-        synchronized (locker) {
-            recorders.set(tagId, createRecorder(tag, params.getMostTimeThreshold(), params.getOutThresholdCount()));
-            backupRecorders.set(tagId, createRecorder(tag, params.getMostTimeThreshold(), params.getOutThresholdCount()));
+        for (int i = 0; i < recordersList.size(); ++i) {
+            Recorders recorders = recordersList.get(i);
+            recorders.setRecorder(tagId, createRecorder(tag, params.getMostTimeThreshold(), params.getOutThresholdCount()));
         }
     }
 }

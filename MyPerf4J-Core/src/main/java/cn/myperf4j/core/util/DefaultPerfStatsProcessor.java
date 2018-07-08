@@ -13,9 +13,9 @@ import java.util.List;
 public class DefaultPerfStatsProcessor implements PerfStatsProcessor {
 
     @Override
-    public void process(List<PerfStats> perfStatsList, long startMillis, long stopMillis) {
+    public void process(List<PerfStats> perfStatsList, int injectMethodCount, long startMillis, long stopMillis) {
         //You can do anything you want to do :)
-        System.out.println(PerfStatsFormatter.getFormatStr(perfStatsList, startMillis, stopMillis));
+        System.out.println(PerfStatsFormatter.getFormatStr(perfStatsList, injectMethodCount, startMillis, stopMillis));
     }
 
 }
