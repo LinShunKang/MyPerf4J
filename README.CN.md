@@ -74,7 +74,7 @@
     #配置Record模式，可配置为accurate/rough
     RecorderMode=accurate
     
-    #配置时间片，单位为ms，最小10s，最大600s
+    #配置时间片，单位为ms，最小1s，最大600s
     MillTimeSlice=10000
     
     #需要监控的package，可配置多个，用英文';'分隔
