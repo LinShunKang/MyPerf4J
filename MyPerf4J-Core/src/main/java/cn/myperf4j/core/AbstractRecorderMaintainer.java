@@ -154,7 +154,7 @@ public abstract class AbstractRecorderMaintainer {
                 tmpCurRecorders.setStopTime(nextTimeSliceEndTime - millTimeSlice);
 
                 curIndex = getNextIdx(curIndex);
-                Logger.info("RecorderMaintainer.roundRobinProcessor curIndex=" + curIndex % recordersList.size());
+                Logger.debug("RecorderMaintainer.roundRobinProcessor curIndex=" + curIndex % recordersList.size());
 
                 Recorders nextRecorders = recordersList.get(curIndex % recordersList.size());
                 nextRecorders.setStartTime(nextTimeSliceEndTime - millTimeSlice);

@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by LinShunkang on 2018/3/30
  */
-public final class PerfStatsFormatter {
+public final class DefaultPerfStatsFormatter {
 
     public static String getFormatStr(List<PerfStats> perfStatsList, int injectMethodCount, long startMillis, long stopMillis) {
         int[] statisticsArr = getStatistics(perfStatsList);

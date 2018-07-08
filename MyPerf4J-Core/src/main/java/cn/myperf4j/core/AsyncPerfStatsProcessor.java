@@ -28,7 +28,7 @@ public class AsyncPerfStatsProcessor implements PerfStatsProcessor {
     @Override
     public void process(final List<PerfStats> perfStatsList, final int injectMethodCount, final long startMillis, final long stopMillis) {
         try {
-            if (perfStatsList == null || perfStatsList.isEmpty()) {
+            if (perfStatsList == null) {
                 return;
             }
 

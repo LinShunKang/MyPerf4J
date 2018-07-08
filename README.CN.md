@@ -65,6 +65,12 @@
 * 在JVM启动参数里加上：-DMyPerf4JPropFile=/your/path/to/myPerf4J.properties，并在`/your/path/to/myPerf4J.properties`中加入以下几个配置项：
 
     ```
+    #配置PerfStatsProcessor，可不配置，用于自定义统计数据的处理
+    #PerfStatsProcessor=cn.perf4j.demo.MyPerfStatsProcessor
+    
+    #配置备份Recorders的数量，默认为1，最小为1，最大为8，当需要在较小MillTimeSlice内统计大量方法性能数据时可配置大一些
+    BackupRecordersCount=1
+    
     #配置Record模式，可配置为accurate/rough
     RecorderMode=accurate
     

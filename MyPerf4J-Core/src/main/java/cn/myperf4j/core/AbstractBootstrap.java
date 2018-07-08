@@ -34,7 +34,7 @@ public abstract class AbstractBootstrap {
                 return false;
             }
 
-            Logger.info("MyASMBootstrap doInitial() SUCCESS!!!");
+            Logger.info("AbstractBootstrap doInitial() SUCCESS!!!");
             return true;
         } catch (Exception e) {
             Logger.error("AbstractBootstrap.initial()", e);

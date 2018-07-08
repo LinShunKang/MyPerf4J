@@ -1,6 +1,6 @@
 package cn.myperf4j.core.constant;
 
-import cn.myperf4j.core.util.DefaultPerfStatsProcessor;
+import cn.myperf4j.base.DefaultPerfStatsProcessor;
 
 /**
  * Created by LinShunkang on 2018/4/27

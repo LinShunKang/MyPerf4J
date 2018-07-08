@@ -61,6 +61,12 @@ Committed to becoming a performance monitoring and statistics tool that can be u
 * Add VM options: `-DMyPerf4JPropFile=/your/path/to/myPerf4J.properties`, and add properties in `/your/path/to/myPerf4J.properties`
 
     ```
+    #configurePerfStatsProcessor，can be configured without for configuration of custom statistics
+    #PerfStatsProcessor=cn.perf4j.demo.MyPerfStatsProcessor
+        
+    #Configure the number of backup Recorders. The default is 1, the minimum is 1, and the maximum is 8. When you need to count a large number of method performance data in a smaller MillTimeSlice, you can configure a larger number.
+    BackupRecordersCount=1
+    
     #configure RecordMode，accurate/rough
     RecorderMode=accurate
     
