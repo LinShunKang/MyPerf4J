@@ -3,8 +3,9 @@ A extremely fast performance monitoring and statistics for Java code. Inspired b
 Committed to becoming a performance monitoring and statistics tool that can be used for a long time in a production environment!
 
 ## Multilingual document
-* English [WIKI](https://github.com/ThinkpadNC5/MyPerf4J/wiki)
-* 中文 [README.CN.md](https://github.com/ThinkpadNC5/MyPerf4J/blob/develop/README.CN.md)
+* English [WIKI](https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Wiki)
+* 中文 [README](https://github.com/ThinkpadNC5/MyPerf4J/blob/develop/README.CN.md) [WIKI](https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Wiki)
+
 
 ## Background
 * I need a program that can measure the response time of method.

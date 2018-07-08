@@ -3,8 +3,8 @@
 致力于成为可在生产环境长时间使用的性能监控和统计工具！
 
 ## 多语言文档
-* English [WIKI](https://github.com/ThinkpadNC5/MyPerf4J/wiki)
-* 中文 
+* English [README](https://github.com/ThinkpadNC5/MyPerf4J/blob/develop/README.md) [WIKI](https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Wiki)
+* 中文  [WIKI](https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Wiki)
 
 ## 背景
 * 我需要一个能统计接口响应时间的程序
