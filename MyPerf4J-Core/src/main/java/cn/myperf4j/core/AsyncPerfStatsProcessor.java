@@ -35,8 +35,12 @@ public class AsyncPerfStatsProcessor implements PerfStatsProcessor {
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    if (target != null) {
-                        target.process(perfStatsList, injectMethodCount, startMillis, stopMillis);
+                    try {
+                        if (target != null) {
+                            target.process(perfStatsList, injectMethodCount, startMillis, stopMillis);
+                        }
+                    } catch (Exception e) {
+                        Logger.error("AsyncPerfStatsProcessor.run()", e);
                     }
                 }
             });

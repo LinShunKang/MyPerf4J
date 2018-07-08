@@ -53,7 +53,7 @@ public final class DefaultPerfStatsFormatter {
      * @return : int[0]:max(api.length)
      */
     private static int[] getStatistics(List<PerfStats> perfStatsList) {
-        int[] result = new int[1];
+        int[] result = {1};
         for (int i = 0; i < perfStatsList.size(); ++i) {
             PerfStats stats = perfStatsList.get(i);
             if (stats == null || stats.getApi() == null) {
