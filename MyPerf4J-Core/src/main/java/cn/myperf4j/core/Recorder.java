@@ -5,16 +5,16 @@ package cn.myperf4j.core;
  */
 public abstract class Recorder {
 
-    private String tag;
+    private final int methodTagId;
 
-    protected volatile boolean hasRecord;
+    volatile boolean hasRecord;
 
-    public String getTag() {
-        return tag;
+    public Recorder(int methodTagId) {
+        this.methodTagId = methodTagId;
     }
 
-    public void setTag(String tag) {
-        this.tag = tag;
+    public int getMethodTagId() {
+        return methodTagId;
     }
 
     public boolean hasRecord() {

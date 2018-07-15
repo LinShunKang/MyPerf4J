@@ -1,13 +1,20 @@
 package cn.myperf4j.core.util;
 
-import cn.myperf4j.base.utils.DateUtils;
-
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
  * Created by LinShunkang on 2018/3/20
  */
 public final class Logger {
+
+    private static final ThreadLocal<DateFormat> TO_MILLS_DATE_FORMAT = new ThreadLocal<DateFormat>() {
+        @Override
+        protected DateFormat initialValue() {
+            return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        }
+    };
 
     private static boolean debugEnable = false;
 
@@ -30,7 +37,11 @@ public final class Logger {
     }
 
     private static String getPrefix(String logLevel) {
-        return DateUtils.getToMillisStr(new Date()) + PREFIX + logLevel;
+        return getToMillisStr(new Date()) + PREFIX + logLevel;
+    }
+
+    private static String getToMillisStr(Date date) {
+        return TO_MILLS_DATE_FORMAT.get().format(date);
     }
 
     public static void debug(String msg) {
@@ -53,4 +64,5 @@ public final class Logger {
             throwable.printStackTrace();
         }
     }
+
 }

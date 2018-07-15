@@ -1,8 +1,8 @@
 package cn.myperf4j.asm.aop;
 
 import cn.myperf4j.asm.ASMRecorderMaintainer;
+import cn.myperf4j.core.MethodTagMaintainer;
 import cn.myperf4j.core.Recorder;
-import cn.myperf4j.core.TagMaintainer;
 import cn.myperf4j.core.util.Logger;
 
 /**
@@ -14,23 +14,23 @@ public final class ProfilingAspect {
 
     private static volatile boolean running = false;
 
-    public static void profiling(long startNanos, int tagId) {
+    public static void profiling(long startNanos, int methodTagId) {
         try {
             if (!running) {
-                Logger.warn("ProfilingAspect.doProfiling(): tag=" + TagMaintainer.getInstance().getTag(tagId) + ", startNanos: " + startNanos + ", IGNORED!!!");
+                Logger.warn("ProfilingAspect.doProfiling(): methodTagId=" + methodTagId + ", methodTag=" + MethodTagMaintainer.getInstance().getMethodTag(methodTagId) + ", startNanos: " + startNanos + ", IGNORED!!!");
                 return;
             }
 
-            Recorder recorder = recorderMaintainer.getRecorder(tagId);
+            Recorder recorder = recorderMaintainer.getRecorder(methodTagId);
             if (recorder == null) {
-                Logger.warn("ProfilingAspect.doProfiling(): tag=" + TagMaintainer.getInstance().getTag(tagId) + ", startNanos: " + startNanos + ", recorder is null IGNORED!!!");
+                Logger.warn("ProfilingAspect.doProfiling(): methodTagId=" + methodTagId + ", methodTag=" + MethodTagMaintainer.getInstance().getMethodTag(methodTagId) + ", startNanos: " + startNanos + ", recorder is null IGNORED!!!");
                 return;
             }
 
             long stopNanos = System.nanoTime();
             recorder.recordTime(startNanos, stopNanos);
         } catch (Exception e) {
-            Logger.error("ProfilingAspect.doProfiling(" + startNanos + ", " + TagMaintainer.getInstance().getTag(tagId) + ")", e);
+            Logger.error("ProfilingAspect.doProfiling(" + startNanos + ", " + methodTagId + ", " + MethodTagMaintainer.getInstance().getMethodTag(methodTagId) + ")", e);
         }
     }
 

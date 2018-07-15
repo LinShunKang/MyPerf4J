@@ -164,6 +164,7 @@ public class ProfilingConfig {
         return "ProfilingConfig{" +
                 "perStatsProcessor='" + perStatsProcessor + '\'' +
                 ", recorderMode='" + recorderMode + '\'' +
+                ", backupRecorderCount=" + backupRecorderCount +
                 ", milliTimeSlice=" + milliTimeSlice +
                 ", includePackages='" + includePackages + '\'' +
                 ", excludePackages='" + excludePackages + '\'' +

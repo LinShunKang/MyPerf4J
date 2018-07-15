@@ -25,7 +25,8 @@ public class RoughRecorder extends Recorder {
     private final AtomicInteger outThresholdCounter;
 
 
-    public RoughRecorder(int mostTimeThreshold) {
+    public RoughRecorder(int methodTag, int mostTimeThreshold) {
+        super(methodTag);
         this.timingArr = new AtomicIntegerArray(mostTimeThreshold);
         this.outThresholdCounter = new AtomicInteger(0);
     }
@@ -85,9 +86,7 @@ public class RoughRecorder extends Recorder {
         return outThresholdCounter.get();
     }
 
-    public static RoughRecorder getInstance(String api, int mostTimeThreshold) {
-        RoughRecorder recorder = new RoughRecorder(mostTimeThreshold);
-        recorder.setTag(api);
-        return recorder;
+    public static RoughRecorder getInstance(int methodTagId, int mostTimeThreshold) {
+        return new RoughRecorder(methodTagId, mostTimeThreshold);
     }
 }

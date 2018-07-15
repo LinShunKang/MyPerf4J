@@ -1,5 +1,6 @@
 package cn.myperf4j.core;
 
+import cn.myperf4j.base.MethodTag;
 import cn.myperf4j.base.PerfStats;
 import cn.myperf4j.base.PerfStatsProcessor;
 import cn.myperf4j.core.config.ProfilingParams;
@@ -19,6 +20,8 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 public abstract class AbstractRecorderMaintainer {
 
     protected List<Recorders> recordersList;
+
+    protected MethodTagMaintainer methodTagMaintainer = MethodTagMaintainer.getInstance();
 
     private int curIndex = 0;
 
@@ -76,7 +79,7 @@ public abstract class AbstractRecorderMaintainer {
     private boolean initRecorders(int backupRecordersCount) {
         recordersList = new ArrayList<>(backupRecordersCount + 1);
         for (int i = 0; i < backupRecordersCount + 1; ++i) {
-            Recorders recorders = new Recorders(new AtomicReferenceArray<Recorder>(TagMaintainer.MAX_NUM));
+            Recorders recorders = new Recorders(new AtomicReferenceArray<Recorder>(MethodTagMaintainer.MAX_NUM));
             recordersList.add(recorders);
         }
 
@@ -116,21 +119,21 @@ public abstract class AbstractRecorderMaintainer {
 
     public abstract boolean initOther();
 
-    protected Recorder createRecorder(String api, int mostTimeThreshold, int outThresholdCount) {
+    protected Recorder createRecorder(int methodTagId, int mostTimeThreshold, int outThresholdCount) {
         if (accurateMode) {
-            return AccurateRecorder.getInstance(api, mostTimeThreshold, outThresholdCount);
+            return AccurateRecorder.getInstance(methodTagId, mostTimeThreshold, outThresholdCount);
         }
-        return RoughRecorder.getInstance(api, mostTimeThreshold);
+        return RoughRecorder.getInstance(methodTagId, mostTimeThreshold);
     }
 
     public Recorders getRecorders() {
         return curRecorders;
     }
 
-    public abstract void addRecorder(int tagId, String tag, ProfilingParams params);
+    public abstract void addRecorder(int methodTagId, ProfilingParams params);
 
-    public Recorder getRecorder(int tagId) {
-        return curRecorders.getRecorder(tagId);
+    public Recorder getRecorder(int methodTagId) {
+        return curRecorders.getRecorder(methodTagId);
     }
 
     private class RoundRobinProcessor implements Runnable {
@@ -174,11 +177,11 @@ public abstract class AbstractRecorderMaintainer {
                                 return;
                             }
 
-                            int actualSize = TagMaintainer.getInstance().getTagCount();
+                            int actualSize = methodTagMaintainer.getMethodTagCount();
                             List<PerfStats> perfStatsList = new ArrayList<>(actualSize / 2);
                             for (int i = 0; i < actualSize; ++i) {
                                 Recorder recorder = tmpCurRecorders.getRecorder(i);
-                                if (recorder == null || !recorder.hasRecord) {
+                                if (recorder == null || !recorder.hasRecord()) {
                                     continue;
                                 }
 
@@ -187,21 +190,22 @@ public abstract class AbstractRecorderMaintainer {
                                     break;
                                 }
 
-                                perfStatsList.add(PerfStatsCalculator.calPerfStats(recorder, tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime()));
+                                MethodTag methodTag = methodTagMaintainer.getMethodTag(recorder.getMethodTagId());
+                                perfStatsList.add(PerfStatsCalculator.calPerfStats(recorder, methodTag, tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime()));
                             }
 
                             perfStatsProcessor.process(perfStatsList, actualSize, tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
                         } catch (Exception e) {
                             Logger.error("RecorderMaintainer.backgroundExecutor error", e);
                         } finally {
-                            Logger.info("RecorderMaintainer.backgroundProcessor finished!!! cost: " + (System.currentTimeMillis() - start) + "ms");
+                            Logger.debug("RecorderMaintainer.backgroundProcessor finished!!! cost: " + (System.currentTimeMillis() - start) + "ms");
                         }
                     }
                 });
             } catch (Exception e) {
                 Logger.error("RecorderMaintainer.roundRobinExecutor error", e);
             } finally {
-                Logger.info("RecorderMaintainer.roundRobinProcessor finished!!! cost: " + (System.currentTimeMillis() - currentMills) + "ms");
+                Logger.debug("RecorderMaintainer.roundRobinProcessor finished!!! cost: " + (System.currentTimeMillis() - currentMills) + "ms");
             }
         }
     }

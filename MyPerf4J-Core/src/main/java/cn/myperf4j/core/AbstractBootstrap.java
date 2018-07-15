@@ -1,5 +1,6 @@
 package cn.myperf4j.core;
 
+import cn.myperf4j.base.MethodTag;
 import cn.myperf4j.base.PerfStats;
 import cn.myperf4j.base.PerfStatsProcessor;
 import cn.myperf4j.core.config.ProfilingConfig;
@@ -34,6 +35,7 @@ public abstract class AbstractBootstrap {
                 return false;
             }
 
+            printBannerText();
             Logger.info("AbstractBootstrap doInitial() SUCCESS!!!");
             return true;
         } catch (Exception e) {
@@ -207,7 +209,8 @@ public abstract class AbstractBootstrap {
 
     private boolean initPerfStatsProcessor() {
         try {
-            String className = ProfilingConfig.getInstance().getPerStatsProcessor();
+            ProfilingConfig config = ProfilingConfig.getInstance();
+            String className = config.getPerStatsProcessor();
             if (className == null || className.isEmpty()) {
                 Logger.error("AbstractBootstrap.initPerfStatsProcessor() MyPerf4J.PSP NOT FOUND!!!");
                 return false;
@@ -290,16 +293,18 @@ public abstract class AbstractBootstrap {
                 public void run() {
                     Logger.info("ENTER ShutdownHook...");
                     try {
+                        MethodTagMaintainer methodTagMaintainer = MethodTagMaintainer.getInstance();
                         Recorders recorders = maintainer.getRecorders();
                         List<PerfStats> perfStatsList = new ArrayList<>(recorders.size());
-                        int actualSize = TagMaintainer.getInstance().getTagCount();
+                        int actualSize = methodTagMaintainer.getMethodTagCount();
                         for (int i = 0; i < actualSize; ++i) {
                             Recorder recorder = recorders.getRecorder(i);
                             if (recorder == null || !recorder.hasRecord()) {
                                 continue;
                             }
 
-                            perfStatsList.add(PerfStatsCalculator.calPerfStats(recorder, recorders.getStartTime(), recorders.getStopTime()));
+                            MethodTag methodTag = methodTagMaintainer.getMethodTag(recorder.getMethodTagId());
+                            perfStatsList.add(PerfStatsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime()));
                         }
                         processor.process(perfStatsList, actualSize, recorders.getStartTime(), recorders.getStopTime());
 
@@ -322,4 +327,13 @@ public abstract class AbstractBootstrap {
 
     public abstract boolean initOther();
 
+    private void printBannerText() {
+        Logger.info("\n" +
+                "    __  ___      ____            ______ __      __\n" +
+                "   /  |/  /_  __/ __ \\___  _____/ __/ // /     / /\n" +
+                "  / /|_/ / / / / /_/ / _ \\/ ___/ /_/ // /___  / / \n" +
+                " / /  / / /_/ / ____/  __/ /  / __/__  __/ /_/ /  \n" +
+                "/_/  /_/\\__, /_/    \\___/_/  /_/    /_/  \\____/   \n" +
+                "       /____/                                     \n");
+    }
 }

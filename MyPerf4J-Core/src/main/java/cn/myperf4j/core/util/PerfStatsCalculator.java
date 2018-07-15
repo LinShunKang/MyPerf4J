@@ -1,6 +1,7 @@
 package cn.myperf4j.core.util;
 
 
+import cn.myperf4j.base.MethodTag;
 import cn.myperf4j.base.PerfStats;
 import cn.myperf4j.core.Recorder;
 
@@ -16,26 +17,26 @@ public final class PerfStatsCalculator {
         }
     };
 
-    public static PerfStats calPerfStats(Recorder recorder, long startTime, long stopTime) {
+    public static PerfStats calPerfStats(Recorder recorder, MethodTag methodTag, long startTime, long stopTime) {
         int[] sortedRecords = null;
         try {
             int effectiveCount = recorder.getEffectiveCount();
             sortedRecords = ChunkPool.getInstance().getChunk(effectiveCount * 2);
             recorder.fillSortedRecords(sortedRecords);
-            return calPerfStats(recorder.getTag(), startTime, stopTime, sortedRecords, effectiveCount);
+            return calPerfStats(methodTag, startTime, stopTime, sortedRecords, effectiveCount);
         } catch (Exception e) {
-            Logger.error("PerfStatsCalculator.calPerfStats(" + recorder + ", " + startTime + ", " + stopTime + ")", e);
+            Logger.error("PerfStatsCalculator.calPerfStats(" + recorder + ", " + methodTag + ", " + startTime + ", " + stopTime + ")", e);
         } finally {
             ChunkPool.getInstance().returnChunk(sortedRecords);
         }
-        return PerfStats.getInstance(recorder.getTag(), startTime, stopTime);
+        return PerfStats.getInstance(methodTag, startTime, stopTime);
     }
 
-    private static PerfStats calPerfStats(String api, long startTime, long stopTime, int[] sortedRecords, int effectiveCount) {
+    private static PerfStats calPerfStats(MethodTag methodTag, long startTime, long stopTime, int[] sortedRecords, int effectiveCount) {
         long[] pair = getTotalTimeAndTotalCount(sortedRecords);
         long totalTime = pair[0];
         int totalCount = (int) pair[1];
-        PerfStats result = PerfStats.getInstance(api);
+        PerfStats result = PerfStats.getInstance(methodTag);
         result.setTotalCount(totalCount);
         result.setStartMillTime(startTime);
         result.setStopMillTime(stopTime);
@@ -50,7 +51,7 @@ public final class PerfStatsCalculator {
         result.setMaxTime(sortedRecords[(effectiveCount - 1) * 2]);
 
         int[] topPerIndexArr = getTopPercentileIndexArr(totalCount);
-        int[] topPerArr = result.getTPArr();
+        int[] topPerArr = result.getTpArr();
         int countMile = 0, perIndex = 0;
         double sigma = 0.0D;//∑
         for (int i = 0, length = sortedRecords.length; i < length; i = i + 2) {
@@ -102,7 +103,7 @@ public final class PerfStatsCalculator {
     }
 
     private static PerfStats reviseStatistic(PerfStats perfStats) {
-        int[] tpArr = perfStats.getTPArr();
+        int[] tpArr = perfStats.getTpArr();
         for (int i = 1; i < tpArr.length; ++i) {
             int last = tpArr[i - 1];
             int cur = tpArr[i];

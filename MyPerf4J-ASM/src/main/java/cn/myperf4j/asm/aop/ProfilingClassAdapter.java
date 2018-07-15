@@ -1,4 +1,4 @@
-package cn.myperf4j.asm.aop.pkg;
+package cn.myperf4j.asm.aop;
 
 import cn.myperf4j.core.config.ProfilingConfig;
 import cn.myperf4j.core.config.ProfilingFilter;
@@ -12,33 +12,22 @@ import java.util.List;
 /**
  * Created by LinShunkang on 2018/4/15
  */
-public class PackageClassAdapter extends ClassVisitor implements Opcodes {
+public class ProfilingClassAdapter extends ClassVisitor implements Opcodes {
 
     private String innerClassName;
-
-    /**
-     * 是否把方法体包进try-finally块；也就是当方法内抛异常的时候是否还记录响应时间；
-     */
-    private boolean addTryCatch;
 
     private boolean isInterface;
 
     private List<String> fieldNameList = new ArrayList<>();
 
-    public PackageClassAdapter(final ClassVisitor cv, String innerClassName, boolean addTryCatch) {
+    public ProfilingClassAdapter(final ClassVisitor cv, String innerClassName) {
         super(ASM5, cv);
-
         this.innerClassName = innerClassName;
-        this.addTryCatch = addTryCatch;
-    }
-
-    public PackageClassAdapter(final ClassVisitor cv, String innerSimpleClassName) {
-        this(cv, innerSimpleClassName, false);
     }
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        Logger.debug("PackageClassAdapter.visit(" + version + ", " + access + ", " + name + ", " + signature + ", " + superName + ", " + Arrays.toString(interfaces) + ")");
+        Logger.debug("ProfilingClassAdapter.visit(" + version + ", " + access + ", " + name + ", " + signature + ", " + superName + ", " + Arrays.toString(interfaces) + ")");
 
         super.visit(version, access, name, signature, superName, interfaces);
         this.isInterface = (access & ACC_INTERFACE) != 0;
@@ -60,7 +49,7 @@ public class PackageClassAdapter extends ClassVisitor implements Opcodes {
                                      String desc,
                                      String signature,
                                      String[] exceptions) {
-        Logger.debug("PackageClassAdapter.visitMethod(" + access + ", " + name + ", " + desc + ", " + signature + ", " + Arrays.toString(exceptions) + ")");
+        Logger.debug("ProfilingClassAdapter.visitMethod(" + access + ", " + name + ", " + desc + ", " + signature + ", " + Arrays.toString(exceptions) + ")");
         if (isInterface || !isNeedVisit(access, name)) {
             return super.visitMethod(access, name, desc, signature, exceptions);
         }
@@ -70,11 +59,7 @@ public class PackageClassAdapter extends ClassVisitor implements Opcodes {
             return null;
         }
 
-        if (addTryCatch) {
-            return new PackageTryCatchMethodVisitor(access, name, desc, mv, innerClassName);
-        } else {
-            return new PackageSimpleMethodVisitor(access, name, desc, mv, innerClassName);
-        }
+        return new ProfilingMethodVisitor(access, name, desc, mv, innerClassName);
     }
 
     private boolean isNeedVisit(int access, String name) {

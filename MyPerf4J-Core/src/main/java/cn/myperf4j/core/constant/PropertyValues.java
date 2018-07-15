@@ -1,6 +1,6 @@
 package cn.myperf4j.core.constant;
 
-import cn.myperf4j.base.DefaultPerfStatsProcessor;
+import cn.myperf4j.base.psp.DefaultStdoutProcessor;
 
 /**
  * Created by LinShunkang on 2018/4/27
@@ -17,7 +17,7 @@ public interface PropertyValues {
 
     int MAX_BACKUP_RECORDERS_COUNT = 8;
 
-    String DEFAULT_PERF_STATS_PROCESSOR = DefaultPerfStatsProcessor.class.getName();
+    String DEFAULT_PERF_STATS_PROCESSOR = DefaultStdoutProcessor.class.getName();
 
     long DEFAULT_TIME_SLICE = 60 * 1000L;
 

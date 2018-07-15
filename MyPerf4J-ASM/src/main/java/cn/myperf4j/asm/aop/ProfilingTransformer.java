@@ -1,6 +1,5 @@
 package cn.myperf4j.asm.aop;
 
-import cn.myperf4j.asm.aop.pkg.PackageClassAdapter;
 import cn.myperf4j.core.config.ProfilingFilter;
 import cn.myperf4j.core.util.Logger;
 import org.objectweb.asm.ClassReader;
@@ -48,13 +47,13 @@ public class ProfilingTransformer implements ClassFileTransformer {
         if (loader != null && loader.getClass().getName().equals("org.apache.catalina.loader.WebappClassLoader")) {
             ClassReader cr = new ClassReader(classFileBuffer);
             ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);
-            ClassVisitor cv = new PackageClassAdapter(cw, className);
+            ClassVisitor cv = new ProfilingClassAdapter(cw, className);
             cr.accept(cv, ClassReader.EXPAND_FRAMES);
             return cw.toByteArray();
         } else {
             ClassReader cr = new ClassReader(classFileBuffer);
             ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_FRAMES);
-            ClassVisitor cv = new PackageClassAdapter(cw, className);
+            ClassVisitor cv = new ProfilingClassAdapter(cw, className);
             cr.accept(cv, ClassReader.EXPAND_FRAMES);
             return cw.toByteArray();
         }

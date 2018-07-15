@@ -1,6 +1,6 @@
 package MyPerf4J.test2;
 
-import cn.myperf4j.asm.aop.pkg.PackageClassAdapter;
+import cn.myperf4j.asm.aop.ProfilingClassAdapter;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -23,8 +23,7 @@ public class Test2 {
     private static void test2() throws IOException {
         ClassReader cr = new ClassReader(Foo2.class.getName());
         ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);
-//        ClassVisitor cv = new ProfilerClassAdapter(cw, Foo2.class.getName(), true);
-        ClassVisitor cv = new PackageClassAdapter(cw, Foo2.class.getName(), false);
+        ClassVisitor cv = new ProfilingClassAdapter(cw, Foo2.class.getName());
         cr.accept(cv, ClassReader.SKIP_FRAMES);
 
         byte[] bytes = cw.toByteArray();

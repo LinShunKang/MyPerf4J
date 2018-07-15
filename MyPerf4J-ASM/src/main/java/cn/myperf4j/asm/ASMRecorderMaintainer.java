@@ -15,16 +15,16 @@ public class ASMRecorderMaintainer extends AbstractRecorderMaintainer {
         return instance;
     }
 
-
     @Override
     public boolean initOther() {
         return true;
     }
 
-    public void addRecorder(int tagId, String tag, ProfilingParams params) {
+    @Override
+    public void addRecorder(int methodTagId, ProfilingParams params) {
         for (int i = 0; i < recordersList.size(); ++i) {
             Recorders recorders = recordersList.get(i);
-            recorders.setRecorder(tagId, createRecorder(tag, params.getMostTimeThreshold(), params.getOutThresholdCount()));
+            recorders.setRecorder(methodTagId, createRecorder(methodTagId, params.getMostTimeThreshold(), params.getOutThresholdCount()));
         }
     }
 }
