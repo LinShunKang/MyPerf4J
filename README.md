@@ -3,8 +3,8 @@ A extremely fast performance monitoring and statistics for Java code. Inspired b
 Committed to becoming a performance monitoring and statistics tool that can be used for a long time in a production environment!
 
 ## Multilingual document
-* English [WIKI](https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Wiki)
-* 中文 [README](https://github.com/ThinkpadNC5/MyPerf4J/blob/develop/README.CN.md) [WIKI](https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Wiki)
+* English [WIKI](https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Doc)
+* 中文 [README](https://github.com/ThinkpadNC5/MyPerf4J/blob/develop/README.CN.md) [WIKI](https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Doc)
 
 
 ## Background
@@ -56,8 +56,7 @@ Committed to becoming a performance monitoring and statistics tool that can be u
     - Reason for high performance
         - MyPerf4J-ASM modifies the bytecode of the class through the ASM framework, inserting two lines of methods before and after the method, without generating redundant objects, and not triggering any GC in the whole process of the benchmark (except for the `System.gc();` executed in the code).
 
-## Usage
-
+## Getting Started
 * Add VM options:  `-javaagent:/your/path/to/MyPerf4J-ASM-${MyPerf4J-version}.jar`
 * Add VM options: `-DMyPerf4JPropFile=/your/path/to/myPerf4J.properties`, and add properties in `/your/path/to/myPerf4J.properties`
 
@@ -107,3 +106,10 @@ Committed to becoming a performance monitoring and statistics tool that can be u
     UserServiceImpl.getId1  7454181     0.00        0        0     0.00   7454181        0        0        0        0        0        0        0        0
     UserServiceImpl.getId2  7454180     0.00        0        0     0.00   7454180        0        0        0        0        0        0        0        0
     ```
+    
+## Visual performance indicators
+* Currently MyPerf4J has provided data display using [Grafana Dashboard](https://grafana.com/dashboards/6991)
+![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-Grafana.jpeg)
+
+## More Information
+For more information about the project, please see [https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Doc](https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Doc).

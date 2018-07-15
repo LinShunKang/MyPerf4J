@@ -3,8 +3,8 @@
 致力于成为可在生产环境长时间使用的性能监控和统计工具！
 
 ## 多语言文档
-* English [README](https://github.com/ThinkpadNC5/MyPerf4J/blob/develop/README.md) [WIKI](https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Wiki)
-* 中文  [WIKI](https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Wiki)
+* English [README](https://github.com/ThinkpadNC5/MyPerf4J/blob/develop/README.md) [WIKI](https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Doc)
+* 中文  [WIKI](https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Doc)
 
 ## 背景
 * 我需要一个能统计接口响应时间的程序
@@ -103,10 +103,16 @@
 * 输出结果
     
     ```
-    2018-07-01 23:40:24.2 [MyPerf4J] INFO RecorderMaintainer.roundRobinProcessor finished!!! cost: 0ms
-    2018-07-01 23:40:24.3 [MyPerf4J] INFO RecorderMaintainer.backgroundProcessor finished!!! cost: 1ms
     MyPerf4J Performance Statistics [2018-07-01 23:40:23, 2018-07-01 23:40:24]
     Api[2/3]                    RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count     TP50     TP90     TP95     TP99    TP999   TP9999  TP99999    TP100
-    UserServiceImpl.getId1  7454181     0.00        0        0     0.00   7454181        0        0        0        0        0        0        0        0
-    UserServiceImpl.getId2  7454180     0.00        0        0     0.00   7454180        0        0        0        0        0        0        0        0
+    DemoServiceImpl.getId1  7454181     0.00        0        0     0.00   7454181        0        0        0        0        0        0        0        0
+    DemoServiceImpl.getId2  7454180     0.00        0        0     0.00   7454180        0        0        0        0        0        0        0        0
     ```
+    
+    
+## 可视化性能指标
+* 目前MyPerf4J已提供[Grafana Dashboard](https://grafana.com/dashboards/6991)进行数据展示
+![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-Grafana.jpeg)
+
+## 更多信息
+想更深入的了解MyPerf4J？请看[https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Doc](https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Doc)。
