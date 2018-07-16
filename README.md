@@ -1,5 +1,5 @@
 # MyPerf4J
-A extremely fast performance monitoring and statistics for Java code. Inspired by [perf4j](https://github.com/perf4j/perf4j) and [TProfiler](https://github.com/alibaba/TProfiler).
+An extremely fast performance monitoring and statistics for Java code. Inspired by [perf4j](https://github.com/perf4j/perf4j) and [TProfiler](https://github.com/alibaba/TProfiler).
 Committed to becoming a performance monitoring and statistics tool that can be used for a long time in a production environment!
 
 ## Multilingual document
