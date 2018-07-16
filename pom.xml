@@ -4,7 +4,7 @@
     <groupId>MyPerf4J</groupId>
     <artifactId>MyPerf4J</artifactId>
     <packaging>pom</packaging>
-    <version>1.6.0</version>
+    <version>1.7.0</version>
     <modules>
         <module>MyPerf4J-Core</module>
         <module>MyPerf4J-ASM</module>
