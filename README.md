@@ -109,7 +109,7 @@ Committed to becoming a performance monitoring and statistics tool that can be u
     
 ## Visual performance indicators
 * Currently MyPerf4J has provided data display using [Grafana Dashboard](https://grafana.com/dashboards/6991)
-![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-Grafana.jpeg)
+![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J_Grafana.jpeg)
 
 ## More Information
 For more information about the project, please see [https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Doc](https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Doc).
