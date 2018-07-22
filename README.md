@@ -1,5 +1,5 @@
 # MyPerf4J
-一个针对高并发、低延迟应用设计的简单、快速且无侵入的Java方法性能监控和统计工具。
+> 一个针对高并发、低延迟应用设计的简单、快速且无侵入的Java方法性能监控和统计工具。
 受 [perf4j](https://github.com/perf4j/perf4j) 和 [TProfiler](https://github.com/alibaba/TProfiler)启发而来。
 
 MyPerf4J具有以下几个特性：
@@ -17,11 +17,13 @@ MyPerf4J具有以下几个特性：
 * 目前MyPerf4J已提供[Grafana Dashboard](https://grafana.com/dashboards/6991)进行数据展示
 ![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/Monitor_Page_V3_200FPS.gif)
 
+> 想知道如何实现上述效果？请先按照[这里](https://github.com/ThinkpadNC5/MyPerf4J/wiki/%E5%BF%AB%E9%80%9F%E5%90%AF%E5%8A%A8)的描述启动应用，再按[这里](https://github.com/ThinkpadNC5/MyPerf4J/wiki/InfluxDB_)的描述进行安装配置即可。
+
 ## 快速启动
-详细内容，请看[这里](https://github.com/ThinkpadNC5/MyPerf4J/wiki/%E5%BF%AB%E9%80%9F%E5%90%AF%E5%8A%A8)
+> 详细内容，请看[这里](https://github.com/ThinkpadNC5/MyPerf4J/wiki/%E5%BF%AB%E9%80%9F%E5%90%AF%E5%8A%A8)
 
 ## 问题
-如果您遇到任何问题或有疑问，请您毫不犹豫的[提交Issue](https://github.com/ThinkpadNC5/MyPerf4J/issues/new) : )
+> 如果您遇到任何问题或有疑问，请您毫不犹豫的[提交Issue](https://github.com/ThinkpadNC5/MyPerf4J/issues/new) : )
 
 ## 更多信息
-想更深入的了解MyPerf4J？请看[https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Doc](https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Doc)。
+> 想更深入的了解MyPerf4J？请看[https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Doc](https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Doc)。
