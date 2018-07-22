@@ -1,115 +1,118 @@
 # MyPerf4J
-An extremely fast performance monitoring and statistics for Java code. Inspired by [perf4j](https://github.com/perf4j/perf4j) and [TProfiler](https://github.com/alibaba/TProfiler).
-Committed to becoming a performance monitoring and statistics tool that can be used for a long time in a production environment!
+一个简单、快速且无侵入的Java方法性能监控和统计工具。受[perf4j](https://github.com/perf4j/perf4j)和[TProfiler](https://github.com/alibaba/TProfiler)启发而来。
+致力于成为可在生产环境长时间使用的性能监控和统计工具！
 
-## Multilingual document
-* English [WIKI](https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Doc)
-* 中文 [README](https://github.com/ThinkpadNC5/MyPerf4J/blob/develop/README.CN.md) [WIKI](https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Doc)
+## 多语言文档
+* English [README](https://github.com/ThinkpadNC5/MyPerf4J/blob/develop/README.md) [WIKI](https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Doc)
+* 中文  [WIKI](https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Doc)
 
+## 背景
+* 我需要一个能统计接口响应时间的程序
+* [perf4j](https://github.com/perf4j/perf4j)现有的统计结果不能满足我的需求
 
-## Background
-* I need a program that can measure the response time of method.
-* The existing statistics of [perf4j](https://github.com/perf4j/perf4j) cannot meet my needs.
+## 需求
+* 能统计出接口的RPS、Avg、Min、Max、StdDev、TP90、TP95、TP99、TP999等性能指标
+* 可配置，可以指定统计某些类、某些方法，也可以指定不统计某些类、某些方法
+* 不占用过多的内存、不影响程序的正常响应
+* 性能指标的处理可以定制化，例如：日志收集、上报给日志收集服务等
 
-## Requirements
-* Statistics on the performance indicators of the method such as RPS, Avg, Min, Max, StdDev, TP50, TP90, TP95, TP99, TP999 and TP9999, etc.
-* It can be configured by properties.
-* Does not take up too much memory, does not affect the normal response of the program.
-* The processing of performance indicators can be customized, for example: log collection, reporting to log collection services, etc.
-
-## Memory
-* Prerequisites
-    - There are 1024 interfaces on the service that need to be monitored.
-    - Most of the response time of each interface is within 300ms, and there are 100 different response times larger than 300ms.
-    - Non-core data structures occupy 2MB.
-* Rough Mode
-    - Only record requests with response time less than 1000ms.
+## 内存
+* 前提条件
+    - 服务上有1024个需要监控的接口
+    - 每个接口的绝大部分响应时间在300ms以内，并且有100个不相同的大于300ms的响应时间
+    - 不开启指针压缩
+    - 非核心数据结构占用2MB
+* rough模式
+    - 只记录响应时间小于1000ms的请求
     - 2 * 1024 * (1000 * 4B) + 2MB ≈ 10MB
-* Accurate Mode
-    - Record all response times.
+* accurate模式
+    - 记录所有的响应时间
     - 2 * 1024 * (300 * 4B + 100 * 90B) + 2MB ≈ 22MB 
 
-## Benchmark
-* Test Platform
-    - OS: macOS High Sierra 10.13.3
-    - JDK: 1.8.0_161
-    - JVM options: -server -Xmx4G -Xms4G -Xmn2G
-    - CPU: Intel(R) Core(TM) i7-7920HQ CPU@3.10GHz
+## 压测
+* 配置说明
+    - 操作系统 macOS High Sierra 10.13.3
+    - JDK 1.8.0_161
+    - JVM参数 -server -Xmx4G -Xms4G -Xmn2G
+    - 机器配置 
+        - CPU Intel(R) Core(TM) i7-7920HQ CPU@3.10GHz
+        - RAM 16GB 2133MHz LPDDR3
 
-* Test way
-    - Run empty methods.
-    - In order to avoid the performance degradation caused by the high competition of multiple threads due to the high execution speed of the empty method, eight empty methods are executed by polling, and then the RPS of the eight methods is added to obtain the result.
-    - The time slice is 10s, each press pauses for 20s, and executes `System.gc();`  
+* 测试方法
+    - 对空方法进行压测 
+    - 为了避免由于空方法执行过快导致多个线程高度竞争资源（竞争AbstractRecorder中的AtomicIntegerArray）进而导致压测结果出现明显的性能下降，通过轮询的方式执行8个空方法，然后把8个方法的RPS相加得出结果
+    - 时间片为10s，每次压测中间停顿20s，并且执行`System.gc();`
 
 * MyPerf4J-ASM
     
-    | Threads | Number of loops per thread | RPS |
+    | 线程数 | 每线程循环数| RPS |
     |-------|-----|------|
     |1|1000000000|13815816|
     |2|1000000000|16199712|
     |4|1000000000|33060632|
     |8|1000000000|55981416|
 
-* Summary
-    - From the benchmark results
-        - MyPerf4J-ASM can support 13.81 million method calls per second in a single thread. The average time per method call is 72.3ns, which can meet the requirements of most people, and does not affect the response time of the program itself.
-    - Reason for high performance
-        - MyPerf4J-ASM modifies the bytecode of the class through the ASM framework, inserting two lines of methods before and after the method, without generating redundant objects, and not triggering any GC in the whole process of the benchmark (except for the `System.gc();` executed in the code).
+* 压测结论
+    - 从压测结果来看：
+        - MyPerf4J-ASM在单线程下每秒可支持1381万次的方法调用！平均每次方法调用耗时72.3ns！！！能够满足绝大部分人的要求，不会对程序本身的响应时间造成影响！
+    - 高性能原因：
+        - MyPerf4J-ASM是通过ASM框架修改类的字节码，在方法前后插入两行方法，不产生多余的对象，在整个压测过程中不会触发任何的GC（除了代码中执行的`System.gc();`）！！！
 
-## Getting Started
-* Add VM options:  `-javaagent:/your/path/to/MyPerf4J-ASM-${MyPerf4J-version}.jar`
-* Add VM options: `-DMyPerf4JPropFile=/your/path/to/myPerf4J.properties`, and add properties in `/your/path/to/myPerf4J.properties`
+## 使用
+    
+* 在JVM启动参数里加上： -javaagent:/your/path/to/MyPerf4J-ASM-${MyPerf4J-version}.jar
+
+* 在JVM启动参数里加上：-DMyPerf4JPropFile=/your/path/to/myPerf4J.properties，并在`/your/path/to/myPerf4J.properties`中加入以下几个配置项：
 
     ```
-    #configurePerfStatsProcessor，can be configured without for configuration of custom statistics
+    #配置PerfStatsProcessor，可不配置，用于自定义统计数据的处理
     #PerfStatsProcessor=cn.perf4j.demo.MyPerfStatsProcessor
-        
-    #Configure the number of backup Recorders. The default is 1, the minimum is 1, and the maximum is 8. When you need to count a large number of method performance data in a smaller MillTimeSlice, you can configure a larger number.
+    
+    #配置备份Recorders的数量，默认为1，最小为1，最大为8，当需要在较小MillTimeSlice内统计大量方法性能数据时可配置大一些
     BackupRecordersCount=1
     
-    #configure RecordMode，accurate/rough
+    #配置Record模式，可配置为accurate/rough
     RecorderMode=accurate
     
-    #configure TimeSlice，time unit: ms，min:1s，max:600s
-    MillTimeSlice=60000
+    #配置时间片，单位为ms，最小1s，最大600s
+    MillTimeSlice=10000
     
-    #configure packages，separated with ';'
-    IncludePackages=cn.perf4j;org.myperf4j
+    #需要监控的package，可配置多个，用英文';'分隔
+    IncludePackages=cn.perf4j.demo
     
-    #configure packages，separated with ';'
+    #不需要监控的package，可配置多个，用英文';'分隔
     ExcludePackages=org.spring;
     
-    #configure methods，separated with ';'
+    #可配置多个方法名，用英文';'分隔
     ExcludeMethods=equals;hash
     
-    #true/false
+    #是否排除私有方法，true/false
     ExcludePrivateMethod=true
     
-    #General method execution time threshold in ms
+    #通用的方法执行时间阈值，单位为ms
     ProfilingTimeThreshold=1000
     
-    #The number of times the method execution time threshold is exceeded in a time slice, valid only when RecorderMode=accurate
+    #在一个时间片内，超过方法执行时间阈值的次数，仅在RecorderMode=accurate时有效
     ProfilingOutThresholdCount=10
     ```
 
-* Execute command `mvn clean package`
+* 执行命令 `mvn clean package`
 
-* Run your application
+* 运行你的程序
 
-* Performance Statistics
-
+* 输出结果
+    
     ```
-    2018-07-01 23:40:24.2 [MyPerf4J] INFO RecorderMaintainer.roundRobinProcessor finished!!! cost: 0ms
-    2018-07-01 23:40:24.3 [MyPerf4J] INFO RecorderMaintainer.backgroundProcessor finished!!! cost: 1ms
     MyPerf4J Performance Statistics [2018-07-01 23:40:23, 2018-07-01 23:40:24]
     Api[2/3]                    RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count     TP50     TP90     TP95     TP99    TP999   TP9999  TP99999    TP100
-    UserServiceImpl.getId1  7454181     0.00        0        0     0.00   7454181        0        0        0        0        0        0        0        0
-    UserServiceImpl.getId2  7454180     0.00        0        0     0.00   7454180        0        0        0        0        0        0        0        0
+    DemoServiceImpl.getId1  7454181     0.00        0        0     0.00   7454181        0        0        0        0        0        0        0        0
+    DemoServiceImpl.getId2  7454180     0.00        0        0     0.00   7454180        0        0        0        0        0        0        0        0
     ```
     
-## Visual performance indicators
-* Currently MyPerf4J has provided data display using [Grafana Dashboard](https://grafana.com/dashboards/6991)
+    
+## 可视化性能指标
+* 目前MyPerf4J已提供[Grafana Dashboard](https://grafana.com/dashboards/6991)进行数据展示
 ![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J_Grafana.jpeg)
 
-## More Information
-For more information about the project, please see [https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Doc](https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Doc).
+## 更多信息
+想更深入的了解MyPerf4J？请看[https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Doc](https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Doc)。
