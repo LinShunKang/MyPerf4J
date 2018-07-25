@@ -23,7 +23,16 @@ import java.util.List;
  */
 public class InfluxDBLoggerProcessor implements PerfStatsProcessor {
 
+    private static final int MAX_LENGTH = 512;
+
     private Logger logger = LoggerFactory.getLogger(InfluxDBLoggerProcessor.class);
+
+    private ThreadLocal<StringBuilder> sbThreadLocal = new ThreadLocal<StringBuilder>() {
+        @Override
+        protected StringBuilder initialValue() {
+            return new StringBuilder(256);
+        }
+    };
 
     @Override
     public void process(List<PerfStats> perfStatsList, int injectMethodCount, long startMillis, long stopMillis) {
@@ -32,13 +41,19 @@ public class InfluxDBLoggerProcessor implements PerfStatsProcessor {
         }
 
         long startNanos = startMillis * 1000 * 1000L;
+        StringBuilder sb = sbThreadLocal.get();
         for (int i = 0; i < perfStatsList.size(); ++i) {
-            logger.info(createLineProtocol(perfStatsList.get(i), startNanos));
+            logger.info(createLineProtocol(perfStatsList.get(i), startNanos, sb));
+            sb.setLength(0);
         }
     }
 
-    private String createLineProtocol(PerfStats perfStats, long startNanos) {
-        StringBuilder sb = new StringBuilder(getSuitSize(perfStats));
+    private String createLineProtocol(PerfStats perfStats, long startNanos, StringBuilder sb) {
+        int suitSize = getSuitSize(perfStats);
+        if (suitSize > MAX_LENGTH) {
+            sb = new StringBuilder(suitSize);
+        }
+
         sb.append(perfStats.getMethodTag().getClassName())
                 .append(",Method=").append(perfStats.getMethodTag().getSimpleDesc())
                 .append(" RPS=").append(perfStats.getRPS()).append("i")
