@@ -1,5 +1,5 @@
 # MyPerf4J
-> A simple, fast, and non-intrusive Java method performance monitoring and statistical tool designed for high-concurrency, low-latency applications. Inspired by [perf4j](https://github.com/perf4j/perf4j) and [TProfiler](https://github.com/alibaba/TProfiler). 
+> A high performance and non-intrusive real-time Java method performance monitoring and statistical tool designed for high-concurrency, low-latency applications. Inspired by [perf4j](https://github.com/perf4j/perf4j) and [TProfiler](https://github.com/alibaba/TProfiler). 
 
 MyPerf4J has the following features:
 *  No intrusion: using JavaAgent mode, no intrusion to the application, no need to modify the application code.
