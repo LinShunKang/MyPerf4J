@@ -17,6 +17,8 @@ MyPerf4J has the following features:
 ![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/Monitor_Page_V3_1_200FPS.gif)
 ![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/Monitor_Page_V4_200FPS.gif)
 
+> Want to know how to achieve the above effect? Please start the application according to the description of [Quick Start](https://github.com/ThinkpadNC5/MyPerf4J/blob/develop/README.EN.md#quick-start), and then follow the instructions in [here](https://github.com/ThinkpadNC5/MyPerf4J/wiki/InfluxDB) to install and configure.
+ 
 ## Quick start
 MyPerf4J adopts JavaAgent configuration mode, **transparent** access application, and the application code is completely **no-intrusive**.
 
@@ -73,8 +75,13 @@ ProfilingOutThresholdCount=10
     DemoServiceImpl.getId1  7454181     0.00        0        0     0.00   7454181        0        0        0        0        0        0        0        0
     DemoServiceImpl.getId2  7454180     0.00        0        0     0.00   7454180        0        0        0        0        0        0        0        0
     ```
-  
+  > Want to **customize** your output? Please see [here](https://github.com/ThinkpadNC5/MyPerf4J/wiki/Extension).
     
+### Uninstall
+Remove the following two parameters from the JVM startup parameters and restart to uninstall the tool.
+> -javaagent:/your/path/to/MyPerf4J-ASM.jar
+> -DMyPerf4JPropFile=/your/path/to/myPerf4J.properties
+
 ## Issues
 If you encounter any issues or if you have a question, don't hesitate to [create an issue](https://github.com/ThinkpadNC5/MyPerf4J/issues/new) : )
 
