@@ -17,7 +17,7 @@ MyPerf4J has the following features:
 ![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/Monitor_Page_V3_1_200FPS.gif)
 ![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/Monitor_Page_V4_200FPS.gif)
 
-## Getting Started
+## Quick start
 MyPerf4J adopts JavaAgent configuration mode, **transparent** access application, and the application code is completely **no-intrusive**.
 
 ### Build
