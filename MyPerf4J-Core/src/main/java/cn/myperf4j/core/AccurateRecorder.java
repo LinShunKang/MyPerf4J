@@ -15,8 +15,8 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
  * MyPerf4J默认使用的是RoughRecorder，如果需要使用AccurateRecorder，则在启动参数里加上-DMyPerf4J.recorder.mode=accurate
  * 该类用于精确存储某一个api在指定时间片内的响应时间
  * 为了减小内存占用，利用数组+Map的方式:
- * 1、将小于mostTimeThreshold的响应时间记录在数组中；
- * 2、将大于等于mostTimeThreshold的响应时间记录到Map中。
+ * 1、将小于等于mostTimeThreshold的响应时间记录在数组中；
+ * 2、将大于mostTimeThreshold的响应时间记录到Map中。
  */
 public class AccurateRecorder extends Recorder {
 
@@ -26,7 +26,7 @@ public class AccurateRecorder extends Recorder {
 
     private AccurateRecorder(int methodTagId, int mostTimeThreshold, int outThresholdCount) {
         super(methodTagId);
-        this.timingArr = new AtomicIntegerArray(mostTimeThreshold);
+        this.timingArr = new AtomicIntegerArray(mostTimeThreshold + 1);
         this.timingMap = new ConcurrentHashMap<>(MapUtils.getFitCapacity(outThresholdCount));
     }
 
