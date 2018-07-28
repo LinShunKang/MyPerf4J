@@ -78,7 +78,7 @@ public class ProfilingFilter {
     }
 
     public static void addExcludePackage(String pkg) {
-        if (pkg == null) {
+        if (pkg == null || pkg.isEmpty()) {
             return;
         }
 
@@ -103,7 +103,7 @@ public class ProfilingFilter {
     }
 
     public static void addIncludePackage(String pkg) {
-        if (pkg == null) {
+        if (pkg == null || pkg.isEmpty()) {
             return;
         }
 
