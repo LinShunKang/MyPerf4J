@@ -17,6 +17,8 @@ public class DefaultLoggerProcessor implements PerfStatsProcessor {
 
     @Override
     public void process(List<PerfStats> perfStatsList, int injectMethodCount, long startMillis, long stopMillis) {
-        logger.info(DefaultFormatter.getFormatStr(perfStatsList, injectMethodCount, startMillis, stopMillis));
+        if(perfStatsList.size()>0) {
+            logger.info(DefaultFormatter.getFormatStr(perfStatsList, injectMethodCount, startMillis, stopMillis));
+        }
     }
 }
