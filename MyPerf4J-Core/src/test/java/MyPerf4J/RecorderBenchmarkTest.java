@@ -4,7 +4,7 @@ import cn.myperf4j.base.MethodTag;
 import cn.myperf4j.core.Recorder;
 import cn.myperf4j.core.AccurateRecorder;
 import cn.myperf4j.core.Recorders;
-import cn.myperf4j.core.util.PerfStatsCalculator;
+import cn.myperf4j.core.PerfStatsCalculator;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReferenceArray;

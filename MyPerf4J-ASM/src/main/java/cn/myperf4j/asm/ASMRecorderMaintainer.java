@@ -2,7 +2,7 @@ package cn.myperf4j.asm;
 
 import cn.myperf4j.core.AbstractRecorderMaintainer;
 import cn.myperf4j.core.Recorders;
-import cn.myperf4j.core.config.ProfilingParams;
+import cn.myperf4j.base.config.ProfilingParams;
 
 /**
  * Created by LinShunkang on 2018/4/26

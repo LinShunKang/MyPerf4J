@@ -1,13 +1,12 @@
 package cn.myperf4j.core;
 
+import cn.myperf4j.base.metric.MethodMetrics;
+import cn.myperf4j.base.MethodMetricsProcessor;
 import cn.myperf4j.base.MethodTag;
-import cn.myperf4j.base.PerfStats;
-import cn.myperf4j.base.PerfStatsProcessor;
-import cn.myperf4j.core.config.ProfilingParams;
-import cn.myperf4j.core.constant.PropertyValues;
-import cn.myperf4j.core.util.Logger;
-import cn.myperf4j.core.util.PerfStatsCalculator;
-import cn.myperf4j.core.util.ThreadUtils;
+import cn.myperf4j.base.config.ProfilingParams;
+import cn.myperf4j.base.constant.PropertyValues;
+import cn.myperf4j.base.util.Logger;
+import cn.myperf4j.base.util.ThreadUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +28,7 @@ public abstract class AbstractRecorderMaintainer {
 
     private ThreadPoolExecutor backgroundExecutor;
 
-    private PerfStatsProcessor perfStatsProcessor;
+    private MethodMetricsProcessor methodMetricsProcessor;
 
     private boolean accurateMode;
 
@@ -37,8 +36,8 @@ public abstract class AbstractRecorderMaintainer {
 
     private volatile long nextTimeSliceEndTime = 0L;
 
-    public boolean initial(PerfStatsProcessor processor, boolean accurateMode, int backupRecordersCount, long millTimeSlice) {
-        this.perfStatsProcessor = processor;
+    public boolean initial(MethodMetricsProcessor processor, boolean accurateMode, int backupRecordersCount, long millTimeSlice) {
+        this.methodMetricsProcessor = processor;
         this.accurateMode = accurateMode;
         this.millTimeSlice = getFitMillTimeSlice(millTimeSlice);
         backupRecordersCount = getFitBackupRecordersCount(backupRecordersCount);
@@ -178,7 +177,7 @@ public abstract class AbstractRecorderMaintainer {
                             }
 
                             int actualSize = methodTagMaintainer.getMethodTagCount();
-                            List<PerfStats> perfStatsList = new ArrayList<>(actualSize / 2);
+                            List<MethodMetrics> methodMetricsList = new ArrayList<>(actualSize / 2);
                             for (int i = 0; i < actualSize; ++i) {
                                 Recorder recorder = tmpCurRecorders.getRecorder(i);
                                 if (recorder == null || !recorder.hasRecord()) {
@@ -191,10 +190,10 @@ public abstract class AbstractRecorderMaintainer {
                                 }
 
                                 MethodTag methodTag = methodTagMaintainer.getMethodTag(recorder.getMethodTagId());
-                                perfStatsList.add(PerfStatsCalculator.calPerfStats(recorder, methodTag, tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime()));
+                                methodMetricsList.add(PerfStatsCalculator.calPerfStats(recorder, methodTag, tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime()));
                             }
 
-                            perfStatsProcessor.process(perfStatsList, actualSize, tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
+                            methodMetricsProcessor.process(methodMetricsList, actualSize, tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
                         } catch (Exception e) {
                             Logger.error("RecorderMaintainer.backgroundExecutor error", e);
                         } finally {

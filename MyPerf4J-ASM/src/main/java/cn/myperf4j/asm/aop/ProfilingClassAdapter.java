@@ -1,8 +1,8 @@
 package cn.myperf4j.asm.aop;
 
-import cn.myperf4j.core.config.ProfilingConfig;
-import cn.myperf4j.core.config.ProfilingFilter;
-import cn.myperf4j.core.util.Logger;
+import cn.myperf4j.base.config.ProfilingConfig;
+import cn.myperf4j.base.config.ProfilingFilter;
+import cn.myperf4j.base.util.Logger;
 import org.objectweb.asm.*;
 
 import java.util.ArrayList;

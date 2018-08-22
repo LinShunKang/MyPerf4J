@@ -4,7 +4,7 @@ import cn.myperf4j.asm.ASMRecorderMaintainer;
 import cn.myperf4j.base.MethodTag;
 import cn.myperf4j.core.AbstractRecorderMaintainer;
 import cn.myperf4j.core.MethodTagMaintainer;
-import cn.myperf4j.core.config.ProfilingConfig;
+import cn.myperf4j.base.config.ProfilingConfig;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.AdviceAdapter;

@@ -1,16 +1,15 @@
 package cn.myperf4j.core;
 
+import cn.myperf4j.base.metric.MethodMetrics;
+import cn.myperf4j.base.MethodMetricsProcessor;
 import cn.myperf4j.base.MethodTag;
-import cn.myperf4j.base.PerfStats;
-import cn.myperf4j.base.PerfStatsProcessor;
-import cn.myperf4j.core.config.ProfilingConfig;
-import cn.myperf4j.core.config.ProfilingFilter;
-import cn.myperf4j.core.constant.PropertyKeys;
-import cn.myperf4j.core.constant.PropertyValues;
-import cn.myperf4j.core.util.IOUtils;
-import cn.myperf4j.core.util.Logger;
-import cn.myperf4j.core.config.MyProperties;
-import cn.myperf4j.core.util.PerfStatsCalculator;
+import cn.myperf4j.base.config.ProfilingConfig;
+import cn.myperf4j.base.config.ProfilingFilter;
+import cn.myperf4j.base.constant.PropertyKeys;
+import cn.myperf4j.base.constant.PropertyValues;
+import cn.myperf4j.base.util.IOUtils;
+import cn.myperf4j.base.util.Logger;
+import cn.myperf4j.base.config.MyProperties;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -24,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class AbstractBootstrap {
 
-    protected AsyncPerfStatsProcessor processor;
+    protected AsyncMethodMetricsProcessor processor;
 
     protected AbstractRecorderMaintainer maintainer;
 
@@ -224,12 +223,12 @@ public abstract class AbstractBootstrap {
 
             Class<?> clazz = AbstractBootstrap.class.getClassLoader().loadClass(className);
             Object obj = clazz.newInstance();
-            if (!(obj instanceof PerfStatsProcessor)) {
+            if (!(obj instanceof MethodMetricsProcessor)) {
                 Logger.error("AbstractBootstrap.initPerfStatsProcessor() className is not correct!!!");
                 return false;
             }
 
-            processor = AsyncPerfStatsProcessor.initial((PerfStatsProcessor) obj);
+            processor = AsyncMethodMetricsProcessor.initial((MethodMetricsProcessor) obj);
             return true;
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
             Logger.error("AbstractBootstrap.initPerfStatsProcessor()", e);
@@ -301,7 +300,7 @@ public abstract class AbstractBootstrap {
                     try {
                         MethodTagMaintainer methodTagMaintainer = MethodTagMaintainer.getInstance();
                         Recorders recorders = maintainer.getRecorders();
-                        List<PerfStats> perfStatsList = new ArrayList<>(recorders.size());
+                        List<MethodMetrics> methodMetricsList = new ArrayList<>(recorders.size());
                         int actualSize = methodTagMaintainer.getMethodTagCount();
                         for (int i = 0; i < actualSize; ++i) {
                             Recorder recorder = recorders.getRecorder(i);
@@ -310,9 +309,9 @@ public abstract class AbstractBootstrap {
                             }
 
                             MethodTag methodTag = methodTagMaintainer.getMethodTag(recorder.getMethodTagId());
-                            perfStatsList.add(PerfStatsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime()));
+                            methodMetricsList.add(PerfStatsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime()));
                         }
-                        processor.process(perfStatsList, actualSize, recorders.getStartTime(), recorders.getStopTime());
+                        processor.process(methodMetricsList, actualSize, recorders.getStartTime(), recorders.getStopTime());
 
                         ThreadPoolExecutor executor = processor.getExecutor();
                         executor.shutdown();

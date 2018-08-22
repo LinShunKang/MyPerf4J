@@ -3,8 +3,8 @@ package cn.myperf4j.asm;
 import cn.myperf4j.asm.aop.ProfilingAspect;
 import cn.myperf4j.core.AbstractBootstrap;
 import cn.myperf4j.core.AbstractRecorderMaintainer;
-import cn.myperf4j.core.config.ProfilingConfig;
-import cn.myperf4j.core.util.Logger;
+import cn.myperf4j.base.config.ProfilingConfig;
+import cn.myperf4j.base.util.Logger;
 
 
 /**

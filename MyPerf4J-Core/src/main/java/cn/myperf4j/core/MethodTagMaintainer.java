@@ -1,7 +1,7 @@
 package cn.myperf4j.core;
 
 import cn.myperf4j.base.MethodTag;
-import cn.myperf4j.core.util.Logger;
+import cn.myperf4j.base.util.Logger;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReferenceArray;
