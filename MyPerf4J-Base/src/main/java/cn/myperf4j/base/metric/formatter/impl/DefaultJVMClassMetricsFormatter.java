@@ -13,15 +13,15 @@ public final class DefaultJVMClassMetricsFormatter implements JVMClassMetricsFor
 
     @Override
     public String format(List<JVMClassMetrics> metricsList, long startMillis, long stopMillis) {
-        String dataTitleFormat = "%9s%9s%9s%n";
-        StringBuilder sb = new StringBuilder((metricsList.size() + 2) * (9 * 3 + 64));
-        sb.append("MyPerf4J JVMClass Metrics [").append(DateFormatUtils.format(startMillis)).append(", ").append(DateFormatUtils.format(stopMillis)).append("]").append(String.format("%n"));
+        String dataTitleFormat = "%-10s%10s%10s%n";
+        StringBuilder sb = new StringBuilder((metricsList.size() + 2) * (12 * 3 + 64));
+        sb.append("MyPerf4J JVM Class Metrics [").append(DateFormatUtils.format(startMillis)).append(", ").append(DateFormatUtils.format(stopMillis)).append("]").append(String.format("%n"));
         sb.append(String.format(dataTitleFormat, "Total", "Loaded", "Unloaded"));
         if (metricsList.isEmpty()) {
             return sb.toString();
         }
 
-        String dataFormat = "%9d%9d%9d%n";
+        String dataFormat = "%-10d%10d%10d%n";
         for (int i = 0; i < metricsList.size(); ++i) {
             JVMClassMetrics metrics = metricsList.get(i);
             sb.append(String.format(dataFormat,

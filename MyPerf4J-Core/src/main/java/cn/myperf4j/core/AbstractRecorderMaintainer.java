@@ -1,12 +1,13 @@
 package cn.myperf4j.core;
 
 import cn.myperf4j.base.metric.MethodMetrics;
-import cn.myperf4j.base.MethodMetricsProcessor;
 import cn.myperf4j.base.MethodTag;
 import cn.myperf4j.base.config.ProfilingParams;
 import cn.myperf4j.base.constant.PropertyValues;
+import cn.myperf4j.base.metric.processor.MethodMetricsProcessor;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.util.ThreadUtils;
+import cn.myperf4j.core.scheduler.Scheduler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 /**
  * Created by LinShunkang on 2018/4/25
  */
-public abstract class AbstractRecorderMaintainer {
+public abstract class AbstractRecorderMaintainer implements Scheduler {
 
     protected List<Recorders> recordersList;
 
@@ -32,21 +33,12 @@ public abstract class AbstractRecorderMaintainer {
 
     private boolean accurateMode;
 
-    private long millTimeSlice;
-
-    private volatile long nextTimeSliceEndTime = 0L;
-
-    public boolean initial(MethodMetricsProcessor processor, boolean accurateMode, int backupRecordersCount, long millTimeSlice) {
+    public boolean initial(MethodMetricsProcessor processor, boolean accurateMode, int backupRecordersCount) {
         this.methodMetricsProcessor = processor;
         this.accurateMode = accurateMode;
-        this.millTimeSlice = getFitMillTimeSlice(millTimeSlice);
         backupRecordersCount = getFitBackupRecordersCount(backupRecordersCount);
 
         if (!initRecorders(backupRecordersCount)) {
-            return false;
-        }
-
-        if (!initRoundRobinTask()) {
             return false;
         }
 
@@ -55,15 +47,6 @@ public abstract class AbstractRecorderMaintainer {
         }
 
         return initOther();
-    }
-
-    private long getFitMillTimeSlice(long millTimeSlice) {
-        if (millTimeSlice < PropertyValues.MIN_TIME_SLICE) {
-            return PropertyValues.MIN_TIME_SLICE;
-        } else if (millTimeSlice > PropertyValues.MAX_TIME_SLICE) {
-            return PropertyValues.MAX_TIME_SLICE;
-        }
-        return millTimeSlice;
     }
 
     private int getFitBackupRecordersCount(int backupRecordersCount) {
@@ -84,20 +67,6 @@ public abstract class AbstractRecorderMaintainer {
 
         curRecorders = recordersList.get(curIndex % recordersList.size());
         return true;
-    }
-
-    private boolean initRoundRobinTask() {
-        try {
-            ScheduledThreadPoolExecutor roundRobinExecutor = new ScheduledThreadPoolExecutor(1,
-                    ThreadUtils.newThreadFactory("MyPerf4J-RoundRobinExecutor_"),
-                    new ThreadPoolExecutor.DiscardPolicy());
-
-            roundRobinExecutor.scheduleAtFixedRate(new RoundRobinProcessor(), 0, 10, TimeUnit.MILLISECONDS);
-            return true;
-        } catch (Exception e) {
-            Logger.error("RecorderMaintainer.initRoundRobinTask()", e);
-        }
-        return false;
     }
 
     private boolean initBackgroundTask(int backupRecordersCount) {
@@ -135,77 +104,65 @@ public abstract class AbstractRecorderMaintainer {
         return curRecorders.getRecorder(methodTagId);
     }
 
-    private class RoundRobinProcessor implements Runnable {
 
-        @Override
-        public void run() {
-            long currentMills = System.currentTimeMillis();
-            if (nextTimeSliceEndTime == 0L) {
-                nextTimeSliceEndTime = ((currentMills / millTimeSlice) * millTimeSlice) + millTimeSlice;
-            }
+    @Override
+    public void run(long currentMills, long millTimeSlice, long nextTimeSliceEndTime) {
+        try {
+            final Recorders tmpCurRecorders = curRecorders;
+            tmpCurRecorders.setStartTime(nextTimeSliceEndTime - 2 * millTimeSlice);
+            tmpCurRecorders.setStopTime(nextTimeSliceEndTime - millTimeSlice);
 
-            //还在当前的时间片里
-            if (nextTimeSliceEndTime > currentMills) {
-                return;
-            }
-            nextTimeSliceEndTime = ((currentMills / millTimeSlice) * millTimeSlice) + millTimeSlice;
+            curIndex = getNextIdx(curIndex);
+            Logger.debug("RecorderMaintainer.roundRobinProcessor curIndex=" + curIndex % recordersList.size());
 
-            try {
-                final Recorders tmpCurRecorders = curRecorders;
-                tmpCurRecorders.setStartTime(nextTimeSliceEndTime - 2 * millTimeSlice);
-                tmpCurRecorders.setStopTime(nextTimeSliceEndTime - millTimeSlice);
+            Recorders nextRecorders = recordersList.get(curIndex % recordersList.size());
+            nextRecorders.setStartTime(nextTimeSliceEndTime - millTimeSlice);
+            nextRecorders.setStopTime(nextTimeSliceEndTime);
+            nextRecorders.setWriting(true);
+            nextRecorders.resetRecorder();
+            curRecorders = nextRecorders;
 
-                curIndex = getNextIdx(curIndex);
-                Logger.debug("RecorderMaintainer.roundRobinProcessor curIndex=" + curIndex % recordersList.size());
-
-                Recorders nextRecorders = recordersList.get(curIndex % recordersList.size());
-                nextRecorders.setStartTime(nextTimeSliceEndTime - millTimeSlice);
-                nextRecorders.setStopTime(nextTimeSliceEndTime);
-                nextRecorders.setWriting(true);
-                nextRecorders.resetRecorder();
-                curRecorders = nextRecorders;
-
-                tmpCurRecorders.setWriting(false);
-                backgroundExecutor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        long start = System.currentTimeMillis();
-                        try {
-                            if (tmpCurRecorders.isWriting()) {
-                                Logger.warn("RecorderMaintainer.backgroundExecutor the tmpCurRecorders is writing!!! Please increase `MillTimeSlice` or increase `RecorderTurntableNum`!!!P1");
-                                return;
-                            }
-
-                            int actualSize = methodTagMaintainer.getMethodTagCount();
-                            List<MethodMetrics> methodMetricsList = new ArrayList<>(actualSize / 2);
-                            for (int i = 0; i < actualSize; ++i) {
-                                Recorder recorder = tmpCurRecorders.getRecorder(i);
-                                if (recorder == null || !recorder.hasRecord()) {
-                                    continue;
-                                }
-
-                                if (tmpCurRecorders.isWriting()) {
-                                    Logger.warn("RecorderMaintainer.backgroundExecutor the tmpCurRecorders is writing!!! Please increase `MillTimeSlice` or increase `RecorderTurntableNum`!!!P2");
-                                    break;
-                                }
-
-                                MethodTag methodTag = methodTagMaintainer.getMethodTag(recorder.getMethodTagId());
-                                methodMetricsList.add(PerfStatsCalculator.calPerfStats(recorder, methodTag, tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime()));
-                            }
-
-                            methodMetricsProcessor.process(methodMetricsList, actualSize, tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
-                        } catch (Exception e) {
-                            Logger.error("RecorderMaintainer.backgroundExecutor error", e);
-                        } finally {
-                            Logger.debug("RecorderMaintainer.backgroundProcessor finished!!! cost: " + (System.currentTimeMillis() - start) + "ms");
-                        }
+            tmpCurRecorders.setWriting(false);
+            backgroundExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    if (tmpCurRecorders.isWriting()) {
+                        Logger.warn("RecorderMaintainer.backgroundExecutor the tmpCurRecorders is writing!!! Please increase `MillTimeSlice` or increase `RecorderTurntableNum`!!!P1");
+                        return;
                     }
-                });
-            } catch (Exception e) {
-                Logger.error("RecorderMaintainer.roundRobinExecutor error", e);
-            } finally {
-                Logger.debug("RecorderMaintainer.roundRobinProcessor finished!!! cost: " + (System.currentTimeMillis() - currentMills) + "ms");
-            }
+
+                    long start = System.currentTimeMillis();
+                    try {
+                        methodMetricsProcessor.beforeProcess(tmpCurRecorders.getStartTime(), tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
+                        int actualSize = methodTagMaintainer.getMethodTagCount();
+                        for (int i = 0; i < actualSize; ++i) {
+                            Recorder recorder = tmpCurRecorders.getRecorder(i);
+                            if (recorder == null || !recorder.hasRecord()) {
+                                continue;
+                            }
+
+                            if (tmpCurRecorders.isWriting()) {
+                                Logger.warn("RecorderMaintainer.backgroundExecutor the tmpCurRecorders is writing!!! Please increase `MillTimeSlice` or increase `RecorderTurntableNum`!!!P2");
+                                break;
+                            }
+
+                            MethodTag methodTag = methodTagMaintainer.getMethodTag(recorder.getMethodTagId());
+
+
+                            MethodMetrics metrics = PerfStatsCalculator.calPerfStats(recorder, methodTag, tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
+                            methodMetricsProcessor.process(metrics, tmpCurRecorders.getStartTime(), tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
+                        }
+
+                        methodMetricsProcessor.afterProcess(tmpCurRecorders.getStartTime(), tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
+                    } catch (Exception e) {
+                        Logger.error("RecorderMaintainer.backgroundExecutor error", e);
+                    } finally {
+                        Logger.debug("RecorderMaintainer.backgroundProcessor finished!!! cost: " + (System.currentTimeMillis() - start) + "ms");
+                    }
+                }
+            });
+        } catch (Exception e) {
+            Logger.error("RecorderMaintainer.roundRobinExecutor error", e);
         }
     }
 

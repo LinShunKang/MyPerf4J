@@ -12,7 +12,15 @@ public class ProfilingConfig {
 
     private static final ProfilingConfig instance = new ProfilingConfig();
 
-    private String perStatsProcessor;
+    private String methodMetricsProcessor;
+
+    private String classMetricsProcessor;
+
+    private String gcMetricsProcessor;
+
+    private String memoryMetricsProcessor;
+
+    private String threadMetricsProcessor;
 
     private String recorderMode;
 
@@ -46,12 +54,44 @@ public class ProfilingConfig {
         return instance;
     }
 
-    public String getPerStatsProcessor() {
-        return perStatsProcessor;
+    public String getMethodMetricsProcessor() {
+        return methodMetricsProcessor;
     }
 
-    public void setPerStatsProcessor(String perStatsProcessor) {
-        this.perStatsProcessor = perStatsProcessor;
+    public void setMethodMetricsProcessor(String methodMetricsProcessor) {
+        this.methodMetricsProcessor = methodMetricsProcessor;
+    }
+
+    public String getClassMetricsProcessor() {
+        return classMetricsProcessor;
+    }
+
+    public void setClassMetricsProcessor(String classMetricsProcessor) {
+        this.classMetricsProcessor = classMetricsProcessor;
+    }
+
+    public String getGcMetricsProcessor() {
+        return gcMetricsProcessor;
+    }
+
+    public void setGcMetricsProcessor(String gcMetricsProcessor) {
+        this.gcMetricsProcessor = gcMetricsProcessor;
+    }
+
+    public String getMemoryMetricsProcessor() {
+        return memoryMetricsProcessor;
+    }
+
+    public void setMemoryMetricsProcessor(String memoryMetricsProcessor) {
+        this.memoryMetricsProcessor = memoryMetricsProcessor;
+    }
+
+    public String getThreadMetricsProcessor() {
+        return threadMetricsProcessor;
+    }
+
+    public void setThreadMetricsProcessor(String threadMetricsProcessor) {
+        this.threadMetricsProcessor = threadMetricsProcessor;
     }
 
     public String getRecorderMode() {
@@ -162,7 +202,11 @@ public class ProfilingConfig {
     @Override
     public String toString() {
         return "ProfilingConfig{" +
-                "perStatsProcessor='" + perStatsProcessor + '\'' +
+                "methodMetricsProcessor='" + methodMetricsProcessor + '\'' +
+                ", classMetricsProcessor='" + classMetricsProcessor + '\'' +
+                ", gcMetricsProcessor='" + gcMetricsProcessor + '\'' +
+                ", memoryMetricsProcessor='" + memoryMetricsProcessor + '\'' +
+                ", threadMetricsProcessor='" + threadMetricsProcessor + '\'' +
                 ", recorderMode='" + recorderMode + '\'' +
                 ", backupRecorderCount=" + backupRecorderCount +
                 ", milliTimeSlice=" + milliTimeSlice +

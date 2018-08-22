@@ -13,9 +13,19 @@ public class JVMGCMetrics extends Metrics {
 
     private String gcName;
 
-    private int collectCount;
+    private long collectCount;
 
-    private int collectTime;
+    private long collectTime;
+
+    public JVMGCMetrics(String gcName, long collectCount, long collectTime) {
+        this.gcName = gcName;
+        this.collectCount = collectCount;
+        this.collectTime = collectTime;
+    }
+
+    public JVMGCMetrics(GarbageCollectorMXBean bean) {
+        this(bean.getName(), bean.getCollectionCount(), bean.getCollectionTime());
+    }
 
     public String getGcName() {
         return gcName;
@@ -25,19 +35,19 @@ public class JVMGCMetrics extends Metrics {
         this.gcName = gcName;
     }
 
-    public int getCollectCount() {
+    public long getCollectCount() {
         return collectCount;
     }
 
-    public void setCollectCount(int collectCount) {
+    public void setCollectCount(long collectCount) {
         this.collectCount = collectCount;
     }
 
-    public int getCollectTime() {
+    public long getCollectTime() {
         return collectTime;
     }
 
-    public void setCollectTime(int collectTime) {
+    public void setCollectTime(long collectTime) {
         this.collectTime = collectTime;
     }
 

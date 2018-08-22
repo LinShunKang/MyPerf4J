@@ -16,6 +16,15 @@ public class JVMClassMetrics extends Metrics {
 
     private long unloaded;
 
+    public JVMClassMetrics(long total, long loaded, long unloaded) {
+        this.total = total;
+        this.loaded = loaded;
+        this.unloaded = unloaded;
+    }
+
+    public JVMClassMetrics(ClassLoadingMXBean bean) {
+        this(bean.getTotalLoadedClassCount(), bean.getLoadedClassCount(), bean.getUnloadedClassCount());
+    }
 
     public long getTotal() {
         return total;

@@ -31,15 +31,22 @@ public class JVMMemoryMetrics extends Metrics {
 
     private long heapMax;
 
+    public JVMMemoryMetrics(long nonHeapInit, long nonHeapUsed, long nonHeapCommitted, long nonHeapMax, long heapInit, long heapUsed, long heapCommitted, long heapMax) {
+        this.nonHeapInit = nonHeapInit;
+        this.nonHeapUsed = nonHeapUsed;
+        this.nonHeapCommitted = nonHeapCommitted;
+        this.nonHeapMax = nonHeapMax;
+        this.heapInit = heapInit;
+        this.heapUsed = heapUsed;
+        this.heapCommitted = heapCommitted;
+        this.heapMax = heapMax;
+    }
 
-    private long codeCacheInit;
 
-    private long codeCacheUsed;
-
-    private long codeCacheCommitted;
-
-    private long codeCacheMax;
-
+    public JVMMemoryMetrics(MemoryUsage nonHeapMem, MemoryUsage heapMem) {
+        this(nonHeapMem.getInit(), nonHeapMem.getUsed(), nonHeapMem.getCommitted(), nonHeapMem.getMax(),
+                heapMem.getInit(), heapMem.getUsed(), heapMem.getCommitted(), heapMem.getMax());
+    }
 
     public long getNonHeapInit() {
         return nonHeapInit;
@@ -105,38 +112,6 @@ public class JVMMemoryMetrics extends Metrics {
         this.heapMax = heapMax;
     }
 
-    public long getCodeCacheInit() {
-        return codeCacheInit;
-    }
-
-    public void setCodeCacheInit(long codeCacheInit) {
-        this.codeCacheInit = codeCacheInit;
-    }
-
-    public long getCodeCacheUsed() {
-        return codeCacheUsed;
-    }
-
-    public void setCodeCacheUsed(long codeCacheUsed) {
-        this.codeCacheUsed = codeCacheUsed;
-    }
-
-    public long getCodeCacheCommitted() {
-        return codeCacheCommitted;
-    }
-
-    public void setCodeCacheCommitted(long codeCacheCommitted) {
-        this.codeCacheCommitted = codeCacheCommitted;
-    }
-
-    public long getCodeCacheMax() {
-        return codeCacheMax;
-    }
-
-    public void setCodeCacheMax(long codeCacheMax) {
-        this.codeCacheMax = codeCacheMax;
-    }
-
     @Override
     public String toString() {
         return "JVMMemoryMetrics{" +
@@ -148,15 +123,12 @@ public class JVMMemoryMetrics extends Metrics {
                 ", heapUsed=" + heapUsed +
                 ", heapCommitted=" + heapCommitted +
                 ", heapMax=" + heapMax +
-                ", codeCacheInit=" + codeCacheInit +
-                ", codeCacheUsed=" + codeCacheUsed +
-                ", codeCacheCommitted=" + codeCacheCommitted +
-                ", codeCacheMax=" + codeCacheMax +
                 '}';
     }
 
     /**
      * -XX:+UseG1GC
+     *
      * @param args
      */
     public static void main(String[] args) {

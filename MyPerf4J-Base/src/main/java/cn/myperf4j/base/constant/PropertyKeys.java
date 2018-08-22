@@ -7,7 +7,15 @@ public interface PropertyKeys {
 
     String PRO_FILE_NAME = "MyPerf4JPropFile";
 
-    String PERF_STATS_PROCESSOR = "MethodMetricsProcessor";
+    String METHOD_METRICS_PROCESSOR = "MethodMetricsProcessor";
+
+    String CLASS_METRICS_PROCESSOR = "ClassMetricsProcessor";
+
+    String GC_METRICS_PROCESSOR = "GCMetricsProcessor";
+
+    String MEM_METRICS_PROCESSOR = "MemMetricsProcessor";
+
+    String THREAD_METRICS_PROCESSOR = "ThreadMetricsProcessor";
 
     String RECORDER_MODE = "RecorderMode";
 

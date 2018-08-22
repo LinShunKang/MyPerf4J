@@ -1,15 +1,17 @@
 package cn.myperf4j.core;
 
 import cn.myperf4j.base.metric.MethodMetrics;
-import cn.myperf4j.base.MethodMetricsProcessor;
 import cn.myperf4j.base.MethodTag;
 import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.config.ProfilingFilter;
 import cn.myperf4j.base.constant.PropertyKeys;
 import cn.myperf4j.base.constant.PropertyValues;
+import cn.myperf4j.base.metric.processor.*;
 import cn.myperf4j.base.util.IOUtils;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.config.MyProperties;
+import cn.myperf4j.core.scheduler.JVMMetricsScheduler;
+import cn.myperf4j.core.scheduler.Scheduler;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -94,6 +96,11 @@ public abstract class AbstractBootstrap {
             return false;
         }
 
+        if (!initScheduler()) {
+            Logger.error("AbstractBootstrap initScheduler() FAILURE!!!");
+            return false;
+        }
+
         if (!initOther()) {
             Logger.error("AbstractBootstrap initOther() FAILURE!!!");
             return false;
@@ -121,7 +128,12 @@ public abstract class AbstractBootstrap {
     private boolean initProfilingConfig() {
         try {
             ProfilingConfig config = ProfilingConfig.getInstance();
-            config.setPerStatsProcessor(MyProperties.getStr(PropertyKeys.PERF_STATS_PROCESSOR, PropertyValues.DEFAULT_PERF_STATS_PROCESSOR));
+            config.setMethodMetricsProcessor(MyProperties.getStr(PropertyKeys.METHOD_METRICS_PROCESSOR, PropertyValues.DEFAULT_METHOD_PROCESSOR));
+            config.setClassMetricsProcessor(MyProperties.getStr(PropertyKeys.CLASS_METRICS_PROCESSOR, PropertyValues.DEFAULT_CLASS_PROCESSOR));
+            config.setGcMetricsProcessor(MyProperties.getStr(PropertyKeys.GC_METRICS_PROCESSOR, PropertyValues.DEFAULT_GC_PROCESSOR));
+            config.setMemoryMetricsProcessor(MyProperties.getStr(PropertyKeys.MEM_METRICS_PROCESSOR, PropertyValues.DEFAULT_MEM_PROCESSOR));
+            config.setThreadMetricsProcessor(MyProperties.getStr(PropertyKeys.THREAD_METRICS_PROCESSOR, PropertyValues.DEFAULT_THREAD_PROCESSOR));
+
             config.setRecorderMode(MyProperties.getStr(PropertyKeys.RECORDER_MODE, PropertyValues.RECORDER_MODE_ROUGH));
             config.setBackupRecorderCount(MyProperties.getInt(PropertyKeys.BACKUP_RECORDERS_COUNT, PropertyValues.MIN_BACKUP_RECORDERS_COUNT));
             config.setMilliTimeSlice(MyProperties.getLong(PropertyKeys.MILL_TIME_SLICE, PropertyValues.DEFAULT_TIME_SLICE));
@@ -215,25 +227,28 @@ public abstract class AbstractBootstrap {
     private boolean initPerfStatsProcessor() {
         try {
             ProfilingConfig config = ProfilingConfig.getInstance();
-            String className = config.getPerStatsProcessor();
-            if (className == null || className.isEmpty()) {
-                Logger.error("AbstractBootstrap.initPerfStatsProcessor() MyPerf4J.PSP NOT FOUND!!!");
+            MethodMetricsProcessor obj = createObj(config.getMethodMetricsProcessor());
+            if (obj == null) {
                 return false;
             }
 
-            Class<?> clazz = AbstractBootstrap.class.getClassLoader().loadClass(className);
-            Object obj = clazz.newInstance();
-            if (!(obj instanceof MethodMetricsProcessor)) {
-                Logger.error("AbstractBootstrap.initPerfStatsProcessor() className is not correct!!!");
-                return false;
-            }
-
-            processor = AsyncMethodMetricsProcessor.initial((MethodMetricsProcessor) obj);
+            processor = AsyncMethodMetricsProcessor.initial(obj);
             return true;
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
             Logger.error("AbstractBootstrap.initPerfStatsProcessor()", e);
         }
         return false;
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T createObj(String className) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+        if (className == null || className.isEmpty()) {
+            Logger.error("AbstractBootstrap.createObj() className=" + className + " NOT FOUND!!!");
+            return null;
+        }
+
+        Class<?> clazz = AbstractBootstrap.class.getClassLoader().loadClass(className);
+        return (T) clazz.newInstance();
     }
 
     private boolean initProfilingParams() {
@@ -300,7 +315,8 @@ public abstract class AbstractBootstrap {
                     try {
                         MethodTagMaintainer methodTagMaintainer = MethodTagMaintainer.getInstance();
                         Recorders recorders = maintainer.getRecorders();
-                        List<MethodMetrics> methodMetricsList = new ArrayList<>(recorders.size());
+                        processor.beforeProcess(recorders.getStartTime(), recorders.getStartTime(), recorders.getStopTime());
+
                         int actualSize = methodTagMaintainer.getMethodTagCount();
                         for (int i = 0; i < actualSize; ++i) {
                             Recorder recorder = recorders.getRecorder(i);
@@ -309,9 +325,10 @@ public abstract class AbstractBootstrap {
                             }
 
                             MethodTag methodTag = methodTagMaintainer.getMethodTag(recorder.getMethodTagId());
-                            methodMetricsList.add(PerfStatsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime()));
+                            MethodMetrics metrics = PerfStatsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime());
+                            processor.process(metrics, recorders.getStartTime(), recorders.getStartTime(), recorders.getStopTime());
                         }
-                        processor.process(methodMetricsList, actualSize, recorders.getStartTime(), recorders.getStopTime());
+                        processor.afterProcess(recorders.getStartTime(), recorders.getStartTime(), recorders.getStopTime());
 
                         ThreadPoolExecutor executor = processor.getExecutor();
                         executor.shutdown();
@@ -328,6 +345,30 @@ public abstract class AbstractBootstrap {
             Logger.error("AbstractBootstrap.initShutDownHook()", e);
         }
         return false;
+    }
+
+    private boolean initScheduler() {
+        try {
+            List<Scheduler> schedulers = new ArrayList<>(2);
+            schedulers.add(createJVMMetricsScheduler());
+            schedulers.add(maintainer);
+
+            LightWeightScheduler.initScheduleTask(schedulers, ProfilingConfig.getInstance().getMilliTimeSlice());
+
+            return true;
+        } catch (Exception e) {
+            Logger.error("AbstractBootstrap.initScheduler()", e);
+        }
+        return false;
+    }
+
+    private Scheduler createJVMMetricsScheduler() throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+        ProfilingConfig config = ProfilingConfig.getInstance();
+        JVMClassMetricsProcessor classProcessor = createObj(config.getClassMetricsProcessor());
+        JVMGCMetricsProcessor gcProcessor = createObj(config.getGcMetricsProcessor());
+        JVMMemoryMetricsProcessor memoryProcessor = createObj(config.getMemoryMetricsProcessor());
+        JVMThreadMetricsProcessor threadProcessor = createObj(config.getThreadMetricsProcessor());
+        return new JVMMetricsScheduler(classProcessor, gcProcessor, memoryProcessor, threadProcessor);
     }
 
     public abstract boolean initOther();

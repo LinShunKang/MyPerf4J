@@ -12,7 +12,6 @@
         <module>MyPerf4J-Extension</module>
     </modules>
     <name>MyPerf4J</name>
-    <url>http://maven.apache.org</url>
 
     <properties>
         <asm-version>6.1.1</asm-version>
