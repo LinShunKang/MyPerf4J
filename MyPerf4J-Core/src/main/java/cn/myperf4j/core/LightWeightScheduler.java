@@ -45,6 +45,8 @@ public class LightWeightScheduler {
     }
 
     public static void initScheduleTask(List<Scheduler> schedulerList, long millTimeSlice) {
+        ExecutorServiceManager.addExecutorService(scheduledExecutor);
+
         millTimeSlice = getFitMillTimeSlice(millTimeSlice);
         new LightWeightScheduler(schedulerList, 0, 10, TimeUnit.MILLISECONDS, millTimeSlice).start();
     }

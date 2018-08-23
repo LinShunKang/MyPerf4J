@@ -78,6 +78,8 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
                     new LinkedBlockingQueue<Runnable>(backupRecordersCount),
                     ThreadUtils.newThreadFactory("MyPerf4J-BackgroundExecutor_"),
                     new ThreadPoolExecutor.DiscardOldestPolicy());
+
+            ExecutorServiceManager.addExecutorService(backgroundExecutor);
             return true;
         } catch (Exception e) {
             Logger.error("RecorderMaintainer.initBackgroundTask()", e);

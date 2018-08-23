@@ -1,7 +1,5 @@
 package cn.myperf4j.core;
 
-import cn.myperf4j.base.metric.MethodMetrics;
-import cn.myperf4j.base.MethodTag;
 import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.config.ProfilingFilter;
 import cn.myperf4j.base.constant.PropertyKeys;
@@ -17,7 +15,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -313,28 +310,7 @@ public abstract class AbstractBootstrap {
                 public void run() {
                     Logger.info("ENTER ShutdownHook...");
                     try {
-                        MethodTagMaintainer methodTagMaintainer = MethodTagMaintainer.getInstance();
-                        Recorders recorders = maintainer.getRecorders();
-                        processor.beforeProcess(recorders.getStartTime(), recorders.getStartTime(), recorders.getStopTime());
-
-                        int actualSize = methodTagMaintainer.getMethodTagCount();
-                        for (int i = 0; i < actualSize; ++i) {
-                            Recorder recorder = recorders.getRecorder(i);
-                            if (recorder == null || !recorder.hasRecord()) {
-                                continue;
-                            }
-
-                            MethodTag methodTag = methodTagMaintainer.getMethodTag(recorder.getMethodTagId());
-                            MethodMetrics metrics = PerfStatsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime());
-                            processor.process(metrics, recorders.getStartTime(), recorders.getStartTime(), recorders.getStopTime());
-                        }
-                        processor.afterProcess(recorders.getStartTime(), recorders.getStartTime(), recorders.getStopTime());
-
-                        ThreadPoolExecutor executor = processor.getExecutor();
-                        executor.shutdown();
-                        executor.awaitTermination(5, TimeUnit.SECONDS);
-                    } catch (Exception e) {
-                        Logger.error("", e);
+                        ExecutorServiceManager.stopAll(6, TimeUnit.SECONDS);
                     } finally {
                         Logger.info("EXIT ShutdownHook...");
                     }

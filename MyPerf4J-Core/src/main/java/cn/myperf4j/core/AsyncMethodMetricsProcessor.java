@@ -5,6 +5,7 @@ import cn.myperf4j.base.metric.processor.MethodMetricsProcessor;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.util.ThreadUtils;
 
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -14,7 +15,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class AsyncMethodMetricsProcessor implements MethodMetricsProcessor {
 
-    private final ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 5, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>(500), ThreadUtils.newThreadFactory("MyPerf4J-AsyncPerfStatsProcessor_"), new ThreadPoolExecutor.DiscardPolicy());
+    private final ExecutorService executor = new ThreadPoolExecutor(1, 1, 5, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>(500), ThreadUtils.newThreadFactory("MyPerf4J-AsyncPerfStatsProcessor_"), new ThreadPoolExecutor.DiscardPolicy());
 
     private static AsyncMethodMetricsProcessor instance = null;
 
@@ -26,18 +27,24 @@ public class AsyncMethodMetricsProcessor implements MethodMetricsProcessor {
 
     @Override
     public void beforeProcess(long processId, long startMillis, long stopMillis) {
+        if (target == null) {
+            return;
+        }
+
         target.beforeProcess(processId, startMillis, stopMillis);
     }
 
     @Override
     public void process(final MethodMetrics metrics, final long processId, final long startMillis, final long stopMillis) {
+        if (target == null) {
+            return;
+        }
+
         executor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
-                    if (target != null) {
-                        target.process(metrics, processId, startMillis, stopMillis);
-                    }
+                    target.process(metrics, processId, startMillis, stopMillis);
                 } catch (Exception e) {
                     Logger.error("AsyncMethodMetricsProcessor.start()", e);
                 }
@@ -47,6 +54,10 @@ public class AsyncMethodMetricsProcessor implements MethodMetricsProcessor {
 
     @Override
     public void afterProcess(final long processId, final long startMillis, final long stopMillis) {
+        if (target == null) {
+            return;
+        }
+
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -59,14 +70,10 @@ public class AsyncMethodMetricsProcessor implements MethodMetricsProcessor {
         if (instance != null) {
             return instance;
         }
-        return instance = new AsyncMethodMetricsProcessor(target);
-    }
 
-    public ThreadPoolExecutor getExecutor() {
-        return executor;
-    }
-
-    public static AsyncMethodMetricsProcessor getInstance() {
+        instance = new AsyncMethodMetricsProcessor(target);
+        ExecutorServiceManager.addExecutorService(instance.executor);
         return instance;
     }
+
 }
