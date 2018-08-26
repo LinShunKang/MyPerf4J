@@ -1,10 +1,10 @@
 package cn.myperf4j.core.scheduler;
 
 
-import cn.myperf4j.base.metric.JVMClassMetrics;
-import cn.myperf4j.base.metric.JVMGCMetrics;
-import cn.myperf4j.base.metric.JVMMemoryMetrics;
-import cn.myperf4j.base.metric.JVMThreadMetrics;
+import cn.myperf4j.base.metric.JvmClassMetrics;
+import cn.myperf4j.base.metric.JvmGCMetrics;
+import cn.myperf4j.base.metric.JvmMemoryMetrics;
+import cn.myperf4j.base.metric.JvmThreadMetrics;
 import cn.myperf4j.base.metric.processor.*;
 
 import java.lang.management.*;
@@ -13,21 +13,21 @@ import java.util.List;
 /**
  * Created by LinShunkang on 2018/8/22
  */
-public class JVMMetricsScheduler implements Scheduler {
+public class JvmMetricsScheduler implements Scheduler {
 
-    private JVMClassMetricsProcessor classMetricsProcessor;
+    private JvmClassMetricsProcessor classMetricsProcessor;
 
-    private JVMGCMetricsProcessor gcMetricsProcessor;
+    private JvmGCMetricsProcessor gcMetricsProcessor;
 
-    private JVMMemoryMetricsProcessor memoryMetricsProcessor;
+    private JvmMemoryMetricsProcessor memoryMetricsProcessor;
 
-    private JVMThreadMetricsProcessor threadMetricsProcessor;
+    private JvmThreadMetricsProcessor threadMetricsProcessor;
 
 
-    public JVMMetricsScheduler(JVMClassMetricsProcessor classMetricsProcessor,
-                               JVMGCMetricsProcessor gcMetricsProcessor,
-                               JVMMemoryMetricsProcessor memoryMetricsProcessor,
-                               JVMThreadMetricsProcessor threadMetricsProcessor) {
+    public JvmMetricsScheduler(JvmClassMetricsProcessor classMetricsProcessor,
+                               JvmGCMetricsProcessor gcMetricsProcessor,
+                               JvmMemoryMetricsProcessor memoryMetricsProcessor,
+                               JvmThreadMetricsProcessor threadMetricsProcessor) {
         this.classMetricsProcessor = classMetricsProcessor;
         this.gcMetricsProcessor = gcMetricsProcessor;
         this.memoryMetricsProcessor = memoryMetricsProcessor;
@@ -48,7 +48,7 @@ public class JVMMetricsScheduler implements Scheduler {
     }
 
     private void processJVMClassMetrics(long processId, long startMillis, long stopMillis) {
-        JVMClassMetrics classMetrics = new JVMClassMetrics(ManagementFactory.getClassLoadingMXBean());
+        JvmClassMetrics classMetrics = new JvmClassMetrics(ManagementFactory.getClassLoadingMXBean());
 
         classMetricsProcessor.beforeProcess(processId, startMillis, stopMillis);
         try {
@@ -63,7 +63,7 @@ public class JVMMetricsScheduler implements Scheduler {
         try {
             List<GarbageCollectorMXBean> garbageCollectorMxBeans = ManagementFactory.getGarbageCollectorMXBeans();
             for (GarbageCollectorMXBean bean : garbageCollectorMxBeans) {
-                JVMGCMetrics gcMetrics = new JVMGCMetrics(bean);
+                JvmGCMetrics gcMetrics = new JvmGCMetrics(bean);
                 gcMetricsProcessor.process(gcMetrics, processId, startMillis, stopMillis);
             }
         } finally {
@@ -78,7 +78,7 @@ public class JVMMetricsScheduler implements Scheduler {
 
         memoryMetricsProcessor.beforeProcess(processId, startMillis, stopMillis);
         try {
-            memoryMetricsProcessor.process(new JVMMemoryMetrics(nonHeapMem, heapMem), processId, startMillis, stopMillis);
+            memoryMetricsProcessor.process(new JvmMemoryMetrics(nonHeapMem, heapMem), processId, startMillis, stopMillis);
         } finally {
             memoryMetricsProcessor.afterProcess(processId, startMillis, stopMillis);
         }
@@ -89,7 +89,7 @@ public class JVMMetricsScheduler implements Scheduler {
 
         threadMetricsProcessor.beforeProcess(processId, startMillis, stopMillis);
         try {
-            threadMetricsProcessor.process(new JVMThreadMetrics(threadMXBean), processId, startMillis, stopMillis);
+            threadMetricsProcessor.process(new JvmThreadMetrics(threadMXBean), processId, startMillis, stopMillis);
         } finally {
             threadMetricsProcessor.afterProcess(processId, startMillis, stopMillis);
         }

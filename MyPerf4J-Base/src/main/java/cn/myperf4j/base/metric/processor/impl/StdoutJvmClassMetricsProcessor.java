@@ -1,9 +1,9 @@
 package cn.myperf4j.base.metric.processor.impl;
 
-import cn.myperf4j.base.metric.JVMClassMetrics;
-import cn.myperf4j.base.metric.formatter.JVMClassMetricsFormatter;
-import cn.myperf4j.base.metric.formatter.impl.DefaultJVMClassMetricsFormatter;
-import cn.myperf4j.base.metric.processor.JVMClassMetricsProcessor;
+import cn.myperf4j.base.metric.JvmClassMetrics;
+import cn.myperf4j.base.metric.formatter.JvmClassMetricsFormatter;
+import cn.myperf4j.base.metric.formatter.impl.DefaultJvmClassMetricsFormatter;
+import cn.myperf4j.base.metric.processor.JvmClassMetricsProcessor;
 import cn.myperf4j.base.util.Logger;
 
 import java.util.ArrayList;
@@ -13,20 +13,20 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by LinShunkang on 2018/8/21
  */
-public class StdoutJVMClassMetricsProcessor implements JVMClassMetricsProcessor {
+public class StdoutJvmClassMetricsProcessor implements JvmClassMetricsProcessor {
 
-    private ConcurrentHashMap<Long, List<JVMClassMetrics>> metricsMap = new ConcurrentHashMap<>(8);
+    private ConcurrentHashMap<Long, List<JvmClassMetrics>> metricsMap = new ConcurrentHashMap<>(8);
 
-    private JVMClassMetricsFormatter metricsFormatter = new DefaultJVMClassMetricsFormatter();
+    private JvmClassMetricsFormatter metricsFormatter = new DefaultJvmClassMetricsFormatter();
 
     @Override
     public void beforeProcess(long processId, long startMillis, long stopMillis) {
-        metricsMap.put(processId, new ArrayList<JVMClassMetrics>(1));
+        metricsMap.put(processId, new ArrayList<JvmClassMetrics>(1));
     }
 
     @Override
-    public void process(JVMClassMetrics metrics, long processId, long startMillis, long stopMillis) {
-        List<JVMClassMetrics> metricsList = metricsMap.get(processId);
+    public void process(JvmClassMetrics metrics, long processId, long startMillis, long stopMillis) {
+        List<JvmClassMetrics> metricsList = metricsMap.get(processId);
         if (metricsList != null) {
             metricsList.add(metrics);
         } else {
@@ -37,7 +37,7 @@ public class StdoutJVMClassMetricsProcessor implements JVMClassMetricsProcessor 
     @Override
     public void afterProcess(long processId, long startMillis, long stopMillis) {
         try {
-            List<JVMClassMetrics> metricsList = metricsMap.get(processId);
+            List<JvmClassMetrics> metricsList = metricsMap.get(processId);
             if (metricsList != null) {
                 System.out.println(metricsFormatter.format(metricsList, startMillis, stopMillis));
             } else {

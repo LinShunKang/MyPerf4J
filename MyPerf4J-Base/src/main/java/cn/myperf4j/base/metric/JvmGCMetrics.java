@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by LinShunkang on 2018/8/19
  */
-public class JVMGCMetrics extends Metrics {
+public class JvmGCMetrics extends Metrics {
 
     private static final long serialVersionUID = -233095689152915892L;
 
@@ -17,13 +17,13 @@ public class JVMGCMetrics extends Metrics {
 
     private long collectTime;
 
-    public JVMGCMetrics(String gcName, long collectCount, long collectTime) {
+    public JvmGCMetrics(String gcName, long collectCount, long collectTime) {
         this.gcName = gcName;
         this.collectCount = collectCount;
         this.collectTime = collectTime;
     }
 
-    public JVMGCMetrics(GarbageCollectorMXBean bean) {
+    public JvmGCMetrics(GarbageCollectorMXBean bean) {
         this(bean.getName(), bean.getCollectionCount(), bean.getCollectionTime());
     }
 
@@ -53,17 +53,11 @@ public class JVMGCMetrics extends Metrics {
 
     @Override
     public String toString() {
-        return "JVMGCMetrics{" +
+        return "JvmGCMetrics{" +
                 "gcName='" + gcName + '\'' +
                 ", collectCount=" + collectCount +
                 ", collectTime=" + collectTime +
                 "} " + super.toString();
     }
 
-    public static void main(String[] args) {
-        List<GarbageCollectorMXBean> garbageCollectorMxBeans = ManagementFactory.getGarbageCollectorMXBeans();
-        for (GarbageCollectorMXBean bean : garbageCollectorMxBeans) {
-            System.out.println(bean.getName() + ": " + bean.getCollectionCount() + ", " + bean.getCollectionTime());
-        }
-    }
 }

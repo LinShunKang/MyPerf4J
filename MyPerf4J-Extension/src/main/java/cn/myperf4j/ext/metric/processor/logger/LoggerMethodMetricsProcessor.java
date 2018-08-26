@@ -1,4 +1,4 @@
-package cn.myperf4j.ext.psp;
+package cn.myperf4j.ext.metric.processor.logger;
 
 import cn.myperf4j.base.metric.MethodMetrics;
 import cn.myperf4j.base.metric.formatter.impl.DefaultMethodMetricsFormatter;
@@ -14,9 +14,9 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by LinShunkang on 2018/7/11
  */
-public class DefaultLoggerProcessor implements MethodMetricsProcessor {
+public class LoggerMethodMetricsProcessor implements MethodMetricsProcessor {
 
-    private Logger logger = LoggerFactory.getLogger(DefaultLoggerProcessor.class);
+    private Logger logger = LoggerFactory.getLogger(LoggerMethodMetricsProcessor.class);
 
     private ConcurrentHashMap<Long, List<MethodMetrics>> metricsMap = new ConcurrentHashMap<>(8);
 

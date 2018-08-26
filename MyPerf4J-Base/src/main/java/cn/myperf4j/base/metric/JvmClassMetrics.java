@@ -6,7 +6,7 @@ import java.lang.management.ManagementFactory;
 /**
  * Created by LinShunkang on 2018/8/19
  */
-public class JVMClassMetrics extends Metrics {
+public class JvmClassMetrics extends Metrics {
 
     private static final long serialVersionUID = 5189910445931453667L;
 
@@ -16,13 +16,13 @@ public class JVMClassMetrics extends Metrics {
 
     private long unloaded;
 
-    public JVMClassMetrics(long total, long loaded, long unloaded) {
+    public JvmClassMetrics(long total, long loaded, long unloaded) {
         this.total = total;
         this.loaded = loaded;
         this.unloaded = unloaded;
     }
 
-    public JVMClassMetrics(ClassLoadingMXBean bean) {
+    public JvmClassMetrics(ClassLoadingMXBean bean) {
         this(bean.getTotalLoadedClassCount(), bean.getLoadedClassCount(), bean.getUnloadedClassCount());
     }
 
@@ -52,17 +52,11 @@ public class JVMClassMetrics extends Metrics {
 
     @Override
     public String toString() {
-        return "JVMClassMetrics{" +
+        return "JvmClassMetrics{" +
                 "total=" + total +
                 ", loaded=" + loaded +
                 ", unloaded=" + unloaded +
                 '}';
     }
 
-    public static void main(String[] args) {
-        ClassLoadingMXBean bean = ManagementFactory.getClassLoadingMXBean();
-        System.out.println(bean.getLoadedClassCount());
-        System.out.println(bean.getTotalLoadedClassCount());
-        System.out.println(bean.getUnloadedClassCount());
-    }
 }

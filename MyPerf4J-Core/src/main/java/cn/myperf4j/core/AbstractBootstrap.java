@@ -8,7 +8,7 @@ import cn.myperf4j.base.metric.processor.*;
 import cn.myperf4j.base.util.IOUtils;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.config.MyProperties;
-import cn.myperf4j.core.scheduler.JVMMetricsScheduler;
+import cn.myperf4j.core.scheduler.JvmMetricsScheduler;
 import cn.myperf4j.core.scheduler.Scheduler;
 
 import java.io.FileInputStream;
@@ -340,11 +340,11 @@ public abstract class AbstractBootstrap {
 
     private Scheduler createJVMMetricsScheduler() throws IllegalAccessException, InstantiationException, ClassNotFoundException {
         ProfilingConfig config = ProfilingConfig.getInstance();
-        JVMClassMetricsProcessor classProcessor = createObj(config.getClassMetricsProcessor());
-        JVMGCMetricsProcessor gcProcessor = createObj(config.getGcMetricsProcessor());
-        JVMMemoryMetricsProcessor memoryProcessor = createObj(config.getMemoryMetricsProcessor());
-        JVMThreadMetricsProcessor threadProcessor = createObj(config.getThreadMetricsProcessor());
-        return new JVMMetricsScheduler(classProcessor, gcProcessor, memoryProcessor, threadProcessor);
+        JvmClassMetricsProcessor classProcessor = createObj(config.getClassMetricsProcessor());
+        JvmGCMetricsProcessor gcProcessor = createObj(config.getGcMetricsProcessor());
+        JvmMemoryMetricsProcessor memoryProcessor = createObj(config.getMemoryMetricsProcessor());
+        JvmThreadMetricsProcessor threadProcessor = createObj(config.getThreadMetricsProcessor());
+        return new JvmMetricsScheduler(classProcessor, gcProcessor, memoryProcessor, threadProcessor);
     }
 
     public abstract boolean initOther();

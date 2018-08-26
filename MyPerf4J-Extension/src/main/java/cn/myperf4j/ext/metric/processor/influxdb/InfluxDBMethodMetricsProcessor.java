@@ -1,8 +1,8 @@
-package cn.myperf4j.ext.psp;
+package cn.myperf4j.ext.metric.processor.influxdb;
 
 import cn.myperf4j.base.metric.MethodMetrics;
 import cn.myperf4j.base.MethodTag;
-import cn.myperf4j.base.metric.processor.MethodMetricsProcessor;
+import cn.myperf4j.base.metric.processor.impl.AbstractMethodMetricsProcessor;
 import cn.myperf4j.ext.util.NumFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,11 +19,11 @@ import org.slf4j.LoggerFactory;
  * 至于日志的收集和InfluxDB的写入，推荐使用官方的Telegraf(https://portal.influxdata.com/downloads)
  * 推荐在Telegraf配置文件中为不同的服务配置不同的数据库(Database)
  */
-public class InfluxDBLoggerMethodMetricsProcessor implements MethodMetricsProcessor {
+public class InfluxDBMethodMetricsProcessor extends AbstractMethodMetricsProcessor {
 
     private static final int MAX_LENGTH = 512;
 
-    private Logger logger = LoggerFactory.getLogger(InfluxDBLoggerMethodMetricsProcessor.class);
+    private Logger logger = LoggerFactory.getLogger(InfluxDBMethodMetricsProcessor.class);
 
     private ThreadLocal<StringBuilder> sbThreadLocal = new ThreadLocal<StringBuilder>() {
         @Override
@@ -33,11 +33,6 @@ public class InfluxDBLoggerMethodMetricsProcessor implements MethodMetricsProces
     };
 
     @Override
-    public void beforeProcess(long processId, long startMillis, long stopMillis) {
-
-    }
-
-    @Override
     public void process(MethodMetrics metrics, long processId, long startMillis, long stopMillis) {
         StringBuilder sb = sbThreadLocal.get();
         try {
@@ -45,11 +40,6 @@ public class InfluxDBLoggerMethodMetricsProcessor implements MethodMetricsProces
         } finally {
             sb.setLength(0);
         }
-    }
-
-    @Override
-    public void afterProcess(long processId, long startMillis, long stopMillis) {
-
     }
 
     private String createLineProtocol(MethodMetrics methodMetrics, long startNanos, StringBuilder sb) {

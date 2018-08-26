@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by LinShunkang on 2018/8/19
  */
-public class JVMMemoryMetrics extends Metrics {
+public class JvmMemoryMetrics extends Metrics {
 
     private static final long serialVersionUID = -1501873958253505089L;
 
@@ -31,7 +31,7 @@ public class JVMMemoryMetrics extends Metrics {
 
     private long heapMax;
 
-    public JVMMemoryMetrics(long nonHeapInit, long nonHeapUsed, long nonHeapCommitted, long nonHeapMax, long heapInit, long heapUsed, long heapCommitted, long heapMax) {
+    public JvmMemoryMetrics(long nonHeapInit, long nonHeapUsed, long nonHeapCommitted, long nonHeapMax, long heapInit, long heapUsed, long heapCommitted, long heapMax) {
         this.nonHeapInit = nonHeapInit;
         this.nonHeapUsed = nonHeapUsed;
         this.nonHeapCommitted = nonHeapCommitted;
@@ -43,7 +43,7 @@ public class JVMMemoryMetrics extends Metrics {
     }
 
 
-    public JVMMemoryMetrics(MemoryUsage nonHeapMem, MemoryUsage heapMem) {
+    public JvmMemoryMetrics(MemoryUsage nonHeapMem, MemoryUsage heapMem) {
         this(nonHeapMem.getInit(), nonHeapMem.getUsed(), nonHeapMem.getCommitted(), nonHeapMem.getMax(),
                 heapMem.getInit(), heapMem.getUsed(), heapMem.getCommitted(), heapMem.getMax());
     }
@@ -114,7 +114,7 @@ public class JVMMemoryMetrics extends Metrics {
 
     @Override
     public String toString() {
-        return "JVMMemoryMetrics{" +
+        return "JvmMemoryMetrics{" +
                 "nonHeapInit=" + nonHeapInit +
                 ", nonHeapUsed=" + nonHeapUsed +
                 ", nonHeapCommitted=" + nonHeapCommitted +
@@ -124,29 +124,5 @@ public class JVMMemoryMetrics extends Metrics {
                 ", heapCommitted=" + heapCommitted +
                 ", heapMax=" + heapMax +
                 '}';
-    }
-
-    /**
-     * -XX:+UseG1GC
-     *
-     * @param args
-     */
-    public static void main(String[] args) {
-        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
-        MemoryUsage nonHeapMemoryUsage = memoryMXBean.getNonHeapMemoryUsage();
-        System.out.println("nonHeapMemoryUsage: " + nonHeapMemoryUsage.toString());
-
-        MemoryUsage heapMemoryUsage = memoryMXBean.getHeapMemoryUsage();
-        System.out.println("heapMemoryUsage: " + heapMemoryUsage.toString());
-
-        System.out.println("ObjectPendingFinalizationCount: " + memoryMXBean.getObjectPendingFinalizationCount());
-
-//        memoryMXBean.
-
-
-        List<MemoryPoolMXBean> memoryPoolMXBeans = ManagementFactory.getMemoryPoolMXBeans();
-        for (MemoryPoolMXBean memoryPoolMXBean : memoryPoolMXBeans) {
-            System.out.println(memoryPoolMXBean.getName() + " " + memoryPoolMXBean.getCollectionUsage());
-        }
     }
 }

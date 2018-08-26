@@ -11,7 +11,7 @@ import static java.lang.Thread.State.TIMED_WAITING;
 /**
  * Created by LinShunkang on 2018/8/19
  */
-public class JVMThreadMetrics extends Metrics {
+public class JvmThreadMetrics extends Metrics {
 
     private static final long serialVersionUID = 8514109576224018139L;
 
@@ -35,7 +35,7 @@ public class JVMThreadMetrics extends Metrics {
 
     private int terminated;
 
-    public JVMThreadMetrics(ThreadMXBean bean) {
+    public JvmThreadMetrics(ThreadMXBean bean) {
         long threadIds[] = bean.getAllThreadIds();
         this.totalStarted = bean.getTotalStartedThreadCount();
         this.active = bean.getThreadCount();
@@ -162,7 +162,7 @@ public class JVMThreadMetrics extends Metrics {
 
     @Override
     public String toString() {
-        return "JVMThreadMetrics{" +
+        return "JvmThreadMetrics{" +
                 "totalStarted=" + totalStarted +
                 ", active=" + active +
                 ", peak=" + peak +
@@ -174,14 +174,6 @@ public class JVMThreadMetrics extends Metrics {
                 ", timedWaiting=" + timedWaiting +
                 ", terminated=" + terminated +
                 "} " + super.toString();
-    }
-
-    public static void main(String[] args) {
-        ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
-        System.out.println(threadMXBean.getPeakThreadCount());
-        System.out.println(threadMXBean.getDaemonThreadCount());
-        System.out.println(threadMXBean.getTotalStartedThreadCount());
-        System.out.println(threadMXBean.getThreadCount());
     }
 
 }

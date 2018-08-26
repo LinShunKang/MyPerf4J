@@ -1,7 +1,7 @@
 package cn.myperf4j.base.metric.formatter.impl;
 
-import cn.myperf4j.base.metric.JVMGCMetrics;
-import cn.myperf4j.base.metric.formatter.JVMGCMetricsFormatter;
+import cn.myperf4j.base.metric.JvmGCMetrics;
+import cn.myperf4j.base.metric.formatter.JvmGCMetricsFormatter;
 import cn.myperf4j.base.util.DateFormatUtils;
 
 import java.util.List;
@@ -9,10 +9,10 @@ import java.util.List;
 /**
  * Created by LinShunkang on 2018/8/21
  */
-public class DefaultJVMGCMetricsFormatter implements JVMGCMetricsFormatter {
+public class DefaultJvmGCMetricsFormatter implements JvmGCMetricsFormatter {
 
     @Override
-    public String format(List<JVMGCMetrics> metricsList, long startMillis, long stopMillis) {
+    public String format(List<JvmGCMetrics> metricsList, long startMillis, long stopMillis) {
         int[] statisticsArr = getStatistics(metricsList);
         int maxGCNameLength = statisticsArr[0];
 
@@ -26,7 +26,7 @@ public class DefaultJVMGCMetricsFormatter implements JVMGCMetricsFormatter {
 
         String dataFormat = "%-" + maxGCNameLength + "s%9d%9d%n";
         for (int i = 0; i < metricsList.size(); ++i) {
-            JVMGCMetrics metrics = metricsList.get(i);
+            JvmGCMetrics metrics = metricsList.get(i);
             sb.append(String.format(dataFormat,
                     metrics.getGcName(),
                     metrics.getCollectCount(),
@@ -39,10 +39,10 @@ public class DefaultJVMGCMetricsFormatter implements JVMGCMetricsFormatter {
      * @param metricsList
      * @return : int[0]:max(api.length)
      */
-    private int[] getStatistics(List<JVMGCMetrics> metricsList) {
+    private int[] getStatistics(List<JvmGCMetrics> metricsList) {
         int[] result = {1};
         for (int i = 0; i < metricsList.size(); ++i) {
-            JVMGCMetrics metrics = metricsList.get(i);
+            JvmGCMetrics metrics = metricsList.get(i);
             if (metrics == null) {
                 continue;
             }

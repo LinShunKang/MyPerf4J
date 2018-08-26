@@ -19,13 +19,13 @@ public interface PropertyValues {
 
     String DEFAULT_METHOD_PROCESSOR = StdoutMethodMetricProcessor.class.getName();
 
-    String DEFAULT_CLASS_PROCESSOR = StdoutJVMClassMetricsProcessor.class.getName();
+    String DEFAULT_CLASS_PROCESSOR = StdoutJvmClassMetricsProcessor.class.getName();
 
-    String DEFAULT_GC_PROCESSOR = StdoutJVMGCMetricsProcessor.class.getName();
+    String DEFAULT_GC_PROCESSOR = StdoutJvmGCMetricsProcessor.class.getName();
 
-    String DEFAULT_MEM_PROCESSOR = StdoutJVMMemoryMetricsProcessor.class.getName();
+    String DEFAULT_MEM_PROCESSOR = StdoutJvmMemoryMetricsProcessor.class.getName();
 
-    String DEFAULT_THREAD_PROCESSOR = StdoutJVMThreadMetricsProcessor.class.getName();
+    String DEFAULT_THREAD_PROCESSOR = StdoutJvmThreadMetricsProcessor.class.getName();
 
     long DEFAULT_TIME_SLICE = 60 * 1000L;
 
