@@ -1,7 +1,6 @@
 package cn.myperf4j.base.metric;
 
 import java.lang.management.ClassLoadingMXBean;
-import java.lang.management.ManagementFactory;
 
 /**
  * Created by LinShunkang on 2018/8/19

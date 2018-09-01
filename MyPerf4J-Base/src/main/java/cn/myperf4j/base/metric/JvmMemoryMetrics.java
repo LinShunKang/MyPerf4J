@@ -1,11 +1,6 @@
 package cn.myperf4j.base.metric;
 
-
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
-import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryUsage;
-import java.util.List;
 
 /**
  * Created by LinShunkang on 2018/8/19
