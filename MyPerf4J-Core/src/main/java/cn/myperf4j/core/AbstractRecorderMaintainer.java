@@ -96,10 +96,6 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
         return RoughRecorder.getInstance(methodTagId, mostTimeThreshold);
     }
 
-    public Recorders getRecorders() {
-        return curRecorders;
-    }
-
     public abstract void addRecorder(int methodTagId, ProfilingParams params);
 
     public Recorder getRecorder(int methodTagId) {
@@ -108,18 +104,18 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
 
 
     @Override
-    public void run(long currentMills, long millTimeSlice, long nextTimeSliceEndTime) {
+    public void run(long lastTimeSliceStartTime, long millTimeSlice) {
         try {
             final Recorders tmpCurRecorders = curRecorders;
-            tmpCurRecorders.setStartTime(nextTimeSliceEndTime - 2 * millTimeSlice);
-            tmpCurRecorders.setStopTime(nextTimeSliceEndTime - millTimeSlice);
+            tmpCurRecorders.setStartTime(lastTimeSliceStartTime);
+            tmpCurRecorders.setStopTime(lastTimeSliceStartTime + millTimeSlice);
 
             curIndex = getNextIdx(curIndex);
             Logger.debug("RecorderMaintainer.roundRobinProcessor curIndex=" + curIndex % recordersList.size());
 
             Recorders nextRecorders = recordersList.get(curIndex % recordersList.size());
-            nextRecorders.setStartTime(nextTimeSliceEndTime - millTimeSlice);
-            nextRecorders.setStopTime(nextTimeSliceEndTime);
+            nextRecorders.setStartTime(lastTimeSliceStartTime + millTimeSlice);
+            nextRecorders.setStopTime(lastTimeSliceStartTime + 2 * millTimeSlice);
             nextRecorders.setWriting(true);
             nextRecorders.resetRecorder();
             curRecorders = nextRecorders;

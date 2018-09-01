@@ -12,6 +12,8 @@ public class ProfilingConfig {
 
     private static final ProfilingConfig instance = new ProfilingConfig();
 
+    private String appName;
+
     private String methodMetricsProcessor;
 
     private String classMetricsProcessor;
@@ -52,6 +54,14 @@ public class ProfilingConfig {
      */
     public static ProfilingConfig getInstance() {
         return instance;
+    }
+
+    public String getAppName() {
+        return appName;
+    }
+
+    public void setAppName(String appName) {
+        this.appName = appName;
     }
 
     public String getMethodMetricsProcessor() {
@@ -202,7 +212,8 @@ public class ProfilingConfig {
     @Override
     public String toString() {
         return "ProfilingConfig{" +
-                "methodMetricsProcessor='" + methodMetricsProcessor + '\'' +
+                "appName='" + appName + '\'' +
+                ", methodMetricsProcessor='" + methodMetricsProcessor + '\'' +
                 ", classMetricsProcessor='" + classMetricsProcessor + '\'' +
                 ", gcMetricsProcessor='" + gcMetricsProcessor + '\'' +
                 ", memoryMetricsProcessor='" + memoryMetricsProcessor + '\'' +

@@ -1,5 +1,6 @@
 package cn.myperf4j.ext.metric.processor.influxdb;
 
+import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.metric.JvmClassMetrics;
 import cn.myperf4j.base.metric.processor.impl.AbstractJvmClassMetricsProcessor;
 import org.slf4j.Logger;
@@ -30,7 +31,8 @@ public class InfluxDBJvmClassMetricsProcessor extends AbstractJvmClassMetricsPro
     }
 
     private String createLineProtocol(JvmClassMetrics metrics, long startNanos, StringBuilder sb) {
-        sb.append("jvm_class")
+        sb.append("jvm_class_metrics")
+                .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
                 .append(" Total=").append(metrics.getTotal()).append("i")
                 .append(",Loaded=").append(metrics.getLoaded()).append("i")
                 .append(",Unloaded=").append(metrics.getUnloaded()).append("i")

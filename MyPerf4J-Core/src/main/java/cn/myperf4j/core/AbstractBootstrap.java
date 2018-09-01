@@ -125,6 +125,12 @@ public abstract class AbstractBootstrap {
     private boolean initProfilingConfig() {
         try {
             ProfilingConfig config = ProfilingConfig.getInstance();
+            String appName = MyProperties.getStr(PropertyKeys.APP_NAME);
+            if (appName == null || appName.isEmpty()) {
+                throw new IllegalArgumentException("AppName is required!!!");
+            }
+            config.setAppName(appName);
+
             config.setMethodMetricsProcessor(MyProperties.getStr(PropertyKeys.METHOD_METRICS_PROCESSOR, PropertyValues.DEFAULT_METHOD_PROCESSOR));
             config.setClassMetricsProcessor(MyProperties.getStr(PropertyKeys.CLASS_METRICS_PROCESSOR, PropertyValues.DEFAULT_CLASS_PROCESSOR));
             config.setGcMetricsProcessor(MyProperties.getStr(PropertyKeys.GC_METRICS_PROCESSOR, PropertyValues.DEFAULT_GC_PROCESSOR));

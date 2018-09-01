@@ -35,16 +35,13 @@ public class JvmMetricsScheduler implements Scheduler {
     }
 
     @Override
-    public void run(long currentMills, long millTimeSlice, long nextTimeSliceEndTime) {
-        long processId = currentMills;
-        long startMillis = currentMills - millTimeSlice;
-        long stopMillis = currentMills;
+    public void run(long lastTimeSliceStartTime, long millTimeSlice) {
+        long stopMillis = lastTimeSliceStartTime + millTimeSlice;
 
-        processJVMClassMetrics(processId, startMillis, stopMillis);
-        processJVMGCMetrics(processId, startMillis, stopMillis);
-        processJVMMemoryMetrics(processId, startMillis, stopMillis);
-        processJVMThreadMetrics(processId, startMillis, stopMillis);
-
+        processJVMClassMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
+        processJVMGCMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
+        processJVMMemoryMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
+        processJVMThreadMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
     }
 
     private void processJVMClassMetrics(long processId, long startMillis, long stopMillis) {

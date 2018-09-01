@@ -3,7 +3,6 @@ package cn.myperf4j.base.metric.processor.impl;
 import cn.myperf4j.base.metric.JvmGCMetrics;
 import cn.myperf4j.base.metric.formatter.JvmGCMetricsFormatter;
 import cn.myperf4j.base.metric.formatter.impl.DefaultJvmGCMetricsFormatter;
-import cn.myperf4j.base.metric.processor.JvmGCMetricsProcessor;
 import cn.myperf4j.base.util.Logger;
 
 import java.util.ArrayList;
@@ -13,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by LinShunkang on 2018/8/21
  */
-public class StdoutJvmGCMetricsProcessor implements JvmGCMetricsProcessor {
+public class StdoutJvmGCMetricsProcessor extends AbstractJvmGCMetricsProcessor {
 
     private ConcurrentHashMap<Long, List<JvmGCMetrics>> metricsMap = new ConcurrentHashMap<>(8);
 

@@ -1,5 +1,6 @@
 package cn.myperf4j.ext.metric.processor.influxdb;
 
+import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.metric.MethodMetrics;
 import cn.myperf4j.base.MethodTag;
 import cn.myperf4j.base.metric.processor.impl.AbstractMethodMetricsProcessor;
@@ -14,7 +15,7 @@ import org.slf4j.LoggerFactory;
 /**
  * 注意：
  * 1、该Processor只是利用MethodMetrics生成InfluxDB的LineProtocol，并把LineProtocol写到磁盘的指定文件
- * 2、该Processor把'类名'作为表名(Measurement)，'类名.方法名'为索引(Tag)，各个性能指标为列数据(Field)
+ * 2、该Processor把'类名'和'类名.方法名'为索引(Tag)，各个性能指标为列数据(Field)
  * <p>
  * 至于日志的收集和InfluxDB的写入，推荐使用官方的Telegraf(https://portal.influxdata.com/downloads)
  * 推荐在Telegraf配置文件中为不同的服务配置不同的数据库(Database)
@@ -48,7 +49,9 @@ public class InfluxDBMethodMetricsProcessor extends AbstractMethodMetricsProcess
             sb = new StringBuilder(suitSize);
         }
 
-        sb.append(methodMetrics.getMethodTag().getClassName())
+        sb.append("method_metrics")
+                .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
+                .append(",ClassName=").append(methodMetrics.getMethodTag().getClassName())
                 .append(",Method=").append(methodMetrics.getMethodTag().getSimpleDesc())
                 .append(" RPS=").append(methodMetrics.getRPS()).append("i")
                 .append(",Avg=").append(NumFormatUtils.getFormatStr(methodMetrics.getAvgTime()))

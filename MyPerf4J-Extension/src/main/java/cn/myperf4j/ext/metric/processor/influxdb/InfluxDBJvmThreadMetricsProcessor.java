@@ -1,5 +1,6 @@
 package cn.myperf4j.ext.metric.processor.influxdb;
 
+import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.metric.JvmThreadMetrics;
 import cn.myperf4j.base.metric.processor.impl.AbstractJvmThreadMetricsProcessor;
 import org.slf4j.Logger;
@@ -30,7 +31,8 @@ public class InfluxDBJvmThreadMetricsProcessor extends AbstractJvmThreadMetricsP
     }
 
     private String createLineProtocol(JvmThreadMetrics metrics, long startNanos, StringBuilder sb) {
-        sb.append("jvm_thread")
+        sb.append("jvm_thread_metrics")
+                .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
                 .append(" TotalStarted=").append(metrics.getTotalStarted()).append("i")
                 .append(",Active=").append(metrics.getActive()).append("i")
                 .append(",Peak=").append(metrics.getPeak()).append("i")

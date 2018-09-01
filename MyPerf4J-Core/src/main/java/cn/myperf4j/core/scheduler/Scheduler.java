@@ -6,11 +6,9 @@ package cn.myperf4j.core.scheduler;
 public interface Scheduler {
 
     /**
-     *
-     * @param currentMills: 当前时间戳
-     * @param millTimeSlice: 时间片大小
-     * @param nextTimeSliceEndTime: 下一个时间片的结束时间
+     * @param lastTimeSliceStartTime: 上一个时间片的起始时间
+     * @param millTimeSlice:          时间片大小
      */
-    void run(long currentMills, long millTimeSlice, long nextTimeSliceEndTime);
+    void run(long lastTimeSliceStartTime, long millTimeSlice);
 
 }

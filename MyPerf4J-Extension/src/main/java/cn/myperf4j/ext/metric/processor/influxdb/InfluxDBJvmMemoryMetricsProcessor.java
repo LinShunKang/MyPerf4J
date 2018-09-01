@@ -1,5 +1,6 @@
 package cn.myperf4j.ext.metric.processor.influxdb;
 
+import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.metric.JvmMemoryMetrics;
 import cn.myperf4j.base.metric.processor.impl.AbstractJvmMemoryMetricsProcessor;
 import org.slf4j.Logger;
@@ -30,7 +31,8 @@ public class InfluxDBJvmMemoryMetricsProcessor extends AbstractJvmMemoryMetricsP
     }
 
     private String createLineProtocol(JvmMemoryMetrics metrics, long startNanos, StringBuilder sb) {
-        sb.append("jvm_memory")
+        sb.append("jvm_memory_metrics")
+                .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
                 .append(" NonHeapInit=").append(metrics.getNonHeapInit())
                 .append(",NonHeapUsed=").append(metrics.getNonHeapUsed())
                 .append(",NonHeapCommitted=").append(metrics.getNonHeapCommitted())

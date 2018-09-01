@@ -7,6 +7,8 @@ public interface PropertyKeys {
 
     String PRO_FILE_NAME = "MyPerf4JPropFile";
 
+    String APP_NAME = "AppName";
+
     String METHOD_METRICS_PROCESSOR = "MethodMetricsProcessor";
 
     String CLASS_METRICS_PROCESSOR = "ClassMetricsProcessor";
