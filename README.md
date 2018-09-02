@@ -17,24 +17,24 @@ MyPerf4J具有以下几个特性：
 MyPerf4J为每个应用收集数十个监控指标，所有的监控指标都是实时采集和展现的。
 
 下面是MyPerf4J目前支持的监控指标列表:
-* [Method](https://grafana.com/dashboards/7766)
+- **[Method](https://grafana.com/dashboards/7766)**<br/>
 RPS，Count，Avg，Min，Max，StdDev，TP50, TP90, TP95, TP99, TP999, TP9999, TP99999, TP100
 ![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-Method_Show_Operation.gif)
 ![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-Method_Just_Record.gif)
 
-* [JVM Thread](https://grafana.com/dashboards/7778)
+* **[JVM Thread](https://grafana.com/dashboards/7778)**<br/>
 TotalStarted，Runnable，Blocked，Waiting，TimedWaiting，Terminated，Active，Peak，Daemon，New
 ![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-JVM-Thread_Just_Record.gif)
 
-* [JVM Memory](https://grafana.com/dashboards/7775)
+* **[JVM Memory](https://grafana.com/dashboards/7775)**<br/>
 HeapInit，HeapUsed，HeapCommitted，HeapMax，NonHeapInit，NonHeapUsed，NonHeapCommitted，NonHeapMax
 ![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-JVM-Memory_Just_Record.gif)
 
-* [JVM GC](https://grafana.com/dashboards/7772)
+* **[JVM GC](https://grafana.com/dashboards/7772)**<br/>
 CollectCount，CollectTime
 ![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-JVM-GC_Just_Record.gif)
 
-* [JVM Class](https://grafana.com/dashboards/7769)
+* **[JVM Class](https://grafana.com/dashboards/7769)**<br/>
 Total，Loaded，Unloaded
 ![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-JVM-Class_Just_Record.gif)
 
