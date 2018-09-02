@@ -1,5 +1,5 @@
 # MyPerf4J
-> 一个针对高并发、低延迟应用设计的高性能且无侵入的实时Java方法性能监控和统计工具。
+> 一个针对高并发、低延迟应用设计的高性能且无侵入的实时Java性能监控和统计工具。
 受 [perf4j](https://github.com/perf4j/perf4j) 和 [TProfiler](https://github.com/alibaba/TProfiler)启发而来。
 
 MyPerf4J具有以下几个特性：
@@ -13,10 +13,30 @@ MyPerf4J具有以下几个特性：
 * English [README](https://github.com/ThinkpadNC5/MyPerf4J/blob/develop/README.md) [Document](https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Doc)
 *  [中文文档](https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Doc)    
     
-## 可视化
-* 目前MyPerf4J已提供[Grafana Dashboard](https://grafana.com/dashboards/6991)进行数据展示
-![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/Monitor_Page_V3_1_200FPS.gif)
-![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/Monitor_Page_V4_200FPS.gif)
+## 监控指标
+MyPerf4J为每个应用收集数十个监控指标，所有的监控指标都是实时采集和展现的。
+
+下面是MyPerf4J目前支持的监控指标列表:
+* [Method](https://grafana.com/dashboards/7766)
+RPS，Count，Avg，Min，Max，StdDev，TP50, TP90, TP95, TP99, TP999, TP9999, TP99999, TP100
+![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-Method_Show_Operation.gif)
+![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-Method_Just_Record.gif)
+
+* [JVM Thread](https://grafana.com/dashboards/7778)
+TotalStarted，Runnable，Blocked，Waiting，TimedWaiting，Terminated，Active，Peak，Daemon，New
+![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-JVM-Thread_Just_Record.gif)
+
+* [JVM Memory](https://grafana.com/dashboards/7775)
+HeapInit，HeapUsed，HeapCommitted，HeapMax，NonHeapInit，NonHeapUsed，NonHeapCommitted，NonHeapMax
+![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-JVM-Memory_Just_Record.gif)
+
+* [JVM GC](https://grafana.com/dashboards/7772)
+CollectCount，CollectTime
+![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-JVM-GC_Just_Record.gif)
+
+* [JVM Class](https://grafana.com/dashboards/7769)
+Total，Loaded，Unloaded
+![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-JVM-Class_Just_Record.gif)
 
     > 想知道如何实现上述效果？请先按照[快速启动](https://github.com/ThinkpadNC5/MyPerf4J#%E5%BF%AB%E9%80%9F%E5%90%AF%E5%8A%A8)的描述启动应用，再按照[这里](https://github.com/ThinkpadNC5/MyPerf4J/wiki/InfluxDB_)的描述进行安装配置即可。
 
@@ -37,8 +57,15 @@ MyPerf4J采用JavaAgent配置方式，**透明化**接入应用，对应用代�
 其中，`MyPerf4JPropFile`的配置如下:
 
  ```
-#配置PerfStatsProcessor，可不配置，用于自定义统计数据的处理
-#PerfStatsProcessor=cn.perf4j.demo.MyPerfStatsProcessor
+#应用名称
+AppName=MyPerf4JTest
+
+#配置MetricsProcessors，可不配置
+#MethodMetricsProcessor=cn.myperf4j.ext.metric.processor.influxdb.InfluxDBMethodMetricsProcessor
+#ClassMetricsProcessor=cn.myperf4j.ext.metric.processor.influxdb.InfluxDBJvmClassMetricsProcessor
+#GCMetricsProcessor=cn.myperf4j.ext.metric.processor.influxdb.InfluxDBJvmGCMetricsProcessor
+#MemMetricsProcessor=cn.myperf4j.ext.metric.processor.influxdb.InfluxDBJvmMemoryMetricsProcessor
+#ThreadMetricsProcessor=cn.myperf4j.ext.metric.processor.influxdb.InfluxDBJvmThreadMetricsProcessor
     
 #配置备份Recorders的数量，默认为1，最小为1，最大为8，当需要在较小MillTimeSlice内统计大量方法性能数据时可配置大一些
 BackupRecordersCount=1
@@ -79,8 +106,6 @@ ProfilingOutThresholdCount=10
     DemoServiceImpl.getId1  7454181     0.00        0        0     0.00   7454181        0        0        0        0        0        0        0        0
     DemoServiceImpl.getId2  7454180     0.00        0        0     0.00   7454180        0        0        0        0        0        0        0        0
     ```
-
-    > 想**定制**你的输出结果？请看[这里](https://github.com/ThinkpadNC5/MyPerf4J/wiki/%E6%89%A9%E5%B1%95)
 
 ### 卸载
 在JVM启动参数中去掉以下两个参数，重启即可卸载此工具。
