@@ -10,7 +10,7 @@ MyPerf4J具有以下几个特性：
 * 高实时: 支持秒级监控，最低1s!
 
 ## 文档
-* English [README](https://github.com/ThinkpadNC5/MyPerf4J/blob/develop/README.md) [Document](https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Doc)
+* English [README](https://github.com/ThinkpadNC5/MyPerf4J/blob/develop/README.EN.md) [Document](https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Doc)
 *  [中文文档](https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Doc)    
     
 ## 监控指标
