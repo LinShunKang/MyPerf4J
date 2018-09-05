@@ -9,15 +9,17 @@ public interface PropertyKeys {
 
     String APP_NAME = "AppName";
 
-    String METHOD_METRICS_PROCESSOR = "MethodMetricsProcessor";
+    String METRICS_PROCESS_TYPE = "MetricsProcessorType";
 
-    String CLASS_METRICS_PROCESSOR = "ClassMetricsProcessor";
+    String METHOD_METRICS_FILE = "MethodMetricsFile";
 
-    String GC_METRICS_PROCESSOR = "GCMetricsProcessor";
+    String CLASS_METRICS_FILE = "ClassMetricsFile";
 
-    String MEM_METRICS_PROCESSOR = "MemMetricsProcessor";
+    String GC_METRICS_FILE = "GCMetricsFile";
 
-    String THREAD_METRICS_PROCESSOR = "ThreadMetricsProcessor";
+    String MEM_METRICS_FILE = "MemMetricsFile";
+
+    String THREAD_METRICS_FILE = "ThreadMetricsFile";
 
     String RECORDER_MODE = "RecorderMode";
 

@@ -1,7 +1,5 @@
 package cn.myperf4j.base.constant;
 
-import cn.myperf4j.base.metric.processor.impl.*;
-
 /**
  * Created by LinShunkang on 2018/4/27
  */
@@ -17,15 +15,15 @@ public interface PropertyValues {
 
     int MAX_BACKUP_RECORDERS_COUNT = 8;
 
-    String DEFAULT_METHOD_PROCESSOR = StdoutMethodMetricProcessor.class.getName();
+    int METRICS_PROCESS_TYPE_STDOUT = 0;
 
-    String DEFAULT_CLASS_PROCESSOR = DiscardJvmClassMetricsProcessor.class.getName();
+    int METRICS_PROCESS_TYPE_LOGGER = 1;
 
-    String DEFAULT_GC_PROCESSOR = DiscardJvmGCMetricsProcessor.class.getName();
+    int METRICS_PROCESS_TYPE_INFLUX_DB = 2;
 
-    String DEFAULT_MEM_PROCESSOR = DiscardJvmMemoryMetricsProcessor.class.getName();
+    String DEFAULT_METRICS_FILE = "/data/logs/MyPerf4J/metrics.log";
 
-    String DEFAULT_THREAD_PROCESSOR = DiscardJvmThreadMetricsProcessor.class.getName();
+    String NULL_FILE = "NULL";
 
     long DEFAULT_TIME_SLICE = 60 * 1000L;
 

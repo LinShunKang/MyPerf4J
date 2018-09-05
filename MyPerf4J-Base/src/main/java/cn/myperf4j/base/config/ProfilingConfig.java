@@ -14,15 +14,17 @@ public class ProfilingConfig {
 
     private String appName;
 
-    private String methodMetricsProcessor;
+    private int metricsProcessorType;
 
-    private String classMetricsProcessor;
+    private String methodMetricsFile;
 
-    private String gcMetricsProcessor;
+    private String classMetricsFile;
 
-    private String memoryMetricsProcessor;
+    private String gcMetricsFile;
 
-    private String threadMetricsProcessor;
+    private String memoryMetricsFile;
+
+    private String threadMetricsFile;
 
     private String recorderMode;
 
@@ -64,44 +66,52 @@ public class ProfilingConfig {
         this.appName = appName;
     }
 
-    public String getMethodMetricsProcessor() {
-        return methodMetricsProcessor;
+    public int getMetricsProcessorType() {
+        return metricsProcessorType;
     }
 
-    public void setMethodMetricsProcessor(String methodMetricsProcessor) {
-        this.methodMetricsProcessor = methodMetricsProcessor;
+    public void setMetricsProcessorType(int metricsProcessorType) {
+        this.metricsProcessorType = metricsProcessorType;
     }
 
-    public String getClassMetricsProcessor() {
-        return classMetricsProcessor;
+    public String getMethodMetricsFile() {
+        return methodMetricsFile;
     }
 
-    public void setClassMetricsProcessor(String classMetricsProcessor) {
-        this.classMetricsProcessor = classMetricsProcessor;
+    public void setMethodMetricsFile(String methodMetricsFile) {
+        this.methodMetricsFile = methodMetricsFile;
     }
 
-    public String getGcMetricsProcessor() {
-        return gcMetricsProcessor;
+    public String getClassMetricsFile() {
+        return classMetricsFile;
     }
 
-    public void setGcMetricsProcessor(String gcMetricsProcessor) {
-        this.gcMetricsProcessor = gcMetricsProcessor;
+    public void setClassMetricsFile(String classMetricsFile) {
+        this.classMetricsFile = classMetricsFile;
     }
 
-    public String getMemoryMetricsProcessor() {
-        return memoryMetricsProcessor;
+    public String getGcMetricsFile() {
+        return gcMetricsFile;
     }
 
-    public void setMemoryMetricsProcessor(String memoryMetricsProcessor) {
-        this.memoryMetricsProcessor = memoryMetricsProcessor;
+    public void setGcMetricsFile(String gcMetricsFile) {
+        this.gcMetricsFile = gcMetricsFile;
     }
 
-    public String getThreadMetricsProcessor() {
-        return threadMetricsProcessor;
+    public String getMemoryMetricsFile() {
+        return memoryMetricsFile;
     }
 
-    public void setThreadMetricsProcessor(String threadMetricsProcessor) {
-        this.threadMetricsProcessor = threadMetricsProcessor;
+    public void setMemoryMetricsFile(String memoryMetricsFile) {
+        this.memoryMetricsFile = memoryMetricsFile;
+    }
+
+    public String getThreadMetricsFile() {
+        return threadMetricsFile;
+    }
+
+    public void setThreadMetricsFile(String threadMetricsFile) {
+        this.threadMetricsFile = threadMetricsFile;
     }
 
     public String getRecorderMode() {
@@ -213,11 +223,12 @@ public class ProfilingConfig {
     public String toString() {
         return "ProfilingConfig{" +
                 "appName='" + appName + '\'' +
-                ", methodMetricsProcessor='" + methodMetricsProcessor + '\'' +
-                ", classMetricsProcessor='" + classMetricsProcessor + '\'' +
-                ", gcMetricsProcessor='" + gcMetricsProcessor + '\'' +
-                ", memoryMetricsProcessor='" + memoryMetricsProcessor + '\'' +
-                ", threadMetricsProcessor='" + threadMetricsProcessor + '\'' +
+                ", metricsProcessorType=" + metricsProcessorType +
+                ", methodMetricsFile='" + methodMetricsFile + '\'' +
+                ", classMetricsFile='" + classMetricsFile + '\'' +
+                ", gcMetricsFile='" + gcMetricsFile + '\'' +
+                ", memoryMetricsFile='" + memoryMetricsFile + '\'' +
+                ", threadMetricsFile='" + threadMetricsFile + '\'' +
                 ", recorderMode='" + recorderMode + '\'' +
                 ", backupRecorderCount=" + backupRecorderCount +
                 ", milliTimeSlice=" + milliTimeSlice +

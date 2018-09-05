@@ -2,6 +2,7 @@ package cn.myperf4j.core;
 
 import cn.myperf4j.base.metric.MethodMetrics;
 import cn.myperf4j.base.metric.processor.MethodMetricsProcessor;
+import cn.myperf4j.base.util.ExecutorManager;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.util.ThreadUtils;
 
@@ -72,7 +73,7 @@ public class AsyncMethodMetricsProcessor implements MethodMetricsProcessor {
         }
 
         instance = new AsyncMethodMetricsProcessor(target);
-        ExecutorServiceManager.addExecutorService(instance.executor);
+        ExecutorManager.addExecutorService(instance.executor);
         return instance;
     }
 

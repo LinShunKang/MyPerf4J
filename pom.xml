@@ -9,7 +9,6 @@
         <module>MyPerf4J-Core</module>
         <module>MyPerf4J-ASM</module>
         <module>MyPerf4J-Base</module>
-        <module>MyPerf4J-Extension</module>
     </modules>
     <name>MyPerf4J</name>
 
@@ -29,12 +28,6 @@
                         <artifactId>asm-tree</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>1.7.25</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

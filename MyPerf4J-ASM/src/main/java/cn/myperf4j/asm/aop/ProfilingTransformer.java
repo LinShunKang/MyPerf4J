@@ -44,7 +44,7 @@ public class ProfilingTransformer implements ClassFileTransformer {
     private byte[] getBytes(ClassLoader loader,
                             String className,
                             byte[] classFileBuffer) {
-        if (loader != null && loader.getClass().getName().equals("org.apache.catalina.loader.WebappClassLoader")) {
+        if (needComputeMaxs(loader)) {
             ClassReader cr = new ClassReader(classFileBuffer);
             ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);
             ClassVisitor cv = new ProfilingClassAdapter(cw, className);
@@ -57,6 +57,17 @@ public class ProfilingTransformer implements ClassFileTransformer {
             cr.accept(cv, ClassReader.EXPAND_FRAMES);
             return cw.toByteArray();
         }
+    }
+
+    private boolean needComputeMaxs(ClassLoader classLoader) {
+        if (classLoader == null) {
+            return false;
+        }
+
+        String loaderName = classLoader.getClass().getName();
+        return loaderName.equals("org.apache.catalina.loader.WebappClassLoader")
+                || loaderName.equals("org.springframework.boot.loader.LaunchedURLClassLoader");
+
     }
 
 }

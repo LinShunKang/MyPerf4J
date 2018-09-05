@@ -1,6 +1,7 @@
 package cn.myperf4j.base.log;
 
 import cn.myperf4j.base.util.DailyRollingFileWriter;
+import cn.myperf4j.base.util.ExecutorManager;
 import cn.myperf4j.base.util.ThreadUtils;
 
 import java.util.*;
@@ -15,6 +16,8 @@ public class DailyRollingLogger implements ILogger {
     private static final Set<DailyRollingFileWriter> WRITER_LIST = new CopyOnWriteArraySet<>();
 
     static {
+        ExecutorManager.addExecutorService(scheduledExecutor);
+
         scheduledExecutor.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {

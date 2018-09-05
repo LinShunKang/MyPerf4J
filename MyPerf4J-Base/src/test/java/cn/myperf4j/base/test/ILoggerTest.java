@@ -7,7 +7,7 @@ public class ILoggerTest {
 
     public static void main(String[] args) {
         for (int i = 0; i < 100; ++i) {
-            final String file = "/tmp/testLogger.log" + i;
+            final String file = "/tmp/testLogger.log";
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -24,8 +24,8 @@ public class ILoggerTest {
         logger.log("333333333");
         logger.log("444444444");
 
-        for (int i = 0; i < 100000000; ++i) {
-            logger.log(String.valueOf(i));
+        for (int i = 0; i < 1000000; ++i) {
+            logger.log(Thread.currentThread().getName() + ": " + i);
         }
     }
 }

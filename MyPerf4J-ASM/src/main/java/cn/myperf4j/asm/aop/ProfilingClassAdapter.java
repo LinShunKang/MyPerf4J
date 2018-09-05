@@ -9,10 +9,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.objectweb.asm.Opcodes.*;
+
 /**
  * Created by LinShunkang on 2018/4/15
  */
-public class ProfilingClassAdapter extends ClassVisitor implements Opcodes {
+public class ProfilingClassAdapter extends ClassVisitor {
 
     private String innerClassName;
 
@@ -49,7 +51,6 @@ public class ProfilingClassAdapter extends ClassVisitor implements Opcodes {
                                      String desc,
                                      String signature,
                                      String[] exceptions) {
-        Logger.debug("ProfilingClassAdapter.visitMethod(" + access + ", " + name + ", " + desc + ", " + signature + ", " + Arrays.toString(exceptions) + ")");
         if (isInterface || !isNeedVisit(access, name)) {
             return super.visitMethod(access, name, desc, signature, exceptions);
         }
@@ -58,6 +59,7 @@ public class ProfilingClassAdapter extends ClassVisitor implements Opcodes {
         if (mv == null) {
             return null;
         }
+        Logger.debug("ProfilingClassAdapter.visitMethod(" + access + ", " + name + ", " + desc + ", " + signature + ", " + Arrays.toString(exceptions) + "), innerClassName=" + innerClassName);
 
         return new ProfilingMethodVisitor(access, name, desc, mv, innerClassName);
     }
@@ -68,8 +70,11 @@ public class ProfilingClassAdapter extends ClassVisitor implements Opcodes {
             return false;
         }
 
-        //不对抽象方法和native方法进行注入
-        if ((access & ACC_ABSTRACT) != 0 || (access & ACC_NATIVE) != 0) {
+        //不对抽象方法、native方法、桥接方法、合成方法进行注入
+        if ((access & ACC_ABSTRACT) != 0
+                || (access & ACC_NATIVE) != 0
+                || (access & ACC_BRIDGE) != 0
+                || (access & ACC_SYNTHETIC) != 0) {
             return false;
         }
 

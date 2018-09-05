@@ -5,6 +5,7 @@ import cn.myperf4j.base.config.ProfilingFilter;
 import cn.myperf4j.base.constant.PropertyKeys;
 import cn.myperf4j.base.constant.PropertyValues;
 import cn.myperf4j.base.metric.processor.*;
+import cn.myperf4j.base.util.ExecutorManager;
 import cn.myperf4j.base.util.IOUtils;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.config.MyProperties;
@@ -131,11 +132,12 @@ public abstract class AbstractBootstrap {
             }
             config.setAppName(appName);
 
-            config.setMethodMetricsProcessor(MyProperties.getStr(PropertyKeys.METHOD_METRICS_PROCESSOR, PropertyValues.DEFAULT_METHOD_PROCESSOR));
-            config.setClassMetricsProcessor(MyProperties.getStr(PropertyKeys.CLASS_METRICS_PROCESSOR, PropertyValues.DEFAULT_CLASS_PROCESSOR));
-            config.setGcMetricsProcessor(MyProperties.getStr(PropertyKeys.GC_METRICS_PROCESSOR, PropertyValues.DEFAULT_GC_PROCESSOR));
-            config.setMemoryMetricsProcessor(MyProperties.getStr(PropertyKeys.MEM_METRICS_PROCESSOR, PropertyValues.DEFAULT_MEM_PROCESSOR));
-            config.setThreadMetricsProcessor(MyProperties.getStr(PropertyKeys.THREAD_METRICS_PROCESSOR, PropertyValues.DEFAULT_THREAD_PROCESSOR));
+            config.setMetricsProcessorType(MyProperties.getInt(PropertyKeys.METRICS_PROCESS_TYPE, PropertyValues.METRICS_PROCESS_TYPE_STDOUT));
+            config.setMethodMetricsFile(MyProperties.getStr(PropertyKeys.METHOD_METRICS_FILE, PropertyValues.DEFAULT_METRICS_FILE));
+            config.setClassMetricsFile(MyProperties.getStr(PropertyKeys.CLASS_METRICS_FILE, PropertyValues.NULL_FILE));
+            config.setGcMetricsFile(MyProperties.getStr(PropertyKeys.GC_METRICS_FILE, PropertyValues.NULL_FILE));
+            config.setMemoryMetricsFile(MyProperties.getStr(PropertyKeys.MEM_METRICS_FILE, PropertyValues.NULL_FILE));
+            config.setThreadMetricsFile(MyProperties.getStr(PropertyKeys.THREAD_METRICS_FILE, PropertyValues.NULL_FILE));
 
             config.setRecorderMode(MyProperties.getStr(PropertyKeys.RECORDER_MODE, PropertyValues.RECORDER_MODE_ROUGH));
             config.setBackupRecorderCount(MyProperties.getInt(PropertyKeys.BACKUP_RECORDERS_COUNT, PropertyValues.MIN_BACKUP_RECORDERS_COUNT));
@@ -229,29 +231,13 @@ public abstract class AbstractBootstrap {
 
     private boolean initPerfStatsProcessor() {
         try {
-            ProfilingConfig config = ProfilingConfig.getInstance();
-            MethodMetricsProcessor obj = createObj(config.getMethodMetricsProcessor());
-            if (obj == null) {
-                return false;
-            }
-
-            processor = AsyncMethodMetricsProcessor.initial(obj);
+            int processorType = ProfilingConfig.getInstance().getMetricsProcessorType();
+            processor = AsyncMethodMetricsProcessor.initial(MetricsProcessorFactory.getMethodMetricsProcessor(processorType));
             return true;
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+        } catch (Exception e) {
             Logger.error("AbstractBootstrap.initPerfStatsProcessor()", e);
         }
         return false;
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T> T createObj(String className) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-        if (className == null || className.isEmpty()) {
-            Logger.error("AbstractBootstrap.createObj() className=" + className + " NOT FOUND!!!");
-            return null;
-        }
-
-        Class<?> clazz = AbstractBootstrap.class.getClassLoader().loadClass(className);
-        return (T) clazz.newInstance();
     }
 
     private boolean initProfilingParams() {
@@ -316,7 +302,7 @@ public abstract class AbstractBootstrap {
                 public void run() {
                     Logger.info("ENTER ShutdownHook...");
                     try {
-                        ExecutorServiceManager.stopAll(6, TimeUnit.SECONDS);
+                        ExecutorManager.stopAll(6, TimeUnit.SECONDS);
                     } finally {
                         Logger.info("EXIT ShutdownHook...");
                     }
@@ -344,12 +330,12 @@ public abstract class AbstractBootstrap {
         return false;
     }
 
-    private Scheduler createJVMMetricsScheduler() throws IllegalAccessException, InstantiationException, ClassNotFoundException {
-        ProfilingConfig config = ProfilingConfig.getInstance();
-        JvmClassMetricsProcessor classProcessor = createObj(config.getClassMetricsProcessor());
-        JvmGCMetricsProcessor gcProcessor = createObj(config.getGcMetricsProcessor());
-        JvmMemoryMetricsProcessor memoryProcessor = createObj(config.getMemoryMetricsProcessor());
-        JvmThreadMetricsProcessor threadProcessor = createObj(config.getThreadMetricsProcessor());
+    private Scheduler createJVMMetricsScheduler() {
+        int processorType = ProfilingConfig.getInstance().getMetricsProcessorType();
+        JvmClassMetricsProcessor classProcessor = MetricsProcessorFactory.getClassMetricsProcessor(processorType);
+        JvmGCMetricsProcessor gcProcessor = MetricsProcessorFactory.getGCMetricsProcessor(processorType);
+        JvmMemoryMetricsProcessor memoryProcessor = MetricsProcessorFactory.getMemoryMetricsProcessor(processorType);
+        JvmThreadMetricsProcessor threadProcessor = MetricsProcessorFactory.getThreadMetricsProcessor(processorType);
         return new JvmMetricsScheduler(classProcessor, gcProcessor, memoryProcessor, threadProcessor);
     }
 

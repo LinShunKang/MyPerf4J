@@ -61,11 +61,11 @@ MyPerf4J采用JavaAgent配置方式，**透明化**接入应用，对应用代�
 AppName=MyPerf4JTest
 
 #配置MetricsProcessors，可不配置
-#MethodMetricsProcessor=cn.myperf4j.ext.metric.processor.influxdb.InfluxDBMethodMetricsProcessor
-#ClassMetricsProcessor=cn.myperf4j.ext.metric.processor.influxdb.InfluxDBJvmClassMetricsProcessor
-#GCMetricsProcessor=cn.myperf4j.ext.metric.processor.influxdb.InfluxDBJvmGCMetricsProcessor
-#MemMetricsProcessor=cn.myperf4j.ext.metric.processor.influxdb.InfluxDBJvmMemoryMetricsProcessor
-#ThreadMetricsProcessor=cn.myperf4j.ext.metric.processor.influxdb.InfluxDBJvmThreadMetricsProcessor
+#MethodMetricsProcessor=cn.myperf4j.base.metric.processor.influxdb.InfluxDBMethodMetricsProcessor
+#ClassMetricsProcessor=cn.myperf4j.base.metric.processor.influxdb.InfluxDBJvmClassMetricsProcessor
+#GCMetricsProcessor=cn.myperf4j.base.metric.processor.influxdb.InfluxDBJvmGCMetricsProcessor
+#MemMetricsProcessor=cn.myperf4j.base.metric.processor.influxdb.InfluxDBJvmMemoryMetricsProcessor
+#ThreadMetricsProcessor=cn.myperf4j.base.metric.processor.influxdb.InfluxDBJvmThreadMetricsProcessor
     
 #配置备份Recorders的数量，默认为1，最小为1，最大为8，当需要在较小MillTimeSlice内统计大量方法性能数据时可配置大一些
 BackupRecordersCount=1

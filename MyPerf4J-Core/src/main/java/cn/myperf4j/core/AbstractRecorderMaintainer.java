@@ -5,6 +5,7 @@ import cn.myperf4j.base.MethodTag;
 import cn.myperf4j.base.config.ProfilingParams;
 import cn.myperf4j.base.constant.PropertyValues;
 import cn.myperf4j.base.metric.processor.MethodMetricsProcessor;
+import cn.myperf4j.base.util.ExecutorManager;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.util.ThreadUtils;
 import cn.myperf4j.core.scheduler.Scheduler;
@@ -79,7 +80,7 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
                     ThreadUtils.newThreadFactory("MyPerf4J-BackgroundExecutor_"),
                     new ThreadPoolExecutor.DiscardOldestPolicy());
 
-            ExecutorServiceManager.addExecutorService(backgroundExecutor);
+            ExecutorManager.addExecutorService(backgroundExecutor);
             return true;
         } catch (Exception e) {
             Logger.error("RecorderMaintainer.initBackgroundTask()", e);
@@ -145,8 +146,6 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
                             }
 
                             MethodTag methodTag = methodTagMaintainer.getMethodTag(recorder.getMethodTagId());
-
-
                             MethodMetrics metrics = PerfStatsCalculator.calPerfStats(recorder, methodTag, tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
                             methodMetricsProcessor.process(metrics, tmpCurRecorders.getStartTime(), tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
                         }

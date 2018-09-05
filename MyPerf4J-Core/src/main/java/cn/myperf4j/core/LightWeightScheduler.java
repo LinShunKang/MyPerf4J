@@ -1,6 +1,7 @@
 package cn.myperf4j.core;
 
 import cn.myperf4j.base.constant.PropertyValues;
+import cn.myperf4j.base.util.ExecutorManager;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.util.ThreadUtils;
 import cn.myperf4j.core.scheduler.Scheduler;
@@ -45,7 +46,7 @@ public class LightWeightScheduler {
     }
 
     public static void initScheduleTask(List<Scheduler> schedulerList, long millTimeSlice) {
-        ExecutorServiceManager.addExecutorService(scheduledExecutor);
+        ExecutorManager.addExecutorService(scheduledExecutor);
 
         millTimeSlice = getFitMillTimeSlice(millTimeSlice);
         new LightWeightScheduler(schedulerList, 0, 10, TimeUnit.MILLISECONDS, millTimeSlice).start();
