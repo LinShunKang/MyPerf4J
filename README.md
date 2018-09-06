@@ -65,10 +65,10 @@ MetricsProcessorType=1
 
 #配置各个Metrics日志的文件路径，可不配置
 MethodMetricsFile=/data/logs/MyPerf4J/method_metrics.log
-ClassMetricsFile=/data/logs/MyPerf4J/class_metrics.log
-GCMetricsFile=/data/logs/MyPerf4J/gc_metrics.log
-MemMetricsFile=/data/logs/MyPerf4J/memory_metrics.log
-ThreadMetricsFile=/data/logs/MyPerf4J/thread_metrics.log
+#ClassMetricsFile=/data/logs/MyPerf4J/class_metrics.log
+#GCMetricsFile=/data/logs/MyPerf4J/gc_metrics.log
+#MemMetricsFile=/data/logs/MyPerf4J/memory_metrics.log
+#ThreadMetricsFile=/data/logs/MyPerf4J/thread_metrics.log
     
 #配置备份Recorders的数量，默认为1，最小为1，最大为8，当需要在较小MillTimeSlice内统计大量方法性能数据时可配置大一些
 BackupRecordersCount=1
@@ -78,6 +78,9 @@ RecorderMode=accurate
     
 #配置时间片，单位为ms，最小1s，最大600s
 MillTimeSlice=10000
+
+#是否展示方法参数类型
+ShowMethodParams=true
     
 #需要监控的package，可配置多个，用英文';'分隔
 IncludePackages=cn.perf4j.demo
@@ -101,13 +104,15 @@ ProfilingOutThresholdCount=10
 > 想了解更多的配置？请看[这里](https://github.com/ThinkpadNC5/MyPerf4J/wiki/%E9%85%8D%E7%BD%AE)
 
 ### 运行
-* 输出结果，默认输出到stdout.log:
+* 输出结果，输出到/data/logs/MyPerf4J/method_metrics.log:
 
     ```
-    MyPerf4J Performance Statistics [2018-07-01 23:40:23, 2018-07-01 23:40:24]
-    Api[2/3]                    RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count     TP50     TP90     TP95     TP99    TP999   TP9999  TP99999    TP100
-    DemoServiceImpl.getId1  7454181     0.00        0        0     0.00   7454181        0        0        0        0        0        0        0        0
-    DemoServiceImpl.getId2  7454180     0.00        0        0     0.00   7454180        0        0        0        0        0        0        0        0
+    MyPerf4J Method Metrics [2018-09-06 19:21:40, 2018-09-06 19:21:45]
+    Method[4]                           RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count     TP50     TP90     TP95     TP99    TP999   TP9999  TP99999    TP100
+    DemoServiceImpl.getId1(long)       1974     0.00        0        0     0.00      9870        0        0        0        0        0        0        0        0
+    DemoServiceImpl.getId2(long)       2995     0.50        0        2     0.01     14975        0        1        2        2        2        2        2        2
+    DemoServiceImplV2.getId1(long)      787     0.00        0        0     0.00      3938        0        0        0        0        0        0        0        0
+    DemoServiceImplV2.getId3(long)     1575     0.50        0        1     0.01      7876        1        1        1        1        1        1        1        1
     ```
 
 ### 卸载

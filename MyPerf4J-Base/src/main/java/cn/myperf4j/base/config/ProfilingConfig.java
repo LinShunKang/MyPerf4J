@@ -32,11 +32,13 @@ public class ProfilingConfig {
 
     private long milliTimeSlice;
 
+    private String excludeClassLoaders;
+
     private String includePackages;
 
     private String excludePackages;
 
-    private String excludeClassLoaders;
+    private boolean showMethodParams;
 
     private boolean printDebugLog;
 
@@ -142,6 +144,14 @@ public class ProfilingConfig {
         this.milliTimeSlice = milliTimeSlice;
     }
 
+    public boolean isShowMethodParams() {
+        return showMethodParams;
+    }
+
+    public void setShowMethodParams(boolean showMethodParams) {
+        this.showMethodParams = showMethodParams;
+    }
+
     public String getIncludePackages() {
         return includePackages;
     }
@@ -232,9 +242,10 @@ public class ProfilingConfig {
                 ", recorderMode='" + recorderMode + '\'' +
                 ", backupRecorderCount=" + backupRecorderCount +
                 ", milliTimeSlice=" + milliTimeSlice +
+                ", excludeClassLoaders='" + excludeClassLoaders + '\'' +
                 ", includePackages='" + includePackages + '\'' +
                 ", excludePackages='" + excludePackages + '\'' +
-                ", excludeClassLoaders='" + excludeClassLoaders + '\'' +
+                ", showMethodParams=" + showMethodParams +
                 ", printDebugLog=" + printDebugLog +
                 ", excludeMethods='" + excludeMethods + '\'' +
                 ", excludePrivateMethod=" + excludePrivateMethod +

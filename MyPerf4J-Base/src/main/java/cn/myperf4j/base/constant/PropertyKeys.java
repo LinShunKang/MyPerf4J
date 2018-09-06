@@ -27,6 +27,8 @@ public interface PropertyKeys {
 
     String MILL_TIME_SLICE = "MillTimeSlice";
 
+    String SHOW_METHOD_PARAMS = "ShowMethodParams";
+
     String FILTER_INCLUDE_PACKAGES = "IncludePackages";
 
     String FILTER_EXCLUDE_PACKAGES = "ExcludePackages";

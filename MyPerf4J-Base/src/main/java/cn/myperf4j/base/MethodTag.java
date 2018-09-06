@@ -5,13 +5,19 @@ package cn.myperf4j.base;
  */
 public class MethodTag {
 
-    private String className;
+    private final String className;
 
-    private String methodName;
+    private final String methodName;
 
-    private MethodTag(String className, String methodName) {
+    private final String methodParamDesc;
+
+    private final String description;
+
+    private MethodTag(String className, String methodName, String methodParamDesc) {
         this.className = className;
         this.methodName = methodName;
+        this.methodParamDesc = methodParamDesc;
+        this.description = className + "." + methodName + methodParamDesc;
     }
 
     public String getClassName() {
@@ -22,8 +28,12 @@ public class MethodTag {
         return methodName;
     }
 
+    public String getMethodParamDesc() {
+        return methodParamDesc;
+    }
+
     public String getSimpleDesc() {
-        return className + "." + methodName;
+        return description;
     }
 
     @Override
@@ -34,7 +44,7 @@ public class MethodTag {
                 '}';
     }
 
-    public static MethodTag getInstance(String className, String methodName) {
-        return new MethodTag(className, methodName);
+    public static MethodTag getInstance(String className, String methodName, String methodParamDesc) {
+        return new MethodTag(className, methodName, methodParamDesc);
     }
 }

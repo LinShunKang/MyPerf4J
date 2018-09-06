@@ -63,10 +63,10 @@ MetricsProcessorType=1
 
 #Config metrics log file, option
 MethodMetricsFile=/data/logs/MyPerf4J/method_metrics.log
-ClassMetricsFile=/data/logs/MyPerf4J/class_metrics.log
-GCMetricsFile=/data/logs/MyPerf4J/gc_metrics.log
-MemMetricsFile=/data/logs/MyPerf4J/memory_metrics.log
-ThreadMetricsFile=/data/logs/MyPerf4J/thread_metrics.log
+#ClassMetricsFile=/data/logs/MyPerf4J/class_metrics.log
+#GCMetricsFile=/data/logs/MyPerf4J/gc_metrics.log
+#MemMetricsFile=/data/logs/MyPerf4J/memory_metrics.log
+#ThreadMetricsFile=/data/logs/MyPerf4J/thread_metrics.log
 
 #Configure the number of backup Recorders. The default is 1, the minimum is 1, and the maximum is 8. When you need to count a large number of method performance data in a smaller MillTimeSlice, you can configure a larger number.
 BackupRecordersCount=1
@@ -76,6 +76,9 @@ RecorderMode=accurate
     
 #configure TimeSlice，time unit: ms，min:1s，max:600s
 MillTimeSlice=60000
+
+#config show method params type
+ShowMethodParams=true
     
 #configure packages，separated with ';'
 IncludePackages=cn.perf4j;org.myperf4j
@@ -97,7 +100,7 @@ ProfilingOutThresholdCount=10
 ```
 
 ### Run
-* The default output is to stdout.log:
+* The output is to /data/logs/MyPerf4J/method_metrics.log:
 
     ```
     MyPerf4J Performance Statistics [2018-07-01 23:40:23, 2018-07-01 23:40:24]

@@ -20,7 +20,7 @@ public class RecorderBenchmarkTest {
         recorderArr.set(0, recorder);
 
         Recorders recorders = new Recorders(recorderArr);
-        MethodTag methodTag = MethodTag.getInstance("", "");
+        MethodTag methodTag = MethodTag.getInstance("", "", "");
 
         int times = 100000000;
         singleThreadBenchmark(recorders, times / 10);//warm up

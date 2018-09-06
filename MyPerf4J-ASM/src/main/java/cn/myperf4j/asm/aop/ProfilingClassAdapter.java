@@ -37,7 +37,7 @@ public class ProfilingClassAdapter extends ClassVisitor {
 
     @Override
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-        String upFieldName = name.substring(0, 1).toUpperCase() + name.substring(1, name.length());
+        String upFieldName = name.substring(0, 1).toUpperCase() + name.substring(1);
         fieldNameList.add("get" + upFieldName);
         fieldNameList.add("set" + upFieldName);
         fieldNameList.add("is" + upFieldName);
