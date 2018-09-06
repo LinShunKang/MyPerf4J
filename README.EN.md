@@ -58,12 +58,15 @@ Among them, the configuration of `MyPerf4JPropFile` is as follows:
 #Application name
 AppName=MyPerf4JTest
 
-#Configure MetricsProcessors
-#MethodMetricsProcessor=cn.myperf4j.base.metric.processor.influxdb.InfluxDBMethodMetricsProcessor
-#ClassMetricsProcessor=cn.myperf4j.base.metric.processor.influxdb.InfluxDBJvmClassMetricsProcessor
-#GCMetricsProcessor=cn.myperf4j.base.metric.processor.influxdb.InfluxDBJvmGCMetricsProcessor
-#MemMetricsProcessor=cn.myperf4j.base.metric.processor.influxdb.InfluxDBJvmMemoryMetricsProcessor
-#ThreadMetricsProcessor=cn.myperf4j.base.metric.processor.influxdb.InfluxDBJvmThreadMetricsProcessor
+#Configure MetricsProcessors type, 0:print metrics to stdout.log, 1:print metrics to log file 2:print metrics to influxdb log file
+MetricsProcessorType=1
+
+#Config metrics log file, option
+MethodMetricsFile=/data/logs/MyPerf4J/method_metrics.log
+ClassMetricsFile=/data/logs/MyPerf4J/class_metrics.log
+GCMetricsFile=/data/logs/MyPerf4J/gc_metrics.log
+MemMetricsFile=/data/logs/MyPerf4J/memory_metrics.log
+ThreadMetricsFile=/data/logs/MyPerf4J/thread_metrics.log
 
 #Configure the number of backup Recorders. The default is 1, the minimum is 1, and the maximum is 8. When you need to count a large number of method performance data in a smaller MillTimeSlice, you can configure a larger number.
 BackupRecordersCount=1
