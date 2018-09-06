@@ -60,7 +60,7 @@ MyPerf4J采用JavaAgent配置方式，**透明化**接入应用，对应用代�
 #应用名称
 AppName=MyPerf4JTest
 
-#MetricsProcessor类型，0:以标准格式化结构输出到stdout.log 1:以标准格式化结构输出到磁盘  2:以InfluxDB格式输出到磁盘
+#MetricsProcessor类型，0:以标准格式化结构输出到stdout.log 1:以标准格式化结构输出到磁盘  2:以InfluxDB LineProtocol格式输出到磁盘
 MetricsProcessorType=1
 
 #配置各个Metrics日志的文件路径，可不配置

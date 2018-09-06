@@ -58,7 +58,7 @@ Among them, the configuration of `MyPerf4JPropFile` is as follows:
 #Application name
 AppName=MyPerf4JTest
 
-#Configure MetricsProcessors type, 0:print metrics to stdout.log, 1:print metrics to log file 2:print metrics to influxdb log file
+#Configure MetricsProcessors type 0:Output to stdout.log in a standard formatted structure 1:Output to disk in standard formatted structure  2:Output to disk in InfluxDB LineProtocol format
 MetricsProcessorType=1
 
 #Config metrics log file, option
