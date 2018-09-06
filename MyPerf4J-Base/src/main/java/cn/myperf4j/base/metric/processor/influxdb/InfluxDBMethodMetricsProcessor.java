@@ -4,6 +4,7 @@ import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.metric.MethodMetrics;
 import cn.myperf4j.base.MethodTag;
 import cn.myperf4j.base.metric.processor.AbstractMethodMetricsProcessor;
+import cn.myperf4j.base.util.LineProtocolUtils;
 import cn.myperf4j.base.util.NumFormatUtils;
 
 /**
@@ -45,10 +46,11 @@ public class InfluxDBMethodMetricsProcessor extends AbstractMethodMetricsProcess
             sb = new StringBuilder(suitSize);
         }
 
+        String methodDesc = LineProtocolUtils.processTagOrField(methodMetrics.getMethodTag().getSimpleDesc());
         sb.append("method_metrics")
                 .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
                 .append(",ClassName=").append(methodMetrics.getMethodTag().getClassName())
-                .append(",Method=").append(methodMetrics.getMethodTag().getSimpleDesc())
+                .append(",Method=").append(methodDesc)
                 .append(" RPS=").append(methodMetrics.getRPS()).append("i")
                 .append(",Avg=").append(NumFormatUtils.getFormatStr(methodMetrics.getAvgTime()))
                 .append(",Min=").append(methodMetrics.getMinTime()).append("i")

@@ -3,6 +3,7 @@ package cn.myperf4j.base.metric.processor.influxdb;
 import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.metric.JvmGCMetrics;
 import cn.myperf4j.base.metric.processor.AbstractJvmGCMetricsProcessor;
+import cn.myperf4j.base.util.LineProtocolUtils;
 
 /**
  * Created by LinShunkang on 2018/8/25
@@ -27,9 +28,10 @@ public class InfluxDBJvmGCMetricsProcessor extends AbstractJvmGCMetricsProcessor
     }
 
     private String createLineProtocol(JvmGCMetrics metrics, long startNanos, StringBuilder sb) {
+        String gcName = LineProtocolUtils.processTagOrField(metrics.getGcName());
         sb.append("jvm_gc_metrics")
                 .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
-                .append(",GCName=").append(metrics.getGcName().replace(' ', '-'))
+                .append(",GCName=").append(gcName)
                 .append(" CollectCount=").append(metrics.getCollectCount()).append("i")
                 .append(",CollectTime=").append(metrics.getCollectTime()).append("i")
                 .append(" ").append(startNanos);
