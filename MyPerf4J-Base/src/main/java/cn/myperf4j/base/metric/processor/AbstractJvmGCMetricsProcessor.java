@@ -18,6 +18,6 @@ public abstract class AbstractJvmGCMetricsProcessor implements JvmGCMetricsProce
 
     @Override
     public void afterProcess(long processId, long startMillis, long stopMillis) {
-        //empty
+        logger.flushLog();
     }
 }

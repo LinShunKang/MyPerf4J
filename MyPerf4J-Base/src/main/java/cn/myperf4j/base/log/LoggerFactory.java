@@ -5,9 +5,24 @@ import cn.myperf4j.base.constant.PropertyValues;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LoggerFactory {
+public final class LoggerFactory {
 
     private static final Map<String, ILogger> LOGGER_MAP = new HashMap<>();
+
+    static {
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (ILogger writer : LOGGER_MAP.values()) {
+                    writer.preCloseLog();
+                }
+
+                for (ILogger writer : LOGGER_MAP.values()) {
+                    writer.closeLog();
+                }
+            }
+        }));
+    }
 
     public static synchronized ILogger getLogger(String logFile) {
         logFile = logFile.trim();
@@ -25,5 +40,4 @@ public class LoggerFactory {
         LOGGER_MAP.put(logFile, logger);
         return logger;
     }
-
 }

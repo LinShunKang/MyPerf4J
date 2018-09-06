@@ -19,6 +19,6 @@ public abstract class AbstractMethodMetricsProcessor implements MethodMetricsPro
 
     @Override
     public void afterProcess(long processId, long startMillis, long stopMillis) {
-        //empty
+        logger.flushLog();
     }
 }

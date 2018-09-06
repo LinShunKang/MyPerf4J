@@ -18,6 +18,6 @@ public abstract class AbstractJvmThreadMetricsProcessor implements JvmThreadMetr
 
     @Override
     public void afterProcess(long processId, long startMillis, long stopMillis) {
-        //empty
+        logger.flushLog();
     }
 }

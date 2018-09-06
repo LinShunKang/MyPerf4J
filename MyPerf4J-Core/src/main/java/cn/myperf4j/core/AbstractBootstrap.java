@@ -10,7 +10,7 @@ import cn.myperf4j.base.util.IOUtils;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.config.MyProperties;
 import cn.myperf4j.core.scheduler.JvmMetricsScheduler;
-import cn.myperf4j.core.scheduler.Scheduler;
+import cn.myperf4j.base.Scheduler;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class AbstractBootstrap {
 
-    protected AsyncMethodMetricsProcessor processor;
+    protected MethodMetricsProcessor processor;
 
     protected AbstractRecorderMaintainer maintainer;
 
@@ -232,7 +232,7 @@ public abstract class AbstractBootstrap {
     private boolean initPerfStatsProcessor() {
         try {
             int processorType = ProfilingConfig.getInstance().getMetricsProcessorType();
-            processor = AsyncMethodMetricsProcessor.initial(MetricsProcessorFactory.getMethodMetricsProcessor(processorType));
+            processor = MetricsProcessorFactory.getMethodMetricsProcessor(processorType);
             return true;
         } catch (Exception e) {
             Logger.error("AbstractBootstrap.initPerfStatsProcessor()", e);

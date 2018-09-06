@@ -126,7 +126,7 @@ public class DailyRollingFileWriter {
 
     public void flush() {
         try {
-            if (bufferedWriter != null) {
+            if (bufferedWriter != null && !closed) {
                 bufferedWriter.flush();
             }
         } catch (Exception e) {

@@ -1,6 +1,7 @@
 package cn.myperf4j.core.scheduler;
 
 
+import cn.myperf4j.base.Scheduler;
 import cn.myperf4j.base.metric.JvmClassMetrics;
 import cn.myperf4j.base.metric.JvmGCMetrics;
 import cn.myperf4j.base.metric.JvmMemoryMetrics;

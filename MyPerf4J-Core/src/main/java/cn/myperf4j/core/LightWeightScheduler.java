@@ -4,7 +4,7 @@ import cn.myperf4j.base.constant.PropertyValues;
 import cn.myperf4j.base.util.ExecutorManager;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.util.ThreadUtils;
-import cn.myperf4j.core.scheduler.Scheduler;
+import cn.myperf4j.base.Scheduler;
 
 import java.util.Collections;
 import java.util.List;

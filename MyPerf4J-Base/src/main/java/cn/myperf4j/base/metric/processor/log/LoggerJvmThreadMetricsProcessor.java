@@ -39,7 +39,7 @@ public class LoggerJvmThreadMetricsProcessor extends AbstractJvmThreadMetricsPro
         try {
             List<JvmThreadMetrics> metricsList = metricsMap.get(processId);
             if (metricsList != null) {
-                logger.log(metricsFormatter.format(metricsList, startMillis, stopMillis));
+                logger.logAndFlush(metricsFormatter.format(metricsList, startMillis, stopMillis));
             } else {
                 Logger.error("StdoutJvmThreadMetricsProcessor.afterProcess(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
             }

@@ -32,6 +32,6 @@ public class LoggerMethodMetricsProcessor extends AbstractMethodMetricsProcessor
     @Override
     public void afterProcess(long processId, long startMillis, long stopMillis) {
         List<MethodMetrics> methodMetrics = metricsMap.get(processId);
-        logger.log(formatter.format(methodMetrics, startMillis, stopMillis));
+        logger.logAndFlush(formatter.format(methodMetrics, startMillis, stopMillis));
     }
 }

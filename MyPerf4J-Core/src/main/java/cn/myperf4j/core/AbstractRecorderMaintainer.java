@@ -8,7 +8,7 @@ import cn.myperf4j.base.metric.processor.MethodMetricsProcessor;
 import cn.myperf4j.base.util.ExecutorManager;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.util.ThreadUtils;
-import cn.myperf4j.core.scheduler.Scheduler;
+import cn.myperf4j.base.Scheduler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -149,11 +149,10 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
                             MethodMetrics metrics = PerfStatsCalculator.calPerfStats(recorder, methodTag, tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
                             methodMetricsProcessor.process(metrics, tmpCurRecorders.getStartTime(), tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
                         }
-
-                        methodMetricsProcessor.afterProcess(tmpCurRecorders.getStartTime(), tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
                     } catch (Exception e) {
                         Logger.error("RecorderMaintainer.backgroundExecutor error", e);
                     } finally {
+                        methodMetricsProcessor.afterProcess(tmpCurRecorders.getStartTime(), tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
                         Logger.debug("RecorderMaintainer.backgroundProcessor finished!!! cost: " + (System.currentTimeMillis() - start) + "ms");
                     }
                 }
