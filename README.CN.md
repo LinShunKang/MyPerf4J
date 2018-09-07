@@ -69,6 +69,9 @@ MethodMetricsFile=/data/logs/MyPerf4J/method_metrics.log
 #GCMetricsFile=/data/logs/MyPerf4J/gc_metrics.log
 #MemMetricsFile=/data/logs/MyPerf4J/memory_metrics.log
 #ThreadMetricsFile=/data/logs/MyPerf4J/thread_metrics.log
+
+#配置日志文件滚动时间间隔，分别有MINUTELY、HOURLY和DAILY三个值
+LogRollingTimeUnit=HOURLY
     
 #配置备份Recorders的数量，默认为1，最小为1，最大为8，当需要在较小MillTimeSlice内统计大量方法性能数据时可配置大一些
 BackupRecordersCount=1

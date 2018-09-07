@@ -68,6 +68,9 @@ MethodMetricsFile=/data/logs/MyPerf4J/method_metrics.log
 #MemMetricsFile=/data/logs/MyPerf4J/memory_metrics.log
 #ThreadMetricsFile=/data/logs/MyPerf4J/thread_metrics.log
 
+#Configure the log file scrolling interval, which has three values: MINUTELY, HOURLY, and DAILY.
+LogRollingTimeUnit=HOURLY
+
 #Configure the number of backup Recorders. The default is 1, the minimum is 1, and the maximum is 8. When you need to count a large number of method performance data in a smaller MillTimeSlice, you can configure a larger number.
 BackupRecordersCount=1
     
