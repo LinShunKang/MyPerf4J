@@ -138,6 +138,7 @@ public abstract class AbstractBootstrap {
             config.setGcMetricsFile(MyProperties.getStr(PropertyKeys.GC_METRICS_FILE, PropertyValues.NULL_FILE));
             config.setMemoryMetricsFile(MyProperties.getStr(PropertyKeys.MEM_METRICS_FILE, PropertyValues.NULL_FILE));
             config.setThreadMetricsFile(MyProperties.getStr(PropertyKeys.THREAD_METRICS_FILE, PropertyValues.NULL_FILE));
+            config.setLogRollingTimeUnit(MyProperties.getStr(PropertyKeys.LOG_ROLLING_TIME_TIME_UNIT, PropertyValues.LOG_ROLLING_TIME_DAILY));
 
             config.setRecorderMode(MyProperties.getStr(PropertyKeys.RECORDER_MODE, PropertyValues.RECORDER_MODE_ROUGH));
             config.setBackupRecorderCount(MyProperties.getInt(PropertyKeys.BACKUP_RECORDERS_COUNT, PropertyValues.MIN_BACKUP_RECORDERS_COUNT));

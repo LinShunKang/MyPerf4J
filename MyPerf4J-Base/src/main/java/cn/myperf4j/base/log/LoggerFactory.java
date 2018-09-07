@@ -1,5 +1,6 @@
 package cn.myperf4j.base.log;
 
+import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.constant.PropertyValues;
 
 import java.util.HashMap;
@@ -36,7 +37,7 @@ public final class LoggerFactory {
             return logger;
         }
 
-        logger = new DailyRollingLogger(logFile);
+        logger = new AutoRollingLogger(logFile, ProfilingConfig.getInstance().getLogRollingTimeUnit());
         LOGGER_MAP.put(logFile, logger);
         return logger;
     }

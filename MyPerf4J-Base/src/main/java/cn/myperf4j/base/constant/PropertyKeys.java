@@ -21,6 +21,8 @@ public interface PropertyKeys {
 
     String THREAD_METRICS_FILE = "ThreadMetricsFile";
 
+    String LOG_ROLLING_TIME_TIME_UNIT = "LogRollingTimeUnit";
+
     String RECORDER_MODE = "RecorderMode";
 
     String BACKUP_RECORDERS_COUNT = "BackupRecordersCount";

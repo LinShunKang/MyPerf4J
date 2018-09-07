@@ -1,24 +1,18 @@
-package cn.myperf4j.base.util;
+package cn.myperf4j.base.util.file;
+
+import cn.myperf4j.base.util.Logger;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 /**
+ * Created by LinShunkang on 2018/9/7
  * 该类参考自TProfiler: https://github.com/alibaba/TProfiler/blob/master/src/main/java/com/taobao/profile/utils/DailyRollingFileWriter.java
  */
-public class DailyRollingFileWriter {
-
-    private static final ThreadLocal<SimpleDateFormat> FILE_DATE_FORMAT = new ThreadLocal<SimpleDateFormat>() {
-        @Override
-        protected SimpleDateFormat initialValue() {
-            return new SimpleDateFormat("'.'yyyy-MM-dd");
-        }
-    };
+public abstract class AutoRollingFileWriter {
 
     private final String fileName;
 
@@ -31,13 +25,13 @@ public class DailyRollingFileWriter {
     private volatile long nextRollingTime;
 
 
-    public DailyRollingFileWriter(String fileName) {
+    public AutoRollingFileWriter(String fileName) {
         Date now = new Date();
 
         this.fileName = fileName;
         this.closed = false;
         this.nextRollingTime = getNextRollingTime(now);
-        this.rollingFileName = fileName + FILE_DATE_FORMAT.get().format(now);
+        this.rollingFileName = formatDateFileName(fileName, now);
 
         File targetFile = new File(fileName);
         if (!targetFile.exists()) {
@@ -46,54 +40,53 @@ public class DailyRollingFileWriter {
         }
 
         Date lastModifiedDate = new Date(targetFile.lastModified());
-        if (DateUtils.isSameDate(now, lastModifiedDate)) {
+        if (isSameEpoch(now, lastModifiedDate)) {
             createWriter(targetFile, true);
             return;
         }
 
-        this.rollingFileName = fileName + FILE_DATE_FORMAT.get().format(lastModifiedDate);
+        this.rollingFileName = formatDateFileName(fileName, lastModifiedDate);
         rollingFile(now);
     }
 
-    private long getNextRollingTime(Date now) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(now);
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        cal.add(Calendar.DATE, 1);
-        return cal.getTime().getTime();
-    }
+    abstract long getNextRollingTime(Date now);
+
+    abstract String formatDateFileName(String fileName, Date date);
+
+    abstract boolean isSameEpoch(Date date1, Date date2);
 
     private void createWriter(File file, boolean append) {
         try {
             File parent = file.getParentFile();
             if (parent != null && !parent.exists()) {
-                Logger.debug("DailyRollingFileWriter.createWriter(" + file.getName() + ", " + append + "): mkdirs=" + parent.mkdirs());
+                boolean mkdirs = parent.mkdirs();
+                Logger.info("AutoRollingFileWriter.createWriter(" + file.getName() + ", " + append + "): mkdirs=" + mkdirs);
             }
 
             bufferedWriter = new BufferedWriter(new FileWriter(file, append), 64 * 1024);
         } catch (IOException e) {
-            Logger.error("DailyRollingFileWriter.createWriter(" + file.getName() + ", " + append + ")", e);
+            Logger.error("AutoRollingFileWriter.createWriter(" + file.getName() + ", " + append + ")", e);
         }
     }
 
     private void rollingFile(Date now) {
-        String datedFilename = fileName + FILE_DATE_FORMAT.get().format(now);
+        String datedFilename = formatDateFileName(fileName, now);
         if (rollingFileName.equals(datedFilename)) {
+            Logger.info("AutoRollingFileWriter.rollingFile(" + now + "): rollingFile=" + rollingFileName + ", datedFilename=" + datedFilename + " return!!!");
             return;
         }
 
-        closeFile();
+        closeFile(false);
 
         File targetFile = new File(rollingFileName);
         if (targetFile.exists()) {
-            Logger.debug("DailyRollingFileWriter.rollingFile(" + now + "): delete rollingFile=" + targetFile.delete());
+            boolean delete = targetFile.delete();
+            Logger.info("AutoRollingFileWriter.rollingFile(" + now + "): rollingFile=" + rollingFileName + ", delete=" + delete);
         }
 
         File file = new File(fileName);
-        Logger.debug("DailyRollingFileWriter.rollingFile(" + now + "): rename " + fileName + " to " + targetFile.getName() + " " + file.renameTo(targetFile));
+        boolean rename = file.renameTo(targetFile);
+        Logger.info("AutoRollingFileWriter.rollingFile(" + now + "): rename " + fileName + " to " + targetFile.getName() + " " + rename);
 
         createWriter(new File(fileName), false);
         rollingFileName = datedFilename;
@@ -102,9 +95,13 @@ public class DailyRollingFileWriter {
     public void write(String msg) {
         long time = System.currentTimeMillis();
         if (time > nextRollingTime) {
-            Date now = new Date();
-            nextRollingTime = getNextRollingTime(now);
-            rollingFile(now);
+            synchronized (this) {
+                if (time > nextRollingTime) {
+                    Date now = new Date();//20180908
+                    nextRollingTime = getNextRollingTime(now);//.20180908
+                    rollingFile(now);
+                }
+            }
         }
         write0(msg);
     }
@@ -115,7 +112,7 @@ public class DailyRollingFileWriter {
                 bufferedWriter.write(msg);
             }
         } catch (Exception e) {
-            Logger.error("DailyRollingFileWriter.write0(msg)", e);
+            Logger.error("AutoRollingFileWriter.write0(msg)", e);
         }
     }
 
@@ -130,23 +127,24 @@ public class DailyRollingFileWriter {
                 bufferedWriter.flush();
             }
         } catch (Exception e) {
-            Logger.error("DailyRollingFileWriter.flush()", e);
+            Logger.error("AutoRollingFileWriter.flush()", e);
         }
     }
 
-    public void closeFile() {
+    public void closeFile(boolean setCloseFlag) {
         try {
-            closed = true;
+            closed = setCloseFlag;
             if (bufferedWriter != null) {
                 bufferedWriter.flush();
                 bufferedWriter.close();
             }
         } catch (IOException e) {
-            Logger.error("DailyRollingFileWriter.closeFile()", e);
+            Logger.error("AutoRollingFileWriter.closeFile()", e);
         }
     }
 
     public void preCloseFile() {
         closed = true;
     }
+
 }

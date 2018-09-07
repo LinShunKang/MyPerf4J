@@ -26,6 +26,8 @@ public class ProfilingConfig {
 
     private String threadMetricsFile;
 
+    private String logRollingTimeUnit;
+
     private String recorderMode;
 
     private int backupRecorderCount;
@@ -116,12 +118,20 @@ public class ProfilingConfig {
         this.threadMetricsFile = threadMetricsFile;
     }
 
+    public String getLogRollingTimeUnit() {
+        return logRollingTimeUnit;
+    }
+
+    public void setLogRollingTimeUnit(String logRollingTimeUnit) {
+        this.logRollingTimeUnit = logRollingTimeUnit;
+    }
+
     public String getRecorderMode() {
         return recorderMode;
     }
 
     public boolean isAccurateMode() {
-        return recorderMode.equals(PropertyValues.RECORDER_MODE_ACCURATE);
+        return recorderMode.toUpperCase().equals(PropertyValues.RECORDER_MODE_ACCURATE);
     }
 
     public void setRecorderMode(String recorderMode) {

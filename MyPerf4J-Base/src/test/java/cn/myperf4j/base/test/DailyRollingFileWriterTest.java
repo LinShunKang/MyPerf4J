@@ -1,6 +1,6 @@
 package cn.myperf4j.base.test;
 
-import cn.myperf4j.base.util.DailyRollingFileWriter;
+import cn.myperf4j.base.util.file.DailyRollingFileWriter;
 
 public class DailyRollingFileWriterTest {
 
