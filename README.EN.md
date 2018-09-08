@@ -13,7 +13,7 @@ MyPerf4J has the following features:
 * [中文README](https://github.com/ThinkpadNC5/MyPerf4J/blob/develop/README.CN.md) [中文文档](https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Doc) 
 
 ## What does it monitor?
-MyPerf4J collects several thousands of metrics per application. All these metrics are collected and visualized in real-time.
+MyPerf4J collects dozens of metrics per application. All these metrics are collected and visualized in real-time.
 
 This is a list of what it currently monitors:
 * **[Method](https://grafana.com/dashboards/7766)**<br/>

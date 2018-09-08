@@ -2,6 +2,9 @@ package cn.myperf4j.base.metric.processor;
 
 import cn.myperf4j.base.constant.PropertyValues;
 import cn.myperf4j.base.metric.processor.discard.DiscardJvmClassMetricsProcessor;
+import cn.myperf4j.base.metric.processor.discard.DiscardJvmGCMetricsProcessor;
+import cn.myperf4j.base.metric.processor.discard.DiscardJvmMemoryMetricsProcessor;
+import cn.myperf4j.base.metric.processor.discard.DiscardJvmThreadMetricsProcessor;
 import cn.myperf4j.base.metric.processor.influxdb.*;
 import cn.myperf4j.base.metric.processor.log.*;
 import cn.myperf4j.base.metric.processor.stdout.*;
@@ -30,7 +33,7 @@ public class MetricsProcessorFactory {
             case PropertyValues.METRICS_PROCESS_TYPE_INFLUX_DB:
                 return new InfluxDBJvmGCMetricsProcessor();
             default:
-                return new StdoutJvmGCMetricsProcessor();
+                return new DiscardJvmGCMetricsProcessor();
         }
     }
 
@@ -43,7 +46,7 @@ public class MetricsProcessorFactory {
             case PropertyValues.METRICS_PROCESS_TYPE_INFLUX_DB:
                 return new InfluxDBJvmMemoryMetricsProcessor();
             default:
-                return new StdoutJvmMemoryMetricsProcessor();
+                return new DiscardJvmMemoryMetricsProcessor();
         }
     }
 
@@ -56,7 +59,7 @@ public class MetricsProcessorFactory {
             case PropertyValues.METRICS_PROCESS_TYPE_INFLUX_DB:
                 return new InfluxDBJvmThreadMetricsProcessor();
             default:
-                return new StdoutJvmThreadMetricsProcessor();
+                return new DiscardJvmThreadMetricsProcessor();
         }
     }
 
