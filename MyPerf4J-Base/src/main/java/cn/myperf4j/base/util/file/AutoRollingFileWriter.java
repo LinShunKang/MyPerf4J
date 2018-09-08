@@ -93,21 +93,22 @@ public abstract class AutoRollingFileWriter {
     }
 
     public void write(String msg) {
-        long time = System.currentTimeMillis();
-        if (time > nextRollingTime) {
-            synchronized (this) {
-                if (time > nextRollingTime) {
-                    Date now = new Date();//20180908
-                    nextRollingTime = getNextRollingTime(now);//.20180908
-                    rollingFile(now);
-                }
-            }
-        }
         write0(msg);
     }
 
     private void write0(String msg) {
         try {
+            long time = System.currentTimeMillis();
+            if (time > nextRollingTime) {
+                synchronized (this) {
+                    if (time > nextRollingTime) {
+                        Date now = new Date();
+                        nextRollingTime = getNextRollingTime(now);
+                        rollingFile(now);
+                    }
+                }
+            }
+
             if (bufferedWriter != null && !closed) {
                 bufferedWriter.write(msg);
             }
@@ -147,4 +148,14 @@ public abstract class AutoRollingFileWriter {
         closed = true;
     }
 
+    @Override
+    public String toString() {
+        return "AutoRollingFileWriter{" +
+                "fileName='" + fileName + '\'' +
+                ", rollingFileName='" + rollingFileName + '\'' +
+                ", bufferedWriter=" + bufferedWriter +
+                ", closed=" + closed +
+                ", nextRollingTime=" + nextRollingTime +
+                '}';
+    }
 }
