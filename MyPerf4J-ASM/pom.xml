@@ -30,12 +30,6 @@
             <artifactId>MyPerf4J-Core</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>MyPerf4J</groupId>
-            <artifactId>MyPerf4J-Extension</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 
     <build>
