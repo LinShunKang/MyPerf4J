@@ -2,6 +2,10 @@
 ![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J_LOGO_V3_com.jpeg)
 > A high performance and non-intrusive real-time Java performance monitoring and statistical tool designed for high-concurrency, low-latency applications. Inspired by [perf4j](https://github.com/perf4j/perf4j) and [TProfiler](https://github.com/alibaba/TProfiler). 
 
+The usage scenario of MyPerf4J is as follows:
+* Quickly locate performance bottlenecks for Java applications in a development environment
+* Long-term monitoring of performance metrics for Java applications in a production environment
+
 MyPerf4J has the following features:
 *  No intrusion: using JavaAgent mode, no intrusion to the application, no need to modify the application code.
 *  High performance: Very low performance consumption, only 73ns per record, can be used in production environment for a long time.
@@ -47,6 +51,8 @@ MyPerf4J adopts JavaAgent configuration mode, **transparent** access application
 * git clone git@github.com:ThinkpadNC5/MyPerf4J.git
 * mvn clean package
 * Rename MyPerf4J-ASM-${MyPerf4J-version}.jar to MyPerf4J-ASM.jar
+
+> If you are using JDK 7 or higher, you can try to download [MyPerf4J-ASM.jar](https://github.com/ThinkpadNC5/Objects/blob/master/MyPerf4J-ASM-2.0.2.jar?raw=true) directly.
 
 ### Configure
 Add the following two parameters to the JVM startup parameters
@@ -107,10 +113,12 @@ ProfilingOutThresholdCount=10
 * The output is to /data/logs/MyPerf4J/method_metrics.log:
 
     ```
-    MyPerf4J Performance Statistics [2018-07-01 23:40:23, 2018-07-01 23:40:24]
-    Api[2/3]                    RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count     TP50     TP90     TP95     TP99    TP999   TP9999  TP99999    TP100
-    DemoServiceImpl.getId1  7454181     0.00        0        0     0.00   7454181        0        0        0        0        0        0        0        0
-    DemoServiceImpl.getId2  7454180     0.00        0        0     0.00   7454180        0        0        0        0        0        0        0        0
+    MyPerf4J Method Metrics [2018-09-06 19:21:40, 2018-09-06 19:21:45]
+    Method[4]                           RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count     TP50     TP90     TP95     TP99    TP999   TP9999  TP99999    TP100
+    DemoServiceImpl.getId1(long)       1974     0.00        0        0     0.00      9870        0        0        0        0        0        0        0        0
+    DemoServiceImpl.getId2(long)       2995     0.50        0        2     0.01     14975        0        1        2        2        2        2        2        2
+    DemoServiceImplV2.getId1(long)      787     0.00        0        0     0.00      3938        0        0        0        0        0        0        0        0
+    DemoServiceImplV2.getId3(long)     1575     0.50        0        1     0.01      7876        1        1        1        1        1        1        1        1
     ```
     
 ### Uninstall
@@ -119,7 +127,7 @@ Remove the following two parameters from the JVM startup parameters and restart 
 > -DMyPerf4JPropFile=/your/path/to/myPerf4J.properties
 
 ## Issues
-If you encounter any issues or if you have a question, don't hesitate to [create an issue](https://github.com/ThinkpadNC5/MyPerf4J/issues/new) : )
+If you encounter any issues or if you have a question, don't hesitate to [create an issue](https://github.com/ThinkpadNC5/MyPerf4J/issues/new) or [send email](mailto:asdfg2385856@gmail.com) : )
 
 ## More Information
 For more information about the project, please see [https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Doc](https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Doc).
