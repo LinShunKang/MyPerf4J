@@ -36,15 +36,11 @@ public class LoggerJvmClassMetricsProcessor extends AbstractJvmClassMetricsProce
 
     @Override
     public void afterProcess(long processId, long startMillis, long stopMillis) {
-        try {
-            List<JvmClassMetrics> metricsList = metricsMap.get(processId);
-            if (metricsList != null) {
-                logger.logAndFlush(metricsFormatter.format(metricsList, startMillis, stopMillis));
-            } else {
-                Logger.error("LoggerJvmClassMetricsProcessor.afterProcess(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
-            }
-        } finally {
-            metricsMap.remove(processId);
+        List<JvmClassMetrics> metricsList = metricsMap.remove(processId);
+        if (metricsList != null) {
+            logger.logAndFlush(metricsFormatter.format(metricsList, startMillis, stopMillis));
+        } else {
+            Logger.error("LoggerJvmClassMetricsProcessor.afterProcess(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
         }
     }
 }

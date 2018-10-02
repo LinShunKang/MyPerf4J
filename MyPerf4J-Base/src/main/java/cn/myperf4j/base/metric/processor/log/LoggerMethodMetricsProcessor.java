@@ -4,6 +4,7 @@ import cn.myperf4j.base.metric.MethodMetrics;
 import cn.myperf4j.base.metric.formatter.impl.DefaultMethodMetricsFormatter;
 import cn.myperf4j.base.metric.formatter.MethodMetricsFormatter;
 import cn.myperf4j.base.metric.processor.AbstractMethodMetricsProcessor;
+import cn.myperf4j.base.util.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,13 +26,21 @@ public class LoggerMethodMetricsProcessor extends AbstractMethodMetricsProcessor
 
     @Override
     public void process(MethodMetrics metrics, long processId, long startMillis, long stopMillis) {
-        List<MethodMetrics> methodMetrics = metricsMap.get(processId);
-        methodMetrics.add(metrics);
+        List<MethodMetrics> metricsList = metricsMap.get(processId);
+        if (metricsList != null) {
+            metricsList.add(metrics);
+        } else {
+            Logger.error("LoggerMethodMetricsProcessor.process(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
+        }
     }
 
     @Override
     public void afterProcess(long processId, long startMillis, long stopMillis) {
-        List<MethodMetrics> methodMetrics = metricsMap.get(processId);
-        logger.logAndFlush(formatter.format(methodMetrics, startMillis, stopMillis));
+        List<MethodMetrics> metricsList = metricsMap.remove(processId);
+        if (metricsList != null) {
+            logger.logAndFlush(formatter.format(metricsList, startMillis, stopMillis));
+        } else {
+            Logger.error("LoggerMethodMetricsProcessor.afterProcess(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
+        }
     }
 }

@@ -36,15 +36,11 @@ public class StdoutJvmMemoryMetricsProcessor extends AbstractJvmMemoryMetricsPro
 
     @Override
     public void afterProcess(long processId, long startMillis, long stopMillis) {
-        try {
-            List<JvmMemoryMetrics> metricsList = metricsMap.get(processId);
-            if (metricsList != null) {
-                System.out.println(metricsFormatter.format(metricsList, startMillis, stopMillis));
-            } else {
-                Logger.error("StdoutJvmMemoryMetricsProcessor.afterProcess(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
-            }
-        } finally {
-            metricsMap.remove(processId);
+        List<JvmMemoryMetrics> metricsList = metricsMap.remove(processId);
+        if (metricsList != null) {
+            System.out.println(metricsFormatter.format(metricsList, startMillis, stopMillis));
+        } else {
+            Logger.error("StdoutJvmMemoryMetricsProcessor.afterProcess(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
         }
     }
 }

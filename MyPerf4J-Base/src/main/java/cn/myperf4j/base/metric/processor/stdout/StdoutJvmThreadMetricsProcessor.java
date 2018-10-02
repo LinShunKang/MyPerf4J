@@ -36,15 +36,11 @@ public class StdoutJvmThreadMetricsProcessor extends AbstractJvmThreadMetricsPro
 
     @Override
     public void afterProcess(long processId, long startMillis, long stopMillis) {
-        try {
-            List<JvmThreadMetrics> metricsList = metricsMap.get(processId);
-            if (metricsList != null) {
-                System.out.println(metricsFormatter.format(metricsList, startMillis, stopMillis));
-            } else {
-                Logger.error("StdoutJvmThreadMetricsProcessor.afterProcess(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
-            }
-        } finally {
-            metricsMap.remove(processId);
+        List<JvmThreadMetrics> metricsList = metricsMap.remove(processId);
+        if (metricsList != null) {
+            System.out.println(metricsFormatter.format(metricsList, startMillis, stopMillis));
+        } else {
+            Logger.error("StdoutJvmThreadMetricsProcessor.afterProcess(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
         }
     }
 }

@@ -36,15 +36,11 @@ public class StdoutMethodMetricsProcessor implements MethodMetricsProcessor {
 
     @Override
     public void afterProcess(long processId, long startMillis, long stopMillis) {
-        try {
-            List<MethodMetrics> metricsList = metricsMap.get(processId);
-            if (metricsList != null) {
-                System.out.println(formatter.format(metricsList, startMillis, stopMillis));
-            } else {
-                Logger.error("StdoutMethodMetricsProcessor.afterProcess(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
-            }
-        } finally {
-            metricsMap.remove(processId);
+        List<MethodMetrics> metricsList = metricsMap.remove(processId);
+        if (metricsList != null) {
+            System.out.println(formatter.format(metricsList, startMillis, stopMillis));
+        } else {
+            Logger.error("StdoutMethodMetricsProcessor.afterProcess(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
         }
     }
 }
