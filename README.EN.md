@@ -8,10 +8,10 @@ The usage scenario of MyPerf4J is as follows:
 
 MyPerf4J has the following features:
 *  No intrusion: using JavaAgent mode, no intrusion to the application, no need to modify the application code.
-*  High performance: Very low performance consumption, only 73ns per record, can be used in production environment for a long time.
+*  High performance: Very low performance consumption, only 73 nano seconds per record, can be used in production environment for a long time.
 *  Low memory: With memory multiplexing, only a small number of temporary objects are generated throughout the life cycle, and the GC of the application is not affected.
 *  High precision: using nanoseconds to calculate response time.
-*  Real-time: Supports second level monitoring, minimum 1s!
+*  Real-time: Supports second level monitoring, minimum 1 second!
 
 ## Multilingual document
 * English [Document](https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Doc)
