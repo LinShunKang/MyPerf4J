@@ -1,0 +1,18 @@
+language: java
+jdk:
+  - oraclejdk7
+#  - openjdk7
+before_install:
+#  - mvn install -Dmaven.javadoc.skip=true
+- "echo skipped"
+install:
+- "echo skipped"
+script:
+- mvn clean install -Dmaven.javadoc.skip=true
+# - mvn deploy
+notifications:
+  email:
+    recipients:
+    - asdfg2385856@gmail.com
+    #on_success: [always|never|change]  default: change
+    #on_failure: [always|never|change]  default: always
