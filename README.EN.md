@@ -1,21 +1,24 @@
-# MyPerf4J
-![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J_LOGO_V3_com.jpeg)
-> A high performance and non-intrusive real-time Java performance monitoring and statistical tool designed for high-concurrency, low-latency applications. Inspired by [perf4j](https://github.com/perf4j/perf4j) and [TProfiler](https://github.com/alibaba/TProfiler). 
+[简体中文](./README.md) | English
 
-The usage scenario of MyPerf4J is as follows:
-* Quickly locate performance bottlenecks for Java applications in a development environment
-* Long-term monitoring of performance metrics for Java applications in a production environment
+# MyPerf4J 
+[![Build Status](https://travis-ci.com/ThinkpadNC5/MyPerf4J.svg?branch=develop)](https://travis-ci.org/ThinkpadNC5/MyPerf4J)
 
-MyPerf4J has the following features:
+A high performance and non-intrusive Java performance monitoring and statistical tool designed for high-concurrency, low-latency applications. 
+
+## Features
 *  No intrusion: using JavaAgent mode, no intrusion to the application, no need to modify the application code.
 *  High performance: Very low performance consumption, only 73 nano seconds per record, can be used in production environment for a long time.
 *  Low memory: With memory multiplexing, only a small number of temporary objects are generated throughout the life cycle, and the GC of the application is not affected.
 *  High precision: using nanoseconds to calculate response time.
 *  Real-time: Supports second level monitoring, minimum 1 second!
 
+## Usage scenarios
+* Quickly locate performance bottlenecks for Java applications in a development environment
+* Long-term monitoring of performance metrics for Java applications in a production environment
+
 ## Multilingual document
-* English [Document](https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Doc)
-* [中文README](https://github.com/ThinkpadNC5/MyPerf4J/blob/develop/README.CN.md) [中文文档](https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Doc) 
+* [English Doc](https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Doc)
+* [中文文档](https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Doc) 
 
 ## What does it monitor?
 MyPerf4J collects dozens of metrics per application. All these metrics are collected and visualized in real-time.
@@ -128,6 +131,10 @@ Remove the following two parameters from the JVM startup parameters and restart 
 
 ## Issues
 If you encounter any issues or if you have a question, don't hesitate to [create an issue](https://github.com/ThinkpadNC5/MyPerf4J/issues/new) or [send email](mailto:asdfg2385856@gmail.com) : )
+
+## Inspired by
+* [Perf4J](https://github.com/perf4j/perf4j)
+* [TProfiler](https://github.com/alibaba/TProfiler)
 
 ## More Information
 For more information about the project, please see [https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Doc](https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Doc).

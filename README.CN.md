@@ -1,22 +1,24 @@
-# MyPerf4J
-![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J_LOGO_V3_com.jpeg)
-MyPerf4J 是一个针对高并发、低延迟应用设计的高性能且无侵入的实时Java性能监控和统计工具。
-受 [perf4j](https://github.com/perf4j/perf4j) 和 [TProfiler](https://github.com/alibaba/TProfiler) 启发而来。
+简体中文 | [English](./README.EN.md)
 
-MyPerf4J 的使用场景如下：
+# MyPerf4J 
+[![Build Status](https://travis-ci.com/ThinkpadNC5/MyPerf4J.svg?branch=develop)](https://travis-ci.org/ThinkpadNC5/MyPerf4J)
+
+一个针对高并发、低延迟应用设计的高性能 Java 性能监控和统计工具。
+
+## 特性
+* 高性能: 单线程支持每秒 **1000万次** 响应时间的记录，每次记录只花费 **73纳秒**
+* 无侵入: 采用 **JavaAgent** 方式，对应用程序完全无侵入，无需修改应用代码
+* 低内存: 采用内存复用的方式，整个生命周期只产生极少的临时对象，不影响应用程序的GC
+* 高精度: 采用纳秒来计算响应时间
+* 高实时: 支持秒级监控，最低 **1** 秒!
+
+## 使用场景
 * 在开发环境中快速定位 Java 应用程序的性能瓶颈
 * 在生产环境中长期监控 Java 应用程序的性能指标
 
-MyPerf4J 具有以下几个特性：
-* 无侵入: 采用JavaAgent方式，对应用程序完全无侵入，无需修改应用代码
-* 高性能: 单线程支持每秒1000万次响应时间的记录，每次记录只花费73纳秒，可以在生产环境长期使用
-* 低内存: 采用内存复用的方式，整个生命周期只产生极少的临时对象，不影响应用程序的GC
-* 高精度: 采用纳秒来计算响应时间
-* 高实时: 支持秒级监控，最低1秒!
-
 ## 文档
-* English [README](https://github.com/ThinkpadNC5/MyPerf4J/blob/develop/README.EN.md) [Document](https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Doc)
-*  [中文文档](https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Doc)    
+* [English Doc](https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Doc)
+* [中文文档](https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Doc)    
     
 ## 监控指标
 MyPerf4J 为每个应用收集数十个监控指标，所有的监控指标都是实时采集和展现的。
@@ -57,7 +59,7 @@ MyPerf4J 采用 JavaAgent 配置方式，**透明化**接入应用，对应用�
 
 ### 配置
 在 JVM 启动参数里加上以下两个参数
-> -javaagent:/your/path/to/MyPerf4J-ASM-${MyPerf4J-version}.jar
+> -javaagent:/your/path/to/MyPerf4J-ASM.jar
 
 > -DMyPerf4JPropFile=/your/path/to/myPerf4J.properties
 
@@ -132,7 +134,12 @@ ProfilingOutThresholdCount=10
 > -DMyPerf4JPropFile=/your/path/to/myPerf4J.properties
 
 ## 问题
-如果您遇到任何问题或有疑问，请您毫不犹豫的 [提交Issue](https://github.com/ThinkpadNC5/MyPerf4J/issues/new) 或者 [发送邮件](mailto:asdfg2385856@gmail.com) : )
+如果您有任何问题、疑问或者建议，请您毫不犹豫的 [提交Issue](https://github.com/ThinkpadNC5/MyPerf4J/issues/new) 或者 [发送邮件](mailto:asdfg2385856@gmail.com) : )
+
+## 参考项目
+MyPerf4J 是受以下项目启发而来：
+* [Perf4J](https://github.com/perf4j/perf4j)
+* [TProfiler](https://github.com/alibaba/TProfiler)
 
 ## 更多信息
 想更深入的了解 MyPerf4J ？请看[https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Doc](https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Doc)。
