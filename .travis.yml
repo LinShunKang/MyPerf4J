@@ -8,7 +8,8 @@ before_install:
 install:
 - "echo skipped"
 script:
-- mvn clean install -Dmaven.javadoc.skip=true
+- "echo skipped"
+# - mvn clean install -Dmaven.javadoc.skip=true
 # - mvn deploy
 notifications:
   email:
