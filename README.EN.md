@@ -1,7 +1,7 @@
 [简体中文](./README.md) | English
 
 # MyPerf4J 
-[![Build Status](https://travis-ci.com/ThinkpadNC5/MyPerf4J.svg?branch=develop)](https://travis-ci.org/ThinkpadNC5/MyPerf4J)
+[![Build Status](https://travis-ci.com/ThinkpadNC5/MyPerf4J.svg?branch=develop)](https://travis-ci.com/ThinkpadNC5/MyPerf4J)
 
 A high performance and non-intrusive Java performance monitoring and statistical tool designed for high-concurrency, low-latency applications. 
 

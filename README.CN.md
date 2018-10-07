@@ -1,7 +1,7 @@
 简体中文 | [English](./README.EN.md)
 
 # MyPerf4J 
-[![Build Status](https://travis-ci.com/ThinkpadNC5/MyPerf4J.svg?branch=develop)](https://travis-ci.org/ThinkpadNC5/MyPerf4J)
+[![Build Status](https://travis-ci.com/ThinkpadNC5/MyPerf4J.svg?branch=develop)](https://travis-ci.com/ThinkpadNC5/MyPerf4J)
 
 一个针对高并发、低延迟应用设计的高性能 Java 性能监控和统计工具。
 
