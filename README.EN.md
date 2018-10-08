@@ -3,9 +3,10 @@
 <h1 align="center">MyPerf4J</h1>
 
 <div align="center">
+
 A high performance, non-intrusive Java performance monitoring and statistical tool designed for high-concurrency, low-latency applications. 
 
-[![GitHub (pre-)release](https://img.shields.io/github/release/ThinkpadNC5/MyPerf4J/all.svg)](https://github.com/ThinkpadNC5/MyPerf4J) [![Build Status](https://travis-ci.com/ThinkpadNC5/MyPerf4J.svg?branch=develop)](https://travis-ci.org/ThinkpadNC5/MyPerf4J) [![GitHub issues](https://img.shields.io/github/issues/ThinkpadNC5/MyPerf4J.svg)](https://github.com/ThinkpadNC5/MyPerf4J) [![GitHub closed issues](https://img.shields.io/github/issues-closed/ThinkpadNC5/MyPerf4J.svg)](https://github.com/ThinkpadNC5/MyPerf4J) [![GitHub repo size in bytes](https://img.shields.io/github/repo-size/ThinkpadNC5/MyPerf4J.svg)](https://github.com/ThinkpadNC5/MyPerf4J)  [![GitHub](https://img.shields.io/github/license/ThinkpadNC5/MyPerf4J.svg)](https://github.com/ThinkpadNC5/MyPerf4J)
+[![GitHub (pre-)release](https://img.shields.io/github/release/ThinkpadNC5/MyPerf4J/all.svg)](https://github.com/ThinkpadNC5/MyPerf4J) [![Build Status](https://travis-ci.com/ThinkpadNC5/MyPerf4J.svg?branch=develop)](https://travis-ci.org/ThinkpadNC5/MyPerf4J) [![GitHub issues](https://img.shields.io/github/issues/ThinkpadNC5/MyPerf4J.svg)](https://github.com/ThinkpadNC5/MyPerf4J/issues) [![GitHub closed issues](https://img.shields.io/github/issues-closed/ThinkpadNC5/MyPerf4J.svg)](https://github.com/ThinkpadNC5/MyPerf4J/issues?q=is%3Aissue+is%3Aclosed) [![GitHub repo size in bytes](https://img.shields.io/github/repo-size/ThinkpadNC5/MyPerf4J.svg)](https://github.com/ThinkpadNC5/MyPerf4J) [![GitHub](https://img.shields.io/github/license/ThinkpadNC5/MyPerf4J.svg)](./LICENSE)
 
 </div>
 
@@ -134,7 +135,7 @@ Remove the following two parameters from the JVM startup parameters and restart 
 > -DMyPerf4JPropFile=/your/path/to/myPerf4J.properties
 
 ## Issues
-If you encounter any issues or if you have a question, don't hesitate to [create an issue](https://github.com/ThinkpadNC5/MyPerf4J/issues/new) or [send email](mailto:asdfg2385856@gmail.com) : )
+If you encounter any issues or if you have a question, don't hesitate to [create an issue](https://github.com/ThinkpadNC5/MyPerf4J/issues/new/choose) or [send email](mailto:asdfg2385856@gmail.com) : )
 
 ## Inspired by
 * [Perf4J](https://github.com/perf4j/perf4j)

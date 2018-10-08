@@ -1,10 +1,12 @@
 简体中文 | [English](./README.EN.md)
 
 <h1 align="center">MyPerf4J</h1>
+
 <div align="center">
+
 一个针对高并发、低延迟应用设计的高性能 Java 性能监控和统计工具。
 
-[![GitHub (pre-)release](https://img.shields.io/github/release/ThinkpadNC5/MyPerf4J/all.svg)](https://github.com/ThinkpadNC5/MyPerf4J) [![Build Status](https://travis-ci.com/ThinkpadNC5/MyPerf4J.svg?branch=develop)](https://travis-ci.org/ThinkpadNC5/MyPerf4J) [![GitHub issues](https://img.shields.io/github/issues/ThinkpadNC5/MyPerf4J.svg)](https://github.com/ThinkpadNC5/MyPerf4J) [![GitHub closed issues](https://img.shields.io/github/issues-closed/ThinkpadNC5/MyPerf4J.svg)](https://github.com/ThinkpadNC5/MyPerf4J) [![GitHub repo size in bytes](https://img.shields.io/github/repo-size/ThinkpadNC5/MyPerf4J.svg)](https://github.com/ThinkpadNC5/MyPerf4J)  [![GitHub](https://img.shields.io/github/license/ThinkpadNC5/MyPerf4J.svg)](./LICENSE)
+[![GitHub (pre-)release](https://img.shields.io/github/release/ThinkpadNC5/MyPerf4J/all.svg)](https://github.com/ThinkpadNC5/MyPerf4J) [![Build Status](https://travis-ci.com/ThinkpadNC5/MyPerf4J.svg?branch=develop)](https://travis-ci.org/ThinkpadNC5/MyPerf4J) [![GitHub issues](https://img.shields.io/github/issues/ThinkpadNC5/MyPerf4J.svg)](https://github.com/ThinkpadNC5/MyPerf4J/issues) [![GitHub closed issues](https://img.shields.io/github/issues-closed/ThinkpadNC5/MyPerf4J.svg)](https://github.com/ThinkpadNC5/MyPerf4J/issues?q=is%3Aissue+is%3Aclosed) [![GitHub repo size in bytes](https://img.shields.io/github/repo-size/ThinkpadNC5/MyPerf4J.svg)](https://github.com/ThinkpadNC5/MyPerf4J)  [![GitHub](https://img.shields.io/github/license/ThinkpadNC5/MyPerf4J.svg)](./LICENSE)
 
 </div>
 
@@ -137,7 +139,7 @@ ProfilingOutThresholdCount=10
 > -DMyPerf4JPropFile=/your/path/to/myPerf4J.properties
 
 ## 问题
-如果您有任何问题、疑问或者建议，请您毫不犹豫的 [提交Issue](https://github.com/ThinkpadNC5/MyPerf4J/issues/new) 或者 [发送邮件](mailto:asdfg2385856@gmail.com) : )
+如果您有任何问题、疑问或者建议，请您毫不犹豫的 [提交Issue](https://github.com/ThinkpadNC5/MyPerf4J/issues/new/choose) 或者 [发送邮件](mailto:asdfg2385856@gmail.com) : )
 
 ## 参考项目
 MyPerf4J 是受以下项目启发而来：
