@@ -6,7 +6,7 @@
 
 A high performance, non-intrusive Java performance monitoring and statistical tool designed for high-concurrency, low-latency applications. 
 
-[![GitHub (pre-)release](https://img.shields.io/github/release/ThinkpadNC5/MyPerf4J/all.svg)](https://github.com/ThinkpadNC5/MyPerf4J) [![Build Status](https://travis-ci.com/ThinkpadNC5/MyPerf4J.svg?branch=develop)](https://travis-ci.org/ThinkpadNC5/MyPerf4J) [![GitHub issues](https://img.shields.io/github/issues/ThinkpadNC5/MyPerf4J.svg)](https://github.com/ThinkpadNC5/MyPerf4J/issues) [![GitHub closed issues](https://img.shields.io/github/issues-closed/ThinkpadNC5/MyPerf4J.svg)](https://github.com/ThinkpadNC5/MyPerf4J/issues?q=is%3Aissue+is%3Aclosed) [![GitHub repo size in bytes](https://img.shields.io/github/repo-size/ThinkpadNC5/MyPerf4J.svg)](https://github.com/ThinkpadNC5/MyPerf4J) [![GitHub](https://img.shields.io/github/license/ThinkpadNC5/MyPerf4J.svg)](./LICENSE)
+[![GitHub (pre-)release](https://img.shields.io/github/release/ThinkpadNC5/MyPerf4J/all.svg)](https://github.com/ThinkpadNC5/MyPerf4J) [![Build Status](https://travis-ci.com/ThinkpadNC5/MyPerf4J.svg?branch=develop)](https://travis-ci.com/ThinkpadNC5/MyPerf4J) [![GitHub issues](https://img.shields.io/github/issues/ThinkpadNC5/MyPerf4J.svg)](https://github.com/ThinkpadNC5/MyPerf4J/issues) [![GitHub closed issues](https://img.shields.io/github/issues-closed/ThinkpadNC5/MyPerf4J.svg)](https://github.com/ThinkpadNC5/MyPerf4J/issues?q=is%3Aissue+is%3Aclosed) [![GitHub repo size in bytes](https://img.shields.io/github/repo-size/ThinkpadNC5/MyPerf4J.svg)](https://github.com/ThinkpadNC5/MyPerf4J) [![GitHub](https://img.shields.io/github/license/ThinkpadNC5/MyPerf4J.svg)](./LICENSE)
 
 </div>
 
