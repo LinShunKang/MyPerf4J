@@ -1,9 +1,12 @@
 简体中文 | [English](./README.EN.md)
 
-# MyPerf4J 
-[![Build Status](https://travis-ci.com/ThinkpadNC5/MyPerf4J.svg?branch=develop)](https://travis-ci.com/ThinkpadNC5/MyPerf4J)
-
+<h1 align="center">MyPerf4J</h1>
+<div align="center">
 一个针对高并发、低延迟应用设计的高性能 Java 性能监控和统计工具。
+
+[![GitHub (pre-)release](https://img.shields.io/github/release/ThinkpadNC5/MyPerf4J/all.svg)](https://github.com/ThinkpadNC5/MyPerf4J) [![Build Status](https://travis-ci.com/ThinkpadNC5/MyPerf4J.svg?branch=develop)](https://travis-ci.org/ThinkpadNC5/MyPerf4J) [![GitHub issues](https://img.shields.io/github/issues/ThinkpadNC5/MyPerf4J.svg)](https://github.com/ThinkpadNC5/MyPerf4J) [![GitHub closed issues](https://img.shields.io/github/issues-closed/ThinkpadNC5/MyPerf4J.svg)](https://github.com/ThinkpadNC5/MyPerf4J) [![GitHub repo size in bytes](https://img.shields.io/github/repo-size/ThinkpadNC5/MyPerf4J.svg)](https://github.com/ThinkpadNC5/MyPerf4J)  [![GitHub](https://img.shields.io/github/license/ThinkpadNC5/MyPerf4J.svg)](./LICENSE)
+
+</div>
 
 ## 特性
 * 高性能: 单线程支持每秒 **1000万次** 响应时间的记录，每次记录只花费 **73纳秒**

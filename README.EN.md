@@ -1,16 +1,20 @@
 [简体中文](./README.md) | English
 
-# MyPerf4J 
-[![Build Status](https://travis-ci.com/ThinkpadNC5/MyPerf4J.svg?branch=develop)](https://travis-ci.com/ThinkpadNC5/MyPerf4J)
+<h1 align="center">MyPerf4J</h1>
 
-A high performance and non-intrusive Java performance monitoring and statistical tool designed for high-concurrency, low-latency applications. 
+<div align="center">
+A high performance, non-intrusive Java performance monitoring and statistical tool designed for high-concurrency, low-latency applications. 
+
+[![GitHub (pre-)release](https://img.shields.io/github/release/ThinkpadNC5/MyPerf4J/all.svg)](https://github.com/ThinkpadNC5/MyPerf4J) [![Build Status](https://travis-ci.com/ThinkpadNC5/MyPerf4J.svg?branch=develop)](https://travis-ci.org/ThinkpadNC5/MyPerf4J) [![GitHub issues](https://img.shields.io/github/issues/ThinkpadNC5/MyPerf4J.svg)](https://github.com/ThinkpadNC5/MyPerf4J) [![GitHub closed issues](https://img.shields.io/github/issues-closed/ThinkpadNC5/MyPerf4J.svg)](https://github.com/ThinkpadNC5/MyPerf4J) [![GitHub repo size in bytes](https://img.shields.io/github/repo-size/ThinkpadNC5/MyPerf4J.svg)](https://github.com/ThinkpadNC5/MyPerf4J)  [![GitHub](https://img.shields.io/github/license/ThinkpadNC5/MyPerf4J.svg)](https://github.com/ThinkpadNC5/MyPerf4J)
+
+</div>
 
 ## Features
-*  No intrusion: using JavaAgent mode, no intrusion to the application, no need to modify the application code.
-*  High performance: Very low performance consumption, only 73 nano seconds per record, can be used in production environment for a long time.
+*  High performance: Very low performance consumption, only **73 nano seconds** per record, can be used in production environment for a long time.
+*  No intrusion: Using **JavaAgent** mode, no intrusion to the application, no need to modify the application code.
 *  Low memory: With memory multiplexing, only a small number of temporary objects are generated throughout the life cycle, and the GC of the application is not affected.
-*  High precision: using nanoseconds to calculate response time.
-*  Real-time: Supports second level monitoring, minimum 1 second!
+*  High precision: Using nanoseconds to calculate response time.
+*  Real-time: Supports second level monitoring, minimum **1 second**!
 
 ## Usage scenarios
 * Quickly locate performance bottlenecks for Java applications in a development environment
@@ -25,24 +29,24 @@ MyPerf4J collects dozens of metrics per application. All these metrics are colle
 
 This is a list of what it currently monitors:
 * **[Method](https://grafana.com/dashboards/7766)**<br/>
-RPS，Count，Avg，Min，Max，StdDev，TP50, TP90, TP95, TP99, TP999, TP9999, TP99999, TP100
+RPS, Count, Avg, Min, Max, StdDev, TP50, TP90, TP95, TP99, TP999, TP9999, TP99999, TP100
 ![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-Method_Show_Operation.gif)
 ![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-Method_Just_Record.gif)
 
 * **[JVM Thread](https://grafana.com/dashboards/7778)**<br/>
-TotalStarted，Runnable，Blocked，Waiting，TimedWaiting，Terminated，Active，Peak，Daemon，New
+TotalStarted, Runnable, Blocked, Waiting, TimedWaiting, Terminated, Active, Peak, Daemon, New
 ![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-JVM-Thread_Just_Record.gif)
 
 * **[JVM Memory](https://grafana.com/dashboards/7775)**<br/>
-HeapInit，HeapUsed，HeapCommitted，HeapMax，NonHeapInit，NonHeapUsed，NonHeapCommitted，NonHeapMax
+HeapInit, HeapUsed, HeapCommitted, HeapMax, NonHeapInit, NonHeapUsed, NonHeapCommitted, NonHeapMax
 ![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-JVM-Memory_Just_Record.gif)
 
 * **[JVM GC](https://grafana.com/dashboards/7772)**<br/>
-CollectCount，CollectTime
+CollectCount, CollectTime
 ![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-JVM-GC_Just_Record.gif)
 
 * **[JVM Class](https://grafana.com/dashboards/7769)**<br/>
-Total，Loaded，Unloaded
+Total, Loaded, Unloaded
 ![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-JVM-Class_Just_Record.gif)
 
 > Want to know how to achieve the above effect? Please start the application according to the description of [Quick Start](https://github.com/ThinkpadNC5/MyPerf4J/blob/develop/README.EN.md#quick-start), and then follow the instructions in [here](https://github.com/ThinkpadNC5/MyPerf4J/wiki/InfluxDB) to install and configure.
@@ -84,22 +88,22 @@ LogRollingTimeUnit=HOURLY
 #Configure the number of backup Recorders. The default is 1, the minimum is 1, and the maximum is 8. When you need to count a large number of method performance data in a smaller MillTimeSlice, you can configure a larger number.
 BackupRecordersCount=1
     
-#configure RecordMode，accurate/rough
+#configure RecordMode, accurate/rough
 RecorderMode=accurate
     
-#configure TimeSlice，time unit: ms，min:1s，max:600s
+#configure TimeSlice, time unit: ms, min:1s, max:600s
 MillTimeSlice=60000
 
 #config show method params type
 ShowMethodParams=true
     
-#configure packages，separated with ';'
+#configure packages, separated with ';'
 IncludePackages=cn.perf4j;org.myperf4j
     
-#configure packages，separated with ';'
+#configure packages, separated with ';'
 ExcludePackages=org.spring;
     
-#configure methods，separated with ';'
+#configure methods, separated with ';'
 ExcludeMethods=equals;hash
     
 #true/false
