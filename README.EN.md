@@ -135,7 +135,7 @@ Remove the following two parameters from the JVM startup parameters and restart 
 > -DMyPerf4JPropFile=/your/path/to/myPerf4J.properties
 
 ## Issues
-If you encounter any issues or if you have a question, don't hesitate to [create an issue](https://github.com/ThinkpadNC5/MyPerf4J/issues/new/choose) or [send email](mailto:asdfg2385856@gmail.com) : )
+If you encounter any issues or if you have a question, don't hesitate to [create an issue](https://github.com/ThinkpadNC5/MyPerf4J/issues/new/choose) or [send email](mailto:feedback.myperf4j@gmail.com) : )
 
 ## Inspired by
 * [Perf4J](https://github.com/perf4j/perf4j)
