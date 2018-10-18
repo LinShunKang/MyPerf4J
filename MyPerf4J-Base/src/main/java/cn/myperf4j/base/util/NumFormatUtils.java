@@ -17,11 +17,4 @@ public final class NumFormatUtils {
     public static String getFormatStr(double num) {
         return decimalFormat.get().format(num);
     }
-
-    public static void main(String[] args) {
-        System.out.println(getFormatStr(10011.22222D));
-        System.out.println(getFormatStr(10011.22D));
-        System.out.println(getFormatStr(1.2222D));
-        System.out.println(getFormatStr(1.2D));
-    }
 }

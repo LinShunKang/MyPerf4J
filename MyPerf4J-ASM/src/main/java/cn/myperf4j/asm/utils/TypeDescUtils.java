@@ -120,15 +120,4 @@ public final class TypeDescUtils {
         }
     }
 
-    public static void main(String[] args) {
-        System.out.println(getMethodParamsDesc("()V"));
-        System.out.println(getMethodParamsDesc("(IF)V"));
-        System.out.println(getMethodParamsDesc("(Ljava/lang/Object;)I"));
-        System.out.println(getMethodParamsDesc("(ILjava/lang/String;)[I"));
-        System.out.println(getMethodParamsDesc("(ILjava/lang/Map;)[I"));
-        System.out.println(getMethodParamsDesc("([I)Ljava/lang/Object;"));
-        System.out.println(getMethodParamsDesc("([ILjava/lang/Object;[Ljava/lang/Object;[Ljava/lang/String;)Ljava/lang/Object;"));
-        System.out.println(getMethodParamsDesc("([[ILjava/lang/Object;[[[Ljava/lang/Object;[[[[[Ljava/lang/String;)Ljava/lang/Object;"));
-    }
-
 }

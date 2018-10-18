@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
  */
 public class MethodTagMaintainer extends AbstractMethodTagMaintainer {
 
-    static final int MAX_NUM = 1024 * 128;
+    public static final int MAX_NUM = 1024 * 128;
 
     private final AtomicInteger index = new AtomicInteger(0);
 

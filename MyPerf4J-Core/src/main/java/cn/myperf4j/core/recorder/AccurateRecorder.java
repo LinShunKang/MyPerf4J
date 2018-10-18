@@ -1,4 +1,4 @@
-package cn.myperf4j.core;
+package cn.myperf4j.core.recorder;
 
 import cn.myperf4j.base.util.MapUtils;
 

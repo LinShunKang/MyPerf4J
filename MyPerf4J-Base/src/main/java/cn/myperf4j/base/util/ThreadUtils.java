@@ -1,6 +1,7 @@
 package cn.myperf4j.base.util;
 
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -19,4 +20,11 @@ public final class ThreadUtils {
         };
     }
 
+    public static void sleepQuietly(long time, TimeUnit timeUnit) {
+        try {
+            timeUnit.sleep(time);
+        } catch (Exception e) {
+            //empty
+        }
+    }
 }

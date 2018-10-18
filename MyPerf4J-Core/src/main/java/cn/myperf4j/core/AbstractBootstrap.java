@@ -9,6 +9,7 @@ import cn.myperf4j.base.util.ExecutorManager;
 import cn.myperf4j.base.util.IOUtils;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.config.MyProperties;
+import cn.myperf4j.core.recorder.AbstractRecorderMaintainer;
 import cn.myperf4j.core.scheduler.JvmMetricsScheduler;
 import cn.myperf4j.base.Scheduler;
 

@@ -1,6 +1,8 @@
 package MyPerf4J.test2;
 
+import cn.myperf4j.asm.ASMRecorderMaintainer;
 import cn.myperf4j.asm.aop.ProfilingClassAdapter;
+import cn.myperf4j.base.metric.processor.stdout.StdoutMethodMetricsProcessor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -16,6 +18,8 @@ import java.io.IOException;
 public class Test2 {
 
     public static void main(String[] args) throws IOException {
+        ASMRecorderMaintainer instance = ASMRecorderMaintainer.getInstance();
+        instance.initial(new StdoutMethodMetricsProcessor(), true, 1);
         test2();
 //        runNewFoo2();
     }

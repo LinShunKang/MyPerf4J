@@ -5,11 +5,12 @@ import cn.myperf4j.base.metric.MethodMetrics;
 import cn.myperf4j.base.MethodTag;
 import cn.myperf4j.base.util.ChunkPool;
 import cn.myperf4j.base.util.Logger;
+import cn.myperf4j.core.recorder.Recorder;
 
 /**
  * Created by LinShunkang on 2018/3/11
  */
-public final class PerfStatsCalculator {
+public final class MethodMetricsCalculator {
 
     private static final ThreadLocal<int[]> threadLocalIntArr = new ThreadLocal<int[]>() {
         @Override
@@ -26,7 +27,7 @@ public final class PerfStatsCalculator {
             recorder.fillSortedRecords(sortedRecords);
             return calPerfStats(methodTag, startTime, stopTime, sortedRecords, effectiveCount);
         } catch (Exception e) {
-            Logger.error("PerfStatsCalculator.calPerfStats(" + recorder + ", " + methodTag + ", " + startTime + ", " + stopTime + ")", e);
+            Logger.error("MethodMetricsCalculator.calPerfStats(" + recorder + ", " + methodTag + ", " + startTime + ", " + stopTime + ")", e);
         } finally {
             ChunkPool.getInstance().returnChunk(sortedRecords);
         }

@@ -2,7 +2,7 @@ package cn.myperf4j.asm.aop;
 
 import cn.myperf4j.asm.ASMRecorderMaintainer;
 import cn.myperf4j.core.MethodTagMaintainer;
-import cn.myperf4j.core.Recorder;
+import cn.myperf4j.core.recorder.Recorder;
 import cn.myperf4j.base.util.Logger;
 
 /**

@@ -1,4 +1,4 @@
-package cn.myperf4j.core;
+package cn.myperf4j.core.recorder;
 
 /**
  * Created by LinShunkang on 2018/3/13

@@ -1,4 +1,4 @@
-package cn.myperf4j.core;
+package cn.myperf4j.core.recorder;
 
 import cn.myperf4j.base.metric.MethodMetrics;
 import cn.myperf4j.base.MethodTag;
@@ -9,6 +9,8 @@ import cn.myperf4j.base.util.ExecutorManager;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.util.ThreadUtils;
 import cn.myperf4j.base.Scheduler;
+import cn.myperf4j.core.MethodMetricsCalculator;
+import cn.myperf4j.core.MethodTagMaintainer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -146,7 +148,7 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
                             }
 
                             MethodTag methodTag = methodTagMaintainer.getMethodTag(recorder.getMethodTagId());
-                            MethodMetrics metrics = PerfStatsCalculator.calPerfStats(recorder, methodTag, tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
+                            MethodMetrics metrics = MethodMetricsCalculator.calPerfStats(recorder, methodTag, tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
                             methodMetricsProcessor.process(metrics, tmpCurRecorders.getStartTime(), tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
                         }
                     } catch (Exception e) {

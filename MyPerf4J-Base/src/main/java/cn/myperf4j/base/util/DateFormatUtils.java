@@ -8,6 +8,7 @@ import java.util.Date;
  * Created by LinShunkang on 2018/8/22
  */
 public class DateFormatUtils {
+
     private static final ThreadLocal<DateFormat> DEFAULT_DATE_FORMAT = new ThreadLocal<DateFormat>() {
         @Override
         protected DateFormat initialValue() {

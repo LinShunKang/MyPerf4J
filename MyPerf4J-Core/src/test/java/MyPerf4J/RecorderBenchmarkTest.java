@@ -1,10 +1,10 @@
 package MyPerf4J;
 
 import cn.myperf4j.base.MethodTag;
-import cn.myperf4j.core.Recorder;
-import cn.myperf4j.core.AccurateRecorder;
-import cn.myperf4j.core.Recorders;
-import cn.myperf4j.core.PerfStatsCalculator;
+import cn.myperf4j.core.MethodMetricsCalculator;
+import cn.myperf4j.core.recorder.Recorder;
+import cn.myperf4j.core.recorder.AccurateRecorder;
+import cn.myperf4j.core.recorder.Recorders;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReferenceArray;
@@ -24,23 +24,23 @@ public class RecorderBenchmarkTest {
 
         int times = 100000000;
         singleThreadBenchmark(recorders, times / 10);//warm up
-        System.out.println(PerfStatsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime()));
+        System.out.println(MethodMetricsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime()));
 
         recorder.resetRecord();
         singleThreadBenchmark(recorders, times);
-        System.out.println(PerfStatsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime()));
+        System.out.println(MethodMetricsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime()));
 
         recorder.resetRecord();
         multiThreadBenchmark(recorders, times, 2);
-        System.out.println(PerfStatsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime()));
+        System.out.println(MethodMetricsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime()));
 
         recorder.resetRecord();
         multiThreadBenchmark(recorders, times, 4);
-        System.out.println(PerfStatsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime()));
+        System.out.println(MethodMetricsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime()));
 
         recorder.resetRecord();
         multiThreadBenchmark(recorders, times, 8);
-        System.out.println(PerfStatsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime()));
+        System.out.println(MethodMetricsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime()));
     }
 
     private static void singleThreadBenchmark(Recorders recorders, int times) {

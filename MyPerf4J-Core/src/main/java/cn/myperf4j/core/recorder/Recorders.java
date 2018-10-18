@@ -1,4 +1,4 @@
-package cn.myperf4j.core;
+package cn.myperf4j.core.recorder;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReferenceArray;
