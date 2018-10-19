@@ -15,6 +15,6 @@ public class LoggerTest {
         Logger.info("info test");
         Logger.warn("warn test");
         Logger.error("error test");
-        Logger.error("error test", new UnknownError());
+//        Logger.error("error test", new UnknownError());
     }
 }
