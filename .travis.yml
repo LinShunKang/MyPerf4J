@@ -14,7 +14,7 @@ script:
 # - mvn clean install -Dmaven.javadoc.skip=true
 # - mvn deploy
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - mvn clean cobertura:cobertura coveralls:report
 notifications:
   email:
     recipients:
