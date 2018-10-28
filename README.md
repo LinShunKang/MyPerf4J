@@ -94,7 +94,7 @@ BackupRecordersCount=1
 RecorderMode=accurate
     
 #配置时间片，单位为ms，最小1s，最大600s
-MillTimeSlice=10000
+MilliTimeSlice=10000
 
 #是否展示方法参数类型
 ShowMethodParams=true

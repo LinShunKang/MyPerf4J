@@ -27,7 +27,7 @@ public interface PropertyKeys {
 
     String BACKUP_RECORDERS_COUNT = "BackupRecordersCount";
 
-    String MILL_TIME_SLICE = "MillTimeSlice";
+    String MILLI_TIME_SLICE = "MilliTimeSlice";
 
     String SHOW_METHOD_PARAMS = "ShowMethodParams";
 

@@ -93,7 +93,7 @@ BackupRecordersCount=1
 RecorderMode=accurate
     
 #configure TimeSlice, time unit: ms, min:1s, max:600s
-MillTimeSlice=60000
+MilliTimeSlice=60000
 
 #config show method params type
 ShowMethodParams=true

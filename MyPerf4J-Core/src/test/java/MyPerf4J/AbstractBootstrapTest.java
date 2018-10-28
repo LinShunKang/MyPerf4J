@@ -56,7 +56,7 @@ public class AbstractBootstrapTest {
         writer.write("AppName=MyPerf4JTest\n");
         writer.write("IncludePackages=MyPerf4J\n");
         writer.write("MetricsProcessorType=" + metricsProcessorType + "\n");
-        writer.write("MillTimeSlice=1000\n");
+        writer.write("MilliTimeSlice=1000\n");
         writer.closeFile(true);
     }
 }
