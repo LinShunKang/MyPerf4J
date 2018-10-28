@@ -26,21 +26,15 @@ public class JvmMemoryMetrics extends Metrics {
 
     private long heapMax;
 
-    public JvmMemoryMetrics(long nonHeapInit, long nonHeapUsed, long nonHeapCommitted, long nonHeapMax, long heapInit, long heapUsed, long heapCommitted, long heapMax) {
-        this.nonHeapInit = nonHeapInit;
-        this.nonHeapUsed = nonHeapUsed;
-        this.nonHeapCommitted = nonHeapCommitted;
-        this.nonHeapMax = nonHeapMax;
-        this.heapInit = heapInit;
-        this.heapUsed = heapUsed;
-        this.heapCommitted = heapCommitted;
-        this.heapMax = heapMax;
-    }
-
-
     public JvmMemoryMetrics(MemoryUsage nonHeapMem, MemoryUsage heapMem) {
-        this(nonHeapMem.getInit(), nonHeapMem.getUsed(), nonHeapMem.getCommitted(), nonHeapMem.getMax(),
-                heapMem.getInit(), heapMem.getUsed(), heapMem.getCommitted(), heapMem.getMax());
+        this.nonHeapInit = nonHeapMem.getInit();
+        this.nonHeapUsed = nonHeapMem.getUsed();
+        this.nonHeapCommitted = nonHeapMem.getCommitted();
+        this.nonHeapMax = nonHeapMem.getMax();
+        this.heapInit = heapMem.getInit();
+        this.heapUsed = heapMem.getUsed();
+        this.heapCommitted = heapMem.getCommitted();
+        this.heapMax = heapMem.getMax();
     }
 
     public long getNonHeapInit() {

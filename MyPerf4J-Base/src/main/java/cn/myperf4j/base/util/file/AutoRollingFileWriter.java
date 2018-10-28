@@ -70,26 +70,30 @@ public abstract class AutoRollingFileWriter {
     }
 
     private void rollingFile(Date now) {
-        String datedFilename = formatDateFileName(fileName, now);
-        if (rollingFileName.equals(datedFilename)) {
-            Logger.info("AutoRollingFileWriter.rollingFile(" + now + "): rollingFile=" + rollingFileName + ", datedFilename=" + datedFilename + " return!!!");
-            return;
+        try {
+            String datedFilename = formatDateFileName(fileName, now);
+            if (rollingFileName.equals(datedFilename)) {
+                Logger.info("AutoRollingFileWriter.rollingFile(" + now + "): rollingFile=" + rollingFileName + ", datedFilename=" + datedFilename + " return!!!");
+                return;
+            }
+
+            closeFile(false);
+
+            File targetFile = new File(rollingFileName);
+            if (targetFile.exists()) {
+                boolean delete = targetFile.delete();
+                Logger.info("AutoRollingFileWriter.rollingFile(" + now + "): rollingFile=" + rollingFileName + ", delete=" + delete);
+            }
+
+            File file = new File(fileName);
+            boolean rename = file.renameTo(targetFile);
+            Logger.info("AutoRollingFileWriter.rollingFile(" + now + "): rename " + fileName + " to " + targetFile.getName() + " " + rename);
+
+            createWriter(new File(fileName), false);
+            rollingFileName = datedFilename;
+        } catch (Exception e) {
+            Logger.error("AutoRollingFileWriter.rollingFile(" + now + "): rollingFile=" + rollingFileName, e);
         }
-
-        closeFile(false);
-
-        File targetFile = new File(rollingFileName);
-        if (targetFile.exists()) {
-            boolean delete = targetFile.delete();
-            Logger.info("AutoRollingFileWriter.rollingFile(" + now + "): rollingFile=" + rollingFileName + ", delete=" + delete);
-        }
-
-        File file = new File(fileName);
-        boolean rename = file.renameTo(targetFile);
-        Logger.info("AutoRollingFileWriter.rollingFile(" + now + "): rename " + fileName + " to " + targetFile.getName() + " " + rename);
-
-        createWriter(new File(fileName), false);
-        rollingFileName = datedFilename;
     }
 
     public void write(String msg) {
@@ -97,23 +101,30 @@ public abstract class AutoRollingFileWriter {
     }
 
     private void write0(String msg) {
-        try {
-            long time = System.currentTimeMillis();
-            if (time > nextRollingTime) {
-                synchronized (this) {
-                    if (time > nextRollingTime) {
-                        Date now = new Date();
-                        nextRollingTime = getNextRollingTime(now);
-                        rollingFile(now);
-                    }
-                }
-            }
+        long time = System.currentTimeMillis();
+        if (time < nextRollingTime) {
+            doWrite(msg);
+            return;
+        }
 
+        synchronized (this) {
+            if (time > nextRollingTime) {
+                Date now = new Date();
+                nextRollingTime = getNextRollingTime(now);
+                rollingFile(now);
+            }
+        }
+
+        doWrite(msg);
+    }
+
+    private void doWrite(String msg) {
+        try {
             if (bufferedWriter != null && !closed) {
                 bufferedWriter.write(msg);
             }
         } catch (Exception e) {
-            Logger.error("AutoRollingFileWriter.write0(msg)", e);
+            Logger.error("AutoRollingFileWriter.doWrite(msg)", e);
         }
     }
 

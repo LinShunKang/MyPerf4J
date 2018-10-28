@@ -46,10 +46,11 @@ public class InfluxDBMethodMetricsProcessor extends AbstractMethodMetricsProcess
             sb = new StringBuilder(suitSize);
         }
 
-        String methodDesc = LineProtocolUtils.processTagOrField(methodMetrics.getMethodTag().getSimpleDesc());
+        MethodTag methodTag = methodMetrics.getMethodTag();
+        String methodDesc = LineProtocolUtils.processTagOrField(methodTag.getSimpleDesc());
         sb.append("method_metrics")
                 .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
-                .append(",ClassName=").append(methodMetrics.getMethodTag().getClassName())
+                .append(",ClassName=").append(methodTag.getClassName())
                 .append(",Method=").append(methodDesc)
                 .append(" RPS=").append(methodMetrics.getRPS()).append("i")
                 .append(",Avg=").append(NumFormatUtils.getFormatStr(methodMetrics.getAvgTime()))
