@@ -30,6 +30,8 @@ public final class LoggerFactory {
 
         if (logFile.equalsIgnoreCase(PropertyValues.NULL_FILE)) {
             return new NullLogger();
+        } else if (logFile.equalsIgnoreCase(PropertyValues.STDOUT_FILE)) {
+            return new StdoutLogger();
         }
 
         ILogger logger = LOGGER_MAP.get(logFile);

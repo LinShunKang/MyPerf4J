@@ -7,14 +7,12 @@ import cn.myperf4j.base.metric.processor.discard.DiscardJvmMemoryMetricsProcesso
 import cn.myperf4j.base.metric.processor.discard.DiscardJvmThreadMetricsProcessor;
 import cn.myperf4j.base.metric.processor.influxdb.*;
 import cn.myperf4j.base.metric.processor.log.*;
-import cn.myperf4j.base.metric.processor.stdout.*;
 
 public class MetricsProcessorFactory {
 
     public static JvmClassMetricsProcessor getClassMetricsProcessor(int processorType) {
         switch (processorType) {
             case PropertyValues.METRICS_PROCESS_TYPE_STDOUT:
-                return new StdoutJvmClassMetricsProcessor();
             case PropertyValues.METRICS_PROCESS_TYPE_LOGGER:
                 return new LoggerJvmClassMetricsProcessor();
             case PropertyValues.METRICS_PROCESS_TYPE_INFLUX_DB:
@@ -27,7 +25,6 @@ public class MetricsProcessorFactory {
     public static JvmGCMetricsProcessor getGCMetricsProcessor(int processorType) {
         switch (processorType) {
             case PropertyValues.METRICS_PROCESS_TYPE_STDOUT:
-                return new StdoutJvmGCMetricsProcessor();
             case PropertyValues.METRICS_PROCESS_TYPE_LOGGER:
                 return new LoggerJvmGCMetricsProcessor();
             case PropertyValues.METRICS_PROCESS_TYPE_INFLUX_DB:
@@ -40,7 +37,6 @@ public class MetricsProcessorFactory {
     public static JvmMemoryMetricsProcessor getMemoryMetricsProcessor(int processorType) {
         switch (processorType) {
             case PropertyValues.METRICS_PROCESS_TYPE_STDOUT:
-                return new StdoutJvmMemoryMetricsProcessor();
             case PropertyValues.METRICS_PROCESS_TYPE_LOGGER:
                 return new LoggerJvmMemoryMetricsProcessor();
             case PropertyValues.METRICS_PROCESS_TYPE_INFLUX_DB:
@@ -53,7 +49,6 @@ public class MetricsProcessorFactory {
     public static JvmThreadMetricsProcessor getThreadMetricsProcessor(int processorType) {
         switch (processorType) {
             case PropertyValues.METRICS_PROCESS_TYPE_STDOUT:
-                return new StdoutJvmThreadMetricsProcessor();
             case PropertyValues.METRICS_PROCESS_TYPE_LOGGER:
                 return new LoggerJvmThreadMetricsProcessor();
             case PropertyValues.METRICS_PROCESS_TYPE_INFLUX_DB:
@@ -66,13 +61,12 @@ public class MetricsProcessorFactory {
     public static MethodMetricsProcessor getMethodMetricsProcessor(int processorType) {
         switch (processorType) {
             case PropertyValues.METRICS_PROCESS_TYPE_STDOUT:
-                return new StdoutMethodMetricsProcessor();
             case PropertyValues.METRICS_PROCESS_TYPE_LOGGER:
                 return new LoggerMethodMetricsProcessor();
             case PropertyValues.METRICS_PROCESS_TYPE_INFLUX_DB:
                 return new InfluxDBMethodMetricsProcessor();
             default:
-                return new StdoutMethodMetricsProcessor();
+                return new LoggerMethodMetricsProcessor();
         }
     }
 

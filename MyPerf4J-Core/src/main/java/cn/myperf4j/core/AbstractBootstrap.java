@@ -134,10 +134,17 @@ public abstract class AbstractBootstrap {
             config.setAppName(appName);
 
             config.setMetricsProcessorType(MyProperties.getInt(PropertyKeys.METRICS_PROCESS_TYPE, PropertyValues.METRICS_PROCESS_TYPE_STDOUT));
-            config.setMethodMetricsFile(MyProperties.getStr(PropertyKeys.METHOD_METRICS_FILE, PropertyValues.DEFAULT_METRICS_FILE));
-            config.setClassMetricsFile(MyProperties.getStr(PropertyKeys.CLASS_METRICS_FILE, PropertyValues.NULL_FILE));
-            config.setGcMetricsFile(MyProperties.getStr(PropertyKeys.GC_METRICS_FILE, PropertyValues.NULL_FILE));
-            config.setMemoryMetricsFile(MyProperties.getStr(PropertyKeys.MEM_METRICS_FILE, PropertyValues.NULL_FILE));
+            if (config.getMetricsProcessorType() == PropertyValues.METRICS_PROCESS_TYPE_STDOUT) {
+                config.setMethodMetricsFile(PropertyValues.STDOUT_FILE);
+                config.setClassMetricsFile(PropertyValues.STDOUT_FILE);
+                config.setGcMetricsFile(PropertyValues.STDOUT_FILE);
+                config.setMemoryMetricsFile(PropertyValues.STDOUT_FILE);
+            } else {
+                config.setMethodMetricsFile(MyProperties.getStr(PropertyKeys.METHOD_METRICS_FILE, PropertyValues.DEFAULT_METRICS_FILE));
+                config.setClassMetricsFile(MyProperties.getStr(PropertyKeys.CLASS_METRICS_FILE, PropertyValues.NULL_FILE));
+                config.setGcMetricsFile(MyProperties.getStr(PropertyKeys.GC_METRICS_FILE, PropertyValues.NULL_FILE));
+                config.setMemoryMetricsFile(MyProperties.getStr(PropertyKeys.MEM_METRICS_FILE, PropertyValues.NULL_FILE));
+            }
             config.setThreadMetricsFile(MyProperties.getStr(PropertyKeys.THREAD_METRICS_FILE, PropertyValues.NULL_FILE));
             config.setLogRollingTimeUnit(MyProperties.getStr(PropertyKeys.LOG_ROLLING_TIME_TIME_UNIT, PropertyValues.LOG_ROLLING_TIME_DAILY));
 

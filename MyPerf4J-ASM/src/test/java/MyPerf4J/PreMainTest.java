@@ -38,7 +38,7 @@ public class PreMainTest {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            ThreadUtils.sleepQuietly(3, TimeUnit.SECONDS);
+            ThreadUtils.sleepQuietly(2, TimeUnit.SECONDS);
         }
     }
 

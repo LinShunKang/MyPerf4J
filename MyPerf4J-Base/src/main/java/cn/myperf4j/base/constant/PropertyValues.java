@@ -31,6 +31,8 @@ public interface PropertyValues {
 
     String NULL_FILE = "NULL";
 
+    String STDOUT_FILE = "STDOUT";
+
     long DEFAULT_TIME_SLICE = 60 * 1000L;
 
     long MIN_TIME_SLICE = 1000L;
