@@ -33,9 +33,9 @@ This is a list of what it currently monitors:
 RPS, Count, Avg, Min, Max, StdDev, TP50, TP90, TP95, TP99, TP999, TP9999, TP99999, TP100
 ![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-Method_Show_Operation.gif)
 
-- **[JVM Metrics](https://grafana.com/dashboards/8787)**
-    Thread，Memory，ByteBuff，GC，Class
-    ![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Objects/master/MyPerf4J_JVM_Compressed.jpeg)
+- **[JVM Metrics](https://grafana.com/dashboards/8787)**<br/>
+Thread，Memory，ByteBuff，GC，Class
+![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Objects/master/MyPerf4J_JVM_Compressed.jpeg)
   
 > Want to know how to achieve the above effect? Please start the application according to the description of [Quick Start](https://github.com/ThinkpadNC5/MyPerf4J/blob/develop/README.EN.md#quick-start), and then follow the instructions in [here](https://github.com/ThinkpadNC5/MyPerf4J/wiki/InfluxDB) to install and configure.
  

@@ -33,9 +33,9 @@ MyPerf4J 为每个应用收集数十个监控指标，所有的监控指标都�
 RPS，Count，Avg，Min，Max，StdDev，TP50, TP90, TP95, TP99, TP999, TP9999, TP99999, TP100
 ![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-Method_Show_Operation.gif)
 
-- **[JVM Metrics](https://grafana.com/dashboards/8787)**
-    Thread，Memory，ByteBuff，GC，Class
-    ![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Objects/master/MyPerf4J_JVM_Compressed.jpeg)
+- **[JVM Metrics](https://grafana.com/dashboards/8787)**<br/>
+Thread，Memory，ByteBuff，GC，Class
+![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Objects/master/MyPerf4J_JVM_Compressed.jpeg)
 
     > 想知道如何实现上述效果？请先按照[快速启动](https://github.com/ThinkpadNC5/MyPerf4J#%E5%BF%AB%E9%80%9F%E5%90%AF%E5%8A%A8)的描述启动应用，再按照[这里](https://github.com/ThinkpadNC5/MyPerf4J/wiki/InfluxDB_)的描述进行安装配置即可。
 
