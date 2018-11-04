@@ -15,7 +15,7 @@ A high performance, non-intrusive Java performance monitoring and statistical to
 *  No intrusion: Using **JavaAgent** mode, no intrusion to the application, no need to modify the application code.
 *  Low memory: With memory multiplexing, only a small number of temporary objects are generated throughout the life cycle, and the GC of the application is not affected.
 *  High precision: Using nanoseconds to calculate response time.
-*  Real-time: Supports second level monitoring, minimum **1 second**!
+*  Real-time: Supports second level monitoring, minimum **1 second**
 
 ## Usage scenarios
 * Quickly locate performance bottlenecks for Java applications in a development environment
@@ -29,27 +29,14 @@ A high performance, non-intrusive Java performance monitoring and statistical to
 MyPerf4J collects dozens of metrics per application. All these metrics are collected and visualized in real-time.
 
 This is a list of what it currently monitors:
-* **[Method](https://grafana.com/dashboards/7766)**<br/>
+* **[Method Metrics](https://grafana.com/dashboards/7766)**<br/>
 RPS, Count, Avg, Min, Max, StdDev, TP50, TP90, TP95, TP99, TP999, TP9999, TP99999, TP100
 ![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-Method_Show_Operation.gif)
-![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-Method_Just_Record.gif)
 
-* **[JVM Thread](https://grafana.com/dashboards/7778)**<br/>
-TotalStarted, Runnable, Blocked, Waiting, TimedWaiting, Terminated, Active, Peak, Daemon, New
-![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-JVM-Thread_Just_Record.gif)
-
-* **[JVM Memory](https://grafana.com/dashboards/7775)**<br/>
-HeapInit, HeapUsed, HeapCommitted, HeapMax, NonHeapInit, NonHeapUsed, NonHeapCommitted, NonHeapMax
-![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-JVM-Memory_Just_Record.gif)
-
-* **[JVM GC](https://grafana.com/dashboards/7772)**<br/>
-CollectCount, CollectTime
-![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-JVM-GC_Just_Record.gif)
-
-* **[JVM Class](https://grafana.com/dashboards/7769)**<br/>
-Total, Loaded, Unloaded
-![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-JVM-Class_Just_Record.gif)
-
+- **[JVM Metrics](https://grafana.com/dashboards/8787)**
+    Thread，Memory，ByteBuff，GC，Class
+    ![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Objects/master/MyPerf4J_JVM_Compressed.jpeg)
+  
 > Want to know how to achieve the above effect? Please start the application according to the description of [Quick Start](https://github.com/ThinkpadNC5/MyPerf4J/blob/develop/README.EN.md#quick-start), and then follow the instructions in [here](https://github.com/ThinkpadNC5/MyPerf4J/wiki/InfluxDB) to install and configure.
  
 ## Quick start
@@ -60,7 +47,7 @@ MyPerf4J adopts JavaAgent configuration mode, **transparent** access application
 * mvn clean package
 * Rename MyPerf4J-ASM-${MyPerf4J-version}.jar to MyPerf4J-ASM.jar
 
-> If you are using JDK 7 or higher, you can try to download [MyPerf4J-ASM.jar](https://github.com/ThinkpadNC5/Objects/blob/master/MyPerf4J-ASM-2.0.2.jar?raw=true) directly.
+> If you are using JDK 7 or higher, you can try to download [MyPerf4J-ASM.jar](https://github.com/ThinkpadNC5/Objects/blob/master/MyPerf4J-ASM-2.1.0.jar?raw=true) directly.
 
 ### Configure
 Add the following two parameters to the JVM startup parameters
@@ -78,43 +65,17 @@ MetricsProcessorType=1
 
 #Config metrics log file, option
 MethodMetricsFile=/data/logs/MyPerf4J/method_metrics.log
-#ClassMetricsFile=/data/logs/MyPerf4J/class_metrics.log
-#GCMetricsFile=/data/logs/MyPerf4J/gc_metrics.log
-#MemMetricsFile=/data/logs/MyPerf4J/memory_metrics.log
-#ThreadMetricsFile=/data/logs/MyPerf4J/thread_metrics.log
-
-#Configure the log file scrolling interval, which has three values: MINUTELY, HOURLY, and DAILY.
-LogRollingTimeUnit=HOURLY
-
-#Configure the number of backup Recorders. The default is 1, the minimum is 1, and the maximum is 8. When you need to count a large number of method performance data in a smaller MillTimeSlice, you can configure a larger number.
-BackupRecordersCount=1
-    
-#configure RecordMode, accurate/rough
-RecorderMode=accurate
+ClassMetricsFile=/data/logs/MyPerf4J/class_metrics.log
+GCMetricsFile=/data/logs/MyPerf4J/gc_metrics.log
+MemMetricsFile=/data/logs/MyPerf4J/memory_metrics.log
+BufPoolMetricsFile=/data/logs/MyPerf4J/buf_pool_metrics
+ThreadMetricsFile=/data/logs/MyPerf4J/thread_metrics.log
     
 #configure TimeSlice, time unit: ms, min:1s, max:600s
 MilliTimeSlice=60000
-
-#config show method params type
-ShowMethodParams=true
     
 #configure packages, separated with ';'
 IncludePackages=cn.perf4j;org.myperf4j
-    
-#configure packages, separated with ';'
-ExcludePackages=org.spring;
-    
-#configure methods, separated with ';'
-ExcludeMethods=equals;hash
-    
-#true/false
-ExcludePrivateMethod=true
-    
-#General method execution time threshold in ms
-ProfilingTimeThreshold=1000
-    
-#The number of times the method execution time threshold is exceeded in a time slice, valid only when RecorderMode=accurate
-ProfilingOutThresholdCount=10
 ```
 
 ### Run

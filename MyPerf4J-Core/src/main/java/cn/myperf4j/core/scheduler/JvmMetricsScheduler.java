@@ -2,10 +2,7 @@ package cn.myperf4j.core.scheduler;
 
 
 import cn.myperf4j.base.Scheduler;
-import cn.myperf4j.base.metric.JvmClassMetrics;
-import cn.myperf4j.base.metric.JvmGCMetrics;
-import cn.myperf4j.base.metric.JvmMemoryMetrics;
-import cn.myperf4j.base.metric.JvmThreadMetrics;
+import cn.myperf4j.base.metric.*;
 import cn.myperf4j.base.metric.processor.*;
 
 import java.lang.management.*;
@@ -22,16 +19,20 @@ public class JvmMetricsScheduler implements Scheduler {
 
     private JvmMemoryMetricsProcessor memoryMetricsProcessor;
 
+    private JvmBufferPoolMetricsProcessor bufferPoolMetricsProcessor;
+
     private JvmThreadMetricsProcessor threadMetricsProcessor;
 
 
     public JvmMetricsScheduler(JvmClassMetricsProcessor classMetricsProcessor,
                                JvmGCMetricsProcessor gcMetricsProcessor,
                                JvmMemoryMetricsProcessor memoryMetricsProcessor,
+                               JvmBufferPoolMetricsProcessor bufferPoolMetricsProcessor,
                                JvmThreadMetricsProcessor threadMetricsProcessor) {
         this.classMetricsProcessor = classMetricsProcessor;
         this.gcMetricsProcessor = gcMetricsProcessor;
         this.memoryMetricsProcessor = memoryMetricsProcessor;
+        this.bufferPoolMetricsProcessor = bufferPoolMetricsProcessor;
         this.threadMetricsProcessor = threadMetricsProcessor;
     }
 
@@ -42,6 +43,7 @@ public class JvmMetricsScheduler implements Scheduler {
         processJVMClassMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
         processJVMGCMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
         processJVMMemoryMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
+        processJVMBufferPoolMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
         processJVMThreadMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
     }
 
@@ -82,6 +84,19 @@ public class JvmMetricsScheduler implements Scheduler {
         }
     }
 
+    private void processJVMBufferPoolMetrics(long processId, long startMillis, long stopMillis) {
+        bufferPoolMetricsProcessor.beforeProcess(processId, startMillis, stopMillis);
+        try {
+
+            List<BufferPoolMXBean> pools = ManagementFactory.getPlatformMXBeans(BufferPoolMXBean.class);
+            for (BufferPoolMXBean mxBean : pools) {
+                bufferPoolMetricsProcessor.process(new JvmBufferPoolMetrics(mxBean), processId, startMillis, stopMillis);
+            }
+        } finally {
+            bufferPoolMetricsProcessor.afterProcess(processId, startMillis, stopMillis);
+        }
+    }
+
     private void processJVMThreadMetrics(long processId, long startMillis, long stopMillis) {
         ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
 
@@ -92,5 +107,4 @@ public class JvmMetricsScheduler implements Scheduler {
             threadMetricsProcessor.afterProcess(processId, startMillis, stopMillis);
         }
     }
-
 }

@@ -11,15 +11,15 @@
 </div>
 
 ## 特性
-* 高性能: 单线程支持每秒 **1000万次** 响应时间的记录，每次记录只花费 **73纳秒**
+* 高性能: 单线程支持每秒 **1000 万次** 响应时间的记录，每次记录只花费 **73 纳秒**
 * 无侵入: 采用 **JavaAgent** 方式，对应用程序完全无侵入，无需修改应用代码
-* 低内存: 采用内存复用的方式，整个生命周期只产生极少的临时对象，不影响应用程序的GC
+* 低内存: 采用内存复用的方式，整个生命周期只产生极少的临时对象，不影响应用程序的 GC
 * 高精度: 采用纳秒来计算响应时间
-* 高实时: 支持秒级监控，最低 **1** 秒!
+* 高实时: 支持秒级监控，最低 **1 秒**
 
 ## 使用场景
-* 在开发环境中快速定位 Java 应用程序的性能瓶颈
-* 在生产环境中长期监控 Java 应用程序的性能指标
+* 在**开发环境**中快速定位 Java 应用程序的性能瓶颈
+* 在**生产环境**中长期监控 Java 应用程序的性能指标
 
 ## 文档
 * [English Doc](https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Doc)
@@ -29,26 +29,13 @@
 MyPerf4J 为每个应用收集数十个监控指标，所有的监控指标都是实时采集和展现的。
 
 下面是 MyPerf4J 目前支持的监控指标列表:
-- **[Method](https://grafana.com/dashboards/7766)**<br/>
+- **[Method Metrics](https://grafana.com/dashboards/7766)**<br/>
 RPS，Count，Avg，Min，Max，StdDev，TP50, TP90, TP95, TP99, TP999, TP9999, TP99999, TP100
 ![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-Method_Show_Operation.gif)
-![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-Method_Just_Record.gif)
 
-* **[JVM Thread](https://grafana.com/dashboards/7778)**<br/>
-TotalStarted，Runnable，Blocked，Waiting，TimedWaiting，Terminated，Active，Peak，Daemon，New
-![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-JVM-Thread_Just_Record.gif)
-
-* **[JVM Memory](https://grafana.com/dashboards/7775)**<br/>
-HeapInit，HeapUsed，HeapCommitted，HeapMax，NonHeapInit，NonHeapUsed，NonHeapCommitted，NonHeapMax
-![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-JVM-Memory_Just_Record.gif)
-
-* **[JVM GC](https://grafana.com/dashboards/7772)**<br/>
-CollectCount，CollectTime
-![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-JVM-GC_Just_Record.gif)
-
-* **[JVM Class](https://grafana.com/dashboards/7769)**<br/>
-Total，Loaded，Unloaded
-![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-JVM-Class_Just_Record.gif)
+- **[JVM Metrics](https://grafana.com/dashboards/8787)**
+    Thread，Memory，ByteBuff，GC，Class
+    ![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Objects/master/MyPerf4J_JVM_Compressed.jpeg)
 
     > 想知道如何实现上述效果？请先按照[快速启动](https://github.com/ThinkpadNC5/MyPerf4J#%E5%BF%AB%E9%80%9F%E5%90%AF%E5%8A%A8)的描述启动应用，再按照[这里](https://github.com/ThinkpadNC5/MyPerf4J/wiki/InfluxDB_)的描述进行安装配置即可。
 
@@ -60,7 +47,7 @@ MyPerf4J 采用 JavaAgent 配置方式，**透明化**接入应用，对应用�
 * mvn clean package
 * 把 MyPerf4J-ASM-${MyPerf4J-version}.jar 重命名为 MyPerf4J-ASM.jar
 
-> 如果你使用的是 JDK 7 或者更高版本可以尝试直接下载 [MyPerf4J-ASM.jar](https://github.com/ThinkpadNC5/Objects/blob/master/MyPerf4J-ASM-2.0.2.jar?raw=true)
+> 如果你使用的是 JDK 7 或者更高版本可以尝试直接下载 [MyPerf4J-ASM.jar](https://github.com/ThinkpadNC5/Objects/blob/master/MyPerf4J-ASM-2.1.0.jar?raw=true)
 
 ### 配置
 在 JVM 启动参数里加上以下两个参数
@@ -79,43 +66,20 @@ MetricsProcessorType=1
 
 #配置各个Metrics日志的文件路径，可不配置
 MethodMetricsFile=/data/logs/MyPerf4J/method_metrics.log
-#ClassMetricsFile=/data/logs/MyPerf4J/class_metrics.log
-#GCMetricsFile=/data/logs/MyPerf4J/gc_metrics.log
-#MemMetricsFile=/data/logs/MyPerf4J/memory_metrics.log
-#ThreadMetricsFile=/data/logs/MyPerf4J/thread_metrics.log
+ClassMetricsFile=/data/logs/MyPerf4J/class_metrics.log
+GCMetricsFile=/data/logs/MyPerf4J/gc_metrics.log
+MemMetricsFile=/data/logs/MyPerf4J/memory_metrics.log
+BufPoolMetricsFile=/data/logs/MyPerf4J/buf_pool_metrics
+ThreadMetricsFile=/data/logs/MyPerf4J/thread_metrics.log
 
-#配置日志文件滚动时间间隔，分别有MINUTELY、HOURLY和DAILY三个值
-LogRollingTimeUnit=HOURLY
-    
-#配置备份Recorders的数量，默认为1，最小为1，最大为8，当需要在较小MillTimeSlice内统计大量方法性能数据时可配置大一些
-BackupRecordersCount=1
-    
 #配置Record模式，可配置为accurate/rough
 RecorderMode=accurate
     
 #配置时间片，单位为ms，最小1s，最大600s
 MilliTimeSlice=10000
-
-#是否展示方法参数类型
-ShowMethodParams=true
     
 #需要监控的package，可配置多个，用英文';'分隔
 IncludePackages=cn.perf4j.demo
-    
-#不需要监控的package，可配置多个，用英文';'分隔
-ExcludePackages=org.spring;
-    
-#可配置多个方法名，用英文';'分隔
-ExcludeMethods=equals;hash
-    
-#是否排除私有方法，true/false
-ExcludePrivateMethod=true
-    
-#通用的方法执行时间阈值，单位为ms
-ProfilingTimeThreshold=1000
-    
-#在一个时间片内，超过方法执行时间阈值的次数，仅在RecorderMode=accurate时有效
-ProfilingOutThresholdCount=10
  ```
         
 > 想了解更多的配置？请看[这里](https://github.com/ThinkpadNC5/MyPerf4J/wiki/%E9%85%8D%E7%BD%AE)

@@ -19,6 +19,8 @@ public interface PropertyKeys {
 
     String MEM_METRICS_FILE = "MemMetricsFile";
 
+    String BUF_POOL_METRICS_FILE = "BufPoolMetricsFile";
+
     String THREAD_METRICS_FILE = "ThreadMetricsFile";
 
     String LOG_ROLLING_TIME_TIME_UNIT = "LogRollingTimeUnit";

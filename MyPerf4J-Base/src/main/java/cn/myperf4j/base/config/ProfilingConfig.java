@@ -24,6 +24,8 @@ public class ProfilingConfig {
 
     private String memoryMetricsFile;
 
+    private String bufferPoolMetricsFile;
+
     private String threadMetricsFile;
 
     private String logRollingTimeUnit;
@@ -108,6 +110,14 @@ public class ProfilingConfig {
 
     public void setMemoryMetricsFile(String memoryMetricsFile) {
         this.memoryMetricsFile = memoryMetricsFile;
+    }
+
+    public String getBufferPoolMetricsFile() {
+        return bufferPoolMetricsFile;
+    }
+
+    public void setBufferPoolMetricsFile(String bufferPoolMetricsFile) {
+        this.bufferPoolMetricsFile = bufferPoolMetricsFile;
     }
 
     public String getThreadMetricsFile() {
@@ -248,6 +258,7 @@ public class ProfilingConfig {
                 ", classMetricsFile='" + classMetricsFile + '\'' +
                 ", gcMetricsFile='" + gcMetricsFile + '\'' +
                 ", memoryMetricsFile='" + memoryMetricsFile + '\'' +
+                ", bufferPoolMetricsFile='" + bufferPoolMetricsFile + '\'' +
                 ", threadMetricsFile='" + threadMetricsFile + '\'' +
                 ", recorderMode='" + recorderMode + '\'' +
                 ", backupRecorderCount=" + backupRecorderCount +

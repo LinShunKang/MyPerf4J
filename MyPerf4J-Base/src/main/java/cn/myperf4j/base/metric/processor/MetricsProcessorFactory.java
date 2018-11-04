@@ -46,6 +46,18 @@ public class MetricsProcessorFactory {
         }
     }
 
+    public static JvmBufferPoolMetricsProcessor getBufferPoolMetricsProcessor(int processorType) {
+        switch (processorType) {
+            case PropertyValues.METRICS_PROCESS_TYPE_STDOUT:
+            case PropertyValues.METRICS_PROCESS_TYPE_LOGGER:
+                return new LoggerJvmBufferPoolMetricsProcessor();
+            case PropertyValues.METRICS_PROCESS_TYPE_INFLUX_DB:
+                return new InfluxDBJvmBufferPoolMetricsProcessor();
+            default:
+                return new LoggerJvmBufferPoolMetricsProcessor();
+        }
+    }
+
     public static JvmThreadMetricsProcessor getThreadMetricsProcessor(int processorType) {
         switch (processorType) {
             case PropertyValues.METRICS_PROCESS_TYPE_STDOUT:

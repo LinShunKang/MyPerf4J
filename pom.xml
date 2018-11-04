@@ -4,7 +4,7 @@
     <groupId>MyPerf4J</groupId>
     <artifactId>MyPerf4J</artifactId>
     <packaging>pom</packaging>
-    <version>2.0.2</version>
+    <version>2.1.0</version>
     <modules>
         <module>MyPerf4J-Core</module>
         <module>MyPerf4J-ASM</module>
@@ -13,7 +13,7 @@
     <name>MyPerf4J</name>
 
     <properties>
-        <asm-version>6.1.1</asm-version>
+        <asm-version>7.0</asm-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
@@ -26,6 +26,10 @@
                 <artifactId>asm-commons</artifactId>
                 <version>${asm-version}</version>
                 <exclusions>
+                    <exclusion>
+                        <groupId>org.ow2.asm</groupId>
+                        <artifactId>asm-analysis</artifactId>
+                    </exclusion>
                     <exclusion>
                         <groupId>org.ow2.asm</groupId>
                         <artifactId>asm-tree</artifactId>
@@ -73,35 +77,35 @@
                     </flowInitContext>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.5</version>
-                <executions>
-                    <execution>
-                        <id>copy-resources</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/classes/</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>src/main/java</directory>
-                                    <filtering>true</filtering>
-                                    <includes>
-                                        <include>**/*.*</include>
-                                    </includes>
-                                    <excludes>
-                                        <exclude>.svn</exclude>
-                                    </excludes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-resources-plugin</artifactId>-->
+                <!--<version>2.5</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>copy-resources</id>-->
+                        <!--<phase>validate</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>copy-resources</goal>-->
+                        <!--</goals>-->
+                        <!--<configuration>-->
+                            <!--<outputDirectory>${project.build.directory}/classes/</outputDirectory>-->
+                            <!--<resources>-->
+                                <!--<resource>-->
+                                    <!--<directory>src/main/java</directory>-->
+                                    <!--<filtering>true</filtering>-->
+                                    <!--<includes>-->
+                                        <!--<include>**/*.*</include>-->
+                                    <!--</includes>-->
+                                    <!--<excludes>-->
+                                        <!--<exclude>.svn</exclude>-->
+                                    <!--</excludes>-->
+                                <!--</resource>-->
+                            <!--</resources>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -134,4 +138,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>
