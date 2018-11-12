@@ -60,7 +60,7 @@ public final class Logger {
 
     public static void error(String msg, Throwable throwable) {
         synchronized (System.err) {
-            System.err.println(getPrefix(ERROR_LEVEL) + msg);
+            System.err.println(getPrefix(ERROR_LEVEL) + msg + " " + throwable.getMessage());
             throwable.printStackTrace();
         }
     }
