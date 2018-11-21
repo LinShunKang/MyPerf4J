@@ -1,12 +1,35 @@
-**Bug 描述**
-请清晰和简洁的描述你遇见的 bug
+---
+name: Bug report
+about: Create a report to help us improve
 
-**运行环境**
-1、JDK 版本号，例如，JDK7、JDK8 等
-2、运行容器和框架，例如，Tomcat、PlainJava、Spring、SpringBoot 等
+---
 
-**配置文件**
-请把你的配置文件内容**完整的**复制出来
+**Describe the bug**
+A clear and concise description of what the bug is.
 
-**异常堆栈**
-请把程序的错误栈信息**完整的**复制出来
+**To Reproduce**
+Steps to reproduce the behavior:
+1. Go to '...'
+2. Click on '....'
+3. Scroll down to '....'
+4. See error
+
+**Expected behavior**
+A clear and concise description of what you expected to happen.
+
+**Screenshots**
+If applicable, add screenshots to help explain your problem.
+
+**Desktop (please complete the following information):**
+ - OS: [e.g. iOS]
+ - Browser [e.g. chrome, safari]
+ - Version [e.g. 22]
+
+**Smartphone (please complete the following information):**
+ - Device: [e.g. iPhone6]
+ - OS: [e.g. iOS8.1]
+ - Browser [e.g. stock browser, safari]
+ - Version [e.g. 22]
+
+**Additional context**
+Add any other context about the problem here.
