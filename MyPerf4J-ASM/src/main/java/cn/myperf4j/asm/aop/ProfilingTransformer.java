@@ -36,7 +36,7 @@ public class ProfilingTransformer implements ClassFileTransformer {
             Logger.info("ProfilingTransformer.transform(" + loader + ", " + className + ", classBeingRedefined, protectionDomain, " + classFileBuffer.length + ")...");
             return getBytes(loader, className, classFileBuffer);
         } catch (Throwable e) {
-            Logger.error("ProfilingTransformer.transform(" + loader + ", " + className + ", " + classBeingRedefined + ", " + protectionDomain + ", " + classFileBuffer.length + ")", e);
+            Logger.error("ProfilingTransformer.transform(" + loader + ", " + className + ", " + classBeingRedefined + ", protectionDomain, " + classFileBuffer.length + ")", e);
         }
         return classFileBuffer;
     }
