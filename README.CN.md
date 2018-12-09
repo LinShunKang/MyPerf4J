@@ -22,8 +22,8 @@
 * 在**生产环境**中长期监控 Java 应用程序的性能指标
 
 ## 文档
-* [English Doc](https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Doc)
-* [中文文档](https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Doc)    
+* [English Doc](https://github.com/LinShunKang/MyPerf4J/wiki/English-Doc)
+* [中文文档](https://github.com/LinShunKang/MyPerf4J/wiki/Chinese-Doc)    
     
 ## 监控指标
 MyPerf4J 为每个应用收集数十个监控指标，所有的监控指标都是实时采集和展现的。
@@ -31,23 +31,23 @@ MyPerf4J 为每个应用收集数十个监控指标，所有的监控指标都�
 下面是 MyPerf4J 目前支持的监控指标列表:
 - **[Method Metrics](https://grafana.com/dashboards/7766)**<br/>
 RPS，Count，Avg，Min，Max，StdDev，TP50, TP90, TP95, TP99, TP999, TP9999, TP99999, TP100
-![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-Method_Show_Operation.gif)
+![Markdown](https://raw.githubusercontent.com/LinShunKang/Objects/master/MyPerf4J-InfluxDB-Method_Show_Operation.gif)
 
 - **[JVM Metrics](https://grafana.com/dashboards/8787)**<br/>
 Thread，Memory，ByteBuff，GC，Class
-![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Objects/master/MyPerf4J_JVM_Compressed.jpeg)
+![Markdown](https://raw.githubusercontent.com/LinShunKang/Objects/master/MyPerf4J_JVM_Compressed.jpeg)
 
-    > 想知道如何实现上述效果？请先按照[快速启动](https://github.com/ThinkpadNC5/MyPerf4J#%E5%BF%AB%E9%80%9F%E5%90%AF%E5%8A%A8)的描述启动应用，再按照[这里](https://github.com/ThinkpadNC5/MyPerf4J/wiki/InfluxDB_)的描述进行安装配置即可。
+    > 想知道如何实现上述效果？请先按照[快速启动](https://github.com/LinShunKang/MyPerf4J#%E5%BF%AB%E9%80%9F%E5%90%AF%E5%8A%A8)的描述启动应用，再按照[这里](https://github.com/LinShunKang/MyPerf4J/wiki/InfluxDB_)的描述进行安装配置即可。
 
 ## 快速启动
 MyPerf4J 采用 JavaAgent 配置方式，**透明化**接入应用，对应用代码完全**没有侵入**。
 
 ### 打包
-* git clone git@github.com:ThinkpadNC5/MyPerf4J.git
+* git clone git@github.com:LinShunKang/MyPerf4J.git
 * mvn clean package
 * 把 MyPerf4J-ASM-${MyPerf4J-version}.jar 重命名为 MyPerf4J-ASM.jar
 
-> 如果你使用的是 JDK 7 或者更高版本可以尝试直接下载 [MyPerf4J-ASM.jar](https://github.com/ThinkpadNC5/Objects/blob/master/MyPerf4J-ASM-2.1.0.jar?raw=true)
+> 如果你使用的是 JDK 7 或者更高版本可以尝试直接下载 [MyPerf4J-ASM.jar](https://github.com/LinShunKang/Objects/blob/master/MyPerf4J-ASM-2.1.0.jar?raw=true)
 
 ### 配置
 在 JVM 启动参数里加上以下两个参数
@@ -82,7 +82,7 @@ MilliTimeSlice=10000
 IncludePackages=cn.perf4j.demo
  ```
         
-> 想了解更多的配置？请看[这里](https://github.com/ThinkpadNC5/MyPerf4J/wiki/%E9%85%8D%E7%BD%AE)
+> 想了解更多的配置？请看[这里](https://github.com/LinShunKang/MyPerf4J/wiki/%E9%85%8D%E7%BD%AE)
 
 ### 运行
 * 输出结果，输出到 /data/logs/MyPerf4J/method_metrics.log:
@@ -103,7 +103,7 @@ IncludePackages=cn.perf4j.demo
 > -DMyPerf4JPropFile=/your/path/to/myPerf4J.properties
 
 ## 问题
-如果您有任何问题、疑问或者建议，请您毫不犹豫的 [提交Issue](https://github.com/ThinkpadNC5/MyPerf4J/issues/new/choose) 或者 [发送邮件](mailto:feedback.myperf4j@gmail.com) : )
+如果您有任何问题、疑问或者建议，请您毫不犹豫的 [提交Issue](https://github.com/LinShunKang/MyPerf4J/issues/new/choose) 或者 [发送邮件](mailto:feedback.myperf4j@gmail.com) : )
 
 ## 参考项目
 MyPerf4J 是受以下项目启发而来：
@@ -111,4 +111,4 @@ MyPerf4J 是受以下项目启发而来：
 * [TProfiler](https://github.com/alibaba/TProfiler)
 
 ## 更多信息
-想更深入的了解 MyPerf4J ？请看[https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Doc](https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Doc)。
+想更深入的了解 MyPerf4J ？请看[https://github.com/LinShunKang/MyPerf4J/wiki/Chinese-Doc](https://github.com/LinShunKang/MyPerf4J/wiki/Chinese-Doc)。

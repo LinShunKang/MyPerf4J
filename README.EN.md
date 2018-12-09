@@ -22,8 +22,8 @@ A high performance, non-intrusive Java performance monitoring and statistical to
 * Long-term monitoring of performance metrics for Java applications in a production environment
 
 ## Multilingual document
-* [English Doc](https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Doc)
-* [中文文档](https://github.com/ThinkpadNC5/MyPerf4J/wiki/Chinese-Doc) 
+* [English Doc](https://github.com/LinShunKang/MyPerf4J/wiki/English-Doc)
+* [中文文档](https://github.com/LinShunKang/MyPerf4J/wiki/Chinese-Doc) 
 
 ## What does it monitor?
 MyPerf4J collects dozens of metrics per application. All these metrics are collected and visualized in real-time.
@@ -31,23 +31,23 @@ MyPerf4J collects dozens of metrics per application. All these metrics are colle
 This is a list of what it currently monitors:
 * **[Method Metrics](https://grafana.com/dashboards/7766)**<br/>
 RPS, Count, Avg, Min, Max, StdDev, TP50, TP90, TP95, TP99, TP999, TP9999, TP99999, TP100
-![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Pictures/master/MyPerf4J-InfluxDB-Method_Show_Operation.gif)
+![Markdown](https://raw.githubusercontent.com/LinShunKang/Objects/master/MyPerf4J-InfluxDB-Method_Show_Operation.gif)
 
 - **[JVM Metrics](https://grafana.com/dashboards/8787)**<br/>
 Thread，Memory，ByteBuff，GC，Class
-![Markdown](https://raw.githubusercontent.com/ThinkpadNC5/Objects/master/MyPerf4J_JVM_Compressed.jpeg)
+![Markdown](https://raw.githubusercontent.com/LinShunKang/Objects/master/MyPerf4J_JVM_Compressed.jpeg)
   
-> Want to know how to achieve the above effect? Please start the application according to the description of [Quick Start](https://github.com/ThinkpadNC5/MyPerf4J/blob/develop/README.EN.md#quick-start), and then follow the instructions in [here](https://github.com/ThinkpadNC5/MyPerf4J/wiki/InfluxDB) to install and configure.
+> Want to know how to achieve the above effect? Please start the application according to the description of [Quick Start](https://github.com/LinShunKang/MyPerf4J/blob/develop/README.EN.md#quick-start), and then follow the instructions in [here](https://github.com/LinShunKang/MyPerf4J/wiki/InfluxDB) to install and configure.
  
 ## Quick start
 MyPerf4J adopts JavaAgent configuration mode, **transparent** access application, and the application code is completely **no-intrusive**.
 
 ### Build
-* git clone git@github.com:ThinkpadNC5/MyPerf4J.git
+* git clone git@github.com:LinShunKang/MyPerf4J.git
 * mvn clean package
 * Rename MyPerf4J-ASM-${MyPerf4J-version}.jar to MyPerf4J-ASM.jar
 
-> If you are using JDK 7 or higher, you can try to download [MyPerf4J-ASM.jar](https://github.com/ThinkpadNC5/Objects/blob/master/MyPerf4J-ASM-2.1.0.jar?raw=true) directly.
+> If you are using JDK 7 or higher, you can try to download [MyPerf4J-ASM.jar](https://github.com/LinShunKang/Objects/blob/master/MyPerf4J-ASM-2.1.0.jar?raw=true) directly.
 
 ### Configure
 Add the following two parameters to the JVM startup parameters
@@ -96,11 +96,11 @@ Remove the following two parameters from the JVM startup parameters and restart 
 > -DMyPerf4JPropFile=/your/path/to/myPerf4J.properties
 
 ## Issues
-If you encounter any issues or if you have a question, don't hesitate to [create an issue](https://github.com/ThinkpadNC5/MyPerf4J/issues/new/choose) or [send email](mailto:feedback.myperf4j@gmail.com) : )
+If you encounter any issues or if you have a question, don't hesitate to [create an issue](https://github.com/LinShunKang/MyPerf4J/issues/new/choose) or [send email](mailto:feedback.myperf4j@gmail.com) : )
 
 ## Inspired by
 * [Perf4J](https://github.com/perf4j/perf4j)
 * [TProfiler](https://github.com/alibaba/TProfiler)
 
 ## More Information
-For more information about the project, please see [https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Doc](https://github.com/ThinkpadNC5/MyPerf4J/wiki/English-Doc).
+For more information about the project, please see [https://github.com/LinShunKang/MyPerf4J/wiki/English-Doc](https://github.com/LinShunKang/MyPerf4J/wiki/English-Doc).
