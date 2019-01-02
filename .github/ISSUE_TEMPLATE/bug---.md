@@ -1,6 +1,9 @@
 ---
 name: Bug 报告
 about: 创建报告以帮助我们改进程序
+title: ''
+labels: ''
+assignees: ''
 
 ---
 
@@ -10,6 +13,7 @@ about: 创建报告以帮助我们改进程序
 **运行环境**
 1、JDK 版本号，例如，JDK7、JDK8 等 
 2、运行容器和框架，例如，Tomcat、PlainJava、Spring、SpringBoot 等
+3、操作系统，例如，Linux、MacOS、Windows 等
 
 **配置文件** 
 请把你的配置文件内容完整的复制出来
