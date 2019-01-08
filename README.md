@@ -103,7 +103,7 @@ IncludePackages=cn.perf4j.demo;cn.perf4j.demo1.[p1,p2,p3]
 > -DMyPerf4JPropFile=/your/path/to/myPerf4J.properties
 
 ## 问题
-如果您有任何问题、疑问或者建议，请您毫不犹豫的 [提交Issue](https://github.com/LinShunKang/MyPerf4J/issues/new/choose) 或者 [发送邮件](mailto:feedback.myperf4j@gmail.com) : )
+如果您有任何问题、疑问或者建议，请您毫不犹豫的 [提交Issue](https://github.com/LinShunKang/MyPerf4J/issues/new/choose) 或者 [发送邮件](mailto:linshunkang.chn@gmail.com) : )
 
 ## 参考项目
 MyPerf4J 是受以下项目启发而来：
