@@ -11,38 +11,48 @@ import java.util.Set;
 public class ProfilingFilter {
 
     /**
-     * 不需要注入的Package集合
+     * 不需要注入的 Package前缀 集合
      */
-    private static Set<String> excludePackage = new HashSet<>();
+    private static Set<String> excludePackagePrefix = new HashSet<>();
 
     /**
-     * 需要注入的Package集合
+     * 不需要注入的 Package表达式 集合
      */
-    private static Set<String> includePackage = new HashSet<>();
+    private static Set<String> excludePackageExp = new HashSet<>();
+
+    /**
+     * 需要注入的 Package前缀 集合
+     */
+    private static Set<String> includePackagePrefix = new HashSet<>();
+
+    /**
+     * 需要注入的 Package表达式 集合
+     */
+    private static Set<String> includePackageExp = new HashSet<>();
 
 
     /**
-     * 不需要注入的method集合
+     * 不需要注入的 method 集合
      */
     private static Set<String> excludeMethods = new HashSet<>();
 
 
     /**
-     * 不注入的ClassLoader集合
+     * 不注入的 ClassLoader 集合
      */
     private static Set<String> excludeClassLoader = new HashSet<>();
 
     static {
         // 默认不注入的package
-        excludePackage.add("java/");
-        excludePackage.add("javax/");
-        excludePackage.add("sun/");
-        excludePackage.add("com/sun/");
-        excludePackage.add("org/");
-        excludePackage.add("com/intellij/");
+        excludePackagePrefix.add("java/");
+        excludePackagePrefix.add("javax/");
+        excludePackagePrefix.add("sun/");
+        excludePackagePrefix.add("com/sun/");
+        excludePackagePrefix.add("org/");
+        excludePackagePrefix.add("com/intellij/");
 
         // 不注入MyPerf4J本身
-        excludePackage.add("cn/myperf4j/");
+        excludePackagePrefix.add("cn/myperf4j/");
 
 
         //默认不注入的method
@@ -71,8 +81,18 @@ public class ProfilingFilter {
             return true;
         }
 
-        for (String prefix : excludePackage) {
+        return isMatch(innerClassName, excludePackagePrefix, excludePackageExp);
+    }
+
+    private static boolean isMatch(String innerClassName, Set<String> pkgPrefixSet, Set<String> pkgExpSet) {
+        for (String prefix : pkgPrefixSet) {
             if (innerClassName.startsWith(prefix)) {
+                return true;
+            }
+        }
+
+        for (String exp : pkgExpSet) {
+            if (PkgExpUtils.isMatch(innerClassName, exp)) {
                 return true;
             }
         }
@@ -84,11 +104,23 @@ public class ProfilingFilter {
             return;
         }
 
+        addPackages(pkg, excludePackagePrefix, excludePackageExp);
+    }
 
-        Set<String> pkgSet = PkgExpUtils.parse(pkg);
-        for (String p : pkgSet) {
-            excludePackage.add(p.replace('.', '/').trim());
+    private static void addPackages(String packages, Set<String> pkgPrefixSet, Set<String> pkgExpSet) {
+        Set<String> pkgSet = PkgExpUtils.parse(packages);
+        for (String pkg : pkgSet) {
+            pkg = preprocess(pkg);
+            if (pkg.indexOf('*') > 0) {
+                pkgExpSet.add(pkg);
+            } else {
+                pkgPrefixSet.add(pkg);
+            }
         }
+    }
+
+    private static String preprocess(String pkg) {
+        return pkg.replace('.', '/').trim();
     }
 
     /**
@@ -100,12 +132,7 @@ public class ProfilingFilter {
             return false;
         }
 
-        for (String prefix : includePackage) {
-            if (innerClassName.startsWith(prefix)) {
-                return true;
-            }
-        }
-        return false;
+        return isMatch(innerClassName, includePackagePrefix, includePackageExp);
     }
 
     public static void addIncludePackage(String pkg) {
@@ -113,18 +140,15 @@ public class ProfilingFilter {
             return;
         }
 
-        Set<String> pkgSet = PkgExpUtils.parse(pkg);
-        for (String p : pkgSet) {
-            includePackage.add(p.replace('.', '/').trim());
-        }
+        addPackages(pkg, includePackagePrefix, includePackageExp);
     }
 
-    public static Set<String> getExcludePackage() {
-        return new HashSet<>(excludePackage);
+    public static Set<String> getExcludePackagePrefix() {
+        return new HashSet<>(excludePackagePrefix);
     }
 
-    public static Set<String> getIncludePackage() {
-        return new HashSet<>(includePackage);
+    public static Set<String> getIncludePackagePrefix() {
+        return new HashSet<>(includePackagePrefix);
     }
 
 

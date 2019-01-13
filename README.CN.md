@@ -79,7 +79,7 @@ RecorderMode=accurate
 MilliTimeSlice=10000
     
 #需要监控的package，可配置多个，用英文';'分隔
-IncludePackages=cn.perf4j.demo;cn.perf4j.demo1.[p1,p2,p3]
+IncludePackages=cn.perf4j.demo;cn.perf4j.demo1.[p1,p2,p3];cn.*.demo.*
  ```
         
 > 想了解更多的配置？请看[这里](https://github.com/LinShunKang/MyPerf4J/wiki/%E9%85%8D%E7%BD%AE)

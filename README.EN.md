@@ -75,7 +75,7 @@ ThreadMetricsFile=/data/logs/MyPerf4J/thread_metrics.log
 MilliTimeSlice=60000
     
 #configure packages, separated with ';'
-IncludePackages=cn.perf4j;org.myperf4j;cn.perf4j.demo1.[p1,p2,p3]
+IncludePackages=cn.perf4j;org.myperf4j;cn.perf4j.demo1.[p1,p2,p3];cn.*.demo.*
 ```
 
 ### Run
