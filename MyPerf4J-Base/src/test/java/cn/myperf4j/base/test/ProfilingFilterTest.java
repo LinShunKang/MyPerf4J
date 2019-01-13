@@ -32,4 +32,23 @@ public class ProfilingFilterTest {
         Assert.assertFalse(ProfilingFilter.isNotNeedInjectClassLoader("org.springframework.boot.loader.LaunchedURLClassLoader"));
     }
 
+    @Test
+    public void testWildcardMatch() {
+        Assert.assertFalse(ProfilingFilter.isNeedInject("cn/junit/test/a"));
+        Assert.assertFalse(ProfilingFilter.isNeedInject("cn/junit/test2"));
+
+        ProfilingFilter.addIncludePackage("cn.junit.test.*");
+        Assert.assertTrue(ProfilingFilter.isNeedInject("cn/junit/test/a"));
+        Assert.assertTrue(ProfilingFilter.isNeedInject("cn/junit/test/2"));
+
+
+
+        Assert.assertFalse(ProfilingFilter.isNotNeedInject("com/junit/test/a"));
+        Assert.assertFalse(ProfilingFilter.isNotNeedInject("com/junit/test2"));
+
+        ProfilingFilter.addExcludePackage("com.junit.test.*");
+        Assert.assertTrue(ProfilingFilter.isNotNeedInject("com/junit/test/a"));
+        Assert.assertTrue(ProfilingFilter.isNotNeedInject("com/junit/test/2"));
+    }
+
 }
