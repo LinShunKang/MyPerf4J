@@ -2,9 +2,6 @@ package MyPerf4J;
 
 import cn.myperf4j.base.util.ThreadUtils;
 import org.junit.Test;
-import sun.misc.JavaNioAccess;
-import sun.misc.SharedSecrets;
-import sun.misc.VM;
 
 import java.lang.management.*;
 import java.nio.ByteBuffer;
@@ -18,8 +15,7 @@ public class JVMMemoryTest {
 
     @Test
     public void test() {
-        System.out.println("VM.maxDirectMemory=" + VM.maxDirectMemory() / 1024 / 1024 + "MB");
-        System.out.println("VM.maxDirectMemory=" + VM.maxDirectMemory());
+
         printCurMem("Init");
 
         allocate(1024 * 1024);
@@ -48,9 +44,6 @@ public class JVMMemoryTest {
     }
 
     private void printCurMem(String desc) {
-        JavaNioAccess.BufferPool bufferPool = SharedSecrets.getJavaNioAccess().getDirectBufferPool();
-        System.out.println(desc + ": name=" + bufferPool.getName() + " count=" + bufferPool.getCount() + " memoryUsed=" + bufferPool.getMemoryUsed() + " totalCapacity=" + bufferPool.getTotalCapacity());
-
         MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
         MemoryUsage nonHeapMem = memoryMXBean.getNonHeapMemoryUsage();
         System.out.println(desc + ": init=" + nonHeapMem.getInit() + ", max=" + nonHeapMem.getMax() + ", used=" + nonHeapMem.getUsed());
