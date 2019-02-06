@@ -1,8 +1,12 @@
 package cn.myperf4j.core;
 
 import cn.myperf4j.base.MethodTag;
+import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.util.Logger;
+import cn.myperf4j.base.util.TypeDescUtils;
 
+import java.lang.reflect.Method;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
@@ -17,7 +21,12 @@ public class MethodTagMaintainer extends AbstractMethodTagMaintainer {
 
     private final AtomicReferenceArray<MethodTag> methodTagArr = new AtomicReferenceArray<>(MAX_NUM);
 
+    private final ConcurrentHashMap<Method, Integer> methodMap = new ConcurrentHashMap<>(1024);
+
     private static final MethodTagMaintainer instance = new MethodTagMaintainer();
+
+    private static final ProfilingConfig profilingConfig = ProfilingConfig.getInstance();
+
 
     private MethodTagMaintainer() {
         //empty
@@ -37,6 +46,35 @@ public class MethodTagMaintainer extends AbstractMethodTagMaintainer {
 
         methodTagArr.set(methodId, methodTag);
         return methodId;
+    }
+
+    @Override
+    public int addMethodTag(Method method) {
+        Integer tagId = methodMap.get(method);
+        if (tagId != null) {
+            return tagId;
+        }
+
+        synchronized (this) {
+            tagId = methodMap.get(method);
+            if (tagId != null) {
+                return tagId;
+            }
+
+            tagId = addMethodTag(createMethodTag(method));
+        }
+
+        if (tagId < 0) {
+            return tagId;
+        }
+
+        methodMap.putIfAbsent(method, tagId);
+        return tagId;
+    }
+
+    private static MethodTag createMethodTag(Method method) {
+        String methodParamDesc = profilingConfig.isShowMethodParams() ? "(" + TypeDescUtils.getMethodParamsDesc(method) + ")" : "";
+        return MethodTag.getInstance(method.getDeclaringClass().getSimpleName(), method.getName(), methodParamDesc);
     }
 
     @Override

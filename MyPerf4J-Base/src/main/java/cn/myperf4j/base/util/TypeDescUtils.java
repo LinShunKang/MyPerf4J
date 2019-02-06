@@ -1,11 +1,18 @@
-package cn.myperf4j.asm.utils;
+package cn.myperf4j.base.util;
 
-import cn.myperf4j.base.util.Logger;
+import java.lang.reflect.Method;
 
 /**
  * Created by LinShunkang on 2018/9/6
  */
 public final class TypeDescUtils {
+
+    private static ThreadLocal<StringBuilder> SB_TL = new ThreadLocal<StringBuilder>() {
+        @Override
+        protected StringBuilder initialValue() {
+            return new StringBuilder(128);
+        }
+    };
 
     //类型􏰀述符
     private static final char[] TYPE_DESCRIPTOR = {'Z', 'C', 'B', 'S', 'I', 'F', 'J', 'D', '[', 'L'};
@@ -117,6 +124,23 @@ public final class TypeDescUtils {
     private static void appendArrDesc(StringBuilder sb, int arrayLevel) {
         for (int k = 0; k < arrayLevel; ++k) {
             sb.append("[]");
+        }
+    }
+
+    public static String getMethodParamsDesc(Method method) {
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        if (parameterTypes.length <= 0) {
+            return "";
+        }
+
+        StringBuilder sb = SB_TL.get();
+        try {
+            for (int i = 0; i < parameterTypes.length; ++i) {
+                sb.append(parameterTypes[i].getSimpleName()).append(", ");
+            }
+            return sb.substring(0, sb.length() - 2);
+        } finally {
+            sb.setLength(0);
         }
     }
 

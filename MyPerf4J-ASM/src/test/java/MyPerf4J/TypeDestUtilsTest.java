@@ -3,7 +3,7 @@ package MyPerf4J;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static cn.myperf4j.asm.utils.TypeDescUtils.getMethodParamsDesc;
+import static cn.myperf4j.base.util.TypeDescUtils.getMethodParamsDesc;
 
 /**
  * Created by LinShunkang on 2018/10/19

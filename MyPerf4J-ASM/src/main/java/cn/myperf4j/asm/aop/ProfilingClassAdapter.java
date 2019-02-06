@@ -61,7 +61,11 @@ public class ProfilingClassAdapter extends ClassVisitor {
         }
         Logger.debug("ProfilingClassAdapter.visitMethod(" + access + ", " + name + ", " + desc + ", " + signature + ", " + Arrays.toString(exceptions) + "), innerClassName=" + innerClassName);
 
-        return new ProfilingMethodVisitor(access, name, desc, mv, innerClassName);
+        if (isInvocationHandler(name, desc)) {
+            return new ProfilingDynamicMethodVisitor(access, name, desc, mv);
+        } else {
+            return new ProfilingMethodVisitor(access, name, desc, mv, innerClassName);
+        }
     }
 
     private boolean isNeedVisit(int access, String name) {
@@ -87,5 +91,9 @@ public class ProfilingClassAdapter extends ClassVisitor {
         }
 
         return true;
+    }
+
+    private boolean isInvocationHandler(String methodName, String methodDesc) {
+        return methodName.equals("invoke") && methodDesc.equals("(Ljava/lang/Object;Ljava/lang/reflect/Method;[Ljava/lang/Object;)Ljava/lang/Object;");
     }
 }

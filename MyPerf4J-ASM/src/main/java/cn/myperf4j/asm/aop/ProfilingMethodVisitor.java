@@ -1,7 +1,7 @@
 package cn.myperf4j.asm.aop;
 
 import cn.myperf4j.asm.ASMRecorderMaintainer;
-import cn.myperf4j.asm.utils.TypeDescUtils;
+import cn.myperf4j.base.util.TypeDescUtils;
 import cn.myperf4j.base.MethodTag;
 import cn.myperf4j.core.recorder.AbstractRecorderMaintainer;
 import cn.myperf4j.core.MethodTagMaintainer;
