@@ -30,11 +30,11 @@ MyPerf4J 为每个应用收集数十个监控指标，所有的监控指标都�
 
 下面是 MyPerf4J 目前支持的监控指标列表:
 - **[Method Metrics](https://grafana.com/dashboards/7766)**<br/>
-RPS，Count，Avg，Min，Max，StdDev，TP50, TP90, TP95, TP99, TP999, TP9999, TP99999, TP100
+[RPS，Count，Avg，Min，Max，StdDev，TP50, TP90, TP95, TP99, TP999, TP9999, TP99999, TP100](https://github.com/LinShunKang/MyPerf4J/wiki/%E6%8C%87%E6%A0%87#method-metrics)
 ![Markdown](https://raw.githubusercontent.com/LinShunKang/Objects/master/MyPerf4J-InfluxDB-Method_Show_Operation.gif)
 
 - **[JVM Metrics](https://grafana.com/dashboards/8787)**<br/>
-Thread，Memory，ByteBuff，GC，Class
+[Thread](https://github.com/LinShunKang/MyPerf4J/wiki/%E6%8C%87%E6%A0%87#jvm-thread-metrics)，[Memory](https://github.com/LinShunKang/MyPerf4J/wiki/%E6%8C%87%E6%A0%87#jvm-memory-metrics)，[ByteBuff](https://github.com/LinShunKang/MyPerf4J/wiki/%E6%8C%87%E6%A0%87#jvm-bytebuff-metrics)，[GC](https://github.com/LinShunKang/MyPerf4J/wiki/%E6%8C%87%E6%A0%87#jvm-gc-metrics)，[Class](https://github.com/LinShunKang/MyPerf4J/wiki/%E6%8C%87%E6%A0%87#jvm-class-metrics)
 ![Markdown](https://raw.githubusercontent.com/LinShunKang/Objects/master/MyPerf4J_JVM_Compressed.jpeg)
 
     > 想知道如何实现上述效果？请先按照[快速启动](https://github.com/LinShunKang/MyPerf4J#%E5%BF%AB%E9%80%9F%E5%90%AF%E5%8A%A8)的描述启动应用，再按照[这里](https://github.com/LinShunKang/MyPerf4J/wiki/InfluxDB_)的描述进行安装配置即可。
@@ -47,7 +47,7 @@ MyPerf4J 采用 JavaAgent 配置方式，**透明化**接入应用，对应用�
 * mvn clean package
 * 把 MyPerf4J-ASM-${MyPerf4J-version}.jar 重命名为 MyPerf4J-ASM.jar
 
-> 如果你使用的是 JDK 7 或者更高版本可以尝试直接下载 [MyPerf4J-ASM.jar](https://github.com/LinShunKang/Objects/blob/master/MyPerf4J-ASM-2.3.0.jar?raw=true)
+> 如果你使用的是 JDK 7 或者更高版本可以尝试直接下载 [MyPerf4J-ASM.jar](https://github.com/LinShunKang/Objects/blob/master/MyPerf4J-ASM-2.4.0.jar?raw=true)
 
 ### 配置
 在 JVM 启动参数里加上以下两个参数
@@ -80,6 +80,9 @@ MilliTimeSlice=10000
     
 #需要监控的package，可配置多个，用英文';'分隔
 IncludePackages=cn.perf4j.demo;cn.perf4j.demo1.[p1,p2,p3];cn.*.demo.*
+
+#是否展示方法参数类型
+ShowMethodParams=true
  ```
         
 > 想了解更多的配置？请看[这里](https://github.com/LinShunKang/MyPerf4J/wiki/%E9%85%8D%E7%BD%AE)
@@ -88,12 +91,13 @@ IncludePackages=cn.perf4j.demo;cn.perf4j.demo1.[p1,p2,p3];cn.*.demo.*
 * 输出结果，输出到 /data/logs/MyPerf4J/method_metrics.log:
 
     ```
-    MyPerf4J Method Metrics [2018-09-06 19:21:40, 2018-09-06 19:21:45]
-    Method[4]                           RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count     TP50     TP90     TP95     TP99    TP999   TP9999  TP99999    TP100
-    DemoServiceImpl.getId1(long)       1974     0.00        0        0     0.00      9870        0        0        0        0        0        0        0        0
-    DemoServiceImpl.getId2(long)       2995     0.50        0        2     0.01     14975        0        1        2        2        2        2        2        2
-    DemoServiceImplV2.getId1(long)      787     0.00        0        0     0.00      3938        0        0        0        0        0        0        0        0
-    DemoServiceImplV2.getId3(long)     1575     0.50        0        1     0.01      7876        1        1        1        1        1        1        1        1
+    MyPerf4J Method Metrics [2019-02-11 20:29:22, 2019-02-11 20:29:23]
+    Method[5]                           RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count     TP50     TP90     TP95     TP99    TP999   TP9999  TP99999    TP100
+    DemoServiceImpl.getId1(long)     203674     0.00        0        0     0.00    203674        0        0        0        0        0        0        0        0
+    DemoServiceImpl.getId2(long)     318386     0.00        0        2     0.00    318386        0        1        2        2        2        2        2        2
+    DemoServiceImplV2.getId1(long)  1931153     0.00        0        0     0.00   1931153        0        0        0        0        0        0        0        0
+    DemoServiceImplV2.getId3(long)  3862304     0.00        0        0     0.00   3862304        0        0        0        0        0        0        0        0
+    Dao.doQuery()                   2134826     0.00        0        0     0.00   2134826        0        0        0        0        0        0        0        0
     ```
 
 ### 卸载

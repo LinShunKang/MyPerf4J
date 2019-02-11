@@ -1,4 +1,4 @@
-[简体中文](./README.md) | English
+# [简体中文](./README.md) | English
 
 <h1 align="center">MyPerf4J</h1>
 
@@ -30,11 +30,11 @@ MyPerf4J collects dozens of metrics per application. All these metrics are colle
 
 This is a list of what it currently monitors:
 * **[Method Metrics](https://grafana.com/dashboards/7766)**<br/>
-RPS, Count, Avg, Min, Max, StdDev, TP50, TP90, TP95, TP99, TP999, TP9999, TP99999, TP100
+[RPS, Count, Avg, Min, Max, StdDev, TP50, TP90, TP95, TP99, TP999, TP9999, TP99999, TP100](https://github.com/LinShunKang/MyPerf4J/wiki/Metrics#method-metrics)
 ![Markdown](https://raw.githubusercontent.com/LinShunKang/Objects/master/MyPerf4J-InfluxDB-Method_Show_Operation.gif)
 
 - **[JVM Metrics](https://grafana.com/dashboards/8787)**<br/>
-Thread，Memory，ByteBuff，GC，Class
+[Thread](https://github.com/LinShunKang/MyPerf4J/wiki/Metrics#jvm-thread-metrics)，[Memory](https://github.com/LinShunKang/MyPerf4J/wiki/Metrics#jvm-memory-metrics)，[ByteBuff](https://github.com/LinShunKang/MyPerf4J/wiki/Metrics#jvm-bytebuff-metrics)，[GC](https://github.com/LinShunKang/MyPerf4J/wiki/Metrics#jvm-gc-metrics)，[Class](https://github.com/LinShunKang/MyPerf4J/wiki/Metrics#jvm-class-metrics)
 ![Markdown](https://raw.githubusercontent.com/LinShunKang/Objects/master/MyPerf4J_JVM_Compressed.jpeg)
   
 > Want to know how to achieve the above effect? Please start the application according to the description of [Quick Start](https://github.com/LinShunKang/MyPerf4J/blob/develop/README.EN.md#quick-start), and then follow the instructions in [here](https://github.com/LinShunKang/MyPerf4J/wiki/InfluxDB) to install and configure.
@@ -47,7 +47,7 @@ MyPerf4J adopts JavaAgent configuration mode, **transparent** access application
 * mvn clean package
 * Rename MyPerf4J-ASM-${MyPerf4J-version}.jar to MyPerf4J-ASM.jar
 
-> If you are using JDK 7 or higher, you can try to download [MyPerf4J-ASM.jar](https://github.com/LinShunKang/Objects/blob/master/MyPerf4J-ASM-2.3.0.jar?raw=true) directly.
+> If you are using JDK 7 or higher, you can try to download [MyPerf4J-ASM.jar](https://github.com/LinShunKang/Objects/blob/master/MyPerf4J-ASM-2.4.0.jar?raw=true) directly.
 
 ### Configure
 Add the following two parameters to the JVM startup parameters
@@ -71,23 +71,28 @@ MemMetricsFile=/data/logs/MyPerf4J/memory_metrics.log
 BufPoolMetricsFile=/data/logs/MyPerf4J/buf_pool_metrics
 ThreadMetricsFile=/data/logs/MyPerf4J/thread_metrics.log
     
-#configure TimeSlice, time unit: ms, min:1s, max:600s
+#Configure TimeSlice, time unit: ms, min:1s, max:600s
 MilliTimeSlice=60000
     
-#configure packages, separated with ';'
+#Configure packages, separated with ';'
 IncludePackages=cn.perf4j;org.myperf4j;cn.perf4j.demo1.[p1,p2,p3];cn.*.demo.*
+
+#Configure show method params type
+ShowMethodParams=true
 ```
 
 ### Run
 * The output is to /data/logs/MyPerf4J/method_metrics.log:
 
-    ```
-    MyPerf4J Method Metrics [2018-09-06 19:21:40, 2018-09-06 19:21:45]
-    Method[4]                           RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count     TP50     TP90     TP95     TP99    TP999   TP9999  TP99999    TP100
-    DemoServiceImpl.getId1(long)       1974     0.00        0        0     0.00      9870        0        0        0        0        0        0        0        0
-    DemoServiceImpl.getId2(long)       2995     0.50        0        2     0.01     14975        0        1        2        2        2        2        2        2
-    DemoServiceImplV2.getId1(long)      787     0.00        0        0     0.00      3938        0        0        0        0        0        0        0        0
-    DemoServiceImplV2.getId3(long)     1575     0.50        0        1     0.01      7876        1        1        1        1        1        1        1        1
+      ```
+    MyPerf4J Method Metrics [2019-02-11 20:29:22, 2019-02-11 20:29:23]
+    Method[5]                           RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count     TP50     TP90     TP95     TP99    TP999   TP9999  TP99999    TP100
+    DemoServiceImpl.getId1(long)     203674     0.00        0        0     0.00    203674        0        0        0        0        0        0        0        0
+    DemoServiceImpl.getId2(long)     318386     0.00        0        2     0.00    318386        0        1        2        2        2        2        2        2
+    DemoServiceImplV2.getId1(long)  1931153     0.00        0        0     0.00   1931153        0        0        0        0        0        0        0        0
+    DemoServiceImplV2.getId3(long)  3862304     0.00        0        0     0.00   3862304        0        0        0        0        0        0        0        0
+    Dao.doQuery()                   2134826     0.00        0        0     0.00   2134826        0        0        0        0        0        0        0        0
+    
     ```
     
 ### Uninstall

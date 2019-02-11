@@ -43,16 +43,19 @@ public class ProfilingFilter {
     private static Set<String> excludeClassLoader = new HashSet<>();
 
     static {
-        // 默认不注入的package
+        // 默认不注入的 package
         excludePackagePrefix.add("java/");
         excludePackagePrefix.add("javax/");
         excludePackagePrefix.add("sun/");
         excludePackagePrefix.add("com/sun/");
         excludePackagePrefix.add("com/intellij/");
 
-        // 不注入MyPerf4J本身
+        // 不注入 MyPerf4J 本身
         excludePackagePrefix.add("cn/myperf4j/");
 
+        // 默认注入的 package
+        includePackagePrefix.add("net/paoding/rose/jade/context/JadeInvocationHandler");//Jade
+        includePackagePrefix.add("org/apache/ibatis/binding/MapperProxy");//Mybatis
 
         //默认不注入的method
         excludeMethods.add("main");
