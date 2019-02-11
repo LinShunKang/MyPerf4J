@@ -48,7 +48,6 @@ public class ProfilingFilter {
         excludePackagePrefix.add("javax/");
         excludePackagePrefix.add("sun/");
         excludePackagePrefix.add("com/sun/");
-        excludePackagePrefix.add("org/");
         excludePackagePrefix.add("com/intellij/");
 
         // 不注入MyPerf4J本身
