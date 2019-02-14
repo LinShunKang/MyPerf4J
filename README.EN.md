@@ -1,4 +1,4 @@
-# [简体中文](./README.md) | English
+[简体中文](./README.md) | English
 
 <h1 align="center">MyPerf4J</h1>
 
@@ -84,7 +84,7 @@ ShowMethodParams=true
 ### Run
 * The output is to /data/logs/MyPerf4J/method_metrics.log:
 
-      ```
+  ```
     MyPerf4J Method Metrics [2019-02-11 20:29:22, 2019-02-11 20:29:23]
     Method[5]                           RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count     TP50     TP90     TP95     TP99    TP999   TP9999  TP99999    TP100
     DemoServiceImpl.getId1(long)     203674     0.00        0        0     0.00    203674        0        0        0        0        0        0        0        0
@@ -92,9 +92,8 @@ ShowMethodParams=true
     DemoServiceImplV2.getId1(long)  1931153     0.00        0        0     0.00   1931153        0        0        0        0        0        0        0        0
     DemoServiceImplV2.getId3(long)  3862304     0.00        0        0     0.00   3862304        0        0        0        0        0        0        0        0
     Dao.doQuery()                   2134826     0.00        0        0     0.00   2134826        0        0        0        0        0        0        0        0
-    
     ```
-    
+
 ### Uninstall
 Remove the following two parameters from the JVM startup parameters and restart to uninstall the tool.
 > -javaagent:/your/path/to/MyPerf4J-ASM.jar
