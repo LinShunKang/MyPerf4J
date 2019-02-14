@@ -59,6 +59,7 @@ public class ProfilingFilter {
         includePackagePrefix.add("com/alibaba/dubbo/rpc/proxy/InvokerInvocationHandler");//DUBBO
         includePackagePrefix.add("org/apache/dubbo/rpc/proxy/InvokerInvocationHandler");//DUBBO
         includePackagePrefix.add("com/alipay/sofa/rpc/proxy/jdk/JDKInvocationHandler");//SOFA jdk-proxy
+        includePackagePrefix.add("com/weibo/api/motan/proxy/RefererInvocationHandler");//Motan
 
         //默认不注入的method
         excludeMethods.add("main");
