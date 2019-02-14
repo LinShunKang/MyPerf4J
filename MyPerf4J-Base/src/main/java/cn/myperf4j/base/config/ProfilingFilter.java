@@ -56,6 +56,9 @@ public class ProfilingFilter {
         // 默认注入的 package
         includePackagePrefix.add("net/paoding/rose/jade/context/JadeInvocationHandler");//Jade
         includePackagePrefix.add("org/apache/ibatis/binding/MapperProxy");//Mybatis
+        includePackagePrefix.add("com/alibaba/dubbo/rpc/proxy/InvokerInvocationHandler");//DUBBO
+        includePackagePrefix.add("org/apache/dubbo/rpc/proxy/InvokerInvocationHandler");//DUBBO
+        includePackagePrefix.add("com/alipay/sofa/rpc/proxy/jdk/JDKInvocationHandler");//SOFA jdk-proxy
 
         //默认不注入的method
         excludeMethods.add("main");
