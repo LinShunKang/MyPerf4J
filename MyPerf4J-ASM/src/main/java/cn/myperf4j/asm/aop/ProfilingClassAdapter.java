@@ -20,6 +20,8 @@ public class ProfilingClassAdapter extends ClassVisitor {
 
     private boolean isInterface;
 
+    private boolean isInvocationHandler;
+
     private List<String> fieldNameList = new ArrayList<>();
 
     public ProfilingClassAdapter(final ClassVisitor cv, String innerClassName) {
@@ -33,6 +35,20 @@ public class ProfilingClassAdapter extends ClassVisitor {
 
         super.visit(version, access, name, signature, superName, interfaces);
         this.isInterface = (access & ACC_INTERFACE) != 0;
+        this.isInvocationHandler = isInvocationHandler(interfaces);
+    }
+
+    private boolean isInvocationHandler(String[] interfaces) {
+        if (interfaces == null || interfaces.length <= 0) {
+            return false;
+        }
+
+        for (int i = 0; i < interfaces.length; ++i) {
+            if ("java/lang/reflect/InvocationHandler".equals(interfaces[i])) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -61,7 +77,7 @@ public class ProfilingClassAdapter extends ClassVisitor {
         }
         Logger.debug("ProfilingClassAdapter.visitMethod(" + access + ", " + name + ", " + desc + ", " + signature + ", " + Arrays.toString(exceptions) + "), innerClassName=" + innerClassName);
 
-        if (isInvocationHandler(name, desc)) {
+        if (isInvocationHandler && isInvokeMethod(name, desc)) {
             return new ProfilingDynamicMethodVisitor(access, name, desc, mv);
         } else {
             return new ProfilingMethodVisitor(access, name, desc, mv, innerClassName);
@@ -93,7 +109,7 @@ public class ProfilingClassAdapter extends ClassVisitor {
         return true;
     }
 
-    private boolean isInvocationHandler(String methodName, String methodDesc) {
+    private boolean isInvokeMethod(String methodName, String methodDesc) {
         return methodName.equals("invoke") && methodDesc.equals("(Ljava/lang/Object;Ljava/lang/reflect/Method;[Ljava/lang/Object;)Ljava/lang/Object;");
     }
 }
