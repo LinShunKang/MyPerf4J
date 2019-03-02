@@ -102,9 +102,15 @@ Remove the following two parameters from the JVM startup parameters and restart 
 ## Issues
 If you encounter any issues or if you have a question, don't hesitate to [create an issue](https://github.com/LinShunKang/MyPerf4J/issues/new/choose) or [send email](mailto:linshunkang.chn@gmail.com) : )
 
+# Known Users
+Welcome to register the company name in this issue: [https://github.com/LinShunKang/MyPerf4J/issues/30](https://github.com/LinShunKang/MyPerf4J/issues/30) (In order of registration)
+<div align="center">
+<img src="https://github.com/LinShunKang/Objects/blob/master/Boss_Logo_compressed.png?raw=true"  height="140" width="140">
+</div>
+
 ## Inspired by
 * [Perf4J](https://github.com/perf4j/perf4j)
 * [TProfiler](https://github.com/alibaba/TProfiler)
 
 ## More Information
-For more information about the project, please see [https://github.com/LinShunKang/MyPerf4J/wiki/English-Doc](https://github.com/LinShunKang/MyPerf4J/wiki/English-Doc).
+For more information about the project, please read [https://github.com/LinShunKang/MyPerf4J/wiki/English-Doc](https://github.com/LinShunKang/MyPerf4J/wiki/English-Doc).

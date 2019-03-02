@@ -111,10 +111,16 @@ ShowMethodParams=true
 ## 问题
 如果您有任何问题、疑问或者建议，请您毫不犹豫的 [提交Issue](https://github.com/LinShunKang/MyPerf4J/issues/new/choose) 或者 [发送邮件](mailto:linshunkang.chn@gmail.com) : )
 
+## 已知用户
+如果您在使用 MyPerf4J，请告诉我，您的使用对我来说非常重要：[https://github.com/LinShunKang/MyPerf4J/issues/30](https://github.com/LinShunKang/MyPerf4J/issues/30) （按登记顺序排列）
+<div align="center">
+<img src="https://github.com/LinShunKang/Objects/blob/master/Boss_Logo_compressed.png?raw=true"  height="140" width="140">
+</div>
+
 ## 参考项目
 MyPerf4J 是受以下项目启发而来：
 * [Perf4J](https://github.com/perf4j/perf4j)
 * [TProfiler](https://github.com/alibaba/TProfiler)
 
 ## 更多信息
-想更深入的了解 MyPerf4J ？请看[https://github.com/LinShunKang/MyPerf4J/wiki/Chinese-Doc](https://github.com/LinShunKang/MyPerf4J/wiki/Chinese-Doc)。
+想更深入的了解 MyPerf4J？请看 [https://github.com/LinShunKang/MyPerf4J/wiki/Chinese-Doc](https://github.com/LinShunKang/MyPerf4J/wiki/Chinese-Doc)。
