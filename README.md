@@ -51,9 +51,12 @@ MyPerf4J 采用 JavaAgent 配置方式，**透明化**接入应用，对应用�
 
 ### 配置
 在 JVM 启动参数里加上以下两个参数
-> -javaagent:/your/path/to/MyPerf4J-ASM.jar
+* -javaagent:/your/path/to/MyPerf4J-ASM.jar
+* -DMyPerf4JPropFile=/your/path/to/myPerf4J.properties
 
-> -DMyPerf4JPropFile=/your/path/to/myPerf4J.properties
+> 形如：java -javaagent:/your/path/to/MyPerf4J-ASM.jar -DMyPerf4JPropFile=/your/path/to/myPerf4J.properties -jar yourJar.jar
+
+> 注意：使用 Windows 的同学，请注意修改路径格式，包括 `MyPerf4JPropFile` 中的文件路径 
 
 其中，`MyPerf4JPropFile`的配置如下:
 
@@ -102,12 +105,17 @@ ShowMethodParams=true
 
 ### 卸载
 在 JVM 启动参数中去掉以下两个参数，重启即可卸载此工具。
-> -javaagent:/your/path/to/MyPerf4J-ASM.jar
-
-> -DMyPerf4JPropFile=/your/path/to/myPerf4J.properties
+* -javaagent:/your/path/to/MyPerf4J-ASM.jar
+* -DMyPerf4JPropFile=/your/path/to/myPerf4J.properties
 
 ## 问题
 如果您有任何问题、疑问或者建议，请您毫不犹豫的 [提交Issue](https://github.com/LinShunKang/MyPerf4J/issues/new/choose) 或者 [发送邮件](mailto:linshunkang.chn@gmail.com) : )
+
+## 已知用户
+如果您在使用 MyPerf4J，请告诉我，您的使用对我来说非常重要：[https://github.com/LinShunKang/MyPerf4J/issues/30](https://github.com/LinShunKang/MyPerf4J/issues/30) （按登记顺序排列）
+<div align="center">
+<img src="https://github.com/LinShunKang/Objects/blob/master/Boss_Logo_compressed.png?raw=true"  height="140" width="140">
+</div>
 
 ## 参考项目
 MyPerf4J 是受以下项目启发而来：
@@ -115,4 +123,4 @@ MyPerf4J 是受以下项目启发而来：
 * [TProfiler](https://github.com/alibaba/TProfiler)
 
 ## 更多信息
-想更深入的了解 MyPerf4J ？请看[https://github.com/LinShunKang/MyPerf4J/wiki/Chinese-Doc](https://github.com/LinShunKang/MyPerf4J/wiki/Chinese-Doc)。
+想更深入的了解 MyPerf4J？请看 [https://github.com/LinShunKang/MyPerf4J/wiki/Chinese-Doc](https://github.com/LinShunKang/MyPerf4J/wiki/Chinese-Doc)。
