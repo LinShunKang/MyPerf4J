@@ -94,13 +94,13 @@ ShowMethodParams=true
 * 输出结果，输出到 /data/logs/MyPerf4J/method_metrics.log:
 
     ```
-    MyPerf4J Method Metrics [2019-02-11 20:29:22, 2019-02-11 20:29:23]
-    Method[5]                           RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count     TP50     TP90     TP95     TP99    TP999   TP9999  TP99999    TP100
-    DemoServiceImpl.getId1(long)     203674     0.00        0        0     0.00    203674        0        0        0        0        0        0        0        0
-    DemoServiceImpl.getId2(long)     318386     0.00        0        2     0.00    318386        0        1        2        2        2        2        2        2
-    DemoServiceImplV2.getId1(long)  1931153     0.00        0        0     0.00   1931153        0        0        0        0        0        0        0        0
-    DemoServiceImplV2.getId3(long)  3862304     0.00        0        0     0.00   3862304        0        0        0        0        0        0        0        0
-    Dao.doQuery()                   2134826     0.00        0        0     0.00   2134826        0        0        0        0        0        0        0        0
+    MyPerf4J Method Metrics [2019-03-03 17:27:50, 2019-03-03 17:28:00]
+Method[5]                              Type      RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count     TP50     TP90     TP95     TP99    TP999   TP9999  TP99999    TP100
+DemoServiceImpl.getId1(long)        General    51317     0.00        0        1     0.00    513178        0        1        1        1        1        1        1        1
+DemoServiceImpl.getId2(long)        General   168637     0.00        0        4     0.00   1686377        0        1        2        3        4        4        4        4
+DemoServiceImplV2.getId1(long)      General      357     0.00        0        0     0.00      3570        0        0        0        0        0        0        0        0
+DemoServiceImplV2.getId3(long)      General      713     0.51        0        5     0.08      7138        0        1        2        3        4        5        5        5
+Dao.doQuery()                  DynamicProxy     1394     0.51        0        5     0.05     13944        0        1        2        3        4        5        5        5
     ```
 
 ### 卸载
