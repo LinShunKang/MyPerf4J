@@ -74,7 +74,7 @@ public class MethodTagMaintainer extends AbstractMethodTagMaintainer {
 
     private static MethodTag createMethodTag(Method method) {
         String methodParamDesc = profilingConfig.isShowMethodParams() ? "(" + TypeDescUtils.getMethodParamsDesc(method) + ")" : "";
-        return MethodTag.getInstance(method.getDeclaringClass().getSimpleName(), method.getName(), methodParamDesc);
+        return MethodTag.getDynamicProxyInstance(method.getDeclaringClass().getSimpleName(), method.getName(), methodParamDesc);
     }
 
     @Override

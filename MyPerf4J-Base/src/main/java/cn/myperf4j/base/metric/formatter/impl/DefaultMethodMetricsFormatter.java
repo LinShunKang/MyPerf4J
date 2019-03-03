@@ -4,9 +4,6 @@ import cn.myperf4j.base.metric.MethodMetrics;
 import cn.myperf4j.base.metric.formatter.MethodMetricsFormatter;
 import cn.myperf4j.base.util.DateFormatUtils;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -19,37 +16,38 @@ public final class DefaultMethodMetricsFormatter implements MethodMetricsFormatt
         int[] statisticsArr = getStatistics(methodMetricsList);
         int maxApiLength = statisticsArr[0];
 
-        String dataTitleFormat = "%-" + maxApiLength + "s%9s%9s%9s%9s%9s%10s%9s%9s%9s%9s%9s%9s%9s%9s%n";
+        String dataTitleFormat = "%-" + maxApiLength + "s%13s%9s%9s%9s%9s%9s%10s%9s%9s%9s%9s%9s%9s%9s%9s%n";
         StringBuilder sb = new StringBuilder((methodMetricsList.size() + 2) * (9 * 11 + 1 + maxApiLength));
         sb.append("MyPerf4J Method Metrics [").append(DateFormatUtils.format(startMillis)).append(", ").append(DateFormatUtils.format(stopMillis)).append("]").append(String.format("%n"));
-        sb.append(String.format(dataTitleFormat, "Method[" + methodMetricsList.size() + "]", "RPS", "Avg(ms)", "Min(ms)", "Max(ms)", "StdDev", "Count", "TP50", "TP90", "TP95", "TP99", "TP999", "TP9999", "TP99999", "TP100"));
+        sb.append(String.format(dataTitleFormat, "Method[" + methodMetricsList.size() + "]", "Type", "RPS", "Avg(ms)", "Min(ms)", "Max(ms)", "StdDev", "Count", "TP50", "TP90", "TP95", "TP99", "TP999", "TP9999", "TP99999", "TP100"));
         if (methodMetricsList.isEmpty()) {
             return sb.toString();
         }
 
-        String dataFormat = "%-" + maxApiLength + "s%9d%9.2f%9d%9d%9.2f%10d%9d%9d%9d%9d%9d%9d%9d%9d%n";
+        String dataFormat = "%-" + maxApiLength + "s%13s%9d%9.2f%9d%9d%9.2f%10d%9d%9d%9d%9d%9d%9d%9d%9d%n";
         for (int i = 0; i < methodMetricsList.size(); ++i) {
-            MethodMetrics methodMetrics = methodMetricsList.get(i);
-            if (methodMetrics.getTotalCount() <= 0) {
+            MethodMetrics metrics = methodMetricsList.get(i);
+            if (metrics.getTotalCount() <= 0) {
                 continue;
             }
 
             sb.append(String.format(dataFormat,
-                    methodMetrics.getMethodTag().getSimpleDesc(),
-                    methodMetrics.getRPS(),
-                    methodMetrics.getAvgTime(),
-                    methodMetrics.getMinTime(),
-                    methodMetrics.getMaxTime(),
-                    methodMetrics.getStdDev(),
-                    methodMetrics.getTotalCount(),
-                    methodMetrics.getTP50(),
-                    methodMetrics.getTP90(),
-                    methodMetrics.getTP95(),
-                    methodMetrics.getTP99(),
-                    methodMetrics.getTP999(),
-                    methodMetrics.getTP9999(),
-                    methodMetrics.getTP99999(),
-                    methodMetrics.getTP100()));
+                    metrics.getMethodTag().getSimpleDesc(),
+                    metrics.getMethodTag().getType(),
+                    metrics.getRPS(),
+                    metrics.getAvgTime(),
+                    metrics.getMinTime(),
+                    metrics.getMaxTime(),
+                    metrics.getStdDev(),
+                    metrics.getTotalCount(),
+                    metrics.getTP50(),
+                    metrics.getTP90(),
+                    metrics.getTP95(),
+                    metrics.getTP99(),
+                    metrics.getTP999(),
+                    metrics.getTP9999(),
+                    metrics.getTP99999(),
+                    metrics.getTP100()));
         }
         return sb.toString();
     }

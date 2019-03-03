@@ -52,6 +52,7 @@ public class InfluxDBMethodMetricsProcessor extends AbstractMethodMetricsProcess
                 .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
                 .append(",ClassName=").append(methodTag.getClassName())
                 .append(",Method=").append(methodDesc)
+                .append(",Type=").append(methodTag.getType())
                 .append(" RPS=").append(methodMetrics.getRPS()).append("i")
                 .append(",Avg=").append(NumFormatUtils.getFormatStr(methodMetrics.getAvgTime()))
                 .append(",Min=").append(methodMetrics.getMinTime()).append("i")
@@ -74,6 +75,7 @@ public class InfluxDBMethodMetricsProcessor extends AbstractMethodMetricsProcess
         MethodTag methodTag = methodMetrics.getMethodTag();
         return methodTag.getClassName().length()
                 + 8 + methodTag.getSimpleDesc().length()//Method
+                + 6 + methodTag.getType().length()//Type
                 + 5 + 6 + 1//RPS
                 + 5 + 7 //Avg
                 + 5 + 3 + 1//Min
