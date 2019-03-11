@@ -33,7 +33,7 @@ public abstract class BaseTest {
     @BeforeClass
     public static void init() {
         System.setProperty(PropertyKeys.PRO_FILE_NAME, TEMP_FILE);
-        AutoRollingFileWriter writer = new MinutelyRollingFileWriter(TEMP_FILE);
+        AutoRollingFileWriter writer = new MinutelyRollingFileWriter(TEMP_FILE, 1);
         writer.write("AppName=" + APP_NAME + "\n");
         writer.write("MetricsProcessorType=" + METRICS_PROCESSOR_TYPE + "\n");
         writer.write("IncludePackages=" + INCLUDE_PACKAGES + "\n");

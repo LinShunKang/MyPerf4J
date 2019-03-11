@@ -12,7 +12,8 @@ public class ILoggerTest {
     @Test
     public void test() {
         ProfilingConfig.getInstance().setLogRollingTimeUnit(PropertyValues.LOG_ROLLING_TIME_MINUTELY);
-        
+        ProfilingConfig.getInstance().setLogReserveCount(PropertyValues.DEFAULT_LOG_RESERVE_COUNT);
+
         test(LoggerFactory.getLogger("/tmp/testLogger.log"));
         test(LoggerFactory.getLogger(PropertyValues.NULL_FILE));
     }

@@ -25,6 +25,8 @@ public interface PropertyKeys {
 
     String LOG_ROLLING_TIME_TIME_UNIT = "LogRollingTimeUnit";
 
+    String LOG_RESERVE_COUNT = "LogReserveCount";
+
     String RECORDER_MODE = "RecorderMode";
 
     String BACKUP_RECORDERS_COUNT = "BackupRecordersCount";

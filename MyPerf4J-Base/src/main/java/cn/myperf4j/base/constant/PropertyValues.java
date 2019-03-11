@@ -21,6 +21,8 @@ public interface PropertyValues {
 
     int METRICS_PROCESS_TYPE_INFLUX_DB = 2;
 
+    int DEFAULT_LOG_RESERVE_COUNT = 7;
+
     String LOG_ROLLING_TIME_MINUTELY = "MINUTELY";
 
     String LOG_ROLLING_TIME_HOURLY = "HOURLY";

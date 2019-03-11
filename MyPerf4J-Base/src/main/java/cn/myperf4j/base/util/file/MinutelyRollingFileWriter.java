@@ -18,8 +18,8 @@ public class MinutelyRollingFileWriter extends AutoRollingFileWriter {
         }
     };
 
-    public MinutelyRollingFileWriter(String fileName) {
-        super(fileName);
+    public MinutelyRollingFileWriter(String fileName, int reserveFileCount) {
+        super(fileName, reserveFileCount);
     }
 
     @Override
@@ -28,13 +28,13 @@ public class MinutelyRollingFileWriter extends AutoRollingFileWriter {
     }
 
     @Override
-    long getNextRollingTime(Date now) {
+    Calendar computeEpochCal(Date now, int epochOffset) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(now);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
-        cal.add(Calendar.MINUTE, 1);
-        return cal.getTime().getTime();
+        cal.add(Calendar.MINUTE, epochOffset);
+        return cal;
     }
 
     @Override

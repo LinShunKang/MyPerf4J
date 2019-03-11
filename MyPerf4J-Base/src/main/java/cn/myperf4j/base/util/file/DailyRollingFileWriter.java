@@ -18,20 +18,20 @@ public class DailyRollingFileWriter extends AutoRollingFileWriter {
         }
     };
 
-    public DailyRollingFileWriter(String fileName) {
-        super(fileName);
+    public DailyRollingFileWriter(String fileName, int reserveFileCount) {
+        super(fileName, reserveFileCount);
     }
 
     @Override
-    long getNextRollingTime(Date now) {
+    Calendar computeEpochCal(Date now, int epochOffset) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(now);
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
-        cal.add(Calendar.DATE, 1);
-        return cal.getTime().getTime();
+        cal.add(Calendar.DATE, epochOffset);
+        return cal;
     }
 
     @Override

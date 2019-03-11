@@ -18,19 +18,19 @@ public class HourlyRollingFileWriter extends AutoRollingFileWriter {
         }
     };
 
-    public HourlyRollingFileWriter(String fileName) {
-        super(fileName);
+    public HourlyRollingFileWriter(String fileName, int reserveFileCount) {
+        super(fileName, reserveFileCount);
     }
 
     @Override
-    long getNextRollingTime(Date now) {
+    Calendar computeEpochCal(Date now, int epochOffset) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(now);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
-        cal.add(Calendar.HOUR_OF_DAY, 1);
-        return cal.getTime().getTime();
+        cal.add(Calendar.HOUR_OF_DAY, epochOffset);
+        return cal;
     }
 
     @Override

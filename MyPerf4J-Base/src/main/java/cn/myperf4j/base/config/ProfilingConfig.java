@@ -30,6 +30,8 @@ public class ProfilingConfig {
 
     private String logRollingTimeUnit;
 
+    private int LogReserveCount;
+
     private String recorderMode;
 
     private int backupRecorderCount;
@@ -134,6 +136,14 @@ public class ProfilingConfig {
 
     public void setLogRollingTimeUnit(String logRollingTimeUnit) {
         this.logRollingTimeUnit = logRollingTimeUnit;
+    }
+
+    public int getLogReserveCount() {
+        return LogReserveCount;
+    }
+
+    public void setLogReserveCount(int logReserveCount) {
+        LogReserveCount = logReserveCount;
     }
 
     public String getRecorderMode() {

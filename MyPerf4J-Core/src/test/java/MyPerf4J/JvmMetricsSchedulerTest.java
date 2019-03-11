@@ -36,5 +36,6 @@ public class JvmMetricsSchedulerTest {
         config.setBufferPoolMetricsFile("/tmp/metrics.log");
         config.setThreadMetricsFile("/tmp/metrics.log");
         config.setLogRollingTimeUnit("DAILY");
+        config.setLogReserveCount(7);
     }
 }
