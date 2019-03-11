@@ -10,16 +10,16 @@ public class AutoRollingLogger implements ILogger {
 
     private final AutoRollingFileWriter writer;
 
-    AutoRollingLogger(String logFile, String rollingTimeUnit) {
+    AutoRollingLogger(String logFile, String rollingTimeUnit, int reserveFileCount) {
         switch (rollingTimeUnit.toUpperCase()) {
             case PropertyValues.LOG_ROLLING_TIME_HOURLY:
-                this.writer = new HourlyRollingFileWriter(logFile);
+                this.writer = new HourlyRollingFileWriter(logFile, reserveFileCount);
                 break;
             case PropertyValues.LOG_ROLLING_TIME_MINUTELY:
-                this.writer = new MinutelyRollingFileWriter(logFile);
+                this.writer = new MinutelyRollingFileWriter(logFile, reserveFileCount);
                 break;
             default:
-                this.writer = new DailyRollingFileWriter(logFile);
+                this.writer = new DailyRollingFileWriter(logFile, reserveFileCount);
         }
     }
 

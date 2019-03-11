@@ -52,7 +52,7 @@ public class AbstractBootstrapTest {
     private void initPropertiesFile(int metricsProcessorType) {
         String propertiesFile = "/tmp/MyPerf4J.properties";
         System.setProperty(PropertyKeys.PRO_FILE_NAME, propertiesFile);
-        AutoRollingFileWriter writer = new MinutelyRollingFileWriter(propertiesFile);
+        AutoRollingFileWriter writer = new MinutelyRollingFileWriter(propertiesFile, 1);
         writer.write("AppName=MyPerf4JTest\n");
         writer.write("IncludePackages=MyPerf4J\n");
         writer.write("MetricsProcessorType=" + metricsProcessorType + "\n");

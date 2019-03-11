@@ -6,6 +6,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -14,7 +15,11 @@ import java.util.Date;
  */
 public abstract class AutoRollingFileWriter {
 
+    private static final int MAX_INACTIVITY_EPOCHS = 30;
+
     private final String fileName;
+
+    private final int reserveFileCount;
 
     private volatile String rollingFileName;
 
@@ -25,31 +30,53 @@ public abstract class AutoRollingFileWriter {
     private volatile long nextRollingTime;
 
 
-    public AutoRollingFileWriter(String fileName) {
+    public AutoRollingFileWriter(String fileName, int reserveFileCount) {
         Date now = new Date();
 
         this.fileName = fileName;
+        this.reserveFileCount = reserveFileCount;
         this.closed = false;
         this.nextRollingTime = getNextRollingTime(now);
         this.rollingFileName = formatDateFileName(fileName, now);
 
-        File targetFile = new File(fileName);
-        if (!targetFile.exists()) {
-            createWriter(targetFile, false);
-            return;
-        }
+        try {
+            File targetFile = new File(fileName);
+            if (!targetFile.exists()) {
+                createWriter(targetFile, false);
+                return;
+            }
 
-        Date lastModifiedDate = new Date(targetFile.lastModified());
-        if (isSameEpoch(now, lastModifiedDate)) {
-            createWriter(targetFile, true);
-            return;
-        }
+            Date lastModifiedDate = new Date(targetFile.lastModified());
+            if (isSameEpoch(now, lastModifiedDate)) {
+                createWriter(targetFile, true);
+                return;
+            }
 
-        this.rollingFileName = formatDateFileName(fileName, lastModifiedDate);
-        rollingFile(now);
+            this.rollingFileName = formatDateFileName(fileName, lastModifiedDate);
+            rollingFile(now);
+        } finally {
+            clean(now, MAX_INACTIVITY_EPOCHS);//尽可能的删除过期的日志文件
+        }
     }
 
-    abstract long getNextRollingTime(Date now);
+    private void clean(Date now, int epochs) {
+        for (int i = 0; i < epochs; ++i) {
+            int epochOffset = (-reserveFileCount - 1) - i;
+            Date date = computeEpochCal(now, epochOffset).getTime();
+            File file2Del = new File(formatDateFileName(fileName, date));
+            if (file2Del.exists() && file2Del.isFile()) {
+                boolean delete = file2Del.delete();
+                Logger.info("AutoRollingFileWriter.clean(" + now + ", " + epochs + "): delete " + file2Del.getName() + " " + (delete ? "success" : "fail"));
+            }
+        }
+    }
+
+    private long getNextRollingTime(Date now) {
+        Calendar calendar = computeEpochCal(now, 1);
+        return calendar.getTime().getTime();
+    }
+
+    abstract Calendar computeEpochCal(Date now, int epochOffset);
 
     abstract String formatDateFileName(String fileName, Date date);
 
@@ -87,10 +114,12 @@ public abstract class AutoRollingFileWriter {
 
             File file = new File(fileName);
             boolean rename = file.renameTo(targetFile);
-            Logger.info("AutoRollingFileWriter.rollingFile(" + now + "): rename " + fileName + " to " + targetFile.getName() + " " + rename);
+            Logger.info("AutoRollingFileWriter.rollingFile(" + now + "): rename " + fileName + " to " + targetFile.getName() + " " + (rename ? "success" : "fail"));
 
             createWriter(new File(fileName), false);
             rollingFileName = datedFilename;
+
+            clean(now, 1);//删除最近一个过期的日志文件
         } catch (Exception e) {
             Logger.error("AutoRollingFileWriter.rollingFile(" + now + "): rollingFile=" + rollingFileName, e);
         }
