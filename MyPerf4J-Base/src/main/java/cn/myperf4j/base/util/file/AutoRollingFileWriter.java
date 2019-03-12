@@ -34,7 +34,7 @@ public abstract class AutoRollingFileWriter {
         Date now = new Date();
 
         this.fileName = fileName;
-        this.reserveFileCount = reserveFileCount;
+        this.reserveFileCount = reserveFileCount < 0 ? 0 : reserveFileCount;
         this.closed = false;
         this.nextRollingTime = getNextRollingTime(now);
         this.rollingFileName = formatDateFileName(fileName, now);
