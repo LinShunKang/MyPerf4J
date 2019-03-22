@@ -113,8 +113,11 @@ ShowMethodParams=true
 
 ## 已知用户
 如果您在使用 MyPerf4J，请告诉我，您的使用对我来说非常重要：[https://github.com/LinShunKang/MyPerf4J/issues/30](https://github.com/LinShunKang/MyPerf4J/issues/30) （按登记顺序排列）
+
 <div align="center">
-<img src="https://github.com/LinShunKang/Objects/blob/master/Boss_Logo_compressed.png?raw=true"  height="140" width="140">
+<img src="https://github.com/LinShunKang/Objects/blob/master/Boss_Logo_compressed.png?raw=true" width="80" height="80"/>
+&nbsp;&nbsp;&nbsp;
+<img src="https://github.com/LinShunKang/Objects/blob/master/logos/Lever.jpeg?raw=true" width="240" height="80"/>
 </div>
 
 ## 参考项目
