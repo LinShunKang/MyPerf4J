@@ -106,9 +106,11 @@ If you encounter any issues or if you have a question, don't hesitate to [create
 Welcome to register the company name in this issue: [https://github.com/LinShunKang/MyPerf4J/issues/30](https://github.com/LinShunKang/MyPerf4J/issues/30) (In order of registration)
 
 <div align="center">
-<img src="https://github.com/LinShunKang/Objects/blob/master/Boss_Logo_compressed.png?raw=true" width="80" height="80"/>
+<img src="https://github.com/LinShunKang/Objects/blob/master/logos/Boss_300x300.png?raw=true" width="80" height="80"/>
 &nbsp;&nbsp;&nbsp;
 <img src="https://github.com/LinShunKang/Objects/blob/master/logos/Lever.jpeg?raw=true" width="240" height="80"/>
+&nbsp;&nbsp;&nbsp;
+<img src="https://github.com/LinShunKang/Objects/blob/master/logos/dianzhang_303x303.jpeg?raw=true" width="80" height="80"/>
 </div>
 
 ## Inspired by
