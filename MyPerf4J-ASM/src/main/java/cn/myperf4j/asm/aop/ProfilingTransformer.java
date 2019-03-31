@@ -33,10 +33,10 @@ public class ProfilingTransformer implements ClassFileTransformer {
                 return classFileBuffer;
             }
 
-            Logger.info("ProfilingTransformer.transform(" + loader + ", " + className + ", classBeingRedefined, protectionDomain, " + classFileBuffer.length + ")...");
+            Logger.info("ProfilingTransformer.transform(" + getClassLoaderName(loader) + ", " + className + ", classBeingRedefined, protectionDomain, " + classFileBuffer.length + ")...");
             return getBytes(loader, className, classFileBuffer);
         } catch (Throwable e) {
-            Logger.error("ProfilingTransformer.transform(" + loader + ", " + className + ", " + classBeingRedefined + ", protectionDomain, " + classFileBuffer.length + ")", e);
+            Logger.error("ProfilingTransformer.transform(" + getClassLoaderName(loader) + ", " + className + ", " + classBeingRedefined + ", protectionDomain, " + classFileBuffer.length + ")", e);
         }
         return classFileBuffer;
     }
@@ -64,10 +64,17 @@ public class ProfilingTransformer implements ClassFileTransformer {
             return false;
         }
 
-        String loaderName = classLoader.getClass().getName();
+        String loaderName = getClassLoaderName(classLoader);
         return loaderName.equals("org.apache.catalina.loader.WebappClassLoader")
+                || loaderName.equals("org.apache.catalina.loader.ParallelWebappClassLoader")
                 || loaderName.equals("org.springframework.boot.loader.LaunchedURLClassLoader");
-
     }
 
+    private String getClassLoaderName(ClassLoader classLoader) {
+        if (classLoader == null) {
+            return "null";
+        }
+
+        return classLoader.getClass().getName();
+    }
 }

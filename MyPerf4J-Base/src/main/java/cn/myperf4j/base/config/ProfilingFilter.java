@@ -63,12 +63,14 @@ public class ProfilingFilter {
 
         //默认不注入的method
         excludeMethods.add("main");
+        excludeMethods.add("premain");
         excludeMethods.add("getClass");//java.lang.Object
         excludeMethods.add("hashCode");//java.lang.Object
         excludeMethods.add("equals");//java.lang.Object
         excludeMethods.add("clone");//java.lang.Object
         excludeMethods.add("toString");//java.lang.Object
         excludeMethods.add("notify");//java.lang.Object
+        excludeMethods.add("notifyAll");//java.lang.Object
         excludeMethods.add("wait");//java.lang.Object
         excludeMethods.add("finalize");//java.lang.Object
         excludeMethods.add("afterPropertiesSet");//spring

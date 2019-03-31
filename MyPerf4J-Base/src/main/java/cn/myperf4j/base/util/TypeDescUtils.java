@@ -46,7 +46,7 @@ public final class TypeDescUtils {
         descriptor = descriptor.trim();
 
         int roundTimes = 0;
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder("(");
         for (int i = 0; i < descriptor.length() && roundTimes++ <= descriptor.length(); ) {
             char ch = descriptor.charAt(i);
             if (ch == '(') {
@@ -68,9 +68,12 @@ public final class TypeDescUtils {
         }
 
         if (sb.length() < 2) {
+            sb.append(")");
             return sb.toString();
         }
-        return sb.substring(0, sb.length() - 2);
+
+        sb.replace(sb.length() - 2, sb.length() - 1, ")");
+        return sb.substring(0, sb.length() - 1);
     }
 
     private static boolean isTypeDescriptor(char ch) {
@@ -130,18 +133,30 @@ public final class TypeDescUtils {
     public static String getMethodParamsDesc(Method method) {
         Class<?>[] parameterTypes = method.getParameterTypes();
         if (parameterTypes.length <= 0) {
-            return "";
+            return "()";
         }
 
         StringBuilder sb = SB_TL.get();
         try {
-            for (int i = 0; i < parameterTypes.length; ++i) {
+            sb.append("(");
+            int i = 0;
+            for (; i < parameterTypes.length - 1; ++i) {
                 sb.append(parameterTypes[i].getSimpleName()).append(", ");
             }
-            return sb.substring(0, sb.length() - 2);
+            sb.append(parameterTypes[i].getSimpleName()).append(")");
+
+            return sb.toString();
         } finally {
             sb.setLength(0);
         }
+    }
+
+    /**
+     * @param innerClassName : 形如：java/lang/String
+     */
+    public static String getSimpleClassName(String innerClassName) {
+        int idx = innerClassName.lastIndexOf('/');
+        return innerClassName.substring(idx + 1);
     }
 
 }

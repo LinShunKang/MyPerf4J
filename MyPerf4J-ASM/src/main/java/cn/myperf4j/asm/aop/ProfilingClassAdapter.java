@@ -3,6 +3,7 @@ package cn.myperf4j.asm.aop;
 import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.config.ProfilingFilter;
 import cn.myperf4j.base.util.Logger;
+import cn.myperf4j.base.util.TypeDescUtils;
 import org.objectweb.asm.*;
 
 import java.util.ArrayList;
@@ -71,6 +72,18 @@ public class ProfilingClassAdapter extends ClassVisitor {
             return super.visitMethod(access, name, desc, signature, exceptions);
         }
 
+        String simpleClassName = TypeDescUtils.getSimpleClassName(innerClassName);
+        String classMethodName = simpleClassName + "." + name;
+        if (ProfilingFilter.isNotNeedInjectMethod(classMethodName)) {
+            return super.visitMethod(access, name, desc, signature, exceptions);
+        }
+
+        String desc4Human = TypeDescUtils.getMethodParamsDesc(desc);
+        classMethodName = classMethodName + desc4Human;
+        if (ProfilingFilter.isNotNeedInjectMethod(classMethodName)) {
+            return super.visitMethod(access, name, desc, signature, exceptions);
+        }
+
         MethodVisitor mv = cv.visitMethod(access, name, desc, signature, exceptions);
         if (mv == null) {
             return null;
@@ -80,7 +93,7 @@ public class ProfilingClassAdapter extends ClassVisitor {
         if (isInvocationHandler && isInvokeMethod(name, desc)) {
             return new ProfilingDynamicMethodVisitor(access, name, desc, mv);
         } else {
-            return new ProfilingMethodVisitor(access, name, desc, mv, innerClassName);
+            return new ProfilingMethodVisitor(access, name, desc, mv, innerClassName, simpleClassName, desc4Human);
         }
     }
 

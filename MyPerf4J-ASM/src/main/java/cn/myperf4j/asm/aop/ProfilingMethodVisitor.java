@@ -35,17 +35,17 @@ public class ProfilingMethodVisitor extends AdviceAdapter {
                                   String name,
                                   String desc,
                                   MethodVisitor mv,
-                                  String innerClassName) {
+                                  String innerClassName,
+                                  String simpleClassName,
+                                  String humanMethodDesc) {
         super(ASM5, mv, access, name, desc);
         this.methodName = name;
-        this.methodTagId = methodTagMaintainer.addMethodTag(getMethodTag(innerClassName, name, desc));
+        this.methodTagId = methodTagMaintainer.addMethodTag(getMethodTag(simpleClassName, name, humanMethodDesc));
         this.innerClassName = innerClassName;
     }
 
-    private MethodTag getMethodTag(String innerClassName, String methodName, String desc) {
-        int idx = innerClassName.replace('.', '/').lastIndexOf('/');
-        String simpleClassName = innerClassName.substring(idx + 1);
-        String methodParamDesc = profilingConfig.isShowMethodParams() ? "(" + TypeDescUtils.getMethodParamsDesc(desc) + ")" : "";
+    private MethodTag getMethodTag(String simpleClassName, String methodName, String humanMethodDesc) {
+        String methodParamDesc = profilingConfig.isShowMethodParams() ? humanMethodDesc : "";
         return MethodTag.getGeneralInstance(simpleClassName, methodName, methodParamDesc);
     }
 
