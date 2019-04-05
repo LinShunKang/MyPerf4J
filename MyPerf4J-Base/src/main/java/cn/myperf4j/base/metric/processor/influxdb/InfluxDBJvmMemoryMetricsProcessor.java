@@ -37,7 +37,7 @@ public class InfluxDBJvmMemoryMetricsProcessor extends AbstractJvmMemoryMetricsP
                 .append(",HeapUsed=").append(metrics.getHeapUsed())
                 .append(",HeapCommitted=").append(metrics.getHeapCommitted())
                 .append(",HeapMax=").append(metrics.getHeapMax())
-                .append(" ").append(startNanos);
+                .append(' ').append(startNanos);
         return sb.toString();
     }
 }

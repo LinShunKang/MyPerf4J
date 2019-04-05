@@ -6,6 +6,8 @@ import cn.myperf4j.base.util.DateFormatUtils;
 
 import java.util.List;
 
+import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
+
 /**
  * Created by LinShunkang on 2018/3/30
  */
@@ -18,7 +20,7 @@ public final class DefaultMethodMetricsFormatter implements MethodMetricsFormatt
 
         String dataTitleFormat = "%-" + maxApiLength + "s%13s%9s%9s%9s%9s%9s%10s%9s%9s%9s%9s%9s%9s%9s%9s%n";
         StringBuilder sb = new StringBuilder((methodMetricsList.size() + 2) * (9 * 11 + 1 + maxApiLength));
-        sb.append("MyPerf4J Method Metrics [").append(DateFormatUtils.format(startMillis)).append(", ").append(DateFormatUtils.format(stopMillis)).append("]").append(String.format("%n"));
+        sb.append("MyPerf4J Method Metrics [").append(DateFormatUtils.format(startMillis)).append(", ").append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
         sb.append(String.format(dataTitleFormat, "Method[" + methodMetricsList.size() + "]", "Type", "RPS", "Avg(ms)", "Min(ms)", "Max(ms)", "StdDev", "Count", "TP50", "TP90", "TP95", "TP99", "TP999", "TP9999", "TP99999", "TP100"));
         if (methodMetricsList.isEmpty()) {
             return sb.toString();

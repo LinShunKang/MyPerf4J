@@ -68,7 +68,7 @@ public final class TypeDescUtils {
         }
 
         if (sb.length() < 2) {
-            sb.append(")");
+            sb.append(')');
             return sb.toString();
         }
 
@@ -138,12 +138,12 @@ public final class TypeDescUtils {
 
         StringBuilder sb = SB_TL.get();
         try {
-            sb.append("(");
+            sb.append('(');
             int i = 0;
             for (; i < parameterTypes.length - 1; ++i) {
                 sb.append(parameterTypes[i].getSimpleName()).append(", ");
             }
-            sb.append(parameterTypes[i].getSimpleName()).append(")");
+            sb.append(parameterTypes[i].getSimpleName()).append(')');
 
             return sb.toString();
         } finally {

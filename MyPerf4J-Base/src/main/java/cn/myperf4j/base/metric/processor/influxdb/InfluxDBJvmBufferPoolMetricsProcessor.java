@@ -30,10 +30,10 @@ public class InfluxDBJvmBufferPoolMetricsProcessor extends AbstractJvmBufferPool
         sb.append("jvm_buffer_pool_metrics")
                 .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
                 .append(",PoolName=").append(metrics.getName())
-                .append(" Count=").append(metrics.getCount()).append("i")
-                .append(",MemoryUsed=").append(metrics.getMemoryUsed()).append("i")
-                .append(",MemoryCapacity=").append(metrics.getMemoryCapacity()).append("i")
-                .append(" ").append(startNanos);
+                .append(" Count=").append(metrics.getCount()).append('i')
+                .append(",MemoryUsed=").append(metrics.getMemoryUsed()).append('i')
+                .append(",MemoryCapacity=").append(metrics.getMemoryCapacity()).append('i')
+                .append(' ').append(startNanos);
         return sb.toString();
     }
 }

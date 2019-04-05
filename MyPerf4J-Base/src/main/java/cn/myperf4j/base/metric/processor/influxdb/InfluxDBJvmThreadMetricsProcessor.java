@@ -29,17 +29,17 @@ public class InfluxDBJvmThreadMetricsProcessor extends AbstractJvmThreadMetricsP
     private String createLineProtocol(JvmThreadMetrics metrics, long startNanos, StringBuilder sb) {
         sb.append("jvm_thread_metrics")
                 .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
-                .append(" TotalStarted=").append(metrics.getTotalStarted()).append("i")
-                .append(",Active=").append(metrics.getActive()).append("i")
-                .append(",Peak=").append(metrics.getPeak()).append("i")
-                .append(",Daemon=").append(metrics.getDaemon()).append("i")
-                .append(",New=").append(metrics.getNews()).append("i")
-                .append(",Runnable=").append(metrics.getRunnable()).append("i")
-                .append(",Blocked=").append(metrics.getBlocked()).append("i")
-                .append(",Waiting=").append(metrics.getWaiting()).append("i")
-                .append(",TimedWaiting=").append(metrics.getTimedWaiting()).append("i")
-                .append(",Terminated=").append(metrics.getTerminated()).append("i")
-                .append(" ").append(startNanos);
+                .append(" TotalStarted=").append(metrics.getTotalStarted()).append('i')
+                .append(",Active=").append(metrics.getActive()).append('i')
+                .append(",Peak=").append(metrics.getPeak()).append('i')
+                .append(",Daemon=").append(metrics.getDaemon()).append('i')
+                .append(",New=").append(metrics.getNews()).append('i')
+                .append(",Runnable=").append(metrics.getRunnable()).append('i')
+                .append(",Blocked=").append(metrics.getBlocked()).append('i')
+                .append(",Waiting=").append(metrics.getWaiting()).append('i')
+                .append(",TimedWaiting=").append(metrics.getTimedWaiting()).append('i')
+                .append(",Terminated=").append(metrics.getTerminated()).append('i')
+                .append(' ').append(startNanos);
         return sb.toString();
     }
 }

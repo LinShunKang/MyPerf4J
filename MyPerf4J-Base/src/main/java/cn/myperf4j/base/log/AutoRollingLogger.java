@@ -6,6 +6,8 @@ import cn.myperf4j.base.util.file.DailyRollingFileWriter;
 import cn.myperf4j.base.util.file.HourlyRollingFileWriter;
 import cn.myperf4j.base.util.file.MinutelyRollingFileWriter;
 
+import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
+
 public class AutoRollingLogger implements ILogger {
 
     private final AutoRollingFileWriter writer;
@@ -25,12 +27,12 @@ public class AutoRollingLogger implements ILogger {
 
     @Override
     public void log(String msg) {
-        writer.write(msg + '\n');
+        writer.write(msg + LINE_SEPARATOR);
     }
 
     @Override
     public void logAndFlush(String msg) {
-        writer.writeAndFlush(msg + '\n');
+        writer.writeAndFlush(msg + LINE_SEPARATOR);
     }
 
     @Override

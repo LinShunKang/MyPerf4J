@@ -6,6 +6,8 @@ import cn.myperf4j.base.util.DateFormatUtils;
 
 import java.util.List;
 
+import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
+
 /**
  * Created by LinShunkang on 2018/8/21
  */
@@ -18,7 +20,7 @@ public class DefaultJvmGCMetricsFormatter implements JvmGCMetricsFormatter {
 
         String dataTitleFormat = "%-" + maxGCNameLength + "s%9s%9s%n";
         StringBuilder sb = new StringBuilder((metricsList.size() + 2) * (9 * 3 + 64));
-        sb.append("MyPerf4J JVM GC Metrics [").append(DateFormatUtils.format(startMillis)).append(", ").append(DateFormatUtils.format(stopMillis)).append("]").append(String.format("%n"));
+        sb.append("MyPerf4J JVM GC Metrics [").append(DateFormatUtils.format(startMillis)).append(", ").append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
         sb.append(String.format(dataTitleFormat, "Name", "Count", "Time"));
         if (metricsList.isEmpty()) {
             return sb.toString();

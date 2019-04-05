@@ -32,9 +32,9 @@ public class InfluxDBJvmGCMetricsProcessor extends AbstractJvmGCMetricsProcessor
         sb.append("jvm_gc_metrics")
                 .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
                 .append(",GCName=").append(gcName)
-                .append(" CollectCount=").append(metrics.getCollectCount()).append("i")
-                .append(",CollectTime=").append(metrics.getCollectTime()).append("i")
-                .append(" ").append(startNanos);
+                .append(" CollectCount=").append(metrics.getCollectCount()).append('i')
+                .append(",CollectTime=").append(metrics.getCollectTime()).append('i')
+                .append(' ').append(startNanos);
         return sb.toString();
     }
 }

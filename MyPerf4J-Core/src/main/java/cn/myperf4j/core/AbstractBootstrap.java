@@ -19,6 +19,8 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
+
 /**
  * Created by LinShunkang on 2018/4/11
  */
@@ -356,12 +358,12 @@ public abstract class AbstractBootstrap {
     public abstract boolean initOther();
 
     private void printBannerText() {
-        Logger.info("\n" +
-                "    __  ___      ____            ______ __      __\n" +
-                "   /  |/  /_  __/ __ \\___  _____/ __/ // /     / /\n" +
-                "  / /|_/ / / / / /_/ / _ \\/ ___/ /_/ // /___  / / \n" +
-                " / /  / / /_/ / ____/  __/ /  / __/__  __/ /_/ /  \n" +
-                "/_/  /_/\\__, /_/    \\___/_/  /_/    /_/  \\____/   \n" +
-                "       /____/                                     \n");
+        Logger.info(LINE_SEPARATOR +
+                "    __  ___      ____            ______ __      __" + LINE_SEPARATOR +
+                "   /  |/  /_  __/ __ \\___  _____/ __/ // /     / /" + LINE_SEPARATOR +
+                "  / /|_/ / / / / /_/ / _ \\/ ___/ /_/ // /___  / / " + LINE_SEPARATOR +
+                " / /  / / /_/ / ____/  __/ /  / __/__  __/ /_/ /  " + LINE_SEPARATOR +
+                "/_/  /_/\\__, /_/    \\___/_/  /_/    /_/  \\____/   " + LINE_SEPARATOR +
+                "       /____/                                     " + LINE_SEPARATOR);
     }
 }

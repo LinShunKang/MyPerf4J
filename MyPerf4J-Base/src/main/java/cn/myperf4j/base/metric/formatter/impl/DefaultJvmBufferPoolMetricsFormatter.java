@@ -6,6 +6,8 @@ import cn.myperf4j.base.util.DateFormatUtils;
 
 import java.util.List;
 
+import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
+
 /**
  * Created by LinShunkang on 1919/8/21
  */
@@ -15,7 +17,7 @@ public class DefaultJvmBufferPoolMetricsFormatter implements JvmBufferPoolMetric
     public String format(List<JvmBufferPoolMetrics> metricsList, long startMillis, long stopMillis) {
         String dataTitleFormat = "%-19s%19s%19s%19s%n";
         StringBuilder sb = new StringBuilder((metricsList.size() + 2) * (3 * 19 + 64));
-        sb.append("MyPerf4J JVM BufferPool Metrics [").append(DateFormatUtils.format(startMillis)).append(", ").append(DateFormatUtils.format(stopMillis)).append("]").append(String.format("%n"));
+        sb.append("MyPerf4J JVM BufferPool Metrics [").append(DateFormatUtils.format(startMillis)).append(", ").append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
         sb.append(String.format(dataTitleFormat, "Name", "Count", "MemoryUsed", "MemoryCapacity"));
         if (metricsList.isEmpty()) {
             return sb.toString();
