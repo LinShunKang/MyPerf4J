@@ -88,7 +88,7 @@ IncludePackages=cn.perf4j.demo;cn.perf4j.demo1.[p1,p2,p3];cn.*.demo.*
 ShowMethodParams=true
  ```
         
-> 想了解更多的配置？请看[这里](https://github.com/LinShunKang/MyPerf4J/wiki/%E9%85%8D%E7%BD%AE)
+> 查看[配置文件模板](https://raw.githubusercontent.com/LinShunKang/Objects/master/jars/MyPerf4J.properties)。想了解更多的配置？请看[这里](https://github.com/LinShunKang/MyPerf4J/wiki/%E9%85%8D%E7%BD%AE)
 
 ### 运行
 * 输出结果，输出到 /data/logs/MyPerf4J/method_metrics.log:
