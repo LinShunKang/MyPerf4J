@@ -52,7 +52,7 @@ MyPerf4J adopts JavaAgent configuration mode, **transparent** access application
 ### Configure
 Add the following two parameters to the JVM startup parameters
 > -javaagent:/your/path/to/MyPerf4J-ASM.jar
-> -DMyPerf4JPropFile=/your/path/to/myPerf4J.properties
+> -DMyPerf4JPropFile=/your/path/to/MyPerf4J.properties
 
 Among them, the configuration of `MyPerf4JPropFile` is as follows:
 
@@ -97,7 +97,7 @@ ShowMethodParams=true
 ### Uninstall
 Remove the following two parameters from the JVM startup parameters and restart to uninstall the tool.
 > -javaagent:/your/path/to/MyPerf4J-ASM.jar
-> -DMyPerf4JPropFile=/your/path/to/myPerf4J.properties
+> -DMyPerf4JPropFile=/your/path/to/MyPerf4J.properties
 
 ## Issues
 If you encounter any issues or if you have a question, don't hesitate to [create an issue](https://github.com/LinShunKang/MyPerf4J/issues/new/choose) or [send email](mailto:linshunkang.chn@gmail.com) : )

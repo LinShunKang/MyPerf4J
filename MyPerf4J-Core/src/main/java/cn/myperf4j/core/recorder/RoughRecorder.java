@@ -8,15 +8,15 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
  */
 
 /**
- * 默认使用该类作为MyPerf4J的Recorder
+ * 默认使用该类作为 MyPerf4J 的 Recorder
  * <p>
- * 该类用于粗略存储某一个api在指定时间片内的响应时间
+ * 该类用于粗略存储某一个方法在指定时间片内的响应时间
  * 为了进一步减小内存占用，只利用数组方式:
- * 1、将小于等于mostTimeThreshold的响应时间记录在数组中；
- * 2、将大于mostTimeThreshold的响应时间记录到timingArr[mostTimeThreshold+1]中。
+ * 1、将小于等于 mostTimeThreshold 的响应时间记录在数组中；
+ * 2、将大于 mostTimeThreshold 的响应时间记录到 timingArr[mostTimeThreshold+1]中。
  * <p>
- * 注意：由于该Recorder会将大于mostTimeThreshold的响应时间记录为mostTimeThreshold+1
- * 所以为了保证RoughRecorder记录的准确性，请把mostTimeThreshold设置的偏大一些。
+ * 注意：由于该 Recorder 会将大于 mostTimeThreshold 的响应时间记录为 mostTimeThreshold+1
+ * 所以为了保证 RoughRecorder 记录的准确性，请把 mostTimeThreshold 设置的偏大一些。
  */
 public class RoughRecorder extends Recorder {
 

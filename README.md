@@ -52,9 +52,9 @@ MyPerf4J 采用 JavaAgent 配置方式，**透明化**接入应用，对应用�
 ### 配置
 在 JVM 启动参数里加上以下两个参数
 * -javaagent:/your/path/to/MyPerf4J-ASM.jar
-* -DMyPerf4JPropFile=/your/path/to/myPerf4J.properties
+* -DMyPerf4JPropFile=/your/path/to/MyPerf4J.properties
 
-> 形如：java -javaagent:/your/path/to/MyPerf4J-ASM.jar -DMyPerf4JPropFile=/your/path/to/myPerf4J.properties -jar yourJar.jar
+> 形如：java -javaagent:/your/path/to/MyPerf4J-ASM.jar -DMyPerf4JPropFile=/your/path/to/MyPerf4J.properties -jar yourJar.jar
 
 > 注意：使用 Windows 的同学，请注意修改路径格式，包括 `MyPerf4JPropFile` 中的文件路径 
 
@@ -106,7 +106,7 @@ ShowMethodParams=true
 ### 卸载
 在 JVM 启动参数中去掉以下两个参数，重启即可卸载此工具。
 * -javaagent:/your/path/to/MyPerf4J-ASM.jar
-* -DMyPerf4JPropFile=/your/path/to/myPerf4J.properties
+* -DMyPerf4JPropFile=/your/path/to/MyPerf4J.properties
 
 ## 问题
 如果您有任何问题、疑问或者建议，请您毫不犹豫的 [提交Issue](https://github.com/LinShunKang/MyPerf4J/issues/new/choose) 或者 [发送邮件](mailto:linshunkang.chn@gmail.com) : )
