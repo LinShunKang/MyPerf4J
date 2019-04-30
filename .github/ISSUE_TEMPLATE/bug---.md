@@ -1,14 +1,14 @@
 ---
 name: Bug 报告
-about: 创建报告以帮助我们改进程序
+about: 创建报告以帮助我们改进 MyPerf4J
 title: ''
-labels: ''
+labels: bug
 assignees: ''
 
 ---
 
 **Bug 描述** 
-请清晰和简洁的描述你遇见的 bug
+请清晰和简洁的描述你遇见的 bug，方便快速的定位和解决问题
 
 **运行环境**
 1、JDK 版本号，例如，JDK7、JDK8 等 
