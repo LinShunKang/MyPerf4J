@@ -62,18 +62,18 @@ MyPerf4J 采用 JavaAgent 配置方式，**透明化**接入应用，对应用�
 
  ```
 #应用名称
-AppName=MyPerf4JTest
+AppName=YourApplicationName
 
 #MetricsProcessor类型，0:以标准格式化结构输出到stdout.log 1:以标准格式化结构输出到磁盘  2:以InfluxDB LineProtocol格式输出到磁盘
 MetricsProcessorType=1
 
 #配置各个Metrics日志的文件路径，可不配置
-MethodMetricsFile=/data/logs/MyPerf4J/method_metrics.log
-ClassMetricsFile=/data/logs/MyPerf4J/class_metrics.log
-GCMetricsFile=/data/logs/MyPerf4J/gc_metrics.log
-MemMetricsFile=/data/logs/MyPerf4J/memory_metrics.log
-BufPoolMetricsFile=/data/logs/MyPerf4J/buf_pool_metrics
-ThreadMetricsFile=/data/logs/MyPerf4J/thread_metrics.log
+MethodMetricsFile=/your/path/to/log/method_metrics.log
+ClassMetricsFile=/your/path/to/log/class_metrics.log
+GCMetricsFile=/your/path/to/log/gc_metrics.log
+MemMetricsFile=/your/path/to/log/memory_metrics.log
+BufPoolMetricsFile=/your/path/to/log/buf_pool_metrics
+ThreadMetricsFile=/your/path/to/log/thread_metrics.log
 
 #配置Record模式，可配置为accurate/rough
 RecorderMode=accurate
@@ -82,16 +82,18 @@ RecorderMode=accurate
 MilliTimeSlice=10000
     
 #需要监控的package，可配置多个，用英文';'分隔
-IncludePackages=cn.perf4j.demo;cn.perf4j.demo1.[p1,p2,p3];cn.*.demo.*
+IncludePackages=your.package.to.monitor;cn.perf4j.demo;cn.perf4j.demo1.[p1,p2,p3];cn.*.demo.*
 
 #是否展示方法参数类型
 ShowMethodParams=true
  ```
-        
+    
 > 查看[配置文件模板](https://raw.githubusercontent.com/LinShunKang/Objects/master/jars/MyPerf4J.properties)。想了解更多的配置？请看[这里](https://github.com/LinShunKang/MyPerf4J/wiki/%E9%85%8D%E7%BD%AE)
 
+> 注意：需要修改 `AppName`、`IncludePackages` 和 `xxxMetricsFile`
+
 ### 运行
-* 输出结果，输出到 /data/logs/MyPerf4J/method_metrics.log:
+* 输出结果，输出到 /your/path/to/log/method_metrics.log:
 
     ```
     MyPerf4J Method Metrics [2019-03-03 17:27:50, 2019-03-03 17:28:00]

@@ -58,31 +58,32 @@ Among them, the configuration of `MyPerf4JPropFile` is as follows:
 
 ```
 #Application name
-AppName=MyPerf4JTest
+AppName=YourApplicationName
 
 #Configure MetricsProcessors type 0:Output to stdout.log in a standard formatted structure 1:Output to disk in standard formatted structure  2:Output to disk in InfluxDB LineProtocol format
 MetricsProcessorType=1
 
 #Config metrics log file, option
-MethodMetricsFile=/data/logs/MyPerf4J/method_metrics.log
-ClassMetricsFile=/data/logs/MyPerf4J/class_metrics.log
-GCMetricsFile=/data/logs/MyPerf4J/gc_metrics.log
-MemMetricsFile=/data/logs/MyPerf4J/memory_metrics.log
-BufPoolMetricsFile=/data/logs/MyPerf4J/buf_pool_metrics
-ThreadMetricsFile=/data/logs/MyPerf4J/thread_metrics.log
+MethodMetricsFile=/your/path/to/log/method_metrics.log
+ClassMetricsFile=/your/path/to/log/class_metrics.log
+GCMetricsFile=/your/path/to/log/gc_metrics.log
+MemMetricsFile=/your/path/to/log/memory_metrics.log
+BufPoolMetricsFile=/your/path/to/log/buf_pool_metrics
+ThreadMetricsFile=/your/path/to/log/thread_metrics.log
     
 #Configure TimeSlice, time unit: ms, min:1s, max:600s
 MilliTimeSlice=60000
     
 #Configure packages, separated with ';'
-IncludePackages=cn.perf4j;org.myperf4j;cn.perf4j.demo1.[p1,p2,p3];cn.*.demo.*
+IncludePackages=your.package.to.monitor;cn.perf4j;org.myperf4j;cn.perf4j.demo1.[p1,p2,p3];cn.*.demo.*
 
 #Configure show method params type
 ShowMethodParams=true
 ```
+> You need modify `AppName`, `IncludePackages` and `xxxMetricsFile`
 
 ### Run
-* The output is to /data/logs/MyPerf4J/method_metrics.log:
+* The output is to /your/path/to/log/method_metrics.log:
 
     ```
     MyPerf4J Method Metrics [2019-03-03 17:27:50, 2019-03-03 17:28:00]
