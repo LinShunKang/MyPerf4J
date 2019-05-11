@@ -32,6 +32,7 @@ public abstract class AbstractBootstrap {
 
     public final boolean initial() {
         try {
+            Logger.info("Thanks sincerely for using MyPerf4J.");
             if (!doInitial()) {
                 Logger.error("AbstractBootstrap doInitial() FAILURE!!!");
                 return false;
@@ -129,53 +130,78 @@ public abstract class AbstractBootstrap {
     private boolean initProfilingConfig() {
         try {
             ProfilingConfig config = ProfilingConfig.getInstance();
-            String appName = MyProperties.getStr(PropertyKeys.APP_NAME);
-            if (appName == null || appName.isEmpty()) {
-                throw new IllegalArgumentException("AppName is required!!!");
-            }
-            config.setAppName(appName);
 
-            config.setMetricsProcessorType(MyProperties.getInt(PropertyKeys.METRICS_PROCESS_TYPE, PropertyValues.METRICS_PROCESS_TYPE_STDOUT));
-            if (config.getMetricsProcessorType() == PropertyValues.METRICS_PROCESS_TYPE_STDOUT) {
-                config.setMethodMetricsFile(PropertyValues.STDOUT_FILE);
-                config.setClassMetricsFile(PropertyValues.STDOUT_FILE);
-                config.setGcMetricsFile(PropertyValues.STDOUT_FILE);
-                config.setMemoryMetricsFile(PropertyValues.STDOUT_FILE);
-                config.setBufferPoolMetricsFile(PropertyValues.STDOUT_FILE);
-            } else {
-                config.setMethodMetricsFile(MyProperties.getStr(PropertyKeys.METHOD_METRICS_FILE, PropertyValues.DEFAULT_METRICS_FILE));
-                config.setClassMetricsFile(MyProperties.getStr(PropertyKeys.CLASS_METRICS_FILE, PropertyValues.NULL_FILE));
-                config.setGcMetricsFile(MyProperties.getStr(PropertyKeys.GC_METRICS_FILE, PropertyValues.NULL_FILE));
-                config.setMemoryMetricsFile(MyProperties.getStr(PropertyKeys.MEM_METRICS_FILE, PropertyValues.NULL_FILE));
-                config.setBufferPoolMetricsFile(MyProperties.getStr(PropertyKeys.BUF_POOL_METRICS_FILE, PropertyValues.NULL_FILE));
-            }
-            config.setThreadMetricsFile(MyProperties.getStr(PropertyKeys.THREAD_METRICS_FILE, PropertyValues.NULL_FILE));
-            config.setLogRollingTimeUnit(MyProperties.getStr(PropertyKeys.LOG_ROLLING_TIME_TIME_UNIT, PropertyValues.LOG_ROLLING_TIME_DAILY));
-            config.setLogReserveCount(MyProperties.getInt(PropertyKeys.LOG_RESERVE_COUNT, PropertyValues.DEFAULT_LOG_RESERVE_COUNT));
+            initAppName(config);
+            initMetricsFileConfig(config);
+            initLogConfig(config);
+            initRecorderConfig(config);
+            initFiltersConfig(config);
+            initProfilingParamsConfig(config);
 
-            config.setRecorderMode(MyProperties.getStr(PropertyKeys.RECORDER_MODE, PropertyValues.RECORDER_MODE_ROUGH));
-            config.setBackupRecorderCount(MyProperties.getInt(PropertyKeys.BACKUP_RECORDERS_COUNT, PropertyValues.MIN_BACKUP_RECORDERS_COUNT));
-            config.setMilliTimeSlice(MyProperties.getLong(PropertyKeys.MILLI_TIME_SLICE, PropertyValues.DEFAULT_TIME_SLICE));
             config.setShowMethodParams(MyProperties.getBoolean(PropertyKeys.SHOW_METHOD_PARAMS, false));
-
-            String includePackages = MyProperties.getStr(PropertyKeys.FILTER_INCLUDE_PACKAGES, "");
-            if (includePackages == null || includePackages.isEmpty()) {
-                throw new IllegalArgumentException("IncludePackages is required!!!");
-            }
-            config.setIncludePackages(includePackages);
-
-            config.setExcludePackages(MyProperties.getStr(PropertyKeys.FILTER_EXCLUDE_PACKAGES, ""));
             config.setPrintDebugLog(MyProperties.getBoolean(PropertyKeys.DEBUG_PRINT_DEBUG_LOG, false));
-            config.setExcludeMethods(MyProperties.getStr(PropertyKeys.FILTER_EXCLUDE_METHODS, ""));
-            config.setExcludePrivateMethod(MyProperties.getBoolean(PropertyKeys.EXCLUDE_PRIVATE_METHODS, true));
-            config.setExcludeClassLoaders(MyProperties.getStr(PropertyKeys.FILTER_INCLUDE_CLASS_LOADERS, ""));
-            config.setProfilingParamsFile(MyProperties.getStr(PropertyKeys.PROFILING_PARAMS_FILE_NAME, ""));
-            config.setCommonProfilingParams(MyProperties.getInt(PropertyKeys.PROFILING_TIME_THRESHOLD, 1000), MyProperties.getInt(PropertyKeys.PROFILING_OUT_THRESHOLD_COUNT, 16));
+
             return true;
         } catch (Exception e) {
             Logger.error("AbstractBootstrap.initProfilingConfig()", e);
         }
         return false;
+    }
+
+    private void initAppName(ProfilingConfig config) {
+        String appName = MyProperties.getStr(PropertyKeys.APP_NAME);
+        if (appName == null || appName.isEmpty()) {
+            throw new IllegalArgumentException("AppName is required!!!");
+        }
+        config.setAppName(appName);
+    }
+
+    private void initMetricsFileConfig(ProfilingConfig config) {
+        config.setMetricsProcessorType(MyProperties.getInt(PropertyKeys.METRICS_PROCESS_TYPE, PropertyValues.METRICS_PROCESS_TYPE_STDOUT));
+        if (config.getMetricsProcessorType() == PropertyValues.METRICS_PROCESS_TYPE_STDOUT) {
+            config.setMethodMetricsFile(PropertyValues.STDOUT_FILE);
+            config.setClassMetricsFile(PropertyValues.STDOUT_FILE);
+            config.setGcMetricsFile(PropertyValues.STDOUT_FILE);
+            config.setMemoryMetricsFile(PropertyValues.STDOUT_FILE);
+            config.setBufferPoolMetricsFile(PropertyValues.STDOUT_FILE);
+            config.setThreadMetricsFile(PropertyValues.STDOUT_FILE);
+        } else {
+            config.setMethodMetricsFile(MyProperties.getStr(PropertyKeys.METHOD_METRICS_FILE, PropertyValues.DEFAULT_METRICS_FILE));
+            config.setClassMetricsFile(MyProperties.getStr(PropertyKeys.CLASS_METRICS_FILE, PropertyValues.NULL_FILE));
+            config.setGcMetricsFile(MyProperties.getStr(PropertyKeys.GC_METRICS_FILE, PropertyValues.NULL_FILE));
+            config.setMemoryMetricsFile(MyProperties.getStr(PropertyKeys.MEM_METRICS_FILE, PropertyValues.NULL_FILE));
+            config.setBufferPoolMetricsFile(MyProperties.getStr(PropertyKeys.BUF_POOL_METRICS_FILE, PropertyValues.NULL_FILE));
+            config.setThreadMetricsFile(MyProperties.getStr(PropertyKeys.THREAD_METRICS_FILE, PropertyValues.NULL_FILE));
+        }
+    }
+
+    private void initLogConfig(ProfilingConfig config) {
+        config.setLogRollingTimeUnit(MyProperties.getStr(PropertyKeys.LOG_ROLLING_TIME_TIME_UNIT, PropertyValues.LOG_ROLLING_TIME_DAILY));
+        config.setLogReserveCount(MyProperties.getInt(PropertyKeys.LOG_RESERVE_COUNT, PropertyValues.DEFAULT_LOG_RESERVE_COUNT));
+    }
+
+    private void initRecorderConfig(ProfilingConfig config) {
+        config.setRecorderMode(MyProperties.getStr(PropertyKeys.RECORDER_MODE, PropertyValues.RECORDER_MODE_ROUGH));
+        config.setBackupRecorderCount(MyProperties.getInt(PropertyKeys.BACKUP_RECORDERS_COUNT, PropertyValues.MIN_BACKUP_RECORDERS_COUNT));
+        config.setMilliTimeSlice(MyProperties.getLong(PropertyKeys.MILLI_TIME_SLICE, PropertyValues.DEFAULT_TIME_SLICE));
+    }
+
+    private void initFiltersConfig(ProfilingConfig config) {
+        String includePackages = MyProperties.getStr(PropertyKeys.FILTER_INCLUDE_PACKAGES, "");
+        if (includePackages == null || includePackages.isEmpty()) {
+            throw new IllegalArgumentException("IncludePackages is required!!!");
+        }
+
+        config.setIncludePackages(includePackages);
+        config.setExcludePackages(MyProperties.getStr(PropertyKeys.FILTER_EXCLUDE_PACKAGES, ""));
+        config.setExcludeMethods(MyProperties.getStr(PropertyKeys.FILTER_EXCLUDE_METHODS, ""));
+        config.setExcludePrivateMethod(MyProperties.getBoolean(PropertyKeys.EXCLUDE_PRIVATE_METHODS, true));
+        config.setExcludeClassLoaders(MyProperties.getStr(PropertyKeys.FILTER_INCLUDE_CLASS_LOADERS, ""));
+    }
+
+    private void initProfilingParamsConfig(ProfilingConfig config) {
+        config.setProfilingParamsFile(MyProperties.getStr(PropertyKeys.PROFILING_PARAMS_FILE_NAME, ""));
+        config.setCommonProfilingParams(MyProperties.getInt(PropertyKeys.PROFILING_TIME_THRESHOLD, 1000), MyProperties.getInt(PropertyKeys.PROFILING_OUT_THRESHOLD_COUNT, 16));
     }
 
     private boolean initLogger() {
@@ -261,7 +287,7 @@ public abstract class AbstractBootstrap {
             ProfilingConfig config = ProfilingConfig.getInstance();
             String profilingParamFile = config.getProfilingParamsFile();
             if (profilingParamFile == null || profilingParamFile.isEmpty()) {
-                Logger.warn("profilingParamFile is empty!");
+                Logger.info("profilingParamFile is empty, so use same profiling params to all methods.");
                 return true;
             }
 
