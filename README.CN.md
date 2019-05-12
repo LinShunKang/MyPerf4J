@@ -111,9 +111,9 @@ ShowMethodParams=true
 * -DMyPerf4JPropFile=/your/path/to/MyPerf4J.properties
 
 ## 问题
-如果您有任何问题、疑问或者建议，请您毫不犹豫的 [提交Issue](https://github.com/LinShunKang/MyPerf4J/issues/new/choose) 或者 [发送邮件](mailto:linshunkang.chn@gmail.com) ：）
+如果您有任何问题、疑问或者建议，您可以 [提交Issue](https://github.com/LinShunKang/MyPerf4J/issues/new/choose) 或者 [发送邮件](mailto:linshunkang.chn@gmail.com) ：）
 
-注意，请保证您已经**完整阅读过**以下内容：
+注意，为了保障大家的时间，请保证您已经**完整阅读过**以下内容：
 * [提问模板](https://github.com/LinShunKang/MyPerf4J/wiki/%E6%8F%90%E9%97%AE%E6%A8%A1%E6%9D%BF)
 * [快速启动](https://github.com/LinShunKang/MyPerf4J#%E5%BF%AB%E9%80%9F%E5%90%AF%E5%8A%A8)
 * [中文文档](https://github.com/LinShunKang/MyPerf4J/wiki/Chinese-Doc)
