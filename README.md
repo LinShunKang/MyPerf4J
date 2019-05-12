@@ -10,16 +10,16 @@
 
 </div>
 
-## 特性
-* 高性能: 单线程支持每秒 **1000 万次** 响应时间的记录，每次记录只花费 **73 纳秒**
-* 无侵入: 采用 **JavaAgent** 方式，对应用程序完全无侵入，无需修改应用代码
-* 低内存: 采用内存复用的方式，整个生命周期只产生极少的临时对象，不影响应用程序的 GC
-* 高精度: 采用纳秒来计算响应时间
-* 高实时: 支持秒级监控，最低 **1 秒**
+## 价值
+* 快速定位性能瓶颈
+* 快速定位故障原因
 
-## 使用场景
-* 在**开发环境**中快速定位 Java 应用程序的性能瓶颈
-* 在**生产环境**中长期监控 Java 应用程序的性能指标
+## 优势
+* 高性能: 单线程支持每秒 **1500 万次** 响应时间的记录，每次记录只花费 **67 纳秒**
+* 无侵入: 采用 **JavaAgent** 方式，对应用程序完全无侵入，无需修改应用代码
+* 低内存: 采用**内存复用**的方式，整个生命周期只产生极少的临时对象，不影响应用程序的 GC
+* 高精度: 采用**纳秒**来计算响应时间
+* 高实时: 支持**秒级统计**，最低统计粒度为 **1 秒**，并且是**全量统计**，不丢失任何一次记录
 
 ## 文档
 * [English Doc](https://github.com/LinShunKang/MyPerf4J/wiki/English-Doc)
@@ -111,10 +111,16 @@ ShowMethodParams=true
 * -DMyPerf4JPropFile=/your/path/to/MyPerf4J.properties
 
 ## 问题
-如果您有任何问题、疑问或者建议，请您毫不犹豫的 [提交Issue](https://github.com/LinShunKang/MyPerf4J/issues/new/choose) 或者 [发送邮件](mailto:linshunkang.chn@gmail.com) : )
+如果您有任何问题、疑问或者建议，请您毫不犹豫的 [提交Issue](https://github.com/LinShunKang/MyPerf4J/issues/new/choose) 或者 [发送邮件](mailto:linshunkang.chn@gmail.com) ：）
+
+注意，请保证您已经**完整阅读过**以下内容：
+* [提问模板](https://github.com/LinShunKang/MyPerf4J/wiki/%E6%8F%90%E9%97%AE%E6%A8%A1%E6%9D%BF)
+* [快速启动](https://github.com/LinShunKang/MyPerf4J#%E5%BF%AB%E9%80%9F%E5%90%AF%E5%8A%A8)
+* [中文文档](https://github.com/LinShunKang/MyPerf4J/wiki/Chinese-Doc)
+* [常见问题](https://github.com/LinShunKang/MyPerf4J/wiki/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98)
 
 ## 已知用户
-如果您在使用 MyPerf4J，请告诉我，您的使用对我来说非常重要：[https://github.com/LinShunKang/MyPerf4J/issues/30](https://github.com/LinShunKang/MyPerf4J/issues/30) （按登记顺序排列）
+如果您在使用 MyPerf4J，请告诉我，您的使用对我来说非常重要：[https://github.com/LinShunKang/MyPerf4J/issues/30](https://github.com/LinShunKang/MyPerf4J/issues/30)（按登记顺序排列）
 
 <div align="center">
 <img src="https://github.com/LinShunKang/Objects/blob/master/logos/Boss_300x300.png?raw=true" width="80" height="80"/>
