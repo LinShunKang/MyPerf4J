@@ -9,22 +9,22 @@ public class JvmMemoryMetrics extends Metrics {
 
     private static final long serialVersionUID = -1501873958253505089L;
 
-    private long nonHeapInit;
+    private final long nonHeapInit;
 
-    private long nonHeapUsed;
+    private final long nonHeapUsed;
 
-    private long nonHeapCommitted;
+    private final long nonHeapCommitted;
 
-    private long nonHeapMax;
+    private final long nonHeapMax;
 
 
-    private long heapInit;
+    private final long heapInit;
 
-    private long heapUsed;
+    private final long heapUsed;
 
-    private long heapCommitted;
+    private final long heapCommitted;
 
-    private long heapMax;
+    private final long heapMax;
 
     public JvmMemoryMetrics(MemoryUsage nonHeapMem, MemoryUsage heapMem) {
         this.nonHeapInit = nonHeapMem.getInit();
@@ -41,64 +41,32 @@ public class JvmMemoryMetrics extends Metrics {
         return nonHeapInit;
     }
 
-    public void setNonHeapInit(long nonHeapInit) {
-        this.nonHeapInit = nonHeapInit;
-    }
-
     public long getNonHeapUsed() {
         return nonHeapUsed;
-    }
-
-    public void setNonHeapUsed(long nonHeapUsed) {
-        this.nonHeapUsed = nonHeapUsed;
     }
 
     public long getNonHeapCommitted() {
         return nonHeapCommitted;
     }
 
-    public void setNonHeapCommitted(long nonHeapCommitted) {
-        this.nonHeapCommitted = nonHeapCommitted;
-    }
-
     public long getNonHeapMax() {
         return nonHeapMax;
-    }
-
-    public void setNonHeapMax(long nonHeapMax) {
-        this.nonHeapMax = nonHeapMax;
     }
 
     public long getHeapInit() {
         return heapInit;
     }
 
-    public void setHeapInit(long heapInit) {
-        this.heapInit = heapInit;
-    }
-
     public long getHeapUsed() {
         return heapUsed;
-    }
-
-    public void setHeapUsed(long heapUsed) {
-        this.heapUsed = heapUsed;
     }
 
     public long getHeapCommitted() {
         return heapCommitted;
     }
 
-    public void setHeapCommitted(long heapCommitted) {
-        this.heapCommitted = heapCommitted;
-    }
-
     public long getHeapMax() {
         return heapMax;
-    }
-
-    public void setHeapMax(long heapMax) {
-        this.heapMax = heapMax;
     }
 
     @Override

@@ -90,80 +90,40 @@ public class MethodMetrics extends Metrics {
         return tpArr[TP_50_IDX];
     }
 
-    public void setTP50(int TP50) {
-        this.tpArr[TP_50_IDX] = TP50;
-    }
-
     public int getTP90() {
         return tpArr[TP_90_IDX];
-    }
-
-    public void setTP90(int TP90) {
-        this.tpArr[TP_90_IDX] = TP90;
     }
 
     public int getTP95() {
         return tpArr[TP_95_IDX];
     }
 
-    public void setTP95(int TP95) {
-        this.tpArr[TP_95_IDX] = TP95;
-    }
-
     public int getTP99() {
         return tpArr[TP_99_IDX];
-    }
-
-    public void setTP99(int TP99) {
-        this.tpArr[TP_99_IDX] = TP99;
     }
 
     public int getTP999() {
         return tpArr[TP_999_IDX];
     }
 
-    public void setTP999(int TP999) {
-        this.tpArr[TP_999_IDX] = TP999;
-    }
-
     public int getTP9999() {
         return tpArr[TP_9999_IDX];
-    }
-
-    public void setTP9999(int TP9999) {
-        this.tpArr[TP_9999_IDX] = TP9999;
     }
 
     public int getTP99999() {
         return tpArr[TP_99999_IDX];
     }
 
-    public void setTP99999(int TP99999) {
-        this.tpArr[TP_99999_IDX] = TP99999;
-    }
-
     public int getTP100() {
         return tpArr[TP_100_IDX];
-    }
-
-    public void setTP100(int TP100) {
-        this.tpArr[TP_100_IDX] = TP100;
     }
 
     public int[] getTpArr() {
         return tpArr;
     }
 
-    public long getStartMillTime() {
-        return startMillTime;
-    }
-
     public void setStartMillTime(long startMillTime) {
         this.startMillTime = startMillTime;
-    }
-
-    public long getStopMillTime() {
-        return stopMillTime;
     }
 
     public void setStopMillTime(long stopMillTime) {

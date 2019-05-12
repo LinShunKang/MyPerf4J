@@ -9,13 +9,13 @@ public class JvmBufferPoolMetrics extends Metrics {
 
     private static final long serialVersionUID = 1308517280962399791L;
 
-    private String name;
+    private final String name;
 
-    private long count;
+    private final long count;
 
-    private long memoryUsed;
+    private final long memoryUsed;
 
-    private long memoryCapacity;
+    private final long memoryCapacity;
 
     public JvmBufferPoolMetrics(BufferPoolMXBean mxBean) {
         this.name = mxBean.getName();

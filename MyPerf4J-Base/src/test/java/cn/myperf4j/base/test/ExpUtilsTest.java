@@ -1,6 +1,7 @@
 package cn.myperf4j.base.test;
 
 import cn.myperf4j.base.util.PkgExpUtils;
+import cn.myperf4j.base.util.StrMatchUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -9,7 +10,7 @@ import java.util.Arrays;
 /**
  * Created by LinShunkang on 2019-01-01
  */
-public class PkgExpUtilsTest {
+public class ExpUtilsTest {
 
     @Test
     public void testParse() {
@@ -25,17 +26,17 @@ public class PkgExpUtilsTest {
 
     @Test
     public void testMatch() {
-        Assert.assertTrue(PkgExpUtils.isMatch("abc", "abc"));
-        Assert.assertTrue(PkgExpUtils.isMatch("abc", "a*"));
-        Assert.assertTrue(PkgExpUtils.isMatch("abc", "*abc"));
-        Assert.assertTrue(PkgExpUtils.isMatch("abc", "a*bc"));
-        Assert.assertTrue(PkgExpUtils.isMatch("abc", "a*c"));
-        Assert.assertTrue(PkgExpUtils.isMatch("abc", "ab*"));
-        Assert.assertTrue(PkgExpUtils.isMatch("abc", "ab**"));
-        Assert.assertTrue(PkgExpUtils.isMatch("abcdef", "ab*c*"));
-        Assert.assertTrue(PkgExpUtils.isMatch("abcdef", "ab*c*f"));
+        Assert.assertTrue(StrMatchUtils.isMatch("abc", "abc"));
+        Assert.assertTrue(StrMatchUtils.isMatch("abc", "a*"));
+        Assert.assertTrue(StrMatchUtils.isMatch("abc", "*abc"));
+        Assert.assertTrue(StrMatchUtils.isMatch("abc", "a*bc"));
+        Assert.assertTrue(StrMatchUtils.isMatch("abc", "a*c"));
+        Assert.assertTrue(StrMatchUtils.isMatch("abc", "ab*"));
+        Assert.assertTrue(StrMatchUtils.isMatch("abc", "ab**"));
+        Assert.assertTrue(StrMatchUtils.isMatch("abcdef", "ab*c*"));
+        Assert.assertTrue(StrMatchUtils.isMatch("abcdef", "ab*c*f"));
 
-        Assert.assertFalse(PkgExpUtils.isMatch("abcdef", "ab*c*eg"));
-        Assert.assertFalse(PkgExpUtils.isMatch("abcdef", "abcdefg"));
+        Assert.assertFalse(StrMatchUtils.isMatch("abcdef", "ab*c*eg"));
+        Assert.assertFalse(StrMatchUtils.isMatch("abcdef", "abcdefg"));
     }
 }

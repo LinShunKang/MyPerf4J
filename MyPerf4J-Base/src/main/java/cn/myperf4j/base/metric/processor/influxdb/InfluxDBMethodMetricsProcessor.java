@@ -53,6 +53,7 @@ public class InfluxDBMethodMetricsProcessor extends AbstractMethodMetricsProcess
                 .append(",ClassName=").append(methodTag.getClassName())
                 .append(",Method=").append(methodDesc)
                 .append(",Type=").append(methodTag.getType())
+                .append(",Level=").append(methodTag.getLevel())
                 .append(" RPS=").append(methodMetrics.getRPS()).append('i')
                 .append(",Avg=").append(NumFormatUtils.getFormatStr(methodMetrics.getAvgTime()))
                 .append(",Min=").append(methodMetrics.getMinTime()).append('i')

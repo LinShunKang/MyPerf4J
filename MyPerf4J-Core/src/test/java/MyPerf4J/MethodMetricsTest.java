@@ -21,10 +21,10 @@ public class MethodMetricsTest {
         Recorders recorders = new Recorders(new AtomicReferenceArray<Recorder>(10));
         MethodTagMaintainer methodTagMaintainer = MethodTagMaintainer.getInstance();
 
-        int methodId1 = methodTagMaintainer.addMethodTag(MethodTag.getGeneralInstance("Test", "test1", ""));
+        int methodId1 = methodTagMaintainer.addMethodTag(MethodTag.getGeneralInstance("Test", "test1", "", ""));
         recorders.setRecorder(methodId1, AccurateRecorder.getInstance(0, 100000, 50));
 
-        int methodId2 = methodTagMaintainer.addMethodTag(MethodTag.getGeneralInstance("Test", "test1", ""));
+        int methodId2 = methodTagMaintainer.addMethodTag(MethodTag.getGeneralInstance("Test", "test1", "", ""));
         recorders.setRecorder(methodId2, RoughRecorder.getInstance(0, 100000));
 
         testRecorder(recorders, methodTagMaintainer, methodId1);

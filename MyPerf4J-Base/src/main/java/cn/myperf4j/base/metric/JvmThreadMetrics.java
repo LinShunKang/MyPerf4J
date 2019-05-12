@@ -14,28 +14,27 @@ public class JvmThreadMetrics extends Metrics {
 
     private static final long serialVersionUID = 8514109576224018139L;
 
-    private long totalStarted;
+    private final long totalStarted;
 
-    private int active;
+    private final int active;
 
-    private int peak;
+    private final int peak;
 
-    private int daemon;
+    private final int daemon;
 
-    private int news;
+    private final int news;
 
-    private int runnable;
+    private final int runnable;
 
-    private int blocked;
+    private final int blocked;
 
-    private int waiting;
+    private final int waiting;
 
-    private int timedWaiting;
+    private final int timedWaiting;
 
-    private int terminated;
+    private final int terminated;
 
     public JvmThreadMetrics(ThreadMXBean bean) {
-        long threadIds[] = bean.getAllThreadIds();
         this.totalStarted = bean.getTotalStartedThreadCount();
         this.active = bean.getThreadCount();
         this.peak = bean.getPeakThreadCount();
@@ -48,7 +47,7 @@ public class JvmThreadMetrics extends Metrics {
         int threadsTimedWaiting = 0;
         int threadsTerminated = 0;
 
-        ThreadInfo[] threadInfoArr = bean.getThreadInfo(threadIds, 0);
+        ThreadInfo[] threadInfoArr = bean.getThreadInfo(bean.getAllThreadIds(), 0);
         for (int i = 0; i < threadInfoArr.length; ++i) {
             ThreadInfo threadInfo = threadInfoArr[i];
             if (threadInfo == null) {
@@ -83,80 +82,40 @@ public class JvmThreadMetrics extends Metrics {
         return totalStarted;
     }
 
-    public void setTotalStarted(long totalStarted) {
-        this.totalStarted = totalStarted;
-    }
-
     public int getActive() {
         return active;
-    }
-
-    public void setActive(int active) {
-        this.active = active;
     }
 
     public int getPeak() {
         return peak;
     }
 
-    public void setPeak(int peak) {
-        this.peak = peak;
-    }
-
     public int getDaemon() {
         return daemon;
-    }
-
-    public void setDaemon(int daemon) {
-        this.daemon = daemon;
     }
 
     public int getNews() {
         return news;
     }
 
-    public void setNews(int news) {
-        this.news = news;
-    }
-
     public int getRunnable() {
         return runnable;
-    }
-
-    public void setRunnable(int runnable) {
-        this.runnable = runnable;
     }
 
     public int getBlocked() {
         return blocked;
     }
 
-    public void setBlocked(int blocked) {
-        this.blocked = blocked;
-    }
-
     public int getWaiting() {
         return waiting;
-    }
-
-    public void setWaiting(int waiting) {
-        this.waiting = waiting;
     }
 
     public int getTimedWaiting() {
         return timedWaiting;
     }
 
-    public void setTimedWaiting(int timedWaiting) {
-        this.timedWaiting = timedWaiting;
-    }
-
     public int getTerminated() {
         return terminated;
-    }
-
-    public void setTerminated(int terminated) {
-        this.terminated = terminated;
     }
 
     @Override

@@ -52,6 +52,8 @@ public class ProfilingConfig {
 
     private boolean excludePrivateMethod;
 
+    private String classLevelMappings;
+
     private String profilingParamsFile;
 
     private ProfilingParams commonProfilingParams;
@@ -230,6 +232,15 @@ public class ProfilingConfig {
         this.excludePrivateMethod = excludePrivateMethod;
     }
 
+    public String getClassLevelMappings() {
+        return classLevelMappings;
+    }
+
+    public ProfilingConfig setClassLevelMappings(String classLevelMappings) {
+        this.classLevelMappings = classLevelMappings;
+        return this;
+    }
+
     public String getProfilingParamsFile() {
         return profilingParamsFile;
     }
@@ -280,6 +291,7 @@ public class ProfilingConfig {
                 ", printDebugLog=" + printDebugLog +
                 ", excludeMethods='" + excludeMethods + '\'' +
                 ", excludePrivateMethod=" + excludePrivateMethod +
+                ", classLevelMappings='" + classLevelMappings + '\'' +
                 ", profilingParamsFile='" + profilingParamsFile + '\'' +
                 ", commonProfilingParams=" + commonProfilingParams +
                 ", profilingParamsMap=" + profilingParamsMap +
