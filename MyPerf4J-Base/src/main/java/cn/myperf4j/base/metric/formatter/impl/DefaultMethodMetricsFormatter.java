@@ -18,15 +18,15 @@ public final class DefaultMethodMetricsFormatter implements MethodMetricsFormatt
         int[] statisticsArr = getStatistics(methodMetricsList);
         int maxApiLength = statisticsArr[0];
 
-        String dataTitleFormat = "%-" + maxApiLength + "s%13s%13s%9s%9s%9s%9s%9s%10s%9s%9s%9s%9s%9s%9s%9s%9s%n";
+        String dataTitleFormat = "%-" + maxApiLength + "s%13s%13s%9s%9s%9s%9s%9s%10s%9s%9s%9s%9s%9s%9s%9s%n";
         StringBuilder sb = new StringBuilder((methodMetricsList.size() + 2) * (9 * 11 + 1 + maxApiLength));
         sb.append("MyPerf4J Method Metrics [").append(DateFormatUtils.format(startMillis)).append(", ").append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
-        sb.append(String.format(dataTitleFormat, "Method[" + methodMetricsList.size() + "]", "Type", "Level", "RPS", "Avg(ms)", "Min(ms)", "Max(ms)", "StdDev", "Count", "TP50", "TP90", "TP95", "TP99", "TP999", "TP9999", "TP99999", "TP100"));
+        sb.append(String.format(dataTitleFormat, "Method[" + methodMetricsList.size() + "]", "Type", "Level", "RPS", "Avg(ms)", "Min(ms)", "Max(ms)", "StdDev", "Count", "TP50", "TP90", "TP95", "TP99", "TP999", "TP9999",  "TP100"));
         if (methodMetricsList.isEmpty()) {
             return sb.toString();
         }
 
-        String dataFormat = "%-" + maxApiLength + "s%13s%13s%9d%9.2f%9d%9d%9.2f%10d%9d%9d%9d%9d%9d%9d%9d%9d%n";
+        String dataFormat = "%-" + maxApiLength + "s%13s%13s%9d%9.2f%9d%9d%9.2f%10d%9d%9d%9d%9d%9d%9d%9d%n";
         for (int i = 0; i < methodMetricsList.size(); ++i) {
             MethodMetrics metrics = methodMetricsList.get(i);
             if (metrics.getTotalCount() <= 0) {
@@ -49,7 +49,6 @@ public final class DefaultMethodMetricsFormatter implements MethodMetricsFormatt
                     metrics.getTP99(),
                     metrics.getTP999(),
                     metrics.getTP9999(),
-                    metrics.getTP99999(),
                     metrics.getTP100()));
         }
         return sb.toString();

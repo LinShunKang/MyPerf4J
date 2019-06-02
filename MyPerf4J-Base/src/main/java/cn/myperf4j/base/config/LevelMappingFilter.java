@@ -22,8 +22,11 @@ public final class LevelMappingFilter {
         //初始化默认的映射关系
         LEVEL_EXPS_MAP.put(ClassLevels.CONTROLLER, Collections.singletonList("*Controller"));
         LEVEL_EXPS_MAP.put(ClassLevels.INTERCEPTOR, Collections.singletonList("*Interceptor"));
+        LEVEL_EXPS_MAP.put(ClassLevels.CONSUMER, Collections.singletonList("*Consumer"));
+        LEVEL_EXPS_MAP.put(ClassLevels.LISTENER, Collections.singletonList("*Listener"));
         LEVEL_EXPS_MAP.put(ClassLevels.API, Arrays.asList("*Api", "*ApiImpl"));
         LEVEL_EXPS_MAP.put(ClassLevels.SERVICE, Arrays.asList("*Service", "*ServiceImpl"));
+        LEVEL_EXPS_MAP.put(ClassLevels.CACHE, Arrays.asList("*Cache", "*CacheImpl"));
         LEVEL_EXPS_MAP.put(ClassLevels.DAO, Collections.singletonList("*DAO"));
         LEVEL_EXPS_MAP.put(ClassLevels.UTILS, Collections.singletonList("*Utils"));
     }

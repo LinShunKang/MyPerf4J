@@ -9,9 +9,15 @@ public interface ClassLevels {
 
     String INTERCEPTOR = "Interceptor";
 
+    String CONSUMER = "Consumer";
+
+    String LISTENER = "Listener";
+
     String API = "Api";
 
     String SERVICE = "Service";
+
+    String CACHE = "Cache";
 
     String DAO = "DAO";
 

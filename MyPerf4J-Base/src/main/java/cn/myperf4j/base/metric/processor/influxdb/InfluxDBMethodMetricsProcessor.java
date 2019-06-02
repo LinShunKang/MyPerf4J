@@ -66,7 +66,6 @@ public class InfluxDBMethodMetricsProcessor extends AbstractMethodMetricsProcess
                 .append(",TP99=").append(methodMetrics.getTP99()).append('i')
                 .append(",TP999=").append(methodMetrics.getTP999()).append('i')
                 .append(",TP9999=").append(methodMetrics.getTP9999()).append('i')
-                .append(",TP99999=").append(methodMetrics.getTP99999()).append('i')
                 .append(",TP100=").append(methodMetrics.getTP100()).append('i')
                 .append(' ').append(startNanos);
         return sb.toString();
@@ -89,7 +88,6 @@ public class InfluxDBMethodMetricsProcessor extends AbstractMethodMetricsProcess
                 + 6 + 5 + 1//TP99
                 + 7 + 5 + 1//TP999
                 + 8 + 5 + 1//TP9999
-                + 9 + 5 + 1//TP99999
                 + 7 + 5 + 1//TP100
                 + 1 + 21//startNanos
                 ;
