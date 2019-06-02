@@ -94,15 +94,13 @@ ShowMethodParams=true
 
 ### 运行
 * 输出结果，输出到 /your/path/to/log/method_metrics.log:
-
     ```
-    MyPerf4J Method Metrics [2019-03-03 17:27:50, 2019-03-03 17:28:00]
-    Method[5]                              Type      RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count     TP50     TP90     TP95     TP99    TP999   TP9999  TP99999    TP100
-    DemoServiceImpl.getId1(long)        General    51317     0.00        0        1     0.00    513178        0        1        1        1        1        1        1        1
-    DemoServiceImpl.getId2(long)        General   168637     0.00        0        4     0.00   1686377        0        1        2        3        4        4        4        4
-    DemoServiceImplV2.getId1(long)      General      357     0.00        0        0     0.00      3570        0        0        0        0        0        0        0        0
-    DemoServiceImplV2.getId3(long)      General      713     0.51        0        5     0.08      7138        0        1        2        3        4        5        5        5
-    Dao.doQuery()                  DynamicProxy     1394     0.51        0        5     0.05     13944        0        1        2        3        4        5        5        5
+    MyPerf4J Method Metrics [2019-06-02 23:44:30, 2019-06-02 23:44:40]
+    Method[4]                            Type        Level      RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count     TP50     TP90     TP95     TP99    TP999   TP9999    TP100
+    DemoServiceImpl.getId1(long)      General      Service  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
+    DemoServiceImpl.getId2(long)      General      Service  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
+    DemoDAO.getId1(long)         DynamicProxy          DAO  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
+    DemoDAO.getId2(long)         DynamicProxy          DAO  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
     ```
 
 ### 卸载
