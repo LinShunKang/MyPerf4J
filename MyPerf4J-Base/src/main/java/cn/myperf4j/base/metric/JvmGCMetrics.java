@@ -9,11 +9,11 @@ public class JvmGCMetrics extends Metrics {
 
     private static final long serialVersionUID = -233095689152915892L;
 
-    private String gcName;
+    private final String gcName;
 
-    private long collectCount;
+    private final long collectCount;
 
-    private long collectTime;
+    private final long collectTime;
 
     public JvmGCMetrics(String gcName, long collectCount, long collectTime) {
         this.gcName = gcName;
@@ -29,24 +29,12 @@ public class JvmGCMetrics extends Metrics {
         return gcName;
     }
 
-    public void setGcName(String gcName) {
-        this.gcName = gcName;
-    }
-
     public long getCollectCount() {
         return collectCount;
     }
 
-    public void setCollectCount(long collectCount) {
-        this.collectCount = collectCount;
-    }
-
     public long getCollectTime() {
         return collectTime;
-    }
-
-    public void setCollectTime(long collectTime) {
-        this.collectTime = collectTime;
     }
 
     @Override

@@ -15,12 +15,11 @@ public class MethodMetrics extends Metrics {
     private static final int TP_99_IDX = 3;
     private static final int TP_999_IDX = 4;
     private static final int TP_9999_IDX = 5;
-    private static final int TP_99999_IDX = 6;
-    private static final int TP_100_IDX = 7;
+    private static final int TP_100_IDX = 6;
 
-    private static final double[] TOP_PERCENTILE_ARR = {0.5D, 0.9D, 0.95D, 0.99D, 0.999D, 0.9999D, 0.99999D, 1.0D};//注意：tpArr和TOP_PERCENTILE_ARR的大小请保持一致！！！！
+    private static final double[] TOP_PERCENTILE_ARR = {0.5D, 0.9D, 0.95D, 0.99D, 0.999D, 0.9999D, 1.0D};//注意：tpArr和TOP_PERCENTILE_ARR的大小请保持一致！！！！
 
-    private final int[] tpArr = {-1, -1, -1, -1, -1, -1, -1, -1};//注意：tpArr和TOP_PERCENTILE_ARR的大小请保持一致！！！！
+    private final int[] tpArr = {-1, -1, -1, -1, -1, -1, -1};//注意：tpArr和TOP_PERCENTILE_ARR的大小请保持一致！！！！
 
     private MethodTag methodTag;
 
@@ -90,80 +89,36 @@ public class MethodMetrics extends Metrics {
         return tpArr[TP_50_IDX];
     }
 
-    public void setTP50(int TP50) {
-        this.tpArr[TP_50_IDX] = TP50;
-    }
-
     public int getTP90() {
         return tpArr[TP_90_IDX];
-    }
-
-    public void setTP90(int TP90) {
-        this.tpArr[TP_90_IDX] = TP90;
     }
 
     public int getTP95() {
         return tpArr[TP_95_IDX];
     }
 
-    public void setTP95(int TP95) {
-        this.tpArr[TP_95_IDX] = TP95;
-    }
-
     public int getTP99() {
         return tpArr[TP_99_IDX];
-    }
-
-    public void setTP99(int TP99) {
-        this.tpArr[TP_99_IDX] = TP99;
     }
 
     public int getTP999() {
         return tpArr[TP_999_IDX];
     }
 
-    public void setTP999(int TP999) {
-        this.tpArr[TP_999_IDX] = TP999;
-    }
-
     public int getTP9999() {
         return tpArr[TP_9999_IDX];
-    }
-
-    public void setTP9999(int TP9999) {
-        this.tpArr[TP_9999_IDX] = TP9999;
-    }
-
-    public int getTP99999() {
-        return tpArr[TP_99999_IDX];
-    }
-
-    public void setTP99999(int TP99999) {
-        this.tpArr[TP_99999_IDX] = TP99999;
     }
 
     public int getTP100() {
         return tpArr[TP_100_IDX];
     }
 
-    public void setTP100(int TP100) {
-        this.tpArr[TP_100_IDX] = TP100;
-    }
-
     public int[] getTpArr() {
         return tpArr;
     }
 
-    public long getStartMillTime() {
-        return startMillTime;
-    }
-
     public void setStartMillTime(long startMillTime) {
         this.startMillTime = startMillTime;
-    }
-
-    public long getStopMillTime() {
-        return stopMillTime;
     }
 
     public void setStopMillTime(long stopMillTime) {
@@ -187,7 +142,6 @@ public class MethodMetrics extends Metrics {
                 ", TP99=" + getTP99() +
                 ", TP999=" + getTP999() +
                 ", TP9999=" + getTP9999() +
-                ", TP99999=" + getTP99999() +
                 ", TP100=" + getTP100() +
                 ", minTime=" + minTime +
                 ", avgTime=" + avgTime +

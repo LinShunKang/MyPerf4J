@@ -35,6 +35,8 @@ public interface PropertyKeys {
 
     String SHOW_METHOD_PARAMS = "ShowMethodParams";
 
+    String CLASS_LEVEL_MAPPING = "ClassLevelMapping";
+
     String FILTER_INCLUDE_PACKAGES = "IncludePackages";
 
     String FILTER_EXCLUDE_PACKAGES = "ExcludePackages";

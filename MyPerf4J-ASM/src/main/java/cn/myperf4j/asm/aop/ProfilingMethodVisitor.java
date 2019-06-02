@@ -1,7 +1,6 @@
 package cn.myperf4j.asm.aop;
 
 import cn.myperf4j.asm.ASMRecorderMaintainer;
-import cn.myperf4j.base.util.TypeDescUtils;
 import cn.myperf4j.base.MethodTag;
 import cn.myperf4j.core.recorder.AbstractRecorderMaintainer;
 import cn.myperf4j.core.MethodTagMaintainer;
@@ -37,16 +36,17 @@ public class ProfilingMethodVisitor extends AdviceAdapter {
                                   MethodVisitor mv,
                                   String innerClassName,
                                   String simpleClassName,
+                                  String classLevel,
                                   String humanMethodDesc) {
         super(ASM5, mv, access, name, desc);
         this.methodName = name;
-        this.methodTagId = methodTagMaintainer.addMethodTag(getMethodTag(simpleClassName, name, humanMethodDesc));
+        this.methodTagId = methodTagMaintainer.addMethodTag(getMethodTag(simpleClassName, classLevel, name, humanMethodDesc));
         this.innerClassName = innerClassName;
     }
 
-    private MethodTag getMethodTag(String simpleClassName, String methodName, String humanMethodDesc) {
+    private MethodTag getMethodTag(String simpleClassName, String classLevel, String methodName, String humanMethodDesc) {
         String methodParamDesc = profilingConfig.isShowMethodParams() ? humanMethodDesc : "";
-        return MethodTag.getGeneralInstance(simpleClassName, methodName, methodParamDesc);
+        return MethodTag.getGeneralInstance(simpleClassName, classLevel, methodName, methodParamDesc);
     }
 
     @Override

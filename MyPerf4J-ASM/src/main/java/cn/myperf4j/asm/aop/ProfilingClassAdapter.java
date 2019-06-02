@@ -1,5 +1,6 @@
 package cn.myperf4j.asm.aop;
 
+import cn.myperf4j.base.config.LevelMappingFilter;
 import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.config.ProfilingFilter;
 import cn.myperf4j.base.util.Logger;
@@ -17,7 +18,11 @@ import static org.objectweb.asm.Opcodes.*;
  */
 public class ProfilingClassAdapter extends ClassVisitor {
 
-    private String innerClassName;
+    private final String innerClassName;
+
+    private final String simpleClassName;
+
+    private final String classLevel;
 
     private boolean isInterface;
 
@@ -28,6 +33,8 @@ public class ProfilingClassAdapter extends ClassVisitor {
     public ProfilingClassAdapter(final ClassVisitor cv, String innerClassName) {
         super(ASM5, cv);
         this.innerClassName = innerClassName;
+        this.simpleClassName = TypeDescUtils.getSimpleClassName(innerClassName);
+        this.classLevel = LevelMappingFilter.getClassLevel(simpleClassName);
     }
 
     @Override
@@ -72,7 +79,6 @@ public class ProfilingClassAdapter extends ClassVisitor {
             return super.visitMethod(access, name, desc, signature, exceptions);
         }
 
-        String simpleClassName = TypeDescUtils.getSimpleClassName(innerClassName);
         String classMethodName = simpleClassName + "." + name;
         if (ProfilingFilter.isNotNeedInjectMethod(classMethodName)) {
             return super.visitMethod(access, name, desc, signature, exceptions);
@@ -93,7 +99,7 @@ public class ProfilingClassAdapter extends ClassVisitor {
         if (isInvocationHandler && isInvokeMethod(name, desc)) {
             return new ProfilingDynamicMethodVisitor(access, name, desc, mv);
         } else {
-            return new ProfilingMethodVisitor(access, name, desc, mv, innerClassName, simpleClassName, desc4Human);
+            return new ProfilingMethodVisitor(access, name, desc, mv, innerClassName, simpleClassName, classLevel, desc4Human);
         }
     }
 

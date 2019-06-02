@@ -1,5 +1,6 @@
 package cn.myperf4j.core;
 
+import cn.myperf4j.base.config.LevelMappingFilter;
 import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.config.ProfilingFilter;
 import cn.myperf4j.base.constant.PropertyKeys;
@@ -9,6 +10,7 @@ import cn.myperf4j.base.util.ExecutorManager;
 import cn.myperf4j.base.util.IOUtils;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.config.MyProperties;
+import cn.myperf4j.base.util.StringUtils;
 import cn.myperf4j.core.recorder.AbstractRecorderMaintainer;
 import cn.myperf4j.core.scheduler.JvmMetricsScheduler;
 import cn.myperf4j.base.Scheduler;
@@ -78,6 +80,11 @@ public abstract class AbstractBootstrap {
             return false;
         }
 
+        if (!initClassLevelMapping()) {
+            Logger.error("AbstractBootstrap initClassLevelMapping() FAILURE!!!");
+            return false;
+        }
+
         if (!initPerfStatsProcessor()) {
             Logger.error("AbstractBootstrap initPerfStatsProcessor() FAILURE!!!");
             return false;
@@ -138,6 +145,7 @@ public abstract class AbstractBootstrap {
             initFiltersConfig(config);
             initProfilingParamsConfig(config);
 
+            config.setClassLevelMappings(MyProperties.getStr(PropertyKeys.CLASS_LEVEL_MAPPING, ""));
             config.setShowMethodParams(MyProperties.getBoolean(PropertyKeys.SHOW_METHOD_PARAMS, false));
             config.setPrintDebugLog(MyProperties.getBoolean(PropertyKeys.DEBUG_PRINT_DEBUG_LOG, false));
 
@@ -150,7 +158,7 @@ public abstract class AbstractBootstrap {
 
     private void initAppName(ProfilingConfig config) {
         String appName = MyProperties.getStr(PropertyKeys.APP_NAME);
-        if (appName == null || appName.isEmpty()) {
+        if (StringUtils.isBlank(appName)) {
             throw new IllegalArgumentException("AppName is required!!!");
         }
         config.setAppName(appName);
@@ -188,7 +196,7 @@ public abstract class AbstractBootstrap {
 
     private void initFiltersConfig(ProfilingConfig config) {
         String includePackages = MyProperties.getStr(PropertyKeys.FILTER_INCLUDE_PACKAGES, "");
-        if (includePackages == null || includePackages.isEmpty()) {
+        if (StringUtils.isBlank(includePackages)) {
             throw new IllegalArgumentException("IncludePackages is required!!!");
         }
 
@@ -270,6 +278,39 @@ public abstract class AbstractBootstrap {
         return false;
     }
 
+    //MethodLevelMapping=Controller:[*Controller];Api:[*Api,*ApiImpl];
+    private boolean initClassLevelMapping() {
+        try {
+            String levelMappings = ProfilingConfig.getInstance().getClassLevelMappings();
+            if (StringUtils.isBlank(levelMappings)) {
+                Logger.info("ClassLevelMapping is blank, so use default mappings.");
+                return true;
+            }
+
+            String[] mappingPairs = levelMappings.split(";");
+            for (int i = 0; i < mappingPairs.length; ++i) {
+                String mappingPair = mappingPairs[i];
+                String[] mappingPairArr = mappingPair.split(":");
+                if (mappingPairArr.length != 2) {
+                    Logger.warn("MethodLevelMapping is not correct: " + mappingPair);
+                    continue;
+                }
+
+                LevelMappingFilter.putLevelMapping(mappingPairArr[0], getMappingExpList(mappingPairArr[1]));
+            }
+            return true;
+        } catch (Exception e) {
+            Logger.error("AbstractBootstrap.initClassLevelMapping()", e);
+        }
+        return false;
+    }
+
+    //Api:[*Api,*ApiImpl]
+    private List<String> getMappingExpList(String expStr) {
+        expStr = expStr.substring(1, expStr.length() - 1);
+        return Arrays.asList(expStr.split(","));
+    }
+
     private boolean initPerfStatsProcessor() {
         try {
             int processorType = ProfilingConfig.getInstance().getMetricsProcessorType();
@@ -286,8 +327,8 @@ public abstract class AbstractBootstrap {
         try {
             ProfilingConfig config = ProfilingConfig.getInstance();
             String profilingParamFile = config.getProfilingParamsFile();
-            if (profilingParamFile == null || profilingParamFile.isEmpty()) {
-                Logger.info("profilingParamFile is empty, so use same profiling params to all methods.");
+            if (StringUtils.isBlank(profilingParamFile)) {
+                Logger.info("profilingParamFile is blank, so use same profiling params to all methods.");
                 return true;
             }
 

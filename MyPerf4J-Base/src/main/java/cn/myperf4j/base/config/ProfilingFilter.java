@@ -1,6 +1,8 @@
 package cn.myperf4j.base.config;
 
 import cn.myperf4j.base.util.PkgExpUtils;
+import cn.myperf4j.base.util.StrMatchUtils;
+import cn.myperf4j.base.util.StringUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -100,7 +102,7 @@ public class ProfilingFilter {
         }
 
         for (String exp : pkgExpSet) {
-            if (PkgExpUtils.isMatch(innerClassName, exp)) {
+            if (StrMatchUtils.isMatch(innerClassName, exp)) {
                 return true;
             }
         }
@@ -108,7 +110,7 @@ public class ProfilingFilter {
     }
 
     public static void addExcludePackage(String pkg) {
-        if (pkg == null || pkg.isEmpty()) {
+        if (StringUtils.isEmpty(pkg)) {
             return;
         }
 
@@ -144,7 +146,7 @@ public class ProfilingFilter {
     }
 
     public static void addIncludePackage(String pkg) {
-        if (pkg == null || pkg.isEmpty()) {
+        if (StringUtils.isEmpty(pkg)) {
             return;
         }
 
