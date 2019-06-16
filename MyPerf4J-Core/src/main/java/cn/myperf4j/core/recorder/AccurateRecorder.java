@@ -1,5 +1,6 @@
 package cn.myperf4j.core.recorder;
 
+import cn.myperf4j.base.buffer.IntBuf;
 import cn.myperf4j.base.util.MapUtils;
 
 import java.util.*;
@@ -24,10 +25,13 @@ public class AccurateRecorder extends Recorder {
 
     private final ConcurrentHashMap<Integer, AtomicInteger> timingMap;
 
+    private final AtomicInteger effectiveCount;
+
     private AccurateRecorder(int methodTagId, int mostTimeThreshold, int outThresholdCount) {
         super(methodTagId);
         this.timingArr = new AtomicIntegerArray(mostTimeThreshold + 1);
         this.timingMap = new ConcurrentHashMap<>(MapUtils.getFitCapacity(outThresholdCount));
+        this.effectiveCount = new AtomicInteger(0);
     }
 
     @Override
@@ -35,11 +39,13 @@ public class AccurateRecorder extends Recorder {
         if (startNanoTime > endNanoTime) {
             return;
         }
-        hasRecord = true;
 
         int elapsedTime = (int) ((endNanoTime - startNanoTime) / 1000000);
         if (elapsedTime < timingArr.length()) {
-            timingArr.incrementAndGet(elapsedTime);
+            int oldValue = timingArr.getAndIncrement(elapsedTime);
+            if (oldValue <= 0) {
+                effectiveCount.incrementAndGet();
+            }
             return;
         }
 
@@ -52,53 +58,46 @@ public class AccurateRecorder extends Recorder {
         AtomicInteger oldCounter = timingMap.putIfAbsent(elapsedTime, new AtomicInteger(1));
         if (oldCounter != null) {
             oldCounter.incrementAndGet();
+        } else {
+            effectiveCount.incrementAndGet();
         }
     }
 
     @Override
-    public void fillSortedRecords(int[] arr) {
-        int idx = 0;
+    public void fillSortedRecords(IntBuf intBuf) {
         for (int i = 0; i < timingArr.length(); ++i) {
             int count = timingArr.get(i);
             if (count > 0) {
-                arr[idx++] = i;
-                arr[idx++] = count;
+                intBuf.write(i);
+                intBuf.write(count);
             }
         }
-        fillMapRecord(arr, idx);
+        fillMapRecord(intBuf);
     }
 
-    private void fillMapRecord(int[] arr, int offset) {
-        int idx = offset;
+    private void fillMapRecord(IntBuf intBuf) {
+        int offset = intBuf.writerIndex();
         for (Map.Entry<Integer, AtomicInteger> entry : timingMap.entrySet()) {
             if (entry.getValue().get() > 0) {
-                arr[idx++] = entry.getKey();
+                intBuf.write(entry.getKey());
             }
         }
 
-        Arrays.sort(arr, offset, idx);
-        for (int i = idx - 1; i >= offset; --i) {
-            arr[2 * i - offset] = arr[i];
-            arr[2 * i + 1 - offset] = timingMap.get(arr[i]).get();
+        int writerIndex = intBuf.writerIndex();
+        Arrays.sort(intBuf._buf(), offset, writerIndex);
+
+        for (int i = writerIndex - 1; i >= offset; --i) {
+            int count = intBuf.getInt(i);
+            int keyIdx = 2 * i - offset;//2 * (i - offset) + offset
+            intBuf.setInt(keyIdx, count);
+            intBuf.setInt(keyIdx + 1, timingMap.get(count).get());
         }
+        intBuf.writerIndex(writerIndex + (writerIndex - offset));
     }
 
     @Override
     public int getEffectiveCount() {
-        int result = 0;
-        for (int i = 0; i < timingArr.length(); ++i) {
-            int count = timingArr.get(i);
-            if (count > 0) {
-                result++;
-            }
-        }
-
-        for (Map.Entry<Integer, AtomicInteger> entry : timingMap.entrySet()) {
-            if (entry.getValue().get() > 0) {
-                result++;
-            }
-        }
-        return result;
+        return effectiveCount.get();
     }
 
     @Override
@@ -118,12 +117,12 @@ public class AccurateRecorder extends Recorder {
             }
         }
 
-        hasRecord = false;
+        effectiveCount.set(0);
     }
 
     @Override
-    public int getOutThresholdCount() {
-        return timingMap.size();//粗略估计
+    public boolean hasRecord() {
+        return effectiveCount.get() > 0;
     }
 
     public static AccurateRecorder getInstance(int methodTagId, int mostTimeThreshold, int outThresholdCount) {

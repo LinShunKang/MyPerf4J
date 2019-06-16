@@ -151,10 +151,6 @@ public class MethodMetrics extends Metrics {
                 '}';
     }
 
-    public static MethodMetrics getInstance(MethodTag methodTag) {
-        return new MethodMetrics(methodTag);
-    }
-
     public static MethodMetrics getInstance(MethodTag methodTag, long startMillTime, long stopMillTime) {
         MethodMetrics result = new MethodMetrics(methodTag);
         result.setStartMillTime(startMillTime);

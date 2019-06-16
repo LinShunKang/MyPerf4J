@@ -1,9 +1,9 @@
 package cn.myperf4j.core;
 
-
+import cn.myperf4j.base.buffer.IntBuf;
+import cn.myperf4j.base.buffer.IntBufPool;
 import cn.myperf4j.base.metric.MethodMetrics;
 import cn.myperf4j.base.MethodTag;
-import cn.myperf4j.base.util.ChunkPool;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.core.recorder.Recorder;
 
@@ -19,51 +19,46 @@ public final class MethodMetricsCalculator {
         }
     };
 
+    private static final IntBufPool intBufPool = IntBufPool.getInstance();
+
     public static MethodMetrics calPerfStats(Recorder recorder, MethodTag methodTag, long startTime, long stopTime) {
-        int[] sortedRecords = null;
+        IntBuf intBuf = null;
         try {
             int effectiveCount = recorder.getEffectiveCount();
-            sortedRecords = ChunkPool.getInstance().getChunk(effectiveCount * 2);
-            recorder.fillSortedRecords(sortedRecords);
-            return calPerfStats(methodTag, startTime, stopTime, sortedRecords, effectiveCount);
+            intBuf = intBufPool.acquire(effectiveCount << 1);
+            recorder.fillSortedRecords(intBuf);
+            return calPerfStats(methodTag, startTime, stopTime, intBuf, effectiveCount);
         } catch (Exception e) {
             Logger.error("MethodMetricsCalculator.calPerfStats(" + recorder + ", " + methodTag + ", " + startTime + ", " + stopTime + ")", e);
         } finally {
-            ChunkPool.getInstance().returnChunk(sortedRecords);
+            intBufPool.release(intBuf);
         }
         return MethodMetrics.getInstance(methodTag, startTime, stopTime);
     }
 
-    private static MethodMetrics calPerfStats(MethodTag methodTag, long startTime, long stopTime, int[] sortedRecords, int effectiveCount) {
-        long[] pair = getTotalTimeAndTotalCount(sortedRecords);
-        long totalTime = pair[0];
-        int totalCount = (int) pair[1];
-        MethodMetrics result = MethodMetrics.getInstance(methodTag);
-        result.setTotalCount(totalCount);
-        result.setStartMillTime(startTime);
-        result.setStopMillTime(stopTime);
-
-        if (totalCount <= 0 || effectiveCount <= 0) {
+    private static MethodMetrics calPerfStats(MethodTag methodTag,
+                                              long startTime,
+                                              long stopTime,
+                                              IntBuf sortedRecords,
+                                              int effectiveCount) {
+        MethodMetrics result = MethodMetrics.getInstance(methodTag, startTime, stopTime);
+        if (effectiveCount <= 0) {
             return result;
         }
+        calAvgTime(result, sortedRecords);
 
-        double avgTime = ((double) totalTime) / totalCount;
-        result.setAvgTime(avgTime);
-        result.setMinTime(sortedRecords[0]);
-        result.setMaxTime(sortedRecords[(effectiveCount - 1) * 2]);
+        result.setMinTime(sortedRecords.getInt(0));
+        result.setMaxTime(sortedRecords.getInt(sortedRecords.writerIndex() - 2));
 
+        int totalCount = result.getTotalCount();
         int[] topPerIndexArr = getTopPercentileIndexArr(totalCount);
         int[] topPerArr = result.getTpArr();
         int countMile = 0, perIndex = 0;
         double sigma = 0.0D;//∑
-        for (int i = 0, length = sortedRecords.length; i < length; i = i + 2) {
-            int timeCost = sortedRecords[i];
-            int count = sortedRecords[i + 1];
-
-            //sortedRecords中只有第0位的响应时间可以为0
-            if (i > 0 && timeCost <= 0) {
-                break;
-            }
+        double avgTime = result.getAvgTime();
+        for (int i = 0; i < sortedRecords.writerIndex(); ) {
+            int timeCost = sortedRecords.getInt(i++);
+            int count = sortedRecords.getInt(i++);
 
             countMile += count;
             int index = topPerIndexArr[perIndex];
@@ -79,33 +74,26 @@ public final class MethodMetricsCalculator {
         return reviseStatistic(result);
     }
 
-    /**
-     * @param sortedRecords
-     * @return : long[]: int[0]代表totalTimeCost, int[1]代表totalCount
-     */
-    private static long[] getTotalTimeAndTotalCount(int[] sortedRecords) {
-        long[] result = {0L, 0L};
-        if (sortedRecords == null || sortedRecords.length == 0) {
-            return result;
+    private static void calAvgTime(MethodMetrics metrics, IntBuf sortedRecords) {
+        if (sortedRecords == null || sortedRecords.writerIndex() <= 0) {
+            return;
         }
 
-        for (int i = 0, length = sortedRecords.length; i < length; i = i + 2) {
-            int timeCost = sortedRecords[i];
-            int count = sortedRecords[i + 1];
+        long totalTime = 0L;
+        int totalCount = 0;
+        for (int i = 0; i < sortedRecords.writerIndex(); ) {
+            int timeCost = sortedRecords.getInt(i++);
+            int count = sortedRecords.getInt(i++);
 
-            //sortedRecords中只有第0位的响应时间可以为0
-            if (i > 0 && timeCost <= 0) {
-                break;
-            }
-
-            result[0] += timeCost * count;
-            result[1] += count;
+            totalTime += timeCost * count;
+            totalCount += count;
         }
-        return result;
+        metrics.setTotalCount(totalCount);
+        metrics.setAvgTime(((double) totalTime) / totalCount);
     }
 
-    private static MethodMetrics reviseStatistic(MethodMetrics methodMetrics) {
-        int[] tpArr = methodMetrics.getTpArr();
+    private static MethodMetrics reviseStatistic(MethodMetrics metrics) {
+        int[] tpArr = metrics.getTpArr();
         for (int i = 1; i < tpArr.length; ++i) {
             int last = tpArr[i - 1];
             int cur = tpArr[i];
@@ -113,7 +101,7 @@ public final class MethodMetricsCalculator {
                 tpArr[i] = last;
             }
         }
-        return methodMetrics;
+        return metrics;
     }
 
     private static int[] getTopPercentileIndexArr(int totalCount) {

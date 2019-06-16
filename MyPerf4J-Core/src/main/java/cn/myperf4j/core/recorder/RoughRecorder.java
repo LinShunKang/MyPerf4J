@@ -1,5 +1,7 @@
 package cn.myperf4j.core.recorder;
 
+import cn.myperf4j.base.buffer.IntBuf;
+
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
@@ -22,13 +24,13 @@ public class RoughRecorder extends Recorder {
 
     private final AtomicIntegerArray timingArr;
 
-    private final AtomicInteger outThresholdCounter;
+    private final AtomicInteger effectiveCount;
 
 
     public RoughRecorder(int methodTag, int mostTimeThreshold) {
         super(methodTag);
         this.timingArr = new AtomicIntegerArray(mostTimeThreshold + 2);
-        this.outThresholdCounter = new AtomicInteger(0);
+        this.effectiveCount = new AtomicInteger(0);
     }
 
     @Override
@@ -36,38 +38,34 @@ public class RoughRecorder extends Recorder {
         if (startNanoTime > endNanoTime) {
             return;
         }
-        hasRecord = true;
 
+        int oldValue;
         int elapsedTime = (int) ((endNanoTime - startNanoTime) / 1000000);
         if (elapsedTime < timingArr.length() - 1) {
-            timingArr.incrementAndGet(elapsedTime);
+            oldValue = timingArr.getAndIncrement(elapsedTime);
         } else {
-            timingArr.incrementAndGet(timingArr.length() - 1);
+            oldValue = timingArr.getAndIncrement(timingArr.length() - 1);
+        }
+
+        if (oldValue <= 0) {
+            effectiveCount.incrementAndGet();
         }
     }
 
     @Override
-    public void fillSortedRecords(int[] arr) {
-        int idx = 0;
+    public void fillSortedRecords(IntBuf intBuf) {
         for (int i = 0; i < timingArr.length(); ++i) {
             int count = timingArr.get(i);
             if (count > 0) {
-                arr[idx++] = i;
-                arr[idx++] = count;
+                intBuf.write(i);
+                intBuf.write(count);
             }
         }
     }
 
     @Override
     public int getEffectiveCount() {
-        int result = 0;
-        for (int i = 0; i < timingArr.length(); ++i) {
-            int count = timingArr.get(i);
-            if (count > 0) {
-                result++;
-            }
-        }
-        return result;
+        return effectiveCount.get();
     }
 
     @Override
@@ -76,12 +74,12 @@ public class RoughRecorder extends Recorder {
             timingArr.set(i, 0);
         }
 
-        hasRecord = false;
+        effectiveCount.set(0);
     }
 
     @Override
-    public int getOutThresholdCount() {
-        return outThresholdCounter.get();
+    public boolean hasRecord() {
+        return effectiveCount.get() > 0;
     }
 
     public static RoughRecorder getInstance(int methodTagId, int mostTimeThreshold) {
