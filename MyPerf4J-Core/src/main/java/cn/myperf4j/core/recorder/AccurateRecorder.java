@@ -25,13 +25,13 @@ public class AccurateRecorder extends Recorder {
 
     private final ConcurrentHashMap<Integer, AtomicInteger> timingMap;
 
-    private final AtomicInteger effectiveCount;
+    private final AtomicInteger diffCount;
 
     private AccurateRecorder(int methodTagId, int mostTimeThreshold, int outThresholdCount) {
         super(methodTagId);
         this.timingArr = new AtomicIntegerArray(mostTimeThreshold + 1);
         this.timingMap = new ConcurrentHashMap<>(MapUtils.getFitCapacity(outThresholdCount));
-        this.effectiveCount = new AtomicInteger(0);
+        this.diffCount = new AtomicInteger(0);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class AccurateRecorder extends Recorder {
         if (elapsedTime < timingArr.length()) {
             int oldValue = timingArr.getAndIncrement(elapsedTime);
             if (oldValue <= 0) {
-                effectiveCount.incrementAndGet();
+                diffCount.incrementAndGet();
             }
             return;
         }
@@ -59,28 +59,36 @@ public class AccurateRecorder extends Recorder {
         if (oldCounter != null) {
             oldCounter.incrementAndGet();
         } else {
-            effectiveCount.incrementAndGet();
+            diffCount.incrementAndGet();
         }
     }
 
     @Override
-    public void fillSortedRecords(IntBuf intBuf) {
+    public int fillSortedRecords(IntBuf intBuf) {
+        int totalCount = 0;
         for (int i = 0; i < timingArr.length(); ++i) {
             int count = timingArr.get(i);
             if (count > 0) {
-                intBuf.write(i);
-                intBuf.write(count);
+                intBuf.write(i, count);
+                totalCount += count;
             }
         }
-        fillMapRecord(intBuf);
+        return totalCount + fillMapRecord(intBuf);
     }
 
-    private void fillMapRecord(IntBuf intBuf) {
+    private int fillMapRecord(IntBuf intBuf) {
+        int totalCount = 0;
         int offset = intBuf.writerIndex();
         for (Map.Entry<Integer, AtomicInteger> entry : timingMap.entrySet()) {
-            if (entry.getValue().get() > 0) {
+            int count = entry.getValue().get();
+            if (count > 0) {
                 intBuf.write(entry.getKey());
+                totalCount += count;
             }
+        }
+
+        if (offset == intBuf.writerIndex()) {
+            return 0;
         }
 
         int writerIndex = intBuf.writerIndex();
@@ -88,16 +96,17 @@ public class AccurateRecorder extends Recorder {
 
         for (int i = writerIndex - 1; i >= offset; --i) {
             int count = intBuf.getInt(i);
-            int keyIdx = 2 * i - offset;//2 * (i - offset) + offset
+            int keyIdx = (i << 1) - offset;//2 * (i - offset) + offset
             intBuf.setInt(keyIdx, count);
             intBuf.setInt(keyIdx + 1, timingMap.get(count).get());
         }
-        intBuf.writerIndex(writerIndex + (writerIndex - offset));
+        intBuf.writerIndex((writerIndex << 1) - offset);//writerIndex + (writerIndex - offset)
+        return totalCount;
     }
 
     @Override
-    public int getEffectiveCount() {
-        return effectiveCount.get();
+    public int getDiffCount() {
+        return diffCount.get();
     }
 
     @Override
@@ -117,12 +126,12 @@ public class AccurateRecorder extends Recorder {
             }
         }
 
-        effectiveCount.set(0);
+        diffCount.set(0);
     }
 
     @Override
     public boolean hasRecord() {
-        return effectiveCount.get() > 0;
+        return diffCount.get() > 0;
     }
 
     public static AccurateRecorder getInstance(int methodTagId, int mostTimeThreshold, int outThresholdCount) {

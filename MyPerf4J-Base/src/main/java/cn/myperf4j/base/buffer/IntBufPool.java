@@ -79,7 +79,7 @@ public class IntBufPool {
             } else if (buf.capacity() == ONE_HUNDRED_K) {
                 oneHundredKQueue.put(buf);
             } else {
-                Logger.warn("IntBufPool.release(" + buf.capacity() + ") buf.capacity() is invalid or chunk is not belongs to this pool!!!");
+                Logger.warn("IntBufPool.release(" + buf.capacity() + ") buf.capacity() is invalid!!!");
             }
         } catch (Exception e) {
             Logger.error("IntBufPool.release(" + buf.capacity() + ")", e);

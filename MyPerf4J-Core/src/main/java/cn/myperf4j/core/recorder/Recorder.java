@@ -26,12 +26,12 @@ public abstract class Recorder {
      *
      * @param intBuf : intBuf.capacity为effectiveRecordCount的两倍!!! 其中，第0位存timeCost，第1位存count，第2位存timeCost，第3位存count，以此类推
      */
-    public abstract void fillSortedRecords(IntBuf intBuf);
+    public abstract int fillSortedRecords(IntBuf intBuf);
 
     /**
      * 获取有效的记录的个数
      */
-    public abstract int getEffectiveCount();
+    public abstract int getDiffCount();
 
     public abstract void resetRecord();
 

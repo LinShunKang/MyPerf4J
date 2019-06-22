@@ -24,10 +24,10 @@ public final class MethodMetricsCalculator {
     public static MethodMetrics calPerfStats(Recorder recorder, MethodTag methodTag, long startTime, long stopTime) {
         IntBuf intBuf = null;
         try {
-            int effectiveCount = recorder.getEffectiveCount();
-            intBuf = intBufPool.acquire(effectiveCount << 1);
-            recorder.fillSortedRecords(intBuf);
-            return calPerfStats(methodTag, startTime, stopTime, intBuf, effectiveCount);
+            int diffCount = recorder.getDiffCount();
+            intBuf = intBufPool.acquire(diffCount << 1);
+            int totalCount = recorder.fillSortedRecords(intBuf);
+            return calPerfStats(methodTag, startTime, stopTime, intBuf, totalCount, diffCount);
         } catch (Exception e) {
             Logger.error("MethodMetricsCalculator.calPerfStats(" + recorder + ", " + methodTag + ", " + startTime + ", " + stopTime + ")", e);
         } finally {
@@ -40,25 +40,27 @@ public final class MethodMetricsCalculator {
                                               long startTime,
                                               long stopTime,
                                               IntBuf sortedRecords,
-                                              int effectiveCount) {
+                                              int totalCount,
+                                              int diffCount) {
         MethodMetrics result = MethodMetrics.getInstance(methodTag, startTime, stopTime);
-        if (effectiveCount <= 0) {
+        if (diffCount <= 0) {
             return result;
         }
-        calAvgTime(result, sortedRecords);
 
-        result.setMinTime(sortedRecords.getInt(0));
-        result.setMaxTime(sortedRecords.getInt(sortedRecords.writerIndex() - 2));
+        result.setTotalCount(totalCount);
+        result.setMinTime(sortedRecords._getInt(0));
+        result.setMaxTime(sortedRecords._getInt(sortedRecords.writerIndex() - 2));
 
-        int totalCount = result.getTotalCount();
         int[] topPerIndexArr = getTopPercentileIndexArr(totalCount);
         int[] topPerArr = result.getTpArr();
         int countMile = 0, perIndex = 0;
         double sigma = 0.0D;//∑
-        double avgTime = result.getAvgTime();
-        for (int i = 0; i < sortedRecords.writerIndex(); ) {
-            int timeCost = sortedRecords.getInt(i++);
-            int count = sortedRecords.getInt(i++);
+        long totalTime = 0L;
+        for (int i = 0, writerIdx = sortedRecords.writerIndex(); i < writerIdx; ) {
+            int timeCost = sortedRecords._getInt(i++);
+            int count = sortedRecords._getInt(i++);
+
+            totalTime += timeCost * count;
 
             countMile += count;
             int index = topPerIndexArr[perIndex];
@@ -67,29 +69,15 @@ public final class MethodMetricsCalculator {
                 perIndex++;
             }
 
-            sigma += Math.pow(timeCost - avgTime, 2.0);
+            sigma += StrictMath.pow(timeCost, 2.0);
         }
-        result.setStdDev(Math.sqrt(sigma / totalCount));
+
+        double avgTime = ((double) totalTime) / totalCount;
+        result.setAvgTime(avgTime);
+
+        result.setStdDev(StrictMath.sqrt((sigma / totalCount) - Math.pow(avgTime, 2.0)));
 
         return reviseStatistic(result);
-    }
-
-    private static void calAvgTime(MethodMetrics metrics, IntBuf sortedRecords) {
-        if (sortedRecords == null || sortedRecords.writerIndex() <= 0) {
-            return;
-        }
-
-        long totalTime = 0L;
-        int totalCount = 0;
-        for (int i = 0; i < sortedRecords.writerIndex(); ) {
-            int timeCost = sortedRecords.getInt(i++);
-            int count = sortedRecords.getInt(i++);
-
-            totalTime += timeCost * count;
-            totalCount += count;
-        }
-        metrics.setTotalCount(totalCount);
-        metrics.setAvgTime(((double) totalTime) / totalCount);
     }
 
     private static MethodMetrics reviseStatistic(MethodMetrics metrics) {

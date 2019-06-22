@@ -28,6 +28,12 @@ public class IntBuf {
         this.buf[writerIndex++] = value;
     }
 
+    public void write(int v1, int v2) {
+        ensureWritable(2);
+        this.buf[writerIndex++] = v1;
+        this.buf[writerIndex++] = v2;
+    }
+
     private void ensureWritable(int minWritableSize) {
         if (minWritableSize > buf.length - writerIndex) {
             throw new IndexOutOfBoundsException("IntBuf minWritableSize(" + minWritableSize + ") + writerIndex(" + writerIndex + ") exceed buf.length(" + buf.length + ")");
@@ -59,6 +65,10 @@ public class IntBuf {
 
     public int getInt(int index) {
         checkBounds(index);
+        return buf[index];
+    }
+
+    public int _getInt(int index) {
         return buf[index];
     }
 
