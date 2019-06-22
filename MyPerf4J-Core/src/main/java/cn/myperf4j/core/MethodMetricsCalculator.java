@@ -69,13 +69,13 @@ public final class MethodMetricsCalculator {
                 perIndex++;
             }
 
-            sigma += StrictMath.pow(timeCost, 2.0);
+            sigma += count * Math.pow(timeCost, 2.0);
         }
 
         double avgTime = ((double) totalTime) / totalCount;
         result.setAvgTime(avgTime);
 
-        result.setStdDev(StrictMath.sqrt((sigma / totalCount) - Math.pow(avgTime, 2.0)));
+        result.setStdDev(Math.sqrt((sigma / totalCount) - Math.pow(avgTime, 2.0)));
 
         return reviseStatistic(result);
     }
