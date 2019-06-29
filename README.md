@@ -128,6 +128,12 @@ ShowMethodParams=true
 <img src="https://github.com/LinShunKang/Objects/blob/master/logos/dianzhang_303x303.jpeg?raw=true" width="80" height="80"/>
 </div>
 
+## 项目捐赠
+开源不易，如果 MyPerf4J 对您有帮助，不妨来个赞赏 : )
+<div align="center">
+<img src="https://github.com/LinShunKang/Objects/blob/master/logos/WechatIMG16.jpeg?raw=true" width="260" height="260"/>
+</div>
+
 ## 参考项目
 MyPerf4J 是受以下项目启发而来：
 * [Perf4J](https://github.com/perf4j/perf4j)
