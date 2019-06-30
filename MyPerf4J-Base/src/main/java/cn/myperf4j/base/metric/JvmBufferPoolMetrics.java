@@ -13,15 +13,15 @@ public class JvmBufferPoolMetrics extends Metrics {
 
     private final long count;
 
-    private final long memoryUsed;
+    private final long memoryUsed;//KB
 
-    private final long memoryCapacity;
+    private final long memoryCapacity;//KB
 
     public JvmBufferPoolMetrics(BufferPoolMXBean mxBean) {
         this.name = mxBean.getName();
         this.count = mxBean.getCount();
-        this.memoryUsed = mxBean.getMemoryUsed();
-        this.memoryCapacity = mxBean.getTotalCapacity();
+        this.memoryUsed = mxBean.getMemoryUsed() / 1024;
+        this.memoryCapacity = mxBean.getTotalCapacity() / 1024;
     }
 
     public String getName() {

@@ -1,85 +1,194 @@
 package cn.myperf4j.base.metric;
 
-import java.lang.management.MemoryUsage;
-
 /**
  * Created by LinShunkang on 2018/8/19
+ * <p>
+ * 注意：以下成员变量的单位都是 KB
  */
 public class JvmMemoryMetrics extends Metrics {
 
     private static final long serialVersionUID = -1501873958253505089L;
 
-    private final long nonHeapInit;
-
-    private final long nonHeapUsed;
-
-    private final long nonHeapCommitted;
-
-    private final long nonHeapMax;
-
-
-    private final long heapInit;
-
     private final long heapUsed;
-
-    private final long heapCommitted;
-
     private final long heapMax;
 
-    public JvmMemoryMetrics(MemoryUsage nonHeapMem, MemoryUsage heapMem) {
-        this.nonHeapInit = nonHeapMem.getInit();
-        this.nonHeapUsed = nonHeapMem.getUsed();
-        this.nonHeapCommitted = nonHeapMem.getCommitted();
-        this.nonHeapMax = nonHeapMem.getMax();
-        this.heapInit = heapMem.getInit();
-        this.heapUsed = heapMem.getUsed();
-        this.heapCommitted = heapMem.getCommitted();
-        this.heapMax = heapMem.getMax();
-    }
+    private final long nonHeapUsed;
+    private final long nonHeapMax;
 
-    public long getNonHeapInit() {
-        return nonHeapInit;
-    }
+    private final long permGenUsed;
+    private final long permGenMax;
 
-    public long getNonHeapUsed() {
-        return nonHeapUsed;
-    }
+    private final long metaspaceUsed;
+    private final long metaspaceMax;
 
-    public long getNonHeapCommitted() {
-        return nonHeapCommitted;
-    }
+    private final long codeCacheUsed;
+    private final long codeCacheMax;
 
-    public long getNonHeapMax() {
-        return nonHeapMax;
-    }
+    private final long oldGenUsed;
+    private final long oldGenMax;
 
-    public long getHeapInit() {
-        return heapInit;
+    private final long edenUsed;
+    private final long edenMax;
+
+    private final long survivorUsed;
+    private final long survivorMax;
+
+    public JvmMemoryMetrics(long heapUsed,
+                            long heapMax,
+                            long nonHeapUsed,
+                            long nonHeapMax,
+                            long permGenUsed,
+                            long permGenMax,
+                            long metaspaceUsed,
+                            long metaspaceMax,
+                            long codeCacheUsed,
+                            long codeCacheMax,
+                            long oldGenUsed,
+                            long oldGenMax,
+                            long edenUsed,
+                            long edenMax,
+                            long survivorUsed,
+                            long survivorMax) {
+        this.heapUsed = heapUsed;
+        this.heapMax = heapMax;
+        this.nonHeapUsed = nonHeapUsed;
+        this.nonHeapMax = nonHeapMax;
+        this.permGenUsed = permGenUsed;
+        this.permGenMax = permGenMax;
+        this.metaspaceUsed = metaspaceUsed;
+        this.metaspaceMax = metaspaceMax;
+        this.codeCacheUsed = codeCacheUsed;
+        this.codeCacheMax = codeCacheMax;
+        this.oldGenUsed = oldGenUsed;
+        this.oldGenMax = oldGenMax;
+        this.edenUsed = edenUsed;
+        this.edenMax = edenMax;
+        this.survivorUsed = survivorUsed;
+        this.survivorMax = survivorMax;
     }
 
     public long getHeapUsed() {
         return heapUsed;
     }
 
-    public long getHeapCommitted() {
-        return heapCommitted;
-    }
-
     public long getHeapMax() {
         return heapMax;
+    }
+
+    public double getHeapUsedPercent() {
+        return getUsedPercent(heapUsed, heapMax);
+    }
+
+    private double getUsedPercent(long used, long max) {
+        if (used > 0L && max > 0L) {
+            return (100D * used) / max;
+        }
+        return 0D;
+    }
+
+    public long getNonHeapUsed() {
+        return nonHeapUsed;
+    }
+
+    public long getNonHeapMax() {
+        return nonHeapMax;
+    }
+
+    public double getNonHeapUsedPercent() {
+        return getUsedPercent(nonHeapUsed, nonHeapMax);
+    }
+
+    public long getPermGenUsed() {
+        return permGenUsed;
+    }
+
+    public long getPermGenMax() {
+        return permGenMax;
+    }
+
+    public double getPermGenUsedPercent() {
+        return getUsedPercent(permGenUsed, permGenMax);
+    }
+
+    public long getMetaspaceUsed() {
+        return metaspaceUsed;
+    }
+
+    public long getMetaspaceMax() {
+        return metaspaceMax;
+    }
+
+    public double getMetaspaceUsedPercent() {
+        return getUsedPercent(metaspaceUsed, metaspaceMax);
+    }
+
+    public long getCodeCacheUsed() {
+        return codeCacheUsed;
+    }
+
+    public long getCodeCacheMax() {
+        return codeCacheMax;
+    }
+
+    public double getCodeCacheUsedPercent() {
+        return getUsedPercent(codeCacheUsed, codeCacheMax);
+    }
+
+    public long getOldGenUsed() {
+        return oldGenUsed;
+    }
+
+    public long getOldGenMax() {
+        return oldGenMax;
+    }
+
+    public double getOldGenUsedPercent() {
+        return getUsedPercent(oldGenUsed, oldGenMax);
+    }
+
+    public long getEdenUsed() {
+        return edenUsed;
+    }
+
+    public long getEdenMax() {
+        return edenMax;
+    }
+
+    public double getEdenUsedPercent() {
+        return getUsedPercent(edenUsed, edenMax);
+    }
+
+    public long getSurvivorUsed() {
+        return survivorUsed;
+    }
+
+    public long getSurvivorMax() {
+        return survivorMax;
+    }
+
+    public double getSurvivorUsedPercent() {
+        return getUsedPercent(survivorUsed, survivorMax);
     }
 
     @Override
     public String toString() {
         return "JvmMemoryMetrics{" +
-                "nonHeapInit=" + nonHeapInit +
-                ", nonHeapUsed=" + nonHeapUsed +
-                ", nonHeapCommitted=" + nonHeapCommitted +
-                ", nonHeapMax=" + nonHeapMax +
-                ", heapInit=" + heapInit +
-                ", heapUsed=" + heapUsed +
-                ", heapCommitted=" + heapCommitted +
+                "heapUsed=" + heapUsed +
                 ", heapMax=" + heapMax +
-                '}';
+                ", nonHeapUsed=" + nonHeapUsed +
+                ", nonHeapMax=" + nonHeapMax +
+                ", permGenUsed=" + permGenUsed +
+                ", permGenMax=" + permGenMax +
+                ", metaspaceUsed=" + metaspaceUsed +
+                ", metaspaceMax=" + metaspaceMax +
+                ", codeCacheUsed=" + codeCacheUsed +
+                ", codeCacheMax=" + codeCacheMax +
+                ", oldGenUsed=" + oldGenUsed +
+                ", oldGenMax=" + oldGenMax +
+                ", edenUsed=" + edenUsed +
+                ", edenMax=" + edenMax +
+                ", survivorUsed=" + survivorUsed +
+                ", survivorMax=" + survivorMax +
+                "} " + super.toString();
     }
 }

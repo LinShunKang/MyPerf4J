@@ -7,7 +7,7 @@ import cn.myperf4j.base.log.LoggerFactory;
 /**
  * Created by LinShunkang on 2018/8/25
  */
-public abstract class AbstractJvmGCMetricsProcessor implements JvmGCMetricsProcessor {
+public abstract class AbstractJvmGcMetricsProcessor implements JvmGCMetricsProcessor {
 
     protected ILogger logger = LoggerFactory.getLogger(ProfilingConfig.getInstance().getGcMetricsFile());
 

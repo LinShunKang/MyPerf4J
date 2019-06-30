@@ -14,7 +14,7 @@ public final class NumFormatUtils {
         }
     };
 
-    public static String getFormatStr(double num) {
+    public static String formatDouble(double num) {
         return decimalFormat.get().format(num);
     }
 }

@@ -27,7 +27,7 @@ public class InfluxDBJvmBufferPoolMetricsProcessor extends AbstractJvmBufferPool
     }
 
     private String createLineProtocol(JvmBufferPoolMetrics metrics, long startNanos, StringBuilder sb) {
-        sb.append("jvm_buffer_pool_metrics")
+        sb.append("jvm_buffer_pool_metrics_v2")
                 .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
                 .append(",PoolName=").append(metrics.getName())
                 .append(" Count=").append(metrics.getCount()).append('i')

@@ -1,6 +1,6 @@
 package cn.myperf4j.base.metric.formatter.impl;
 
-import cn.myperf4j.base.metric.JvmGCMetrics;
+import cn.myperf4j.base.metric.JvmGcMetrics;
 import cn.myperf4j.base.metric.formatter.JvmGCMetricsFormatter;
 import cn.myperf4j.base.util.DateFormatUtils;
 
@@ -14,43 +14,25 @@ import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
 public class DefaultJvmGCMetricsFormatter implements JvmGCMetricsFormatter {
 
     @Override
-    public String format(List<JvmGCMetrics> metricsList, long startMillis, long stopMillis) {
-        int[] statisticsArr = getStatistics(metricsList);
-        int maxGCNameLength = statisticsArr[0];
-
-        String dataTitleFormat = "%-" + maxGCNameLength + "s%9s%9s%n";
+    public String format(List<JvmGcMetrics> metricsList, long startMillis, long stopMillis) {
+        String dataTitleFormat = "%-15s%15s%15s%15s%15s%n";
         StringBuilder sb = new StringBuilder((metricsList.size() + 2) * (9 * 3 + 64));
         sb.append("MyPerf4J JVM GC Metrics [").append(DateFormatUtils.format(startMillis)).append(", ").append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
-        sb.append(String.format(dataTitleFormat, "Name", "Count", "Time"));
+        sb.append(String.format(dataTitleFormat, "YoungGcCount", "YoungGcTime", "AvgYoungGcTime", "FullGcCount", "FullGcTime"));
         if (metricsList.isEmpty()) {
             return sb.toString();
         }
 
-        String dataFormat = "%-" + maxGCNameLength + "s%9d%9d%n";
+        String dataFormat = "%-15s%15d%15.2f%15d%15d%n";
         for (int i = 0; i < metricsList.size(); ++i) {
-            JvmGCMetrics metrics = metricsList.get(i);
+            JvmGcMetrics metrics = metricsList.get(i);
             sb.append(String.format(dataFormat,
-                    metrics.getGcName(),
-                    metrics.getCollectCount(),
-                    metrics.getCollectTime()));
+                    metrics.getYoungGcCount(),
+                    metrics.getYoungGcTime(),
+                    metrics.getAvgYoungGcTime(),
+                    metrics.getFullGcCount(),
+                    metrics.getFullGcTime()));
         }
         return sb.toString();
-    }
-
-    /**
-     * @param metricsList
-     * @return : int[0]:max(api.length)
-     */
-    private int[] getStatistics(List<JvmGCMetrics> metricsList) {
-        int[] result = {1};
-        for (int i = 0; i < metricsList.size(); ++i) {
-            JvmGCMetrics metrics = metricsList.get(i);
-            if (metrics == null) {
-                continue;
-            }
-
-            result[0] = Math.max(result[0], metrics.getGcName().length());
-        }
-        return result;
     }
 }

@@ -1,0 +1,41 @@
+package cn.myperf4j.base.metric.processor.influxdb;
+
+import cn.myperf4j.base.config.ProfilingConfig;
+import cn.myperf4j.base.metric.JvmGcMetrics;
+import cn.myperf4j.base.metric.processor.AbstractJvmGcMetricsProcessor;
+import cn.myperf4j.base.util.NumFormatUtils;
+
+/**
+ * Created by LinShunkang on 2018/8/25
+ */
+public class InfluxDBJvmGcMetricsProcessor extends AbstractJvmGcMetricsProcessor {
+
+    private ThreadLocal<StringBuilder> sbThreadLocal = new ThreadLocal<StringBuilder>() {
+        @Override
+        protected StringBuilder initialValue() {
+            return new StringBuilder(128);
+        }
+    };
+
+    @Override
+    public void process(JvmGcMetrics metrics, long processId, long startMillis, long stopMillis) {
+        StringBuilder sb = sbThreadLocal.get();
+        try {
+            logger.log(createLineProtocol(metrics, startMillis * 1000 * 1000L, sb));
+        } finally {
+            sb.setLength(0);
+        }
+    }
+
+    private String createLineProtocol(JvmGcMetrics metrics, long startNanos, StringBuilder sb) {
+        sb.append("jvm_gc_metrics_v2")
+                .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
+                .append(" YoungGcCount=").append(metrics.getYoungGcCount()).append('i')
+                .append(",YoungGcTime=").append(metrics.getYoungGcTime()).append('i')
+                .append(",AvgYoungGcTime=").append(NumFormatUtils.formatDouble(metrics.getAvgYoungGcTime()))
+                .append(",FullGcCount=").append(metrics.getFullGcCount()).append('i')
+                .append(",FullGcTime=").append(metrics.getFullGcTime()).append('i')
+                .append(' ').append(startNanos);
+        return sb.toString();
+    }
+}

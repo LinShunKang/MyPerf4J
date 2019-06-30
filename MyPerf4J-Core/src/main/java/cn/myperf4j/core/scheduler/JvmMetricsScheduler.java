@@ -1,8 +1,9 @@
 package cn.myperf4j.core.scheduler;
 
-
 import cn.myperf4j.base.Scheduler;
 import cn.myperf4j.base.metric.*;
+import cn.myperf4j.base.metric.collector.JvmGcCollector;
+import cn.myperf4j.base.metric.collector.JvmMemoryCollector;
 import cn.myperf4j.base.metric.processor.*;
 
 import java.lang.management.*;
@@ -40,68 +41,60 @@ public class JvmMetricsScheduler implements Scheduler {
     public void run(long lastTimeSliceStartTime, long millTimeSlice) {
         long stopMillis = lastTimeSliceStartTime + millTimeSlice;
 
-        processJVMClassMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
-        processJVMGCMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
-        processJVMMemoryMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
-        processJVMBufferPoolMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
-        processJVMThreadMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
+        processJvmClassMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
+        processJvmGCMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
+        processJvmMemoryMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
+        processJvmBufferPoolMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
+        processJvmThreadMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
     }
 
-    private void processJVMClassMetrics(long processId, long startMillis, long stopMillis) {
-        JvmClassMetrics classMetrics = new JvmClassMetrics(ManagementFactory.getClassLoadingMXBean());
-
+    private void processJvmClassMetrics(long processId, long startMillis, long stopMillis) {
         classMetricsProcessor.beforeProcess(processId, startMillis, stopMillis);
         try {
+            JvmClassMetrics classMetrics = new JvmClassMetrics(ManagementFactory.getClassLoadingMXBean());
             classMetricsProcessor.process(classMetrics, processId, startMillis, stopMillis);
         } finally {
             classMetricsProcessor.afterProcess(processId, startMillis, stopMillis);
         }
     }
 
-    private void processJVMGCMetrics(long processId, long startMillis, long stopMillis) {
+    private void processJvmGCMetrics(long processId, long startMillis, long stopMillis) {
         gcMetricsProcessor.beforeProcess(processId, startMillis, stopMillis);
         try {
-            List<GarbageCollectorMXBean> garbageCollectorMxBeans = ManagementFactory.getGarbageCollectorMXBeans();
-            for (GarbageCollectorMXBean bean : garbageCollectorMxBeans) {
-                JvmGCMetrics gcMetrics = new JvmGCMetrics(bean);
-                gcMetricsProcessor.process(gcMetrics, processId, startMillis, stopMillis);
-            }
+            JvmGcMetrics jvmGcMetrics = JvmGcCollector.getInstance().collectGcMetrics();
+            gcMetricsProcessor.process(jvmGcMetrics, processId, startMillis, stopMillis);
         } finally {
             gcMetricsProcessor.afterProcess(processId, startMillis, stopMillis);
         }
     }
 
-    private void processJVMMemoryMetrics(long processId, long startMillis, long stopMillis) {
-        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
-        MemoryUsage nonHeapMem = memoryMXBean.getNonHeapMemoryUsage();
-        MemoryUsage heapMem = memoryMXBean.getHeapMemoryUsage();
-
+    private void processJvmMemoryMetrics(long processId, long startMillis, long stopMillis) {
         memoryMetricsProcessor.beforeProcess(processId, startMillis, stopMillis);
         try {
-            memoryMetricsProcessor.process(new JvmMemoryMetrics(nonHeapMem, heapMem), processId, startMillis, stopMillis);
+            JvmMemoryMetrics jvmMemoryMetrics = JvmMemoryCollector.collectMemoryMetrics();
+            memoryMetricsProcessor.process(jvmMemoryMetrics, processId, startMillis, stopMillis);
         } finally {
             memoryMetricsProcessor.afterProcess(processId, startMillis, stopMillis);
         }
     }
 
-    private void processJVMBufferPoolMetrics(long processId, long startMillis, long stopMillis) {
+    private void processJvmBufferPoolMetrics(long processId, long startMillis, long stopMillis) {
         bufferPoolMetricsProcessor.beforeProcess(processId, startMillis, stopMillis);
         try {
-
             List<BufferPoolMXBean> pools = ManagementFactory.getPlatformMXBeans(BufferPoolMXBean.class);
-            for (BufferPoolMXBean mxBean : pools) {
-                bufferPoolMetricsProcessor.process(new JvmBufferPoolMetrics(mxBean), processId, startMillis, stopMillis);
+            for (int i = 0; i < pools.size(); i++) {
+                JvmBufferPoolMetrics metrics = new JvmBufferPoolMetrics(pools.get(i));
+                bufferPoolMetricsProcessor.process(metrics, processId, startMillis, stopMillis);
             }
         } finally {
             bufferPoolMetricsProcessor.afterProcess(processId, startMillis, stopMillis);
         }
     }
 
-    private void processJVMThreadMetrics(long processId, long startMillis, long stopMillis) {
-        ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
-
+    private void processJvmThreadMetrics(long processId, long startMillis, long stopMillis) {
         threadMetricsProcessor.beforeProcess(processId, startMillis, stopMillis);
         try {
+            ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
             threadMetricsProcessor.process(new JvmThreadMetrics(threadMXBean), processId, startMillis, stopMillis);
         } finally {
             threadMetricsProcessor.afterProcess(processId, startMillis, stopMillis);
