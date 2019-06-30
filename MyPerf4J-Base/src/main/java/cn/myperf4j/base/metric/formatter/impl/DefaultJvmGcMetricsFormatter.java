@@ -11,7 +11,7 @@ import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
 /**
  * Created by LinShunkang on 2018/8/21
  */
-public class DefaultJvmGCMetricsFormatter implements JvmGCMetricsFormatter {
+public class DefaultJvmGcMetricsFormatter implements JvmGCMetricsFormatter {
 
     @Override
     public String format(List<JvmGcMetrics> metricsList, long startMillis, long stopMillis) {

@@ -1,4 +1,4 @@
-package cn.myperf4j.base.metric.processor.influxdb;
+package cn.myperf4j.base.metric.processor.influx;
 
 import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.metric.MethodMetrics;
@@ -19,7 +19,7 @@ import cn.myperf4j.base.util.NumFormatUtils;
  * 至于日志的收集和InfluxDB的写入，推荐使用官方的Telegraf(https://portal.influxdata.com/downloads)
  * 推荐在Telegraf配置文件中为不同的服务配置不同的数据库(Database)
  */
-public class InfluxDBMethodMetricsProcessor extends AbstractMethodMetricsProcessor {
+public class InfluxMethodMetricsProcessor extends AbstractMethodMetricsProcessor {
 
     private static final int MAX_LENGTH = 512;
 

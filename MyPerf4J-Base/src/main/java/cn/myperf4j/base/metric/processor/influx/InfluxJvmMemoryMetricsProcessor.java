@@ -1,4 +1,4 @@
-package cn.myperf4j.base.metric.processor.influxdb;
+package cn.myperf4j.base.metric.processor.influx;
 
 import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.metric.JvmMemoryMetrics;
@@ -8,7 +8,7 @@ import cn.myperf4j.base.util.NumFormatUtils;
 /**
  * Created by LinShunkang on 2018/8/25
  */
-public class InfluxDBJvmMemoryMetricsProcessor extends AbstractJvmMemoryMetricsProcessor {
+public class InfluxJvmMemoryMetricsProcessor extends AbstractJvmMemoryMetricsProcessor {
 
     private ThreadLocal<StringBuilder> sbThreadLocal = new ThreadLocal<StringBuilder>() {
         @Override

@@ -18,7 +18,7 @@ public class JvmMetricsSchedulerTest {
 
         int processorType = PropertyValues.METRICS_PROCESS_TYPE_STDOUT;
         JvmClassMetricsProcessor classProcessor = MetricsProcessorFactory.getClassMetricsProcessor(processorType);
-        JvmGCMetricsProcessor gcProcessor = MetricsProcessorFactory.getGCMetricsProcessor(processorType);
+        JvmGcMetricsProcessor gcProcessor = MetricsProcessorFactory.getGcMetricsProcessor(processorType);
         JvmMemoryMetricsProcessor memoryProcessor = MetricsProcessorFactory.getMemoryMetricsProcessor(processorType);
         JvmThreadMetricsProcessor threadProcessor = MetricsProcessorFactory.getThreadMetricsProcessor(processorType);
         JvmBufferPoolMetricsProcessor bufferPoolProcessor = MetricsProcessorFactory.getBufferPoolMetricsProcessor(processorType);

@@ -16,7 +16,7 @@ public class JvmMetricsScheduler implements Scheduler {
 
     private JvmClassMetricsProcessor classMetricsProcessor;
 
-    private JvmGCMetricsProcessor gcMetricsProcessor;
+    private JvmGcMetricsProcessor gcMetricsProcessor;
 
     private JvmMemoryMetricsProcessor memoryMetricsProcessor;
 
@@ -26,7 +26,7 @@ public class JvmMetricsScheduler implements Scheduler {
 
 
     public JvmMetricsScheduler(JvmClassMetricsProcessor classMetricsProcessor,
-                               JvmGCMetricsProcessor gcMetricsProcessor,
+                               JvmGcMetricsProcessor gcMetricsProcessor,
                                JvmMemoryMetricsProcessor memoryMetricsProcessor,
                                JvmBufferPoolMetricsProcessor bufferPoolMetricsProcessor,
                                JvmThreadMetricsProcessor threadMetricsProcessor) {

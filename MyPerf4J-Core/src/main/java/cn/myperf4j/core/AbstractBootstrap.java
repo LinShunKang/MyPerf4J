@@ -415,7 +415,7 @@ public abstract class AbstractBootstrap {
     private Scheduler createJVMMetricsScheduler() {
         int processorType = ProfilingConfig.getInstance().getMetricsProcessorType();
         JvmClassMetricsProcessor classProcessor = MetricsProcessorFactory.getClassMetricsProcessor(processorType);
-        JvmGCMetricsProcessor gcProcessor = MetricsProcessorFactory.getGCMetricsProcessor(processorType);
+        JvmGcMetricsProcessor gcProcessor = MetricsProcessorFactory.getGcMetricsProcessor(processorType);
         JvmMemoryMetricsProcessor memoryProcessor = MetricsProcessorFactory.getMemoryMetricsProcessor(processorType);
         JvmBufferPoolMetricsProcessor bufferPoolProcessor = MetricsProcessorFactory.getBufferPoolMetricsProcessor(processorType);
         JvmThreadMetricsProcessor threadProcessor = MetricsProcessorFactory.getThreadMetricsProcessor(processorType);
