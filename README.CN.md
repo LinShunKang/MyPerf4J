@@ -30,7 +30,7 @@ MyPerf4J 为每个应用收集数十个监控指标，所有的监控指标都�
 
 下面是 MyPerf4J 目前支持的监控指标列表:
 - **[Method Metrics](https://grafana.com/dashboards/7766)**<br/>
-[RPS，Count，Avg，Min，Max，StdDev，TP50, TP90, TP95, TP99, TP999, TP9999, TP99999, TP100](https://github.com/LinShunKang/MyPerf4J/wiki/%E6%8C%87%E6%A0%87#method-metrics)
+[RPS，Count，Avg，Min，Max，StdDev，TP50, TP90, TP95, TP99, TP999, TP9999, TP100](https://github.com/LinShunKang/MyPerf4J/wiki/%E6%8C%87%E6%A0%87#method-metrics)
 ![Markdown](https://raw.githubusercontent.com/LinShunKang/Objects/master/MyPerf4J-InfluxDB-Method_Show_Operation.gif)
 
 - **[JVM Metrics](https://grafana.com/dashboards/8787)**<br/>

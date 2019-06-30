@@ -30,7 +30,7 @@ MyPerf4J collects dozens of metrics per application. All these metrics are colle
 
 This is a list of what it currently monitors:
 * **[Method Metrics](https://grafana.com/dashboards/7766)**<br/>
-[RPS, Count, Avg, Min, Max, StdDev, TP50, TP90, TP95, TP99, TP999, TP9999, TP99999, TP100](https://github.com/LinShunKang/MyPerf4J/wiki/Metrics#method-metrics)
+[RPS, Count, Avg, Min, Max, StdDev, TP50, TP90, TP95, TP99, TP999, TP9999, TP100](https://github.com/LinShunKang/MyPerf4J/wiki/Metrics#method-metrics)
 ![Markdown](https://raw.githubusercontent.com/LinShunKang/Objects/master/MyPerf4J-InfluxDB-Method_Show_Operation.gif)
 
 - **[JVM Metrics](https://grafana.com/dashboards/8787)**<br/>
