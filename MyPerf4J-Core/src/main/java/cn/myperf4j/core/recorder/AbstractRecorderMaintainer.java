@@ -105,7 +105,6 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
         return curRecorders.getRecorder(methodTagId);
     }
 
-
     @Override
     public void run(long lastTimeSliceStartTime, long millTimeSlice) {
         try {

@@ -15,9 +15,9 @@ public final class ProfilingAspect {
 
     private static final MethodTagMaintainer methodTagMaintainer = MethodTagMaintainer.getInstance();
 
-    private static volatile ASMRecorderMaintainer recorderMaintainer;
+    private static ASMRecorderMaintainer recorderMaintainer;
 
-    private static volatile boolean running = false;
+    private static boolean running = false;
 
     public static void profiling(final long startNanos, final int methodTagId) {
         try {
@@ -52,13 +52,14 @@ public final class ProfilingAspect {
                 return;
             }
 
-            Recorder recorder = recorderMaintainer.getRecorder(methodTagId);
+            ASMRecorderMaintainer recMaintainer = ProfilingAspect.recorderMaintainer;
+            Recorder recorder = recMaintainer.getRecorder(methodTagId);
             if (recorder == null) {
                 synchronized (ProfilingAspect.class) {
-                    recorder = recorderMaintainer.getRecorder(methodTagId);
+                    recorder = recMaintainer.getRecorder(methodTagId);
                     if (recorder == null) {
-                        recorderMaintainer.addRecorder(methodTagId, ProfilingParams.of(3000, 10));
-                        recorder = recorderMaintainer.getRecorder(methodTagId);
+                        recMaintainer.addRecorder(methodTagId, ProfilingParams.of(3000, 10));
+                        recorder = recMaintainer.getRecorder(methodTagId);
                     }
                 }
             }
@@ -70,10 +71,14 @@ public final class ProfilingAspect {
     }
 
     public static void setRecorderMaintainer(ASMRecorderMaintainer maintainer) {
-        recorderMaintainer = maintainer;
+        synchronized (ProfilingAspect.class) {//强制把值刷新到主存
+            recorderMaintainer = maintainer;
+        }
     }
 
     public static void setRunning(boolean run) {
-        running = run;
+        synchronized (ProfilingAspect.class) {//强制把值刷新到主存
+            running = run;
+        }
     }
 }

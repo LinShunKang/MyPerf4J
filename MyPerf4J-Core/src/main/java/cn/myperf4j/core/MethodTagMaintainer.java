@@ -21,7 +21,7 @@ public class MethodTagMaintainer extends AbstractMethodTagMaintainer {
 
     private final AtomicReferenceArray<MethodTag> methodTagArr = new AtomicReferenceArray<>(MAX_NUM);
 
-    private final ConcurrentHashMap<Method, Integer> methodMap = new ConcurrentHashMap<>(1024);
+    private final ConcurrentHashMap<Method, Integer> methodMap = new ConcurrentHashMap<>(4096);
 
     private static final MethodTagMaintainer instance = new MethodTagMaintainer();
 
