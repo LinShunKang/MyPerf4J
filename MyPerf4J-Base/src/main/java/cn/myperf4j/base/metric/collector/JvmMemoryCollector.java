@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by LinShunkang on 2019/06/23
  */
-public class JvmMemoryCollector {
+public final class JvmMemoryCollector {
 
     public static JvmMemoryMetrics collectMemoryMetrics() {
         long oldGenUsed = 0L, oldGenMax = 0L;
@@ -27,34 +27,34 @@ public class JvmMemoryCollector {
             MemoryUsage usage = memoryPool.getUsage();
             String poolName = memoryPool.getName();
             if (poolName.endsWith("Perm Gen")) {
-                permGenUsed = usage.getUsed() / 1024;
-                permGenMax = usage.getMax() / 1024;
+                permGenUsed = usage.getUsed() >> 10;
+                permGenMax = usage.getMax() >> 10;
             } else if (poolName.endsWith("Metaspace")) {
-                metaspaceUsed = usage.getUsed() / 1024;
-                metaSpaceMax = usage.getMax() / 1024;
+                metaspaceUsed = usage.getUsed() >> 10;
+                metaSpaceMax = usage.getMax() >> 10;
             } else if (poolName.endsWith("Code Cache")) {
-                codeCacheUsed = usage.getUsed() / 1024;
-                codeCacheMax = usage.getMax() / 1024;
+                codeCacheUsed = usage.getUsed() >> 10;
+                codeCacheMax = usage.getMax() >> 10;
             } else if (poolName.endsWith("Old Gen")) {
-                oldGenUsed = usage.getUsed() / 1024;
-                oldGenMax = usage.getMax() / 1024;
+                oldGenUsed = usage.getUsed() >> 10;
+                oldGenMax = usage.getMax() >> 10;
             } else if (poolName.endsWith("Eden Space")) {
-                edenUsed = usage.getUsed() / 1024;
-                edenMax = usage.getMax() / 1024;
+                edenUsed = usage.getUsed() >> 10;
+                edenMax = usage.getMax() >> 10;
             } else if (poolName.endsWith("Survivor Space")) {
-                survivorUsed = usage.getUsed() / 1024;
-                survivorMax = usage.getMax() / 1024;
+                survivorUsed = usage.getUsed() >> 10;
+                survivorMax = usage.getMax() >> 10;
             }
         }
 
         MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
         MemoryUsage nonHeapMem = memoryMXBean.getNonHeapMemoryUsage();
-        long nonHeapUsed = nonHeapMem.getUsed() / 1024;
-        long nonHeapMax = nonHeapMem.getMax() / 1024;
+        long nonHeapUsed = nonHeapMem.getUsed() >> 10;
+        long nonHeapMax = nonHeapMem.getMax() >> 10;
 
         MemoryUsage heapMem = memoryMXBean.getHeapMemoryUsage();
-        long heapUsed = heapMem.getUsed() / 1024;
-        long heapMax = heapMem.getMax() / 1024;
+        long heapUsed = heapMem.getUsed() >> 10;
+        long heapMax = heapMem.getMax() >> 10;
 
         return new JvmMemoryMetrics(
                 heapUsed, heapMax,

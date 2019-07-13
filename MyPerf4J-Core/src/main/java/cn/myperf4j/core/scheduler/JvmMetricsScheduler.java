@@ -2,8 +2,10 @@ package cn.myperf4j.core.scheduler;
 
 import cn.myperf4j.base.Scheduler;
 import cn.myperf4j.base.metric.*;
+import cn.myperf4j.base.metric.collector.JvmClassCollector;
 import cn.myperf4j.base.metric.collector.JvmGcCollector;
 import cn.myperf4j.base.metric.collector.JvmMemoryCollector;
+import cn.myperf4j.base.metric.collector.JvmThreadCollector;
 import cn.myperf4j.base.metric.processor.*;
 
 import java.lang.management.*;
@@ -51,7 +53,7 @@ public class JvmMetricsScheduler implements Scheduler {
     private void processJvmClassMetrics(long processId, long startMillis, long stopMillis) {
         classMetricsProcessor.beforeProcess(processId, startMillis, stopMillis);
         try {
-            JvmClassMetrics classMetrics = new JvmClassMetrics(ManagementFactory.getClassLoadingMXBean());
+            JvmClassMetrics classMetrics = JvmClassCollector.collectClassMetrics();
             classMetricsProcessor.process(classMetrics, processId, startMillis, stopMillis);
         } finally {
             classMetricsProcessor.afterProcess(processId, startMillis, stopMillis);
@@ -61,7 +63,7 @@ public class JvmMetricsScheduler implements Scheduler {
     private void processJvmGCMetrics(long processId, long startMillis, long stopMillis) {
         gcMetricsProcessor.beforeProcess(processId, startMillis, stopMillis);
         try {
-            JvmGcMetrics jvmGcMetrics = JvmGcCollector.getInstance().collectGcMetrics();
+            JvmGcMetrics jvmGcMetrics = JvmGcCollector.collectGcMetrics();
             gcMetricsProcessor.process(jvmGcMetrics, processId, startMillis, stopMillis);
         } finally {
             gcMetricsProcessor.afterProcess(processId, startMillis, stopMillis);
@@ -94,8 +96,8 @@ public class JvmMetricsScheduler implements Scheduler {
     private void processJvmThreadMetrics(long processId, long startMillis, long stopMillis) {
         threadMetricsProcessor.beforeProcess(processId, startMillis, stopMillis);
         try {
-            ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
-            threadMetricsProcessor.process(new JvmThreadMetrics(threadMXBean), processId, startMillis, stopMillis);
+            JvmThreadMetrics jvmThreadMetrics = JvmThreadCollector.collectThreadMetrics();
+            threadMetricsProcessor.process(jvmThreadMetrics, processId, startMillis, stopMillis);
         } finally {
             threadMetricsProcessor.afterProcess(processId, startMillis, stopMillis);
         }

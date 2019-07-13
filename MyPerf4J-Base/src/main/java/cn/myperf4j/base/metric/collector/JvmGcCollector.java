@@ -17,31 +17,21 @@ import java.util.Set;
  * -XX:+UseSerialGC
  * -XX:+UseG1GC
  */
-public class JvmGcCollector {
+public final class JvmGcCollector {
 
     private static final Set<String> YOUNG_GC_SET = SetUtils.of("Copy", "ParNew", "PS Scavenge", "G1 Young Generation");
 
     private static final Set<String> OLD_GC_SET = SetUtils.of("MarkSweepCompact", "PS MarkSweep", "ConcurrentMarkSweep", "G1 Old Generation");
 
-    private static final JvmGcCollector instance = new JvmGcCollector();
+    private static volatile long lastYoungGcTime = 0L;
 
-    private volatile long lastYoungGcTime = 0L;
+    private static volatile long lastYoungGcCount = 0L;
 
-    private volatile long lastYoungGcCount = 0L;
+    private static volatile long lastOldGcTime = 0L;
 
-    private volatile long lastOldGcTime = 0L;
+    private static volatile long lastOldGcCount = 0L;
 
-    private volatile long lastOldGcCount = 0L;
-
-    private JvmGcCollector() {
-        //empty
-    }
-
-    public static JvmGcCollector getInstance() {
-        return instance;
-    }
-
-    public JvmGcMetrics collectGcMetrics() {
+    public static JvmGcMetrics collectGcMetrics() {
         long youngGcCount = 0L;
         long youngGcTime = 0L;
         long oldGCount = 0L;

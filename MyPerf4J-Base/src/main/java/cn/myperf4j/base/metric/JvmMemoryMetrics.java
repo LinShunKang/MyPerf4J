@@ -71,10 +71,6 @@ public class JvmMemoryMetrics extends Metrics {
         return heapUsed;
     }
 
-    public long getHeapMax() {
-        return heapMax;
-    }
-
     public double getHeapUsedPercent() {
         return getUsedPercent(heapUsed, heapMax);
     }
@@ -90,20 +86,12 @@ public class JvmMemoryMetrics extends Metrics {
         return nonHeapUsed;
     }
 
-    public long getNonHeapMax() {
-        return nonHeapMax;
-    }
-
     public double getNonHeapUsedPercent() {
         return getUsedPercent(nonHeapUsed, nonHeapMax);
     }
 
     public long getPermGenUsed() {
         return permGenUsed;
-    }
-
-    public long getPermGenMax() {
-        return permGenMax;
     }
 
     public double getPermGenUsedPercent() {
@@ -114,20 +102,12 @@ public class JvmMemoryMetrics extends Metrics {
         return metaspaceUsed;
     }
 
-    public long getMetaspaceMax() {
-        return metaspaceMax;
-    }
-
     public double getMetaspaceUsedPercent() {
         return getUsedPercent(metaspaceUsed, metaspaceMax);
     }
 
     public long getCodeCacheUsed() {
         return codeCacheUsed;
-    }
-
-    public long getCodeCacheMax() {
-        return codeCacheMax;
     }
 
     public double getCodeCacheUsedPercent() {
@@ -138,10 +118,6 @@ public class JvmMemoryMetrics extends Metrics {
         return oldGenUsed;
     }
 
-    public long getOldGenMax() {
-        return oldGenMax;
-    }
-
     public double getOldGenUsedPercent() {
         return getUsedPercent(oldGenUsed, oldGenMax);
     }
@@ -150,20 +126,12 @@ public class JvmMemoryMetrics extends Metrics {
         return edenUsed;
     }
 
-    public long getEdenMax() {
-        return edenMax;
-    }
-
     public double getEdenUsedPercent() {
         return getUsedPercent(edenUsed, edenMax);
     }
 
     public long getSurvivorUsed() {
         return survivorUsed;
-    }
-
-    public long getSurvivorMax() {
-        return survivorMax;
     }
 
     public double getSurvivorUsedPercent() {

@@ -1,7 +1,5 @@
 package cn.myperf4j.base.metric;
 
-import java.lang.management.ClassLoadingMXBean;
-
 /**
  * Created by LinShunkang on 2018/8/19
  */
@@ -19,10 +17,6 @@ public class JvmClassMetrics extends Metrics {
         this.total = total;
         this.loaded = loaded;
         this.unloaded = unloaded;
-    }
-
-    public JvmClassMetrics(ClassLoadingMXBean bean) {
-        this(bean.getTotalLoadedClassCount(), bean.getLoadedClassCount(), bean.getUnloadedClassCount());
     }
 
     public long getTotal() {

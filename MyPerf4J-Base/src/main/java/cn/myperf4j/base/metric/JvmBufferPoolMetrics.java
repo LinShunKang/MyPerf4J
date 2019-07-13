@@ -20,8 +20,8 @@ public class JvmBufferPoolMetrics extends Metrics {
     public JvmBufferPoolMetrics(BufferPoolMXBean mxBean) {
         this.name = mxBean.getName();
         this.count = mxBean.getCount();
-        this.memoryUsed = mxBean.getMemoryUsed() / 1024;
-        this.memoryCapacity = mxBean.getTotalCapacity() / 1024;
+        this.memoryUsed = mxBean.getMemoryUsed() >> 10;
+        this.memoryCapacity = mxBean.getTotalCapacity() >> 10;
     }
 
     public String getName() {

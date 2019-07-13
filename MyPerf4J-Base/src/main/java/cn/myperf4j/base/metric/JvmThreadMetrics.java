@@ -1,12 +1,5 @@
 package cn.myperf4j.base.metric;
 
-import java.lang.management.ThreadInfo;
-import java.lang.management.ThreadMXBean;
-
-import static java.lang.Thread.State.*;
-import static java.lang.Thread.State.TERMINATED;
-import static java.lang.Thread.State.TIMED_WAITING;
-
 /**
  * Created by LinShunkang on 2018/8/19
  */
@@ -34,48 +27,26 @@ public class JvmThreadMetrics extends Metrics {
 
     private final int terminated;
 
-    public JvmThreadMetrics(ThreadMXBean bean) {
-        this.totalStarted = bean.getTotalStartedThreadCount();
-        this.active = bean.getThreadCount();
-        this.peak = bean.getPeakThreadCount();
-        this.daemon = bean.getDaemonThreadCount();
-
-        int threadsNew = 0;
-        int threadsRunnable = 0;
-        int threadsBlocked = 0;
-        int threadsWaiting = 0;
-        int threadsTimedWaiting = 0;
-        int threadsTerminated = 0;
-
-        ThreadInfo[] threadInfoArr = bean.getThreadInfo(bean.getAllThreadIds(), 0);
-        for (int i = 0; i < threadInfoArr.length; ++i) {
-            ThreadInfo threadInfo = threadInfoArr[i];
-            if (threadInfo == null) {
-                continue;
-            }
-
-            Thread.State state = threadInfo.getThreadState();
-            if (state == NEW) {
-                threadsNew++;
-            } else if (state == RUNNABLE) {
-                threadsRunnable++;
-            } else if (state == BLOCKED) {
-                threadsBlocked++;
-            } else if (state == WAITING) {
-                threadsWaiting++;
-            } else if (state == TIMED_WAITING) {
-                threadsTimedWaiting++;
-            } else if (state == TERMINATED) {
-                threadsTerminated++;
-            }
-        }
-
-        this.news = threadsNew;
-        this.runnable = threadsRunnable;
-        this.blocked = threadsBlocked;
-        this.waiting = threadsWaiting;
-        this.timedWaiting = threadsTimedWaiting;
-        this.terminated = threadsTerminated;
+    public JvmThreadMetrics(long totalStarted,
+                            int active,
+                            int peak,
+                            int daemon,
+                            int news,
+                            int runnable,
+                            int blocked,
+                            int waiting,
+                            int timedWaiting,
+                            int terminated) {
+        this.totalStarted = totalStarted;
+        this.active = active;
+        this.peak = peak;
+        this.daemon = daemon;
+        this.news = news;
+        this.runnable = runnable;
+        this.blocked = blocked;
+        this.waiting = waiting;
+        this.timedWaiting = timedWaiting;
+        this.terminated = terminated;
     }
 
     public long getTotalStarted() {
