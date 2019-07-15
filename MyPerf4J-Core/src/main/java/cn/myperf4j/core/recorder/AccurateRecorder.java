@@ -66,6 +66,7 @@ public class AccurateRecorder extends Recorder {
     @Override
     public int fillSortedRecords(IntBuf intBuf) {
         int totalCount = 0;
+        AtomicIntegerArray timingArr = this.timingArr;
         for (int i = 0; i < timingArr.length(); ++i) {
             int count = timingArr.get(i);
             if (count > 0) {
@@ -79,6 +80,7 @@ public class AccurateRecorder extends Recorder {
     private int fillMapRecord(IntBuf intBuf) {
         int totalCount = 0;
         int offset = intBuf.writerIndex();
+        ConcurrentHashMap<Integer, AtomicInteger> timingMap = this.timingMap;
         for (Map.Entry<Integer, AtomicInteger> entry : timingMap.entrySet()) {
             int count = entry.getValue().get();
             if (count > 0) {
@@ -111,6 +113,7 @@ public class AccurateRecorder extends Recorder {
 
     @Override
     public synchronized void resetRecord() {
+        AtomicIntegerArray timingArr = this.timingArr;
         for (int i = 0; i < timingArr.length(); ++i) {
             timingArr.set(i, 0);
         }

@@ -26,7 +26,6 @@ public class RoughRecorder extends Recorder {
 
     private final AtomicInteger diffCount;
 
-
     public RoughRecorder(int methodTag, int mostTimeThreshold) {
         super(methodTag);
         this.timingArr = new AtomicIntegerArray(mostTimeThreshold + 2);
@@ -41,6 +40,7 @@ public class RoughRecorder extends Recorder {
 
         int oldValue;
         int elapsedTime = (int) ((endNanoTime - startNanoTime) / 1000000);
+        AtomicIntegerArray timingArr = this.timingArr;
         if (elapsedTime < timingArr.length() - 1) {
             oldValue = timingArr.getAndIncrement(elapsedTime);
         } else {
@@ -55,6 +55,7 @@ public class RoughRecorder extends Recorder {
     @Override
     public int fillSortedRecords(IntBuf intBuf) {
         int totalCount = 0;
+        AtomicIntegerArray timingArr = this.timingArr;
         for (int i = 0; i < timingArr.length(); ++i) {
             int count = timingArr.get(i);
             if (count > 0) {
@@ -72,6 +73,7 @@ public class RoughRecorder extends Recorder {
 
     @Override
     public synchronized void resetRecord() {
+        AtomicIntegerArray timingArr = this.timingArr;
         for (int i = 0; i < timingArr.length(); ++i) {
             timingArr.set(i, 0);
         }

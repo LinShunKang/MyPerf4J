@@ -63,6 +63,7 @@ public class Recorders {
 
     public void resetRecorder() {
         int count = recorderCount.get();
+        AtomicReferenceArray<Recorder> recorderArr = this.recorderArr;
         for (int i = 0; i < count; ++i) {
             Recorder recorder = recorderArr.get(i);
             if (recorder != null) {
