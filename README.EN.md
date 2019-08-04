@@ -71,8 +71,11 @@ MemMetricsFile=/your/path/to/log/memory_metrics.log
 BufPoolMetricsFile=/your/path/to/log/buf_pool_metrics
 ThreadMetricsFile=/your/path/to/log/thread_metrics.log
     
-#Configure TimeSlice, time unit: ms, min:1s, max:600s
-MilliTimeSlice=60000
+#Configure MethodMetrics TimeSlice, time unit: ms, min:1s, max:600s
+MethodMilliTimeSlice=10000
+
+#Configure JvmMetrics TimeSlice, time unit: ms, min:1s, max:600s
+JvmMilliTimeSlice=1000
     
 #Configure packages, separated with ';'
 IncludePackages=your.package.to.monitor;cn.perf4j;org.myperf4j;cn.perf4j.demo1.[p1,p2,p3];cn.*.demo.*

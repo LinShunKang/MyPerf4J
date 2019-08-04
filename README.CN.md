@@ -78,8 +78,11 @@ ThreadMetricsFile=/your/path/to/log/thread_metrics.log
 #配置Record模式，可配置为accurate/rough
 RecorderMode=accurate
     
-#配置时间片，单位为ms，最小1s，最大600s
-MilliTimeSlice=10000
+#配置方法指标时间片，单位为ms，最小1s，最大600s
+MethodMilliTimeSlice=10000
+
+#配置 JVM 指标时间片，单位为ms，最小1s，最大600s
+JvmMilliTimeSlice=1000
     
 #需要监控的package，可配置多个，用英文';'分隔
 IncludePackages=your.package.to.monitor;cn.perf4j.demo;cn.perf4j.demo1.[p1,p2,p3];cn.*.demo.*
