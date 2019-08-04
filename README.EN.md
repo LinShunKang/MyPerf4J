@@ -47,7 +47,7 @@ MyPerf4J adopts JavaAgent configuration mode, **transparent** access application
 * mvn clean package
 * Rename MyPerf4J-ASM-${MyPerf4J-version}.jar to MyPerf4J-ASM.jar
 
-> You can download [MyPerf4J-ASM.jar](https://github.com/LinShunKang/Objects/blob/master/jars/MyPerf4J-ASM-2.7.0.jar?raw=true) directly.
+> You can download [MyPerf4J-ASM.jar](https://github.com/LinShunKang/Objects/blob/master/jars/MyPerf4J-ASM-2.8.0.jar?raw=true) directly.
 
 ### Configure
 Add the following two parameters to the JVM startup parameters
