@@ -141,6 +141,7 @@ public abstract class AbstractBootstrap {
             initAppName(config);
             initMetricsFileConfig(config);
             initLogConfig(config);
+            initTimeSliceConfig(config);
             initRecorderConfig(config);
             initFiltersConfig(config);
             initProfilingParamsConfig(config);
@@ -188,10 +189,15 @@ public abstract class AbstractBootstrap {
         config.setLogReserveCount(MyProperties.getInt(PropertyKeys.LOG_RESERVE_COUNT, PropertyValues.DEFAULT_LOG_RESERVE_COUNT));
     }
 
+    private void initTimeSliceConfig(ProfilingConfig config) {
+        config.setMilliTimeSlice(MyProperties.getLong(PropertyKeys.MILLI_TIME_SLICE, PropertyValues.DEFAULT_TIME_SLICE));
+        config.setMethodMilliTimeSlice(MyProperties.getLong(PropertyKeys.METHOD_MILLI_TIME_SLICE, config.getMilliTimeSlice()));
+        config.setJvmMilliTimeSlice(MyProperties.getLong(PropertyKeys.JVM_MILLI_TIME_SLICE, config.getMilliTimeSlice()));
+    }
+
     private void initRecorderConfig(ProfilingConfig config) {
         config.setRecorderMode(MyProperties.getStr(PropertyKeys.RECORDER_MODE, PropertyValues.RECORDER_MODE_ROUGH));
         config.setBackupRecorderCount(MyProperties.getInt(PropertyKeys.BACKUP_RECORDERS_COUNT, PropertyValues.MIN_BACKUP_RECORDERS_COUNT));
-        config.setMilliTimeSlice(MyProperties.getLong(PropertyKeys.MILLI_TIME_SLICE, PropertyValues.DEFAULT_TIME_SLICE));
     }
 
     private void initFiltersConfig(ProfilingConfig config) {
@@ -399,12 +405,9 @@ public abstract class AbstractBootstrap {
 
     private boolean initScheduler() {
         try {
-            List<Scheduler> schedulers = new ArrayList<>(2);
-            schedulers.add(createJVMMetricsScheduler());
-            schedulers.add(maintainer);
-
-            LightWeightScheduler.initScheduleTask(schedulers, ProfilingConfig.getInstance().getMilliTimeSlice());
-
+            ProfilingConfig config = ProfilingConfig.getInstance();
+            LightWeightScheduler.dispatchScheduleTask(maintainer, config.getMethodMilliTimeSlice());
+            LightWeightScheduler.dispatchScheduleTask(jvmMetricsScheduler(), config.getJvmMilliTimeSlice());
             return true;
         } catch (Exception e) {
             Logger.error("AbstractBootstrap.initScheduler()", e);
@@ -412,7 +415,7 @@ public abstract class AbstractBootstrap {
         return false;
     }
 
-    private Scheduler createJVMMetricsScheduler() {
+    private Scheduler jvmMetricsScheduler() {
         int processorType = ProfilingConfig.getInstance().getMetricsProcessorType();
         JvmClassMetricsProcessor classProcessor = MetricsProcessorFactory.getClassMetricsProcessor(processorType);
         JvmGcMetricsProcessor gcProcessor = MetricsProcessorFactory.getGcMetricsProcessor(processorType);

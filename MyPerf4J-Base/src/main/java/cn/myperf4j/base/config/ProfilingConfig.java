@@ -38,6 +38,10 @@ public class ProfilingConfig {
 
     private long milliTimeSlice;
 
+    private long methodMilliTimeSlice;
+
+    private long jvmMilliTimeSlice;
+
     private String excludeClassLoaders;
 
     private String includePackages;
@@ -176,6 +180,22 @@ public class ProfilingConfig {
         this.milliTimeSlice = milliTimeSlice;
     }
 
+    public long getMethodMilliTimeSlice() {
+        return methodMilliTimeSlice;
+    }
+
+    public void setMethodMilliTimeSlice(long methodMilliTimeSlice) {
+        this.methodMilliTimeSlice = methodMilliTimeSlice;
+    }
+
+    public long getJvmMilliTimeSlice() {
+        return jvmMilliTimeSlice;
+    }
+
+    public void setJvmMilliTimeSlice(long jvmMilliTimeSlice) {
+        this.jvmMilliTimeSlice = jvmMilliTimeSlice;
+    }
+
     public boolean isShowMethodParams() {
         return showMethodParams;
     }
@@ -281,9 +301,13 @@ public class ProfilingConfig {
                 ", memoryMetricsFile='" + memoryMetricsFile + '\'' +
                 ", bufferPoolMetricsFile='" + bufferPoolMetricsFile + '\'' +
                 ", threadMetricsFile='" + threadMetricsFile + '\'' +
+                ", logRollingTimeUnit='" + logRollingTimeUnit + '\'' +
+                ", LogReserveCount=" + LogReserveCount +
                 ", recorderMode='" + recorderMode + '\'' +
                 ", backupRecorderCount=" + backupRecorderCount +
                 ", milliTimeSlice=" + milliTimeSlice +
+                ", methodMilliTimeSlice=" + methodMilliTimeSlice +
+                ", jvmMilliTimeSlice=" + jvmMilliTimeSlice +
                 ", excludeClassLoaders='" + excludeClassLoaders + '\'' +
                 ", includePackages='" + includePackages + '\'' +
                 ", excludePackages='" + excludePackages + '\'' +

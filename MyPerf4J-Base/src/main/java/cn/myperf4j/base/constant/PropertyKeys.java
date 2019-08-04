@@ -31,7 +31,12 @@ public interface PropertyKeys {
 
     String BACKUP_RECORDERS_COUNT = "BackupRecordersCount";
 
+    @Deprecated
     String MILLI_TIME_SLICE = "MilliTimeSlice";
+
+    String METHOD_MILLI_TIME_SLICE = "MethodMilliTimeSlice";
+
+    String JVM_MILLI_TIME_SLICE = "JvmMilliTimeSlice";
 
     String SHOW_METHOD_PARAMS = "ShowMethodParams";
 
