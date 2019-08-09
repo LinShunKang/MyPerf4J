@@ -21,6 +21,10 @@ public class LightWeightScheduler {
             ThreadUtils.newThreadFactory("MyPerf4J-LightWeightScheduler-"),
             new ThreadPoolExecutor.DiscardOldestPolicy());
 
+    static {
+        ExecutorManager.addExecutorService(scheduledExecutor);
+    }
+
     private final List<Scheduler> schedulerList;
 
     private final long initialDelay;
@@ -33,11 +37,11 @@ public class LightWeightScheduler {
 
     private volatile long nextTimeSliceEndTime = 0L;
 
-    public LightWeightScheduler(List<Scheduler> schedulerList,
-                                long initialDelay,
-                                long period,
-                                TimeUnit unit,
-                                long millTimeSlice) {
+    private LightWeightScheduler(List<Scheduler> schedulerList,
+                                 long initialDelay,
+                                 long period,
+                                 TimeUnit unit,
+                                 long millTimeSlice) {
         this.schedulerList = Collections.unmodifiableList(schedulerList);
         this.millTimeSlice = millTimeSlice;
         this.initialDelay = initialDelay;
@@ -45,9 +49,11 @@ public class LightWeightScheduler {
         this.unit = unit;
     }
 
-    public static void initScheduleTask(List<Scheduler> schedulerList, long millTimeSlice) {
-        ExecutorManager.addExecutorService(scheduledExecutor);
+    public static void dispatchScheduleTask(Scheduler scheduler, long millTimeSlice) {
+        dispatchScheduleTask(Collections.singletonList(scheduler), millTimeSlice);
+    }
 
+    public static void dispatchScheduleTask(List<Scheduler> schedulerList, long millTimeSlice) {
         millTimeSlice = getFitMillTimeSlice(millTimeSlice);
         new LightWeightScheduler(schedulerList, 0, 10, TimeUnit.MILLISECONDS, millTimeSlice).start();
     }

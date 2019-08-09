@@ -47,7 +47,7 @@ MyPerf4J 采用 JavaAgent 配置方式，**透明化**接入应用，对应用�
 * mvn clean package
 * 把 MyPerf4J-ASM-${MyPerf4J-version}.jar 重命名为 MyPerf4J-ASM.jar
 
-> 可以尝试直接下载 [MyPerf4J-ASM.jar](https://github.com/LinShunKang/Objects/blob/master/jars/MyPerf4J-ASM-2.7.0.jar?raw=true)
+> 可以尝试直接下载 [MyPerf4J-ASM.jar](https://github.com/LinShunKang/Objects/blob/master/jars/MyPerf4J-ASM-2.8.0.jar?raw=true)
 
 ### 配置
 在 JVM 启动参数里加上以下两个参数
@@ -78,8 +78,11 @@ ThreadMetricsFile=/your/path/to/log/thread_metrics.log
 #配置Record模式，可配置为accurate/rough
 RecorderMode=accurate
     
-#配置时间片，单位为ms，最小1s，最大600s
-MilliTimeSlice=10000
+#配置方法指标时间片，单位为ms，最小1s，最大600s
+MethodMilliTimeSlice=10000
+
+#配置 JVM 指标时间片，单位为ms，最小1s，最大600s
+JvmMilliTimeSlice=1000
     
 #需要监控的package，可配置多个，用英文';'分隔
 IncludePackages=your.package.to.monitor;cn.perf4j.demo;cn.perf4j.demo1.[p1,p2,p3];cn.*.demo.*

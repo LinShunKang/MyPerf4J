@@ -47,7 +47,7 @@ MyPerf4J adopts JavaAgent configuration mode, **transparent** access application
 * mvn clean package
 * Rename MyPerf4J-ASM-${MyPerf4J-version}.jar to MyPerf4J-ASM.jar
 
-> You can download [MyPerf4J-ASM.jar](https://github.com/LinShunKang/Objects/blob/master/jars/MyPerf4J-ASM-2.7.0.jar?raw=true) directly.
+> You can download [MyPerf4J-ASM.jar](https://github.com/LinShunKang/Objects/blob/master/jars/MyPerf4J-ASM-2.8.0.jar?raw=true) directly.
 
 ### Configure
 Add the following two parameters to the JVM startup parameters
@@ -71,8 +71,11 @@ MemMetricsFile=/your/path/to/log/memory_metrics.log
 BufPoolMetricsFile=/your/path/to/log/buf_pool_metrics
 ThreadMetricsFile=/your/path/to/log/thread_metrics.log
     
-#Configure TimeSlice, time unit: ms, min:1s, max:600s
-MilliTimeSlice=60000
+#Configure MethodMetrics TimeSlice, time unit: ms, min:1s, max:600s
+MethodMilliTimeSlice=10000
+
+#Configure JvmMetrics TimeSlice, time unit: ms, min:1s, max:600s
+JvmMilliTimeSlice=1000
     
 #Configure packages, separated with ';'
 IncludePackages=your.package.to.monitor;cn.perf4j;org.myperf4j;cn.perf4j.demo1.[p1,p2,p3];cn.*.demo.*
