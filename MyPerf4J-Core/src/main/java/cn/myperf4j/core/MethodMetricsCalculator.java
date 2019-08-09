@@ -27,22 +27,25 @@ public final class MethodMetricsCalculator {
             int diffCount = recorder.getDiffCount();
             intBuf = intBufPool.acquire(diffCount << 1);
             int totalCount = recorder.fillSortedRecords(intBuf);
-            return calPerfStats(methodTag, startTime, stopTime, intBuf, totalCount, diffCount);
+            MethodMetrics methodMetrics = calPerfStats(recorder, methodTag, startTime, stopTime, intBuf, totalCount, diffCount);
+            MethodMetricsHistogram.recordMetrics(methodMetrics);
+            return methodMetrics;
         } catch (Exception e) {
             Logger.error("MethodMetricsCalculator.calPerfStats(" + recorder + ", " + methodTag + ", " + startTime + ", " + stopTime + ")", e);
         } finally {
             intBufPool.release(intBuf);
         }
-        return MethodMetrics.getInstance(methodTag, startTime, stopTime);
+        return MethodMetrics.getInstance(methodTag, recorder.getMethodTagId(), startTime, stopTime);
     }
 
-    private static MethodMetrics calPerfStats(MethodTag methodTag,
+    private static MethodMetrics calPerfStats(Recorder recorder,
+                                              MethodTag methodTag,
                                               long startTime,
                                               long stopTime,
                                               IntBuf sortedRecords,
                                               int totalCount,
                                               int diffCount) {
-        MethodMetrics result = MethodMetrics.getInstance(methodTag, startTime, stopTime);
+        MethodMetrics result = MethodMetrics.getInstance(methodTag, recorder.getMethodTagId(), startTime, stopTime);
         if (diffCount <= 0) {
             return result;
         }

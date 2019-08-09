@@ -20,7 +20,7 @@ public class MethodMetricsBenchmark {
         Recorders recorders = new Recorders(new AtomicReferenceArray<Recorder>(10));
         MethodTagMaintainer methodTagMaintainer = MethodTagMaintainer.getInstance();
 
-        int methodId1 = methodTagMaintainer.addMethodTag(MethodTag.getGeneralInstance("Test", "Api", "m1", ""));
+        int methodId1 = methodTagMaintainer.addMethodTag(MethodTag.getGeneralInstance("", "Test", "Api", "m1", ""));
 //        recorders.setRecorder(methodId1, AccurateRecorder.getInstance(0, 9000, 50));
         recorders.setRecorder(methodId1, RoughRecorder.getInstance(0, 10000));
 

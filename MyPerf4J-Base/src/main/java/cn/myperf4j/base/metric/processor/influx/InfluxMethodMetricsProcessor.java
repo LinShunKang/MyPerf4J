@@ -50,7 +50,7 @@ public class InfluxMethodMetricsProcessor extends AbstractMethodMetricsProcessor
         String methodDesc = LineProtocolUtils.processTagOrField(methodTag.getSimpleDesc());
         sb.append("method_metrics")
                 .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
-                .append(",ClassName=").append(methodTag.getClassName())
+                .append(",ClassName=").append(methodTag.getSimpleClassName())
                 .append(",Method=").append(methodDesc)
                 .append(",Type=").append(methodTag.getType())
                 .append(",Level=").append(methodTag.getLevel())
@@ -73,7 +73,7 @@ public class InfluxMethodMetricsProcessor extends AbstractMethodMetricsProcessor
 
     private int getSuitSize(MethodMetrics methodMetrics) {
         MethodTag methodTag = methodMetrics.getMethodTag();
-        return methodTag.getClassName().length()
+        return methodTag.getSimpleClassName().length()
                 + 8 + methodTag.getSimpleDesc().length()//Method
                 + 6 + methodTag.getType().length()//Type
                 + 5 + 6 + 1//RPS

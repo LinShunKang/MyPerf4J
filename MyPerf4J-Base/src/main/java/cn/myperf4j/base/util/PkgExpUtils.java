@@ -1,5 +1,6 @@
 package cn.myperf4j.base.util;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -30,10 +31,10 @@ public final class PkgExpUtils {
         String suffixStr = rightIdx + 1 < expStr.length() ? expStr.substring(rightIdx + 1) : "";
 
         String elementsStr = expStr.substring(leftIdx + 1, rightIdx);
-        String[] elements = elementsStr.split(",");
-        Set<String> result = SetUtils.createHashSet(elements.length);
-        for (int i = 0; i < elements.length; ++i) {
-            String subExpStr = prefixStr.concat(elements[i]).concat(suffixStr);
+        List<String> elements = StrUtils.splitAsList(elementsStr, ',');
+        Set<String> result = SetUtils.createHashSet(elements.size());
+        for (int i = 0; i < elements.size(); ++i) {
+            String subExpStr = prefixStr.concat(elements.get(i)).concat(suffixStr);
             result.addAll(parse(subExpStr));
         }
         return result;

@@ -14,6 +14,8 @@ public class ProfilingConfig {
 
     private String appName;
 
+    private String configFileDir;
+
     private int metricsProcessorType;
 
     private String methodMetricsFile;
@@ -74,6 +76,14 @@ public class ProfilingConfig {
 
     public void setAppName(String appName) {
         this.appName = appName;
+    }
+
+    public String getConfigFileDir() {
+        return configFileDir;
+    }
+
+    public void setConfigFileDir(String configFileDir) {
+        this.configFileDir = configFileDir;
     }
 
     public int getMetricsProcessorType() {
@@ -241,6 +251,10 @@ public class ProfilingConfig {
         return this;
     }
 
+    public String getSysProfilingParamsFile() {
+        return configFileDir + appName + "_SysGenProfilingFile";
+    }
+
     public String getProfilingParamsFile() {
         return profilingParamsFile;
     }
@@ -253,10 +267,6 @@ public class ProfilingConfig {
         this.commonProfilingParams = ProfilingParams.of(timeThreshold, outThresholdCount);
     }
 
-    public ProfilingParams getCommonProfilingParams() {
-        return commonProfilingParams;
-    }
-
     public void addProfilingParam(String methodName, int timeThreshold, int outThresholdCount) {
         profilingParamsMap.put(methodName, ProfilingParams.of(timeThreshold, outThresholdCount));
     }
@@ -266,7 +276,6 @@ public class ProfilingConfig {
         if (params != null) {
             return params;
         }
-
         return commonProfilingParams;
     }
 

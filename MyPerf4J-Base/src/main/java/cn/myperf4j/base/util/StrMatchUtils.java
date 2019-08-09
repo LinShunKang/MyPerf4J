@@ -17,7 +17,6 @@ public final class StrMatchUtils {
         int strIndex = 0;
         int expIndex = 0;
         int starIndex = -1;//记录上一个 '*' 的位置
-        int match = 0;//记录与 '*' 匹配的 strIndex 的位置 (与 starIndex 不同的是，每次回溯，match自增)
 
         while (strIndex < str.length()) {
             char pkgChar = str.charAt(strIndex);
@@ -28,11 +27,9 @@ public final class StrMatchUtils {
             } else if (expChar == '*') {//遇到'*', 记录'*'的位置，并记录 expIndex 和 match
                 starIndex = expIndex;
                 expIndex++;
-                match = strIndex;
             } else if (starIndex != -1) {//不是上述两种情况，无法匹配，因此回溯
                 expIndex = starIndex + 1;
-                match++;
-                strIndex = match;
+                strIndex++;
             } else {//其他情况， 直接返回false
                 return false;
             }

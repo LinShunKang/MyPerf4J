@@ -11,11 +11,13 @@ public class MethodTag {
 
     private static final String TYPE_DYNAMIC_PROXY = "DynamicProxy";
 
-    private final String className;
+    private final String simpleClassName;
 
     private final String methodName;
 
     private final String methodParamDesc;
+
+    private final String fullDescription;
 
     private final String description;
 
@@ -23,17 +25,18 @@ public class MethodTag {
 
     private final String level;
 
-    private MethodTag(String className, String methodName, String methodParamDesc, String type, String level) {
-        this.className = className;
+    private MethodTag(String fullClassName, String simpleClassName, String methodName, String methodParamDesc, String type, String level) {
+        this.simpleClassName = simpleClassName;
         this.methodName = methodName;
         this.methodParamDesc = methodParamDesc;
-        this.description = className + "." + methodName + methodParamDesc;
+        this.fullDescription = fullClassName + "." + methodName;
+        this.description = simpleClassName + "." + methodName + methodParamDesc;
         this.type = type;
         this.level = level;
     }
 
-    public String getClassName() {
-        return className;
+    public String getSimpleClassName() {
+        return simpleClassName;
     }
 
     public String getMethodName() {
@@ -48,6 +51,10 @@ public class MethodTag {
         return description;
     }
 
+    public String getFullDesc() {
+        return fullDescription;
+    }
+
     public String getType() {
         return type;
     }
@@ -59,7 +66,7 @@ public class MethodTag {
     @Override
     public String toString() {
         return "MethodTag{" +
-                "className='" + className + '\'' +
+                "simpleClassName='" + simpleClassName + '\'' +
                 ", methodName='" + methodName + '\'' +
                 ", methodParamDesc='" + methodParamDesc + '\'' +
                 ", description='" + description + '\'' +
@@ -67,12 +74,12 @@ public class MethodTag {
                 '}';
     }
 
-    public static MethodTag getGeneralInstance(String className, String classLevel, String methodName, String methodParamDesc) {
-        return new MethodTag(className, methodName, methodParamDesc, TYPE_GENERAL, classLevel);
+    public static MethodTag getGeneralInstance(String fullClassName, String simpleClassName, String classLevel, String methodName, String methodParamDesc) {
+        return new MethodTag(fullClassName, simpleClassName, methodName, methodParamDesc, TYPE_GENERAL, classLevel);
     }
 
-    public static MethodTag getDynamicProxyInstance(String className, String methodName, String methodParamDesc) {
+    public static MethodTag getDynamicProxyInstance(String fullClassName, String className, String methodName, String methodParamDesc) {
         String classLevel = LevelMappingFilter.getClassLevel(className);
-        return new MethodTag(className, methodName, methodParamDesc, TYPE_DYNAMIC_PROXY, classLevel);
+        return new MethodTag(fullClassName, className, methodName, methodParamDesc, TYPE_DYNAMIC_PROXY, classLevel);
     }
 }

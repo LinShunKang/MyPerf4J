@@ -7,14 +7,14 @@ import cn.myperf4j.base.constant.PropertyKeys;
 import cn.myperf4j.base.constant.PropertyValues;
 import cn.myperf4j.base.metric.processor.*;
 import cn.myperf4j.base.util.ExecutorManager;
-import cn.myperf4j.base.util.IOUtils;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.config.MyProperties;
-import cn.myperf4j.base.util.StringUtils;
+import cn.myperf4j.base.util.StrUtils;
 import cn.myperf4j.core.recorder.AbstractRecorderMaintainer;
 import cn.myperf4j.core.scheduler.JvmMetricsScheduler;
 import cn.myperf4j.base.Scheduler;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -118,20 +118,27 @@ public abstract class AbstractBootstrap {
     }
 
     private boolean initProperties() {
-        InputStream in = null;
-        try {
-            String configFilePath = System.getProperty(PropertyKeys.PRO_FILE_NAME, PropertyValues.DEFAULT_PRO_FILE);
-            in = new FileInputStream(configFilePath);
-
+        String configFilePath = System.getProperty(PropertyKeys.PRO_FILE_NAME, PropertyValues.DEFAULT_PRO_FILE);
+        try (InputStream in = new FileInputStream(configFilePath)) {
             Properties properties = new Properties();
             properties.load(in);
+
+            properties.put(PropertyKeys.PRO_FILE_DIR, getConfigFileDir(configFilePath));
             return MyProperties.initial(properties);
         } catch (IOException e) {
             Logger.error("AbstractBootstrap.initProperties()", e);
-        } finally {
-            IOUtils.closeQuietly(in);
         }
         return false;
+    }
+
+    private String getConfigFileDir(String configFilePath) {
+        if (System.getProperty("os.name").startsWith("windows")) {
+            int idx = configFilePath.lastIndexOf('\\');
+            return configFilePath.substring(0, idx + 1);
+        }
+
+        int idx = configFilePath.lastIndexOf('/');
+        return configFilePath.substring(0, idx + 1);
     }
 
     private boolean initProfilingConfig() {
@@ -145,6 +152,7 @@ public abstract class AbstractBootstrap {
             initFiltersConfig(config);
             initProfilingParamsConfig(config);
 
+            config.setConfigFileDir(MyProperties.getStr(PropertyKeys.PRO_FILE_DIR));
             config.setClassLevelMappings(MyProperties.getStr(PropertyKeys.CLASS_LEVEL_MAPPING, ""));
             config.setShowMethodParams(MyProperties.getBoolean(PropertyKeys.SHOW_METHOD_PARAMS, false));
             config.setPrintDebugLog(MyProperties.getBoolean(PropertyKeys.DEBUG_PRINT_DEBUG_LOG, false));
@@ -158,7 +166,7 @@ public abstract class AbstractBootstrap {
 
     private void initAppName(ProfilingConfig config) {
         String appName = MyProperties.getStr(PropertyKeys.APP_NAME);
-        if (StringUtils.isBlank(appName)) {
+        if (StrUtils.isBlank(appName)) {
             throw new IllegalArgumentException("AppName is required!!!");
         }
         config.setAppName(appName);
@@ -196,7 +204,7 @@ public abstract class AbstractBootstrap {
 
     private void initFiltersConfig(ProfilingConfig config) {
         String includePackages = MyProperties.getStr(PropertyKeys.FILTER_INCLUDE_PACKAGES, "");
-        if (StringUtils.isBlank(includePackages)) {
+        if (StrUtils.isBlank(includePackages)) {
             throw new IllegalArgumentException("IncludePackages is required!!!");
         }
 
@@ -282,21 +290,21 @@ public abstract class AbstractBootstrap {
     private boolean initClassLevelMapping() {
         try {
             String levelMappings = ProfilingConfig.getInstance().getClassLevelMappings();
-            if (StringUtils.isBlank(levelMappings)) {
+            if (StrUtils.isBlank(levelMappings)) {
                 Logger.info("ClassLevelMapping is blank, so use default mappings.");
                 return true;
             }
 
-            String[] mappingPairs = levelMappings.split(";");
-            for (int i = 0; i < mappingPairs.length; ++i) {
-                String mappingPair = mappingPairs[i];
-                String[] mappingPairArr = mappingPair.split(":");
-                if (mappingPairArr.length != 2) {
+            List<String> mappingPairs = StrUtils.splitAsList(levelMappings, ';');
+            for (int i = 0; i < mappingPairs.size(); ++i) {
+                String mappingPair = mappingPairs.get(i);
+                List<String> mappingPairList = StrUtils.splitAsList(mappingPair, ':');
+                if (mappingPairList.size() != 2) {
                     Logger.warn("MethodLevelMapping is not correct: " + mappingPair);
                     continue;
                 }
 
-                LevelMappingFilter.putLevelMapping(mappingPairArr[0], getMappingExpList(mappingPairArr[1]));
+                LevelMappingFilter.putLevelMapping(mappingPairList.get(0), getMappingExpList(mappingPairList.get(1)));
             }
             return true;
         } catch (Exception e) {
@@ -308,7 +316,7 @@ public abstract class AbstractBootstrap {
     //Api:[*Api,*ApiImpl]
     private List<String> getMappingExpList(String expStr) {
         expStr = expStr.substring(1, expStr.length() - 1);
-        return Arrays.asList(expStr.split(","));
+        return StrUtils.splitAsList(expStr, ',');
     }
 
     private boolean initPerfStatsProcessor() {
@@ -323,16 +331,27 @@ public abstract class AbstractBootstrap {
     }
 
     private boolean initProfilingParams() {
-        InputStream in = null;
         try {
             ProfilingConfig config = ProfilingConfig.getInstance();
-            String profilingParamFile = config.getProfilingParamsFile();
-            if (StringUtils.isBlank(profilingParamFile)) {
-                Logger.info("profilingParamFile is blank, so use same profiling params to all methods.");
-                return true;
+            String sysProfilingParamFile = config.getSysProfilingParamsFile();
+            File sysFile = new File(sysProfilingParamFile);
+            if (sysFile.exists() && sysFile.isFile()) {
+                addProfilingParams(config, sysProfilingParamFile);
             }
 
-            in = new FileInputStream(profilingParamFile);
+            String manualProfilingParamFile = config.getProfilingParamsFile();
+            if (StrUtils.isNotBlank(manualProfilingParamFile)) {
+                addProfilingParams(config, manualProfilingParamFile);
+            }
+            return true;
+        } catch (Exception e) {
+            Logger.error("AbstractBootstrap.initProfilingParams()", e);
+        }
+        return false;
+    }
+
+    private void addProfilingParams(ProfilingConfig config, String profilingParamFile) {
+        try (InputStream in = new FileInputStream(profilingParamFile)) {
             Properties properties = new Properties();
             properties.load(in);
 
@@ -343,28 +362,23 @@ public abstract class AbstractBootstrap {
                     continue;
                 }
 
-                String[] strings = value.split(":");
-                if (strings.length != 2) {
+                List<String> strList = StrUtils.splitAsList(value, ':');
+                if (strList.size() != 2) {
                     continue;
                 }
 
-                int timeThreshold = getInt(strings[0].trim(), 500);
-                int outThresholdCount = getInt(strings[1].trim(), 50);
+                int timeThreshold = getInt(strList.get(0).trim(), 1000);
+                int outThresholdCount = getInt(strList.get(1).trim(), 64);
                 config.addProfilingParam(key.replace('.', '/'), timeThreshold, outThresholdCount);
             }
-
-            return true;
         } catch (Exception e) {
-            Logger.error("AbstractBootstrap.initProfilingParams()", e);
-        } finally {
-            IOUtils.closeQuietly(in);
+            Logger.error("AbstractBootstrap.addProfilingParams(" + profilingParamFile + ")", e);
         }
-        return false;
     }
 
     private int getInt(String str, int defaultValue) {
         try {
-            return Integer.valueOf(str);
+            return Integer.parseInt(str);
         } catch (Exception e) {
             Logger.error("AbstractBootstrap.getInt(" + str + ")", e);
         }
@@ -384,6 +398,7 @@ public abstract class AbstractBootstrap {
                 public void run() {
                     Logger.info("ENTER ShutdownHook...");
                     try {
+                        MethodMetricsHistogram.buildSysGenProfilingFile();
                         ExecutorManager.stopAll(6, TimeUnit.SECONDS);
                     } finally {
                         Logger.info("EXIT ShutdownHook...");

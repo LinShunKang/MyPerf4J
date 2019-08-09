@@ -33,7 +33,7 @@ public class ExpUtilsTest {
         Assert.assertTrue(StrMatchUtils.isMatch("abc", "a*c"));
         Assert.assertTrue(StrMatchUtils.isMatch("abc", "ab*"));
         Assert.assertTrue(StrMatchUtils.isMatch("abc", "ab**"));
-        Assert.assertTrue(StrMatchUtils.isMatch("abcdef", "ab*c*"));
+        Assert.assertTrue(StrMatchUtils.isMatch("abcdef", "ab****c*"));
         Assert.assertTrue(StrMatchUtils.isMatch("abcdef", "ab*c*f"));
 
         Assert.assertFalse(StrMatchUtils.isMatch("abcdef", "ab*c*eg"));

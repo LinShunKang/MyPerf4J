@@ -20,6 +20,8 @@ public class ProfilingClassAdapter extends ClassVisitor {
 
     private final String innerClassName;
 
+    private final String fullClassName;
+
     private final String simpleClassName;
 
     private final String classLevel;
@@ -33,6 +35,7 @@ public class ProfilingClassAdapter extends ClassVisitor {
     public ProfilingClassAdapter(final ClassVisitor cv, String innerClassName) {
         super(ASM5, cv);
         this.innerClassName = innerClassName;
+        this.fullClassName = innerClassName.replace('/', '.');
         this.simpleClassName = TypeDescUtils.getSimpleClassName(innerClassName);
         this.classLevel = LevelMappingFilter.getClassLevel(simpleClassName);
     }
@@ -99,7 +102,7 @@ public class ProfilingClassAdapter extends ClassVisitor {
         if (isInvocationHandler && isInvokeMethod(name, desc)) {
             return new ProfilingDynamicMethodVisitor(access, name, desc, mv);
         } else {
-            return new ProfilingMethodVisitor(access, name, desc, mv, innerClassName, simpleClassName, classLevel, desc4Human);
+            return new ProfilingMethodVisitor(access, name, desc, mv, innerClassName, fullClassName, simpleClassName, classLevel, desc4Human);
         }
     }
 

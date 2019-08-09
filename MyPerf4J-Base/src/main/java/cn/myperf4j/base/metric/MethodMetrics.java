@@ -21,7 +21,13 @@ public class MethodMetrics extends Metrics {
 
     private final int[] tpArr = {-1, -1, -1, -1, -1, -1, -1};//注意：tpArr和TOP_PERCENTILE_ARR的大小请保持一致！！！！
 
-    private MethodTag methodTag;
+    private final MethodTag methodTag;
+
+    private final int methodTagId;
+
+    private final long startMillTime;
+
+    private final long stopMillTime;
 
     private int minTime = -1;//ms
 
@@ -33,16 +39,19 @@ public class MethodMetrics extends Metrics {
 
     private int totalCount = -1;//ms
 
-    private long startMillTime = -1L;
-
-    private long stopMillTime = -1L;
-
-    private MethodMetrics(MethodTag methodTag) {
+    private MethodMetrics(MethodTag methodTag, int methodTagId, long startMillTime, long stopMillTime) {
         this.methodTag = methodTag;
+        this.methodTagId = methodTagId;
+        this.startMillTime = startMillTime;
+        this.stopMillTime = stopMillTime;
     }
 
     public MethodTag getMethodTag() {
         return methodTag;
+    }
+
+    public int getMethodTagId() {
+        return methodTagId;
     }
 
     public int getMinTime() {
@@ -117,14 +126,6 @@ public class MethodMetrics extends Metrics {
         return tpArr;
     }
 
-    public void setStartMillTime(long startMillTime) {
-        this.startMillTime = startMillTime;
-    }
-
-    public void setStopMillTime(long stopMillTime) {
-        this.stopMillTime = stopMillTime;
-    }
-
     public int getRPS() {
         long seconds = (stopMillTime - startMillTime) / 1000;
         seconds = seconds <= 0L ? 1 : seconds;
@@ -151,11 +152,8 @@ public class MethodMetrics extends Metrics {
                 '}';
     }
 
-    public static MethodMetrics getInstance(MethodTag methodTag, long startMillTime, long stopMillTime) {
-        MethodMetrics result = new MethodMetrics(methodTag);
-        result.setStartMillTime(startMillTime);
-        result.setStopMillTime(stopMillTime);
-        return result;
+    public static MethodMetrics getInstance(MethodTag methodTag, int methodTagId, long startMillTime, long stopMillTime) {
+        return new MethodMetrics(methodTag, methodTagId, startMillTime, stopMillTime);
     }
 
     public static double[] getPercentiles() {
