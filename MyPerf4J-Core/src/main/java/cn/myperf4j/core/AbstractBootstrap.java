@@ -339,10 +339,12 @@ public abstract class AbstractBootstrap {
     private boolean initProfilingParams() {
         try {
             ProfilingConfig config = ProfilingConfig.getInstance();
-            String sysProfilingParamFile = config.getSysProfilingParamsFile();
-            File sysFile = new File(sysProfilingParamFile);
-            if (sysFile.exists() && sysFile.isFile()) {
-                addProfilingParams(config, sysProfilingParamFile);
+            if (config.isAccurateMode()) {
+                String sysProfilingParamFile = config.getSysProfilingParamsFile();
+                File sysFile = new File(sysProfilingParamFile);
+                if (sysFile.exists() && sysFile.isFile()) {
+                    addProfilingParams(config, sysProfilingParamFile);
+                }
             }
 
             String manualProfilingParamFile = config.getProfilingParamsFile();
