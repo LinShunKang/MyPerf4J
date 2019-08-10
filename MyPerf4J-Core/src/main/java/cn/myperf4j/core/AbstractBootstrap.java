@@ -423,6 +423,7 @@ public abstract class AbstractBootstrap {
             ProfilingConfig config = ProfilingConfig.getInstance();
             LightWeightScheduler.dispatchScheduleTask(maintainer, config.getMethodMilliTimeSlice());
             LightWeightScheduler.dispatchScheduleTask(jvmMetricsScheduler(), config.getJvmMilliTimeSlice());
+            LightWeightScheduler.dispatchScheduleTask(buildSysGenProfilingScheduler(), 10 * 60 * 1000);//10m
             return true;
         } catch (Exception e) {
             Logger.error("AbstractBootstrap.initScheduler()", e);
@@ -438,6 +439,15 @@ public abstract class AbstractBootstrap {
         JvmBufferPoolMetricsProcessor bufferPoolProcessor = MetricsProcessorFactory.getBufferPoolMetricsProcessor(processorType);
         JvmThreadMetricsProcessor threadProcessor = MetricsProcessorFactory.getThreadMetricsProcessor(processorType);
         return new JvmMetricsScheduler(classProcessor, gcProcessor, memoryProcessor, bufferPoolProcessor, threadProcessor);
+    }
+
+    private Scheduler buildSysGenProfilingScheduler() {
+        return new Scheduler() {
+            @Override
+            public void run(long lastTimeSliceStartTime, long millTimeSlice) {
+                MethodMetricsHistogram.buildSysGenProfilingFile();
+            }
+        };
     }
 
     public abstract boolean initOther();

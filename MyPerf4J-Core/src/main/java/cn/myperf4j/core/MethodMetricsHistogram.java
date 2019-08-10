@@ -28,11 +28,10 @@ public class MethodMetricsHistogram {
         methodMap.put(metrics.getMethodTagId(), info);
     }
 
-    public static void buildSysGenProfilingFile() {
-        try {
-            String file = ProfilingConfig.getInstance().getSysProfilingParamsFile();
-            BufferedWriter fileWriter = new BufferedWriter(new FileWriter(file, false), 64 * 1024);
-
+    public static synchronized void buildSysGenProfilingFile() {
+        long startMills = System.currentTimeMillis();
+        String fileName = ProfilingConfig.getInstance().getSysProfilingParamsFile();
+        try (BufferedWriter fileWriter = new BufferedWriter(new FileWriter(fileName, false), 64 * 1024)) {
             MethodTagMaintainer tagMaintainer = MethodTagMaintainer.getInstance();
             Map<Integer, MethodMetricsInfo> methodMap = MethodMetricsHistogram.methodMap;
             for (Map.Entry<Integer, MethodMetricsInfo> entry : methodMap.entrySet()) {
@@ -51,6 +50,8 @@ public class MethodMetricsHistogram {
             fileWriter.flush();
         } catch (Exception e) {
             Logger.error("MethodMetricsHistogram.buildSysGenProfilingFile()", e);
+        } finally {
+            Logger.debug("MethodMetricsHistogram.buildSysGenProfilingFile() finished, cost=" + (System.currentTimeMillis() - startMills) + "ms");
         }
     }
 
