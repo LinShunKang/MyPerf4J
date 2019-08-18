@@ -18,6 +18,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -223,7 +225,7 @@ public abstract class AbstractBootstrap {
 
     private void initProfilingParamsConfig(ProfilingConfig config) {
         config.setProfilingParamsFile(MyProperties.getStr(PropertyKeys.PROFILING_PARAMS_FILE_NAME, ""));
-        config.setCommonProfilingParams(MyProperties.getInt(PropertyKeys.PROFILING_TIME_THRESHOLD, 1000), MyProperties.getInt(PropertyKeys.PROFILING_OUT_THRESHOLD_COUNT, 16));
+        config.setCommonProfilingParams(MyProperties.getInt(PropertyKeys.PROFILING_TIME_THRESHOLD, 1024), MyProperties.getInt(PropertyKeys.PROFILING_OUT_THRESHOLD_COUNT, 16));
     }
 
     private boolean initLogger() {
@@ -406,7 +408,6 @@ public abstract class AbstractBootstrap {
                 public void run() {
                     Logger.info("ENTER ShutdownHook...");
                     try {
-                        MethodMetricsHistogram.buildSysGenProfilingFile();
                         ExecutorManager.stopAll(6, TimeUnit.SECONDS);
                     } finally {
                         Logger.info("EXIT ShutdownHook...");
@@ -425,7 +426,7 @@ public abstract class AbstractBootstrap {
             ProfilingConfig config = ProfilingConfig.getInstance();
             LightWeightScheduler.dispatchScheduleTask(maintainer, config.getMethodMilliTimeSlice());
             LightWeightScheduler.dispatchScheduleTask(jvmMetricsScheduler(), config.getJvmMilliTimeSlice());
-            LightWeightScheduler.dispatchScheduleTask(buildSysGenProfilingScheduler(), 10 * 60 * 1000);//10m
+            LightWeightScheduler.dispatchScheduleTask(buildSysGenProfilingScheduler(), 10 * 60 * 1000);//10min
             return true;
         } catch (Exception e) {
             Logger.error("AbstractBootstrap.initScheduler()", e);
@@ -447,7 +448,10 @@ public abstract class AbstractBootstrap {
         return new Scheduler() {
             @Override
             public void run(long lastTimeSliceStartTime, long millTimeSlice) {
-                MethodMetricsHistogram.buildSysGenProfilingFile();
+                RuntimeMXBean bean = ManagementFactory.getRuntimeMXBean();
+                if (System.currentTimeMillis() - bean.getStartTime() >= 60 * 60 * 1000) {//60min
+                    MethodMetricsHistogram.buildSysGenProfilingFile();
+                }
             }
         };
     }
