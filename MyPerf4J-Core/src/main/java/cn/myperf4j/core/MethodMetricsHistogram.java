@@ -72,8 +72,6 @@ public class MethodMetricsHistogram {
             return 128;
         } else if (tp9999Avg <= 256) {
             return 256;
-        } else if (tp9999Avg <= 512) {
-            return 512;
         }
 
         long tp999Avg = info.getTp999Sum() / count;
@@ -83,8 +81,6 @@ public class MethodMetricsHistogram {
             return 256;
         } else if (tp999Avg <= 512) {
             return 512;
-        } else if (tp999Avg <= 1024) {
-            return 1024;
         }
 
         long tp99Avg = info.getTp99Sum() / count;
@@ -94,8 +90,6 @@ public class MethodMetricsHistogram {
             return 512;
         } else if (tp99Avg <= 1024) {
             return 1024;
-        } else if (tp99Avg <= 1536) {
-            return 1536;
         }
 
         long tp95Avg = info.getTp95Sum() / count;
@@ -105,24 +99,21 @@ public class MethodMetricsHistogram {
             return 1024;
         } else if (tp95Avg <= 1536) {
             return 1536;
-        } else if (tp95Avg <= 2048) {
-            return 2048;
         }
-
-        return 3000;
+        return 2048;
     }
 
     private static int calOutThresholdCount(int mostTimeThreshold) {
-        if (mostTimeThreshold <= 512) {
+        if (mostTimeThreshold <= 256) {
             return 8;
-        } else if (mostTimeThreshold <= 1024) {
+        } else if (mostTimeThreshold <= 512) {
             return 16;
-        } else if (mostTimeThreshold <= 1536) {
-            return 24;
-        } else if (mostTimeThreshold <= 2048) {
+        } else if (mostTimeThreshold <= 1024) {
             return 32;
-        } else {
+        } else if (mostTimeThreshold <= 1536) {
             return 64;
+        } else {
+            return 128;
         }
     }
 
