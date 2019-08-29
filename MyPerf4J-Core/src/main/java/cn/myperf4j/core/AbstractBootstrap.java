@@ -342,11 +342,7 @@ public abstract class AbstractBootstrap {
         try {
             ProfilingConfig config = ProfilingConfig.getInstance();
             if (config.isAccurateMode()) {
-                String sysProfilingParamFile = config.getSysProfilingParamsFile();
-                File sysFile = new File(sysProfilingParamFile);
-                if (sysFile.exists() && sysFile.isFile()) {
-                    addProfilingParams(config, sysProfilingParamFile);
-                }
+                addProfilingParams(config, config.getSysProfilingParamsFile());
             }
 
             String manualProfilingParamFile = config.getProfilingParamsFile();
@@ -360,7 +356,15 @@ public abstract class AbstractBootstrap {
         return false;
     }
 
-    private void addProfilingParams(ProfilingConfig config, String profilingParamFile) {
+    private void addProfilingParams(ProfilingConfig config, String filePath) {
+        File sysFile = new File(filePath);
+        if (sysFile.exists() && sysFile.isFile()) {
+            Logger.info("Loading " + sysFile.getName() + " to init profiling params.");
+            addProfilingParams0(config, filePath);
+        }
+    }
+
+    private void addProfilingParams0(ProfilingConfig config, String profilingParamFile) {
         try (InputStream in = new FileInputStream(profilingParamFile)) {
             Properties properties = new Properties();
             properties.load(in);

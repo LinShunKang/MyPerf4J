@@ -272,7 +272,7 @@ public class ProfilingConfig {
     }
 
     public String getSysProfilingParamsFile() {
-        return configFileDir + appName + "_SysGenProfilingFile";
+        return configFileDir + "." + appName + "_SysGenProfilingFile";
     }
 
     public String getProfilingParamsFile() {
