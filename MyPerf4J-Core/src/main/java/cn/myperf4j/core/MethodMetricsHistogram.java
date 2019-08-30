@@ -61,7 +61,7 @@ public class MethodMetricsHistogram {
             fileWriter.flush();
 
             File destFile = new File(filePath);
-            boolean rename = tempFile.renameTo(destFile);
+            boolean rename = tempFile.renameTo(destFile) && destFile.setReadOnly();
             Logger.debug("MethodMetricsHistogram.buildSysGenProfilingFile(): rename " + tempFile.getName() + " to " + destFile.getName() + " " + (rename ? "success" : "fail"));
         } catch (Exception e) {
             Logger.error("MethodMetricsHistogram.buildSysGenProfilingFile()", e);
