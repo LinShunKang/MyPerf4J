@@ -1,4 +1,4 @@
-[简体中文](./README.md) | English
+# [简体中文](./README.md) | English
 
 <h1 align="center">MyPerf4J</h1>
 
@@ -42,17 +42,13 @@ This is a list of what it currently monitors:
 ## Quick start
 MyPerf4J adopts JavaAgent configuration mode, **transparent** access application, and the application code is completely **no-intrusive**.
 
-### Build
-* git clone git@github.com:LinShunKang/MyPerf4J.git
-* mvn clean package
-* Rename MyPerf4J-ASM-${MyPerf4J-version}.jar to MyPerf4J-ASM.jar
-
-> You can download [MyPerf4J-ASM.jar](https://github.com/LinShunKang/Objects/blob/master/jars/MyPerf4J-ASM-2.8.0.jar?raw=true) directly.
+### Download
+Download [MyPerf4J-ASM.jar](https://github.com/LinShunKang/Objects/blob/master/jars/MyPerf4J-ASM-2.8.0.jar?raw=true).
 
 ### Configure
 Add the following two parameters to the JVM startup parameters
-> -javaagent:/your/path/to/MyPerf4J-ASM.jar
-> -DMyPerf4JPropFile=/your/path/to/MyPerf4J.properties
+> -javaagent:/path/to/MyPerf4J-ASM.jar
+> -DMyPerf4JPropFile=/path/to/MyPerf4J.properties
 
 Among them, the configuration of `MyPerf4JPropFile` is as follows:
 
@@ -64,12 +60,12 @@ AppName=YourApplicationName
 MetricsProcessorType=1
 
 #Config metrics log file, option
-MethodMetricsFile=/your/path/to/log/method_metrics.log
-ClassMetricsFile=/your/path/to/log/class_metrics.log
-GCMetricsFile=/your/path/to/log/gc_metrics.log
-MemMetricsFile=/your/path/to/log/memory_metrics.log
-BufPoolMetricsFile=/your/path/to/log/buf_pool_metrics
-ThreadMetricsFile=/your/path/to/log/thread_metrics.log
+MethodMetricsFile=/path/to/log/method_metrics.log
+ClassMetricsFile=/path/to/log/class_metrics.log
+GCMetricsFile=/path/to/log/gc_metrics.log
+MemMetricsFile=/path/to/log/memory_metrics.log
+BufPoolMetricsFile=/path/to/log/buf_pool_metrics
+ThreadMetricsFile=/path/to/log/thread_metrics.log
     
 #Configure MethodMetrics TimeSlice, time unit: ms, min:1s, max:600s
 MethodMilliTimeSlice=10000
@@ -78,15 +74,17 @@ MethodMilliTimeSlice=10000
 JvmMilliTimeSlice=1000
     
 #Configure packages, separated with ';'
-IncludePackages=your.package.to.monitor;cn.perf4j;org.myperf4j;cn.perf4j.demo1.[p1,p2,p3];cn.*.demo.*
+IncludePackages=your.package.to.profiling;cn.perf4j;org.myperf4j;cn.perf4j.demo1.[p1,p2,p3];cn.*.demo.*
 
 #Configure show method params type
 ShowMethodParams=true
 ```
 > You need modify `AppName`, `IncludePackages` and `xxxMetricsFile`
 
+> Check that the user account that runs the JVM has write access to the `MyPerf4JPropFile` folder
+
 ### Run
-* The output is to /your/path/to/log/method_metrics.log:
+* The output is to /path/to/log/method_metrics.log:
     ```
     MyPerf4J Method Metrics [2019-06-02 23:44:30, 2019-06-02 23:44:40]
     Method[4]                            Type        Level      RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count     TP50     TP90     TP95     TP99    TP999   TP9999    TP100
@@ -98,8 +96,15 @@ ShowMethodParams=true
 
 ### Uninstall
 Remove the following two parameters from the JVM startup parameters and restart to uninstall the tool.
-> -javaagent:/your/path/to/MyPerf4J-ASM.jar
-> -DMyPerf4JPropFile=/your/path/to/MyPerf4J.properties
+> -javaagent:/path/to/MyPerf4J-ASM.jar
+> -DMyPerf4JPropFile=/path/to/MyPerf4J.properties
+
+## Build
+You can build MyPerf4J-ASM.jar by yourself.
+* git clone git@github.com:LinShunKang/MyPerf4J.git
+* mvn clean package
+
+> MyPerf4J-ASM-${MyPerf4J-version}.jar at MyPerf4J-ASM/target/ 
 
 ## Issues
 If you encounter any issues or if you have a question, don't hesitate to [create an issue](https://github.com/LinShunKang/MyPerf4J/issues/new/choose) or [send email](mailto:linshunkang.chn@gmail.com) : )

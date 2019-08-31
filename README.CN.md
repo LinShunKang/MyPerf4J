@@ -42,21 +42,19 @@ MyPerf4J 为每个应用收集数十个监控指标，所有的监控指标都�
 ## 快速启动
 MyPerf4J 采用 JavaAgent 配置方式，**透明化**接入应用，对应用代码完全**没有侵入**。
 
-### 打包
-* git clone git@github.com:LinShunKang/MyPerf4J.git
-* mvn clean package
-* 把 MyPerf4J-ASM-${MyPerf4J-version}.jar 重命名为 MyPerf4J-ASM.jar
-
-> 可以尝试直接下载 [MyPerf4J-ASM.jar](https://github.com/LinShunKang/Objects/blob/master/jars/MyPerf4J-ASM-2.8.0.jar?raw=true)
+### 下载
+下载 [MyPerf4J-ASM.jar](https://github.com/LinShunKang/Objects/blob/master/jars/MyPerf4J-ASM-2.8.0.jar?raw=true)
 
 ### 配置
 在 JVM 启动参数里加上以下两个参数
-* -javaagent:/your/path/to/MyPerf4J-ASM.jar
-* -DMyPerf4JPropFile=/your/path/to/MyPerf4J.properties
+* -javaagent:/path/to/MyPerf4J-ASM.jar
+* -DMyPerf4JPropFile=/path/to/MyPerf4J.properties
 
-> 形如：java -javaagent:/your/path/to/MyPerf4J-ASM.jar -DMyPerf4JPropFile=/your/path/to/MyPerf4J.properties -jar yourJar.jar
+> 形如：java -javaagent:/path/to/MyPerf4J-ASM.jar -DMyPerf4JPropFile=/path/to/MyPerf4J.properties `-jar yourApp.jar`
 
 > 注意：使用 Windows 的同学，请注意修改路径格式，包括 `MyPerf4JPropFile` 中的文件路径 
+
+> 注意：需要保证 MyPerf4J 对 `MyPerf4JPropFile` 所在的目录具有可写的权限
 
 其中，`MyPerf4JPropFile`的配置如下:
 
@@ -68,24 +66,21 @@ AppName=YourApplicationName
 MetricsProcessorType=1
 
 #配置各个Metrics日志的文件路径，可不配置
-MethodMetricsFile=/your/path/to/log/method_metrics.log
-ClassMetricsFile=/your/path/to/log/class_metrics.log
-GCMetricsFile=/your/path/to/log/gc_metrics.log
-MemMetricsFile=/your/path/to/log/memory_metrics.log
-BufPoolMetricsFile=/your/path/to/log/buf_pool_metrics
-ThreadMetricsFile=/your/path/to/log/thread_metrics.log
-
-#配置Record模式，可配置为accurate/rough
-RecorderMode=accurate
+MethodMetricsFile=/path/to/log/method_metrics.log
+ClassMetricsFile=/path/to/log/class_metrics.log
+GCMetricsFile=/path/to/log/gc_metrics.log
+MemMetricsFile=/path/to/log/memory_metrics.log
+BufPoolMetricsFile=/path/to/log/buf_pool_metrics
+ThreadMetricsFile=/path/to/log/thread_metrics.log
     
-#配置方法指标时间片，单位为ms，最小1s，最大600s
+#配置方法指标的采集周期，单位为ms，最小1s，最大600s
 MethodMilliTimeSlice=10000
 
-#配置 JVM 指标时间片，单位为ms，最小1s，最大600s
+#配置 JVM 指标的采集周期，单位为ms，最小1s，最大600s
 JvmMilliTimeSlice=1000
     
 #需要监控的package，可配置多个，用英文';'分隔
-IncludePackages=your.package.to.monitor;cn.perf4j.demo;cn.perf4j.demo1.[p1,p2,p3];cn.*.demo.*
+IncludePackages=your.package.to.profiling;cn.perf4j.demo;cn.perf4j.demo1.[p1,p2,p3];cn.*.demo.*
 
 #是否展示方法参数类型
 ShowMethodParams=true
@@ -96,7 +91,7 @@ ShowMethodParams=true
 > 注意：需要修改 `AppName`、`IncludePackages` 和 `xxxMetricsFile`
 
 ### 运行
-* 输出结果，输出到 /your/path/to/log/method_metrics.log:
+* 输出结果，输出到 /path/to/log/method_metrics.log:
     ```
     MyPerf4J Method Metrics [2019-06-02 23:44:30, 2019-06-02 23:44:40]
     Method[4]                            Type        Level      RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count     TP50     TP90     TP95     TP99    TP999   TP9999    TP100
@@ -108,8 +103,15 @@ ShowMethodParams=true
 
 ### 卸载
 在 JVM 启动参数中去掉以下两个参数，重启即可卸载此工具。
-* -javaagent:/your/path/to/MyPerf4J-ASM.jar
-* -DMyPerf4JPropFile=/your/path/to/MyPerf4J.properties
+* -javaagent:/path/to/MyPerf4J-ASM.jar
+* -DMyPerf4JPropFile=/path/to/MyPerf4J.properties
+
+## 构建
+您可以自行构建 MyPerf4J-ASM.jar
+* git clone git@github.com:LinShunKang/MyPerf4J.git
+* mvn clean package
+
+> MyPerf4J-ASM-${MyPerf4J-version}.jar 在 MyPerf4J-ASM/target/ 目录下
 
 ## 问题
 如果您有任何问题、疑问或者建议，您可以 [提交Issue](https://github.com/LinShunKang/MyPerf4J/issues/new/choose) 或者 [发送邮件](mailto:linshunkang.chn@gmail.com) ：）
