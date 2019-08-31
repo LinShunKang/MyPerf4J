@@ -206,7 +206,7 @@ public abstract class AbstractBootstrap {
     }
 
     private void initRecorderConfig(ProfilingConfig config) {
-        config.setRecorderMode(MyProperties.getStr(PropertyKeys.RECORDER_MODE, PropertyValues.RECORDER_MODE_ROUGH));
+        config.setRecorderMode(MyProperties.getStr(PropertyKeys.RECORDER_MODE, PropertyValues.RECORDER_MODE_ACCURATE));
         config.setBackupRecorderCount(MyProperties.getInt(PropertyKeys.BACKUP_RECORDERS_COUNT, PropertyValues.MIN_BACKUP_RECORDERS_COUNT));
     }
 
@@ -453,7 +453,7 @@ public abstract class AbstractBootstrap {
             @Override
             public void run(long lastTimeSliceStartTime, long millTimeSlice) {
                 RuntimeMXBean bean = ManagementFactory.getRuntimeMXBean();
-                if (System.currentTimeMillis() - bean.getStartTime() >= 60 * 60 * 1000) {//60min
+                if (bean.getUptime() >= 60 * 60 * 1000) {//60min
                     MethodMetricsHistogram.buildSysGenProfilingFile();
                 }
             }
