@@ -43,61 +43,32 @@ This is a list of what it currently monitors:
 MyPerf4J adopts JavaAgent configuration mode, **transparent** access application, and the application code is completely **no-intrusive**.
 
 ### Download
-Download [MyPerf4J-ASM.jar](https://github.com/LinShunKang/Objects/blob/master/jars/MyPerf4J-ASM-2.8.0.jar?raw=true).
+* Download and unzip [MyPerf4J-ASM.zip](https://github.com/LinShunKang/Objects/blob/master/zips/EN/MyPerf4J-ASM-2.8.0.zip?raw=true)
+* Read the `README` file
+* Modify `AppName`, `IncludePackages` and `xxxMetricsFile` in `MyPerf4J.properties` 
 
 ### Configure
 Add the following two parameters to the JVM startup parameters
-> -javaagent:/path/to/MyPerf4J-ASM.jar
-> -DMyPerf4JPropFile=/path/to/MyPerf4J.properties
+* -javaagent:/path/to/MyPerf4J-ASM.jar
+* -DMyPerf4JPropFile=/path/to/MyPerf4J.properties
 
-Among them, the configuration of `MyPerf4JPropFile` is as follows:
-
-```
-#Application name
-AppName=YourApplicationName
-
-#Configure MetricsProcessors type 0:Output to stdout.log in a standard formatted structure 1:Output to disk in standard formatted structure  2:Output to disk in InfluxDB LineProtocol format
-MetricsProcessorType=1
-
-#Config metrics log file, option
-MethodMetricsFile=/path/to/log/method_metrics.log
-ClassMetricsFile=/path/to/log/class_metrics.log
-GCMetricsFile=/path/to/log/gc_metrics.log
-MemMetricsFile=/path/to/log/memory_metrics.log
-BufPoolMetricsFile=/path/to/log/buf_pool_metrics
-ThreadMetricsFile=/path/to/log/thread_metrics.log
-    
-#Configure MethodMetrics TimeSlice, time unit: ms, min:1s, max:600s
-MethodMilliTimeSlice=10000
-
-#Configure JvmMetrics TimeSlice, time unit: ms, min:1s, max:600s
-JvmMilliTimeSlice=1000
-    
-#Configure packages, separated with ';'
-IncludePackages=your.package.to.profiling;cn.perf4j;org.myperf4j;cn.perf4j.demo1.[p1,p2,p3];cn.*.demo.*
-
-#Configure show method params type
-ShowMethodParams=true
-```
-> You need modify `AppName`, `IncludePackages` and `xxxMetricsFile`
-
-> Check that the user account that runs the JVM has write access to the `MyPerf4JPropFile` folder
+> Like: java -javaagent:/path/to/MyPerf4J-ASM.jar -DMyPerf4JPropFile=/path/to/MyPerf4J.properties `-jar yourApp.jar`
 
 ### Run
-* The output is to /path/to/log/method_metrics.log:
-    ```
-    MyPerf4J Method Metrics [2019-06-02 23:44:30, 2019-06-02 23:44:40]
-    Method[4]                            Type        Level      RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count     TP50     TP90     TP95     TP99    TP999   TP9999    TP100
-    DemoServiceImpl.getId1(long)      General      Service  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
-    DemoServiceImpl.getId2(long)      General      Service  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
-    DemoDAO.getId1(long)         DynamicProxy          DAO  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
-    DemoDAO.getId2(long)         DynamicProxy          DAO  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
-    ```
+Start your application, the output is to /path/to/log/method_metrics.log:
+```
+MyPerf4J Method Metrics [2019-06-02 23:44:30, 2019-06-02 23:44:40]
+Method[4]                            Type        Level      RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count     TP50     TP90     TP95     TP99    TP999   TP9999    TP100
+DemoServiceImpl.getId1(long)      General      Service  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
+DemoServiceImpl.getId2(long)      General      Service  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
+DemoDAO.getId1(long)         DynamicProxy          DAO  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
+DemoDAO.getId2(long)         DynamicProxy          DAO  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
+```
 
 ### Uninstall
 Remove the following two parameters from the JVM startup parameters and restart to uninstall the tool.
-> -javaagent:/path/to/MyPerf4J-ASM.jar
-> -DMyPerf4JPropFile=/path/to/MyPerf4J.properties
+* -javaagent:/path/to/MyPerf4J-ASM.jar
+* -DMyPerf4JPropFile=/path/to/MyPerf4J.properties
 
 ## Build
 You can build MyPerf4J-ASM.jar by yourself.

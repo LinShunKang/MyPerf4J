@@ -43,7 +43,11 @@ MyPerf4J 为每个应用收集数十个监控指标，所有的监控指标都�
 MyPerf4J 采用 JavaAgent 配置方式，**透明化**接入应用，对应用代码完全**没有侵入**。
 
 ### 下载
-下载 [MyPerf4J-ASM.jar](https://github.com/LinShunKang/Objects/blob/master/jars/MyPerf4J-ASM-2.8.0.jar?raw=true)
+* 下载并解压 [MyPerf4J-ASM.zip](https://github.com/LinShunKang/Objects/blob/master/zips/CN/MyPerf4J-ASM-2.8.0.zip?raw=true)
+* 阅读解压出的 `README` 文件
+* 修改解压出的 `MyPerf4J.properties` 配置文件中 `AppName`、`IncludePackages` 和 `xxxMetricsFile` 的配置值
+
+> 查看[配置文件模板](https://raw.githubusercontent.com/LinShunKang/Objects/master/jars/MyPerf4J.properties)。想了解更多的配置？请看[这里](https://github.com/LinShunKang/MyPerf4J/wiki/%E9%85%8D%E7%BD%AE)
 
 ### 配置
 在 JVM 启动参数里加上以下两个参数
@@ -52,54 +56,16 @@ MyPerf4J 采用 JavaAgent 配置方式，**透明化**接入应用，对应用�
 
 > 形如：java -javaagent:/path/to/MyPerf4J-ASM.jar -DMyPerf4JPropFile=/path/to/MyPerf4J.properties `-jar yourApp.jar`
 
-> 注意：使用 Windows 的同学，请注意修改路径格式，包括 `MyPerf4JPropFile` 中的文件路径 
-
-> 注意：需要保证 MyPerf4J 对 `MyPerf4JPropFile` 所在的目录具有可写的权限
-
-其中，`MyPerf4JPropFile`的配置如下:
-
- ```
-#应用名称
-AppName=YourApplicationName
-
-#MetricsProcessor类型，0:以标准格式化结构输出到stdout.log 1:以标准格式化结构输出到磁盘  2:以InfluxDB LineProtocol格式输出到磁盘
-MetricsProcessorType=1
-
-#配置各个Metrics日志的文件路径，可不配置
-MethodMetricsFile=/path/to/log/method_metrics.log
-ClassMetricsFile=/path/to/log/class_metrics.log
-GCMetricsFile=/path/to/log/gc_metrics.log
-MemMetricsFile=/path/to/log/memory_metrics.log
-BufPoolMetricsFile=/path/to/log/buf_pool_metrics
-ThreadMetricsFile=/path/to/log/thread_metrics.log
-    
-#配置方法指标的采集周期，单位为ms，最小1s，最大600s
-MethodMilliTimeSlice=10000
-
-#配置 JVM 指标的采集周期，单位为ms，最小1s，最大600s
-JvmMilliTimeSlice=1000
-    
-#需要监控的package，可配置多个，用英文';'分隔
-IncludePackages=your.package.to.profiling;cn.perf4j.demo;cn.perf4j.demo1.[p1,p2,p3];cn.*.demo.*
-
-#是否展示方法参数类型
-ShowMethodParams=true
- ```
-    
-> 查看[配置文件模板](https://raw.githubusercontent.com/LinShunKang/Objects/master/jars/MyPerf4J.properties)。想了解更多的配置？请看[这里](https://github.com/LinShunKang/MyPerf4J/wiki/%E9%85%8D%E7%BD%AE)
-
-> 注意：需要修改 `AppName`、`IncludePackages` 和 `xxxMetricsFile`
-
 ### 运行
-* 输出结果，输出到 /path/to/log/method_metrics.log:
-    ```
-    MyPerf4J Method Metrics [2019-06-02 23:44:30, 2019-06-02 23:44:40]
-    Method[4]                            Type        Level      RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count     TP50     TP90     TP95     TP99    TP999   TP9999    TP100
-    DemoServiceImpl.getId1(long)      General      Service  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
-    DemoServiceImpl.getId2(long)      General      Service  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
-    DemoDAO.getId1(long)         DynamicProxy          DAO  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
-    DemoDAO.getId2(long)         DynamicProxy          DAO  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
-    ```
+启动应用，监控日志输出到 /path/to/log/method_metrics.log:
+```
+MyPerf4J Method Metrics [2019-06-02 23:44:30, 2019-06-02 23:44:40]
+Method[4]                            Type        Level      RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count     TP50     TP90     TP95     TP99    TP999   TP9999    TP100
+DemoServiceImpl.getId1(long)      General      Service  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
+DemoServiceImpl.getId2(long)      General      Service  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
+DemoDAO.getId1(long)         DynamicProxy          DAO  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
+DemoDAO.getId2(long)         DynamicProxy          DAO  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
+```
 
 ### 卸载
 在 JVM 启动参数中去掉以下两个参数，重启即可卸载此工具。
