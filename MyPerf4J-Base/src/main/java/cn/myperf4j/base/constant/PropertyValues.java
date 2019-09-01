@@ -41,6 +41,10 @@ public interface PropertyValues {
 
     long MAX_TIME_SLICE = 10 * 60 * 1000L;
 
-    String FILTER_SEPARATOR = ";";
+    char ELE_SEPARATOR = ';';
+
+    char ELE_KV_SEPARATOR = ':';
+
+    char ARR_ELE_SEPARATOR = ',';
 
 }

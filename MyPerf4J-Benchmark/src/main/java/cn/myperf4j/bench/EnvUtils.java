@@ -11,23 +11,24 @@ import cn.myperf4j.base.util.file.MinutelyRollingFileWriter;
  */
 public class EnvUtils {
 
-    public static boolean initASMBootstrap() {
-        initProperties();
+    public static boolean initASMBootstrap(long milliTimeSlice) {
+        initProperties(milliTimeSlice);
         return ASMBootstrap.getInstance().initial();
     }
 
-    private static void initProperties() {
+    private static void initProperties(long milliTimeSlice) {
         String propertiesFile = "/tmp/MyPerf4J.properties";
-        buildPropertiesFile(propertiesFile);
+        buildPropertiesFile(propertiesFile, milliTimeSlice);
         System.setProperty(PropertyKeys.PRO_FILE_NAME, propertiesFile);
     }
 
-    private static void buildPropertiesFile(String propertiesFile) {
+    private static void buildPropertiesFile(String propertiesFile, long milliTimeSlice) {
         AutoRollingFileWriter writer = new MinutelyRollingFileWriter(propertiesFile, 1);
         writer.write("AppName=MyPerf4JTest\n");
-        writer.write("MetricsProcessorType=" + PropertyValues.METRICS_PROCESS_TYPE_STDOUT + "\n");
+        writer.write("MetricsProcessorType=" + PropertyValues.METRICS_PROCESS_TYPE_LOGGER + "\n");
+        writer.write("MethodMetricsFile=/tmp/method_metrics.log\n");
         writer.write("IncludePackages=MyPerf4J\n");
-        writer.write("MillTimeSlice=1000\n");
+        writer.write("MillTimeSlice=" + milliTimeSlice + "\n");
         writer.closeFile(true);
     }
 }

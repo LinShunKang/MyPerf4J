@@ -241,19 +241,15 @@ public abstract class AbstractBootstrap {
     private boolean initPackageFilter() {
         try {
             String includePackages = ProfilingConfig.getInstance().getIncludePackages();
-            String[] includeArr = includePackages.split(PropertyValues.FILTER_SEPARATOR);
-            if (includeArr.length > 0) {
-                for (String pkg : includeArr) {
-                    ProfilingFilter.addIncludePackage(pkg);
-                }
+            List<String> includeList = StrUtils.splitAsList(includePackages, PropertyValues.ELE_SEPARATOR);
+            for (int i = 0; i < includeList.size(); i++) {
+                ProfilingFilter.addIncludePackage(includeList.get(i));
             }
 
             String excludePackages = ProfilingConfig.getInstance().getExcludePackages();
-            String[] excludeArr = excludePackages.split(PropertyValues.FILTER_SEPARATOR);
-            if (excludeArr.length > 0) {
-                for (String pkg : excludeArr) {
-                    ProfilingFilter.addExcludePackage(pkg);
-                }
+            List<String> excludeList = StrUtils.splitAsList(excludePackages, PropertyValues.ELE_SEPARATOR);
+            for (int i = 0; i < excludeList.size(); i++) {
+                ProfilingFilter.addExcludePackage(excludeList.get(i));
             }
             return true;
         } catch (Exception e) {
@@ -265,11 +261,9 @@ public abstract class AbstractBootstrap {
     private boolean initClassLoaderFilter() {
         try {
             String excludeClassLoaders = ProfilingConfig.getInstance().getExcludeClassLoaders();
-            String[] excludeArr = excludeClassLoaders.split(PropertyValues.FILTER_SEPARATOR);
-            if (excludeArr.length > 0) {
-                for (String classLoader : excludeArr) {
-                    ProfilingFilter.addExcludeClassLoader(classLoader);
-                }
+            List<String> excludeList = StrUtils.splitAsList(excludeClassLoaders, PropertyValues.ELE_SEPARATOR);
+            for (int i = 0; i < excludeList.size(); i++) {
+                ProfilingFilter.addExcludeClassLoader(excludeList.get(i));
             }
             return true;
         } catch (Exception e) {
@@ -280,12 +274,10 @@ public abstract class AbstractBootstrap {
 
     private boolean initMethodFilter() {
         try {
-            String includePackages = ProfilingConfig.getInstance().getExcludeMethods();
-            String[] excludeArr = includePackages.split(PropertyValues.FILTER_SEPARATOR);
-            if (excludeArr.length > 0) {
-                for (String method : excludeArr) {
-                    ProfilingFilter.addExcludeMethods(method);
-                }
+            String excludeMethods = ProfilingConfig.getInstance().getExcludeMethods();
+            List<String> excludeList = StrUtils.splitAsList(excludeMethods, PropertyValues.ELE_SEPARATOR);
+            for (int i = 0; i < excludeList.size(); i++) {
+                ProfilingFilter.addExcludeMethods(excludeList.get(i));
             }
             return true;
         } catch (Exception e) {
@@ -303,16 +295,16 @@ public abstract class AbstractBootstrap {
                 return true;
             }
 
-            List<String> mappingPairs = StrUtils.splitAsList(levelMappings, ';');
+            List<String> mappingPairs = StrUtils.splitAsList(levelMappings, PropertyValues.ELE_SEPARATOR);
             for (int i = 0; i < mappingPairs.size(); ++i) {
                 String mappingPair = mappingPairs.get(i);
-                List<String> mappingPairList = StrUtils.splitAsList(mappingPair, ':');
-                if (mappingPairList.size() != 2) {
+                List<String> pairs = StrUtils.splitAsList(mappingPair, PropertyValues.ELE_KV_SEPARATOR);
+                if (pairs.size() != 2) {
                     Logger.warn("MethodLevelMapping is not correct: " + mappingPair);
                     continue;
                 }
 
-                LevelMappingFilter.putLevelMapping(mappingPairList.get(0), getMappingExpList(mappingPairList.get(1)));
+                LevelMappingFilter.putLevelMapping(pairs.get(0), getMappingExpList(pairs.get(1)));
             }
             return true;
         } catch (Exception e) {
@@ -324,7 +316,7 @@ public abstract class AbstractBootstrap {
     //Api:[*Api,*ApiImpl]
     private List<String> getMappingExpList(String expStr) {
         expStr = expStr.substring(1, expStr.length() - 1);
-        return StrUtils.splitAsList(expStr, ',');
+        return StrUtils.splitAsList(expStr, PropertyValues.ARR_ELE_SEPARATOR);
     }
 
     private boolean initPerfStatsProcessor() {

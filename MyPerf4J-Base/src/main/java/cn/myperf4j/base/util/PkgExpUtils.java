@@ -1,5 +1,7 @@
 package cn.myperf4j.base.util;
 
+import cn.myperf4j.base.constant.PropertyValues;
+
 import java.util.List;
 import java.util.Set;
 
@@ -31,7 +33,7 @@ public final class PkgExpUtils {
         String suffixStr = rightIdx + 1 < expStr.length() ? expStr.substring(rightIdx + 1) : "";
 
         String elementsStr = expStr.substring(leftIdx + 1, rightIdx);
-        List<String> elements = StrUtils.splitAsList(elementsStr, ',');
+        List<String> elements = StrUtils.splitAsList(elementsStr, PropertyValues.ARR_ELE_SEPARATOR);
         Set<String> result = SetUtils.createHashSet(elements.size());
         for (int i = 0; i < elements.size(); ++i) {
             String subExpStr = prefixStr.concat(elements.get(i)).concat(suffixStr);

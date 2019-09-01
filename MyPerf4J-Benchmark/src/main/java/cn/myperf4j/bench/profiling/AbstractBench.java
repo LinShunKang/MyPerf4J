@@ -14,7 +14,7 @@ public class AbstractBench {
 
     @Setup
     public void setup() {
-        boolean initASMBootstrap = EnvUtils.initASMBootstrap();
+        boolean initASMBootstrap = EnvUtils.initASMBootstrap(60 * 1000);
         System.out.println("initASMBootstrap=" + initASMBootstrap);
 
         ASMRecorderMaintainer recorderMaintainer = ASMRecorderMaintainer.getInstance();
@@ -25,20 +25,21 @@ public class AbstractBench {
     }
 
     @Benchmark
-    public void baseline() {
-        emptyMethod();
+    public int baseline() {
+        return emptyMethod();
     }
 
     @Benchmark
-    public void profiling() {
+    public int profiling() {
         long start = System.nanoTime();
-        emptyMethod();
+        int result = emptyMethod();
         ProfilingAspect.profiling(start, 0);
+        return result;
     }
 
     @CompilerControl(CompilerControl.Mode.DONT_INLINE)
-    public void emptyMethod() {
-        //empty
+    public int emptyMethod() {
+        return 1000;
     }
 
 }

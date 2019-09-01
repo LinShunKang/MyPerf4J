@@ -24,7 +24,7 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
 
     protected List<Recorders> recordersList;
 
-    protected MethodTagMaintainer methodTagMaintainer = MethodTagMaintainer.getInstance();
+    private MethodTagMaintainer methodTagMaintainer = MethodTagMaintainer.getInstance();
 
     private int curIndex = 0;
 
@@ -68,7 +68,7 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
             recordersList.add(recorders);
         }
 
-        curRecorders = recordersList.get(curIndex % recordersList.size());
+        curRecorders = recordersList.get(curIndex);
         return true;
     }
 
@@ -112,10 +112,10 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
             tmpCurRecorders.setStartTime(lastTimeSliceStartTime);
             tmpCurRecorders.setStopTime(lastTimeSliceStartTime + millTimeSlice);
 
-            curIndex = getNextIdx(curIndex);
-            Logger.debug("RecorderMaintainer.roundRobinProcessor curIndex=" + curIndex % recordersList.size());
+            curIndex = getNextIdx(curIndex, recordersList.size());
+            Logger.debug("RecorderMaintainer.roundRobinProcessor curIndex=" + curIndex);
 
-            Recorders nextRecorders = recordersList.get(curIndex % recordersList.size());
+            Recorders nextRecorders = recordersList.get(curIndex);
             nextRecorders.setStartTime(lastTimeSliceStartTime + millTimeSlice);
             nextRecorders.setStopTime(lastTimeSliceStartTime + 2 * millTimeSlice);
             nextRecorders.setWriting(true);
@@ -163,11 +163,8 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
         }
     }
 
-    private int getNextIdx(int idx) {
-        if (idx == Integer.MAX_VALUE) {
-            return 0;
-        }
-        return idx + 1;
+    private int getNextIdx(int idx, int maxIdx) {
+        return (idx + 1) % maxIdx;
     }
 
 }
