@@ -7,6 +7,7 @@ import cn.myperf4j.base.metric.collector.JvmGcCollector;
 import cn.myperf4j.base.metric.collector.JvmMemoryCollector;
 import cn.myperf4j.base.metric.collector.JvmThreadCollector;
 import cn.myperf4j.base.metric.processor.*;
+import cn.myperf4j.base.util.Logger;
 
 import java.lang.management.*;
 import java.util.List;
@@ -55,6 +56,8 @@ public class JvmMetricsScheduler implements Scheduler {
         try {
             JvmClassMetrics classMetrics = JvmClassCollector.collectClassMetrics();
             classMetricsProcessor.process(classMetrics, processId, startMillis, stopMillis);
+        } catch (Throwable t) {
+            Logger.error("JvmMetricsScheduler.processJvmClassMetrics(" + processId + ", " + startMillis + ", " + stopMillis + ")", t);
         } finally {
             classMetricsProcessor.afterProcess(processId, startMillis, stopMillis);
         }
@@ -65,6 +68,8 @@ public class JvmMetricsScheduler implements Scheduler {
         try {
             JvmGcMetrics jvmGcMetrics = JvmGcCollector.collectGcMetrics();
             gcMetricsProcessor.process(jvmGcMetrics, processId, startMillis, stopMillis);
+        } catch (Throwable t) {
+            Logger.error("JvmMetricsScheduler.processJvmGCMetrics(" + processId + ", " + startMillis + ", " + stopMillis + ")", t);
         } finally {
             gcMetricsProcessor.afterProcess(processId, startMillis, stopMillis);
         }
@@ -75,6 +80,8 @@ public class JvmMetricsScheduler implements Scheduler {
         try {
             JvmMemoryMetrics jvmMemoryMetrics = JvmMemoryCollector.collectMemoryMetrics();
             memoryMetricsProcessor.process(jvmMemoryMetrics, processId, startMillis, stopMillis);
+        } catch (Throwable t) {
+            Logger.error("JvmMetricsScheduler.processJvmMemoryMetrics(" + processId + ", " + startMillis + ", " + stopMillis + ")", t);
         } finally {
             memoryMetricsProcessor.afterProcess(processId, startMillis, stopMillis);
         }
@@ -88,6 +95,8 @@ public class JvmMetricsScheduler implements Scheduler {
                 JvmBufferPoolMetrics metrics = new JvmBufferPoolMetrics(pools.get(i));
                 bufferPoolMetricsProcessor.process(metrics, processId, startMillis, stopMillis);
             }
+        } catch (Throwable t) {
+            Logger.error("JvmMetricsScheduler.processJvmBufferPoolMetrics(" + processId + ", " + startMillis + ", " + stopMillis + ")", t);
         } finally {
             bufferPoolMetricsProcessor.afterProcess(processId, startMillis, stopMillis);
         }
@@ -98,6 +107,8 @@ public class JvmMetricsScheduler implements Scheduler {
         try {
             JvmThreadMetrics jvmThreadMetrics = JvmThreadCollector.collectThreadMetrics();
             threadMetricsProcessor.process(jvmThreadMetrics, processId, startMillis, stopMillis);
+        } catch (Throwable t) {
+            Logger.error("JvmMetricsScheduler.processJvmThreadMetrics(" + processId + ", " + startMillis + ", " + stopMillis + ")", t);
         } finally {
             threadMetricsProcessor.afterProcess(processId, startMillis, stopMillis);
         }
