@@ -15,7 +15,7 @@ public class DefaultJvmMemoryMetricsFormatter implements JvmMemoryMetricsFormatt
 
     @Override
     public String format(List<JvmMemoryMetrics> metricsList, long startMillis, long stopMillis) {
-        String dataTitleFormat = "%-14s%21s%12s%17s%12s%19s%12s%17s%13s%19s%13s%20s%15s%22s%15s%22s%n";
+        String dataTitleFormat = "%-14s%21s%12s%17s%12s%19s%12s%17s%13s%19s%13s%20s%15s%22s%15s%22s%11s%18s%9s%n";
         StringBuilder sb = new StringBuilder((metricsList.size() + 2) * (9 * 19 + 64));
         sb.append("MyPerf4J JVM Memory Metrics [").append(DateFormatUtils.format(startMillis)).append(", ").append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
         sb.append(String.format(dataTitleFormat,
@@ -26,12 +26,14 @@ public class DefaultJvmMemoryMetricsFormatter implements JvmMemoryMetricsFormatt
                 "NonHeapUsed", "NoHeapUsedPercent",
                 "PermGenUsed", "PermGenUsedPercent",
                 "MetaspaceUsed", "MetaspaceUsedPercent",
-                "CodeCacheUsed", "CodeCacheUsedPercent"));
+                "CodeCacheUsed", "CodeCacheUsedPercent",
+                "ZHeadUsed", "ZHeadUsedPercent",
+                "HeapMax"));
         if (metricsList.isEmpty()) {
             return sb.toString();
         }
 
-        String dataFormat = "%-14d%21.2f%12d%17.2f%12d%19.2f%12d%17.2f%13d%19.2f%13d%20.2f%15d%22.2f%15d%22.2f%n";
+        String dataFormat = "%-14d%21.2f%12d%17.2f%12d%19.2f%12d%17.2f%13d%19.2f%13d%20.2f%15d%22.2f%15d%22.2f%11d%18.2f%9d%n";
         for (int i = 0; i < metricsList.size(); ++i) {
             JvmMemoryMetrics metrics = metricsList.get(i);
             sb.append(String.format(dataFormat,
@@ -50,7 +52,10 @@ public class DefaultJvmMemoryMetricsFormatter implements JvmMemoryMetricsFormatt
                     metrics.getMetaspaceUsed(),
                     metrics.getMetaspaceUsedPercent(),
                     metrics.getCodeCacheUsed(),
-                    metrics.getCodeCacheUsedPercent())
+                    metrics.getCodeCacheUsedPercent(),
+                    metrics.getZHeapUsed(),
+                    metrics.getZHeapUsedPercent(),
+                    metrics.getHeapMax())
             );
         }
         return sb.toString();

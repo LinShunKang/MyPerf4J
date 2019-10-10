@@ -13,7 +13,7 @@ public class InfluxJvmGcMetricsProcessor extends AbstractJvmGcMetricsProcessor {
     private ThreadLocal<StringBuilder> sbThreadLocal = new ThreadLocal<StringBuilder>() {
         @Override
         protected StringBuilder initialValue() {
-            return new StringBuilder(128);
+            return new StringBuilder(256);
         }
     };
 
@@ -35,6 +35,9 @@ public class InfluxJvmGcMetricsProcessor extends AbstractJvmGcMetricsProcessor {
                 .append(",AvgYoungGcTime=").append(NumFormatUtils.formatDouble(metrics.getAvgYoungGcTime()))
                 .append(",FullGcCount=").append(metrics.getFullGcCount()).append('i')
                 .append(",FullGcTime=").append(metrics.getFullGcTime()).append('i')
+                .append(",ZGcTime=").append(metrics.getZGcTime()).append('i')
+                .append(",ZGcCount=").append(metrics.getZGcCount()).append('i')
+                .append(",AvgZGcTime=").append(NumFormatUtils.formatDouble(metrics.getAvgZGcTime()))
                 .append(' ').append(startNanos);
         return sb.toString();
     }

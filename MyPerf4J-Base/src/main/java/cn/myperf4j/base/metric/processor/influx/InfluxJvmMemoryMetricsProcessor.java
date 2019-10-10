@@ -13,7 +13,7 @@ public class InfluxJvmMemoryMetricsProcessor extends AbstractJvmMemoryMetricsPro
     private ThreadLocal<StringBuilder> sbThreadLocal = new ThreadLocal<StringBuilder>() {
         @Override
         protected StringBuilder initialValue() {
-            return new StringBuilder(512);
+            return new StringBuilder(648);
         }
     };
 
@@ -46,6 +46,9 @@ public class InfluxJvmMemoryMetricsProcessor extends AbstractJvmMemoryMetricsPro
                 .append(",EdenUsedPercent=").append(NumFormatUtils.formatDouble(metrics.getEdenUsedPercent()))
                 .append(",SurvivorUsed=").append(metrics.getSurvivorUsed()).append('i')
                 .append(",SurvivorUsedPercent=").append(metrics.getSurvivorUsedPercent())
+                .append(",ZHeadUsed=").append(metrics.getZHeapUsed()).append('i')
+                .append(",ZHeadUsedPercent=").append(metrics.getZHeapUsedPercent())
+                .append(",HeapMax=").append(metrics.getHeapMax()).append('i')
                 .append(' ').append(startNanos);
         return sb.toString();
     }

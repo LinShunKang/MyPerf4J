@@ -33,6 +33,9 @@ public class JvmMemoryMetrics extends Metrics {
     private final long survivorUsed;
     private final long survivorMax;
 
+    private final long zHeapUsed;
+    private final long zHeapMax;
+
     public JvmMemoryMetrics(long heapUsed,
                             long heapMax,
                             long nonHeapUsed,
@@ -48,7 +51,9 @@ public class JvmMemoryMetrics extends Metrics {
                             long edenUsed,
                             long edenMax,
                             long survivorUsed,
-                            long survivorMax) {
+                            long survivorMax,
+                            long zHeapUsed,
+                            long zHeapMax) {
         this.heapUsed = heapUsed;
         this.heapMax = heapMax;
         this.nonHeapUsed = nonHeapUsed;
@@ -65,6 +70,12 @@ public class JvmMemoryMetrics extends Metrics {
         this.edenMax = edenMax;
         this.survivorUsed = survivorUsed;
         this.survivorMax = survivorMax;
+        this.zHeapUsed = zHeapUsed;
+        this.zHeapMax = zHeapMax;
+    }
+
+    public long getHeapMax(){
+        return heapMax;
     }
 
     public long getHeapUsed() {
@@ -138,6 +149,12 @@ public class JvmMemoryMetrics extends Metrics {
         return getUsedPercent(survivorUsed, survivorMax);
     }
 
+    public long getZHeapUsed(){return zHeapUsed;}
+
+    public double getZHeapUsedPercent(){
+        return getUsedPercent(zHeapUsed, zHeapMax);
+    }
+
     @Override
     public String toString() {
         return "JvmMemoryMetrics{" +
@@ -157,6 +174,8 @@ public class JvmMemoryMetrics extends Metrics {
                 ", edenMax=" + edenMax +
                 ", survivorUsed=" + survivorUsed +
                 ", survivorMax=" + survivorMax +
+                ", zHeapUsed=" + zHeapUsed +
+                ", zHeapMax=" + zHeapMax +
                 "} " + super.toString();
     }
 }

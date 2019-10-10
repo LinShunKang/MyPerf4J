@@ -15,15 +15,15 @@ public class DefaultJvmGcMetricsFormatter implements JvmGCMetricsFormatter {
 
     @Override
     public String format(List<JvmGcMetrics> metricsList, long startMillis, long stopMillis) {
-        String dataTitleFormat = "%-15s%15s%15s%15s%15s%n";
+        String dataTitleFormat = "%-15s%15s%15s%15s%15s%15s%15s%15s%n";
         StringBuilder sb = new StringBuilder((metricsList.size() + 2) * (9 * 3 + 64));
         sb.append("MyPerf4J JVM GC Metrics [").append(DateFormatUtils.format(startMillis)).append(", ").append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
-        sb.append(String.format(dataTitleFormat, "YoungGcCount", "YoungGcTime", "AvgYoungGcTime", "FullGcCount", "FullGcTime"));
+        sb.append(String.format(dataTitleFormat, "YoungGcCount", "YoungGcTime", "AvgYoungGcTime", "FullGcCount", "FullGcTime", "ZGcCount", "ZGcTime", "AvgZGcTime"));
         if (metricsList.isEmpty()) {
             return sb.toString();
         }
 
-        String dataFormat = "%-15s%15d%15.2f%15d%15d%n";
+        String dataFormat = "%-15s%15d%15.2f%15d%15d%15d%15d%15.2f%n";
         for (int i = 0; i < metricsList.size(); ++i) {
             JvmGcMetrics metrics = metricsList.get(i);
             sb.append(String.format(dataFormat,
@@ -31,7 +31,10 @@ public class DefaultJvmGcMetricsFormatter implements JvmGCMetricsFormatter {
                     metrics.getYoungGcTime(),
                     metrics.getAvgYoungGcTime(),
                     metrics.getFullGcCount(),
-                    metrics.getFullGcTime()));
+                    metrics.getFullGcTime(),
+                    metrics.getZGcCount(),
+                    metrics.getZGcTime(),
+                    metrics.getAvgZGcTime()));
         }
         return sb.toString();
     }

@@ -167,11 +167,18 @@ public class ProfilingFilter {
      * @return : true->需要修改字节码  false->不需要修改字节码
      */
     public static boolean isNotNeedInjectMethod(String methodName) {
-        if (methodName == null) {
+        if(methodName == null) {
             return false;
         }
 
-        if (methodName.indexOf('$') >= 0) {
+        int dotIndex = methodName.indexOf('.');
+        int leftParenIndex = methodName.indexOf('(');
+
+        if(dotIndex >= 0 && leftParenIndex >= 0) {
+            methodName = methodName.substring(dotIndex + 1, leftParenIndex);
+        }
+
+        if(methodName.indexOf('$') >= 0) {
             return true;
         }
 

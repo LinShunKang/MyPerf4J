@@ -28,6 +28,8 @@ public class ProfilingFilterTest {
         Assert.assertTrue(ProfilingFilter.isNotNeedInjectMethod("hello"));
         Assert.assertFalse(ProfilingFilter.isNotNeedInjectMethod("assertFalse"));
 
+        Assert.assertTrue(ProfilingFilter.isNotNeedInjectMethod("hello(ClassA$ClassB)"));
+
         Assert.assertTrue(ProfilingFilter.isNotNeedInjectClassLoader("org.apache.catalina.loader.WebappClassLoader"));
         Assert.assertFalse(ProfilingFilter.isNotNeedInjectClassLoader("org.springframework.boot.loader.LaunchedURLClassLoader"));
     }

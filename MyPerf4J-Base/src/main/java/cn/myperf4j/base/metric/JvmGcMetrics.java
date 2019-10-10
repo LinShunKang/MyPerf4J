@@ -17,12 +17,21 @@ public class JvmGcMetrics extends Metrics {
 
     private final long fullGcTime;
 
-    public JvmGcMetrics(long youngGcCount, long youngGcTime, long fullGcCount, long fullGcTime) {
+    private final long zGcTime;
+
+    private final long zGcCount;
+
+    private final double avgZGcTime;
+
+    public JvmGcMetrics(long youngGcCount, long youngGcTime, long fullGcCount, long fullGcTime, long zGcCount, long zGcTime) {
         this.youngGcCount = youngGcCount;
         this.youngGcTime = youngGcTime;
         this.avgYoungGcTime = youngGcCount > 0L ? ((double) youngGcTime) / youngGcCount : 0D;
         this.fullGcCount = fullGcCount;
         this.fullGcTime = fullGcTime;
+        this.zGcCount = zGcCount;
+        this.zGcTime = zGcTime;
+        this.avgZGcTime =  zGcCount > 0L ? ((double) zGcTime) / zGcCount : 0D;
     }
 
     public double getAvgYoungGcTime() {
@@ -45,6 +54,21 @@ public class JvmGcMetrics extends Metrics {
         return youngGcTime;
     }
 
+    public long getZGcTime()
+    {
+        return zGcTime;
+    }
+
+    public long getZGcCount()
+    {
+        return zGcCount;
+    }
+
+    public double getAvgZGcTime()
+    {
+        return avgZGcTime;
+    }
+
     @Override
     public String toString() {
         return "JvmGcMetrics{" +
@@ -53,6 +77,10 @@ public class JvmGcMetrics extends Metrics {
                 ", avgYoungGcTime=" + avgYoungGcTime +
                 ", fullGcCount=" + fullGcCount +
                 ", fullGcTime=" + fullGcTime +
-                "} " + super.toString();
+                ", zGcTime=" + zGcTime +
+                ", zGcCount=" + zGcCount +
+                ", avgZGcTime=" + avgZGcTime +
+                '}';
     }
+
 }

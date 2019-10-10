@@ -20,6 +20,7 @@ public final class JvmMemoryCollector {
         long survivorUsed = 0L, survivorMax = 0L;
         long metaspaceUsed = 0L, metaSpaceMax = 0L;
         long codeCacheUsed = 0L, codeCacheMax = 0L;
+        long zHeapUsed = 0L, zHeapMax = 0L;
 
         List<MemoryPoolMXBean> memPoolMXBeanList = ManagementFactory.getMemoryPoolMXBeans();
         for (int i = 0; i < memPoolMXBeanList.size(); i++) {
@@ -44,6 +45,9 @@ public final class JvmMemoryCollector {
             } else if (poolName.endsWith("Survivor Space")) {
                 survivorUsed = usage.getUsed() >> 10;
                 survivorMax = usage.getMax() >> 10;
+            } else if(poolName.endsWith("ZHeap")){
+                zHeapUsed = usage.getUsed() >> 10;
+                zHeapMax = usage.getMax() >> 10;
             }
         }
 
@@ -64,7 +68,8 @@ public final class JvmMemoryCollector {
                 codeCacheUsed, codeCacheMax,
                 oldGenUsed, oldGenMax,
                 edenUsed, edenMax,
-                survivorUsed, survivorMax);
+                survivorUsed, survivorMax,
+                zHeapUsed, zHeapMax);
     }
 
 }
