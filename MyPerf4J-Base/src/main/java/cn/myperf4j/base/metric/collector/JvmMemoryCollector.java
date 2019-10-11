@@ -45,7 +45,7 @@ public final class JvmMemoryCollector {
             } else if (poolName.endsWith("Survivor Space")) {
                 survivorUsed = usage.getUsed() >> 10;
                 survivorMax = usage.getMax() >> 10;
-            } else if(poolName.endsWith("ZHeap")){
+            } else if (poolName.endsWith("ZHeap")) {
                 zHeapUsed = usage.getUsed() >> 10;
                 zHeapMax = usage.getMax() >> 10;
             }
