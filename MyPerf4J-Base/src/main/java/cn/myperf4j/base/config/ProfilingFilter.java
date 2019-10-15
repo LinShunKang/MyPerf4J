@@ -178,21 +178,15 @@ public class ProfilingFilter {
         return excludeMethods.contains(methodName);
     }
 
-
     private static boolean isSpecialMethod(String methodName) {
         int leftParenIndex = methodName.indexOf('(');
-
-        if (leftParenIndex >= 0) {
-            methodName = methodName.substring(0, leftParenIndex);
-        }
-
-        if (methodName.indexOf('$') >= 0) {
+        int symbolIndex = methodName.indexOf('$');
+        if (symbolIndex >= 0 && (leftParenIndex < 0
+                || symbolIndex < leftParenIndex)) {
             return true;
         }
-
         return false;
     }
-
 
     public static void addExcludeMethods(String method) {
         if (method == null) {

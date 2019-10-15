@@ -26,12 +26,16 @@ public class JvmGcMetrics extends Metrics {
     public JvmGcMetrics(long youngGcCount, long youngGcTime, long fullGcCount, long fullGcTime, long zGcCount, long zGcTime) {
         this.youngGcCount = youngGcCount;
         this.youngGcTime = youngGcTime;
-        this.avgYoungGcTime = youngGcCount > 0L ? ((double) youngGcTime) / youngGcCount : 0D;
+        this.avgYoungGcTime = getAvgTime(youngGcCount, youngGcTime);
         this.fullGcCount = fullGcCount;
         this.fullGcTime = fullGcTime;
         this.zGcCount = zGcCount;
         this.zGcTime = zGcTime;
-        this.avgZGcTime =  zGcCount > 0L ? ((double) zGcTime) / zGcCount : 0D;
+        this.avgZGcTime = getAvgTime(zGcCount, zGcTime);
+    }
+
+    private double getAvgTime(long count, long time) {
+        return  count > 0L ? ((double) time) / count : 0D;
     }
 
     public double getAvgYoungGcTime() {
@@ -54,18 +58,15 @@ public class JvmGcMetrics extends Metrics {
         return youngGcTime;
     }
 
-    public long getZGcTime()
-    {
+    public long getZGcTime() {
         return zGcTime;
     }
 
-    public long getZGcCount()
-    {
+    public long getZGcCount() {
         return zGcCount;
     }
 
-    public double getAvgZGcTime()
-    {
+    public double getAvgZGcTime() {
         return avgZGcTime;
     }
 
