@@ -179,13 +179,13 @@ public class ProfilingFilter {
     }
 
     private static boolean isSpecialMethod(String methodName) {
-        int leftParenIndex = methodName.indexOf('(');
         int symbolIndex = methodName.indexOf('$');
-        if (symbolIndex >= 0 && (leftParenIndex < 0
-                || symbolIndex < leftParenIndex)) {
-            return true;
+        if (symbolIndex < 0) {
+            return false;
         }
-        return false;
+
+        int leftParenIndex = methodName.indexOf('(');
+        return leftParenIndex < 0 || symbolIndex < leftParenIndex;
     }
 
     public static void addExcludeMethods(String method) {
