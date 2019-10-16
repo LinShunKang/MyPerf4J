@@ -23,6 +23,8 @@ public final class JvmGcCollector {
 
     private static final Set<String> OLD_GC_SET = SetUtils.of("MarkSweepCompact", "PS MarkSweep", "ConcurrentMarkSweep", "G1 Old Generation");
 
+    private static final Set<String> Z_GC_SET = SetUtils.of("ZGC");
+
     private static volatile long lastYoungGcTime = 0L;
 
     private static volatile long lastYoungGcCount = 0L;
@@ -31,11 +33,17 @@ public final class JvmGcCollector {
 
     private static volatile long lastOldGcCount = 0L;
 
+    private static volatile long lastZGcTime = 0L;
+
+    private static volatile long lastZGcCount = 0L;
+
     public static JvmGcMetrics collectGcMetrics() {
         long youngGcCount = 0L;
         long youngGcTime = 0L;
-        long oldGCount = 0L;
+        long oldGcCount = 0L;
         long oldGcTime = 0L;
+        long zGcCount = 0L;
+        long zGcTime = 0L;
 
         List<GarbageCollectorMXBean> gcMXBeanList = ManagementFactory.getGarbageCollectorMXBeans();
         for (int i = 0; i < gcMXBeanList.size(); i++) {
@@ -46,7 +54,10 @@ public final class JvmGcCollector {
                 youngGcCount += gcMxBean.getCollectionCount();
             } else if (OLD_GC_SET.contains(gcName)) {
                 oldGcTime += gcMxBean.getCollectionTime();
-                oldGCount += gcMxBean.getCollectionCount();
+                oldGcCount += gcMxBean.getCollectionCount();
+            } else if (Z_GC_SET.contains(gcName)) {
+                zGcTime += gcMxBean.getCollectionTime();
+                zGcCount += gcMxBean.getCollectionCount();
             } else {
                 Logger.warn("Unknown GC: " + gcName);
             }
@@ -55,14 +66,17 @@ public final class JvmGcCollector {
         JvmGcMetrics jvmGcMetrics = new JvmGcMetrics(
                 youngGcCount - lastYoungGcCount,
                 youngGcTime - lastYoungGcTime,
-                oldGCount - lastOldGcCount,
-                oldGcTime - lastOldGcTime);
+                oldGcCount - lastOldGcCount,
+                oldGcTime - lastOldGcTime,
+                zGcCount - lastZGcCount,
+                zGcTime - lastZGcTime);
 
         lastYoungGcCount = youngGcCount;
         lastYoungGcTime = youngGcTime;
-        lastOldGcCount = oldGCount;
+        lastOldGcCount = oldGcCount;
         lastOldGcTime = oldGcTime;
-
+        lastZGcCount = zGcCount;
+        lastZGcTime = zGcTime;
         return jvmGcMetrics;
     }
 

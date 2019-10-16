@@ -16,6 +16,10 @@ public class ProfilingFilterTest {
         ProfilingFilter.addExcludePackage("org.junit.rules");
         ProfilingFilter.addExcludeMethods("hello");
         ProfilingFilter.addExcludeClassLoader("org.apache.catalina.loader.WebappClassLoader");
+        ProfilingFilter.addExcludeMethods("Demo.getId1(long)");
+        ProfilingFilter.addExcludeMethods("Demo.getId1(long,int)");
+        ProfilingFilter.addExcludeMethods("Demo.getId1()");
+        ProfilingFilter.addExcludeMethods("Demo.getId1(ClassA$ClassB,long)");
     }
 
     @Test
@@ -27,6 +31,13 @@ public class ProfilingFilterTest {
         Assert.assertTrue(ProfilingFilter.isNotNeedInjectMethod("toString"));
         Assert.assertTrue(ProfilingFilter.isNotNeedInjectMethod("hello"));
         Assert.assertFalse(ProfilingFilter.isNotNeedInjectMethod("assertFalse"));
+
+        Assert.assertFalse(ProfilingFilter.isNotNeedInjectMethod("Demo.getId1(ClassA$ClassB)"));
+        Assert.assertTrue(ProfilingFilter.isNotNeedInjectMethod("Demo.getId1()"));
+        Assert.assertTrue(ProfilingFilter.isNotNeedInjectMethod("Demo.getId1(ClassA$ClassB,long)"));
+        Assert.assertTrue(ProfilingFilter.isNotNeedInjectMethod("Demo.getId1(long)"));
+        Assert.assertTrue(ProfilingFilter.isNotNeedInjectMethod("Demo.getId1(long,int)"));
+
 
         Assert.assertTrue(ProfilingFilter.isNotNeedInjectClassLoader("org.apache.catalina.loader.WebappClassLoader"));
         Assert.assertFalse(ProfilingFilter.isNotNeedInjectClassLoader("org.springframework.boot.loader.LaunchedURLClassLoader"));
