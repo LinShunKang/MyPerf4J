@@ -11,10 +11,9 @@ A high performance, non-intrusive Java performance monitoring and statistical to
 </div>
 
 ## Features
-*  High performance: Very low performance consumption, only **63 nano seconds** per record, can be used in production environment for a long time.
+*  [High performance](https://github.com/LinShunKang/MyPerf4J/wiki/Overhead): Very low performance consumption, only **63 nano seconds** per record, can be used in production environment for a long time.
 *  No intrusion: Using **JavaAgent** mode, no intrusion to the application, no need to modify the application code.
 *  Low memory: With memory multiplexing, only a small number of temporary objects are generated throughout the life cycle, and the GC of the application is not affected.
-*  High precision: Using nanoseconds to calculate response time.
 *  Real-time: Supports second level monitoring, minimum **1 second**
 
 ## Usage scenarios
