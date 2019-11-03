@@ -20,6 +20,7 @@ public class ThroughputBench extends AbstractBench {
         Options opt = new OptionsBuilder()
                 .include(ThroughputBench.class.getSimpleName())
                 .forks(1)
+                .threads(1)
                 .warmupIterations(3)
                 .measurementIterations(5)
                 .build();

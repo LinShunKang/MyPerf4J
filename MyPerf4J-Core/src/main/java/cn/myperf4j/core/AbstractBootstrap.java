@@ -30,14 +30,21 @@ import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
  */
 public abstract class AbstractBootstrap {
 
+    private volatile boolean initStatus = false;
+
     protected MethodMetricsProcessor processor;
 
     protected AbstractRecorderMaintainer maintainer;
 
     public final boolean initial() {
         try {
+            if (initStatus) {
+                Logger.warn("AbstractBootstrap is already init.");
+                return true;
+            }
+
             Logger.info("Thanks sincerely for using MyPerf4J.");
-            if (!doInitial()) {
+            if (!(initStatus = doInitial())) {
                 Logger.error("AbstractBootstrap doInitial() FAILURE!!!");
                 return false;
             }

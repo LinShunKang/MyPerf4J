@@ -11,7 +11,7 @@ import cn.myperf4j.base.util.file.MinutelyRollingFileWriter;
  */
 public class EnvUtils {
 
-    public static boolean initASMBootstrap(long milliTimeSlice) {
+    public static synchronized boolean initASMBootstrap(long milliTimeSlice) {
         initProperties(milliTimeSlice);
         return ASMBootstrap.getInstance().initial();
     }
