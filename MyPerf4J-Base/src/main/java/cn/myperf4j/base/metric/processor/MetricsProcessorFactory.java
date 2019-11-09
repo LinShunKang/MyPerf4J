@@ -69,13 +69,34 @@ public class MetricsProcessorFactory {
 
     public static MethodMetricsProcessor getMethodMetricsProcessor(int processorType) {
         switch (processorType) {
-            case PropertyValues.METRICS_PROCESS_TYPE_STDOUT:
-            case PropertyValues.METRICS_PROCESS_TYPE_LOGGER:
-                return new LoggerMethodMetricsProcessor();
             case PropertyValues.METRICS_PROCESS_TYPE_INFLUX_DB:
                 return new InfluxMethodMetricsProcessor();
             default:
                 return new LoggerMethodMetricsProcessor();
+        }
+    }
+
+    public static JvmFileDescProcessor getFileDescProcessor(int processorType) {
+        switch (processorType) {
+            case PropertyValues.METRICS_PROCESS_TYPE_STDOUT:
+            case PropertyValues.METRICS_PROCESS_TYPE_LOGGER:
+                return new LoggerJvmFileDescMetricsProcessor();
+            case PropertyValues.METRICS_PROCESS_TYPE_INFLUX_DB:
+                return new InfluxJvmFileDescMetricsProcessor();
+            default:
+                return new DiscardJvmFileDescProcessor();
+        }
+    }
+
+    public static JvmCompilationProcessor getCompilationProcessor(int processorType) {
+        switch (processorType) {
+            case PropertyValues.METRICS_PROCESS_TYPE_STDOUT:
+            case PropertyValues.METRICS_PROCESS_TYPE_LOGGER:
+                return new LoggerJvmCompilationMetricsProcessor();
+            case PropertyValues.METRICS_PROCESS_TYPE_INFLUX_DB:
+                return new InfluxJvmCompilationMetricsProcessor();
+            default:
+                return new DiscardJvmCompilationProcessor();
         }
     }
 

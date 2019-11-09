@@ -3,8 +3,8 @@ package cn.myperf4j.bench;
 import cn.myperf4j.asm.ASMBootstrap;
 import cn.myperf4j.base.constant.PropertyKeys;
 import cn.myperf4j.base.constant.PropertyValues;
-import cn.myperf4j.base.util.file.AutoRollingFileWriter;
-import cn.myperf4j.base.util.file.MinutelyRollingFileWriter;
+import cn.myperf4j.base.file.AutoRollingFileWriter;
+import cn.myperf4j.base.file.MinutelyRollingFileWriter;
 
 /**
  * Created by LinShunkang on 2019/08/31

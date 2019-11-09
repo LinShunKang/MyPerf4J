@@ -30,6 +30,10 @@ public class ProfilingConfig {
 
     private String threadMetricsFile;
 
+    private String compilationMetricsFile;
+
+    private String fileDescMetricsFile;
+
     private String logRollingTimeUnit;
 
     private int LogReserveCount;
@@ -144,6 +148,22 @@ public class ProfilingConfig {
 
     public void setThreadMetricsFile(String threadMetricsFile) {
         this.threadMetricsFile = threadMetricsFile;
+    }
+
+    public String getCompilationMetricsFile() {
+        return compilationMetricsFile;
+    }
+
+    public void setCompilationMetricsFile(String compilationMetricsFile) {
+        this.compilationMetricsFile = compilationMetricsFile;
+    }
+
+    public String getFileDescMetricsFile() {
+        return fileDescMetricsFile;
+    }
+
+    public void setFileDescMetricsFile(String fileDescMetricsFile) {
+        this.fileDescMetricsFile = fileDescMetricsFile;
     }
 
     public String getLogRollingTimeUnit() {
@@ -310,6 +330,8 @@ public class ProfilingConfig {
                 ", memoryMetricsFile='" + memoryMetricsFile + '\'' +
                 ", bufferPoolMetricsFile='" + bufferPoolMetricsFile + '\'' +
                 ", threadMetricsFile='" + threadMetricsFile + '\'' +
+                ", fileDescMetricsFile='" + fileDescMetricsFile + '\'' +
+                ", compilationMetricsFile='" + compilationMetricsFile + '\'' +
                 ", logRollingTimeUnit='" + logRollingTimeUnit + '\'' +
                 ", LogReserveCount=" + LogReserveCount +
                 ", recorderMode='" + recorderMode + '\'' +

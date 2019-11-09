@@ -1,5 +1,7 @@
 package cn.myperf4j.base.metric;
 
+import cn.myperf4j.base.util.NumUtils;
+
 /**
  * Created by LinShunkang on 2018/8/19
  * <p>
@@ -72,14 +74,7 @@ public class JvmMemoryMetrics extends Metrics {
     }
 
     public double getHeapUsedPercent() {
-        return getUsedPercent(heapUsed, heapMax);
-    }
-
-    private double getUsedPercent(long used, long max) {
-        if (used > 0L && max > 0L) {
-            return (100D * used) / max;
-        }
-        return 0D;
+        return NumUtils.getPercent(heapUsed, heapMax);
     }
 
     public long getNonHeapUsed() {
@@ -87,7 +82,7 @@ public class JvmMemoryMetrics extends Metrics {
     }
 
     public double getNonHeapUsedPercent() {
-        return getUsedPercent(nonHeapUsed, nonHeapMax);
+        return NumUtils.getPercent(nonHeapUsed, nonHeapMax);
     }
 
     public long getPermGenUsed() {
@@ -95,7 +90,7 @@ public class JvmMemoryMetrics extends Metrics {
     }
 
     public double getPermGenUsedPercent() {
-        return getUsedPercent(permGenUsed, permGenMax);
+        return NumUtils.getPercent(permGenUsed, permGenMax);
     }
 
     public long getMetaspaceUsed() {
@@ -103,7 +98,7 @@ public class JvmMemoryMetrics extends Metrics {
     }
 
     public double getMetaspaceUsedPercent() {
-        return getUsedPercent(metaspaceUsed, metaspaceMax);
+        return NumUtils.getPercent(metaspaceUsed, metaspaceMax);
     }
 
     public long getCodeCacheUsed() {
@@ -111,7 +106,7 @@ public class JvmMemoryMetrics extends Metrics {
     }
 
     public double getCodeCacheUsedPercent() {
-        return getUsedPercent(codeCacheUsed, codeCacheMax);
+        return NumUtils.getPercent(codeCacheUsed, codeCacheMax);
     }
 
     public long getOldGenUsed() {
@@ -119,7 +114,7 @@ public class JvmMemoryMetrics extends Metrics {
     }
 
     public double getOldGenUsedPercent() {
-        return getUsedPercent(oldGenUsed, oldGenMax);
+        return NumUtils.getPercent(oldGenUsed, oldGenMax);
     }
 
     public long getEdenUsed() {
@@ -127,7 +122,7 @@ public class JvmMemoryMetrics extends Metrics {
     }
 
     public double getEdenUsedPercent() {
-        return getUsedPercent(edenUsed, edenMax);
+        return NumUtils.getPercent(edenUsed, edenMax);
     }
 
     public long getSurvivorUsed() {
@@ -135,7 +130,7 @@ public class JvmMemoryMetrics extends Metrics {
     }
 
     public double getSurvivorUsedPercent() {
-        return getUsedPercent(survivorUsed, survivorMax);
+        return NumUtils.getPercent(survivorUsed, survivorMax);
     }
 
     @Override

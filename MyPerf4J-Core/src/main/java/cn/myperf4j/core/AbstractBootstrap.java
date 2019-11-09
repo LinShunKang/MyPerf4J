@@ -191,6 +191,8 @@ public abstract class AbstractBootstrap {
             config.setMemoryMetricsFile(PropertyValues.STDOUT_FILE);
             config.setBufferPoolMetricsFile(PropertyValues.STDOUT_FILE);
             config.setThreadMetricsFile(PropertyValues.STDOUT_FILE);
+            config.setCompilationMetricsFile(PropertyValues.STDOUT_FILE);
+            config.setFileDescMetricsFile(PropertyValues.STDOUT_FILE);
         } else {
             config.setMethodMetricsFile(MyProperties.getStr(PropertyKeys.METHOD_METRICS_FILE, PropertyValues.DEFAULT_METRICS_FILE));
             config.setClassMetricsFile(MyProperties.getStr(PropertyKeys.CLASS_METRICS_FILE, PropertyValues.NULL_FILE));
@@ -198,6 +200,8 @@ public abstract class AbstractBootstrap {
             config.setMemoryMetricsFile(MyProperties.getStr(PropertyKeys.MEM_METRICS_FILE, PropertyValues.NULL_FILE));
             config.setBufferPoolMetricsFile(MyProperties.getStr(PropertyKeys.BUF_POOL_METRICS_FILE, PropertyValues.NULL_FILE));
             config.setThreadMetricsFile(MyProperties.getStr(PropertyKeys.THREAD_METRICS_FILE, PropertyValues.NULL_FILE));
+            config.setCompilationMetricsFile(MyProperties.getStr(PropertyKeys.COMPILATION_METRICS_FILE, PropertyValues.NULL_FILE));
+            config.setFileDescMetricsFile(MyProperties.getStr(PropertyKeys.FILE_DESC_METRICS_FILE, PropertyValues.NULL_FILE));
         }
     }
 
@@ -444,7 +448,17 @@ public abstract class AbstractBootstrap {
         JvmMemoryMetricsProcessor memoryProcessor = MetricsProcessorFactory.getMemoryMetricsProcessor(processorType);
         JvmBufferPoolMetricsProcessor bufferPoolProcessor = MetricsProcessorFactory.getBufferPoolMetricsProcessor(processorType);
         JvmThreadMetricsProcessor threadProcessor = MetricsProcessorFactory.getThreadMetricsProcessor(processorType);
-        return new JvmMetricsScheduler(classProcessor, gcProcessor, memoryProcessor, bufferPoolProcessor, threadProcessor);
+        JvmCompilationProcessor compilationProcessor = MetricsProcessorFactory.getCompilationProcessor(processorType);
+        JvmFileDescProcessor fileDescProcessor = MetricsProcessorFactory.getFileDescProcessor(processorType);
+        return new JvmMetricsScheduler(
+                classProcessor,
+                gcProcessor,
+                memoryProcessor,
+                bufferPoolProcessor,
+                threadProcessor,
+                compilationProcessor,
+                fileDescProcessor
+        );
     }
 
     private Scheduler buildSysGenProfilingScheduler() {

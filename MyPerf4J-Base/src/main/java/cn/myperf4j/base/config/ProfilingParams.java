@@ -5,7 +5,7 @@ package cn.myperf4j.base.config;
  */
 public class ProfilingParams {
 
-    private int mostTimeThreshold;//单位:ms
+    private int mostTimeThreshold;//UNIT: ms
 
     private int outThresholdCount;
 

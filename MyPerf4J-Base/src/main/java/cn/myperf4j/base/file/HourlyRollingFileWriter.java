@@ -1,4 +1,4 @@
-package cn.myperf4j.base.util.file;
+package cn.myperf4j.base.file;
 
 import cn.myperf4j.base.util.DateUtils;
 

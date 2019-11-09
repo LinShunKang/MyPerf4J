@@ -25,6 +25,10 @@ public interface PropertyKeys {
 
     String THREAD_METRICS_FILE = "ThreadMetricsFile";
 
+    String FILE_DESC_METRICS_FILE = "FileDescMetricsFile";
+
+    String COMPILATION_METRICS_FILE = "CompilationMetricsFile";
+
     String LOG_ROLLING_TIME_TIME_UNIT = "LogRollingTimeUnit";
 
     String LOG_RESERVE_COUNT = "LogReserveCount";

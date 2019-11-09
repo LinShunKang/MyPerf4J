@@ -1,4 +1,4 @@
-package cn.myperf4j.base.util.file;
+package cn.myperf4j.base.file;
 
 import cn.myperf4j.base.util.Logger;
 
@@ -29,12 +29,11 @@ public abstract class AutoRollingFileWriter {
 
     private volatile long nextRollingTime;
 
-
     public AutoRollingFileWriter(String fileName, int reserveFileCount) {
         Date now = new Date();
 
         this.fileName = fileName;
-        this.reserveFileCount = reserveFileCount < 0 ? 0 : reserveFileCount;
+        this.reserveFileCount = Math.max(reserveFileCount, 0);
         this.closed = false;
         this.nextRollingTime = getNextRollingTime(now);
         this.rollingFileName = formatDateFileName(fileName, now);

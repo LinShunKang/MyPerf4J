@@ -1,9 +1,9 @@
 package cn.myperf4j.base.test;
 
-import cn.myperf4j.base.util.file.AutoRollingFileWriter;
-import cn.myperf4j.base.util.file.DailyRollingFileWriter;
-import cn.myperf4j.base.util.file.HourlyRollingFileWriter;
-import cn.myperf4j.base.util.file.MinutelyRollingFileWriter;
+import cn.myperf4j.base.file.AutoRollingFileWriter;
+import cn.myperf4j.base.file.DailyRollingFileWriter;
+import cn.myperf4j.base.file.HourlyRollingFileWriter;
+import cn.myperf4j.base.file.MinutelyRollingFileWriter;
 import org.junit.Test;
 
 /**
