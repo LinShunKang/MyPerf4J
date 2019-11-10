@@ -42,7 +42,7 @@ MyPerf4J 为每个应用收集数十个监控指标，所有的监控指标都�
 MyPerf4J 采用 JavaAgent 配置方式，**透明化**接入应用，对应用代码完全**没有侵入**。
 
 ### 下载
-* 下载并解压 [MyPerf4J-ASM.zip](https://github.com/LinShunKang/Objects/blob/master/zips/CN/MyPerf4J-ASM-2.8.0.zip?raw=true)
+* 下载并解压 [MyPerf4J-ASM.zip](https://github.com/LinShunKang/Objects/blob/master/zips/CN/MyPerf4J-ASM-2.9.0.zip?raw=true)
 * 阅读解压出的 `README` 文件
 * 修改解压出的 `MyPerf4J.properties` 配置文件中 `AppName`、`IncludePackages` 和 `xxxMetricsFile` 的配置值
 
@@ -99,7 +99,7 @@ DemoDAO.getId2(long)         DynamicProxy          DAO  3274139     0.00        
 </div>
 
 ## 项目捐赠
-开源不易，如果 MyPerf4J 对您有帮助，不妨来个赞赏 : )
+如果 MyPerf4J 对您有帮助，可以请我喝杯咖啡 : )
 <div align="center">
 <img src="https://github.com/LinShunKang/Objects/blob/master/logos/WechatIMG16.jpeg?raw=true" width="260" height="260"/>
 </div>
