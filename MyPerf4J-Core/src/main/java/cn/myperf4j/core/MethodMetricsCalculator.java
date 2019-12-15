@@ -12,10 +12,10 @@ import cn.myperf4j.core.recorder.Recorder;
  */
 public final class MethodMetricsCalculator {
 
-    private static final ThreadLocal<int[]> threadLocalIntArr = new ThreadLocal<int[]>() {
+    private static final ThreadLocal<long[]> LONG_ARR_TL = new ThreadLocal<long[]>() {
         @Override
-        protected int[] initialValue() {
-            return new int[MethodMetrics.getPercentiles().length];
+        protected long[] initialValue() {
+            return new long[MethodMetrics.getPercentiles().length];
         }
     };
 
@@ -26,12 +26,12 @@ public final class MethodMetricsCalculator {
         try {
             int diffCount = recorder.getDiffCount();
             intBuf = intBufPool.acquire(diffCount << 1);
-            int totalCount = recorder.fillSortedRecords(intBuf);
+            long totalCount = recorder.fillSortedRecords(intBuf);
             MethodMetrics methodMetrics = calPerfStats(recorder, methodTag, startTime, stopTime, intBuf, totalCount, diffCount);
             MethodMetricsHistogram.recordMetrics(methodMetrics);
             return methodMetrics;
         } catch (Exception e) {
-            Logger.error("MethodMetricsCalculator.calPerfStats(" + recorder + ", " + methodTag + ", " + startTime + ", " + stopTime + ")", e);
+            Logger.error("MethodMetricsCalculator.calPerfStats(" + recorder + ", " + methodTag + ", " + startTime + ", " + stopTime + "): infBuf=" + intBuf, e);
         } finally {
             intBufPool.release(intBuf);
         }
@@ -43,7 +43,7 @@ public final class MethodMetricsCalculator {
                                               long startTime,
                                               long stopTime,
                                               IntBuf sortedRecords,
-                                              int totalCount,
+                                              long totalCount,
                                               int diffCount) {
         MethodMetrics result = MethodMetrics.getInstance(methodTag, recorder.getMethodTagId(), startTime, stopTime);
         if (diffCount <= 0) {
@@ -54,9 +54,10 @@ public final class MethodMetricsCalculator {
         result.setMinTime(sortedRecords._getInt(0));
         result.setMaxTime(sortedRecords._getInt(sortedRecords.writerIndex() - 2));
 
-        int[] topPerIndexArr = getTopPercentileIndexArr(totalCount);
+        long[] topPerIndexArr = getTopPercentileIndexArr(totalCount);
         int[] topPerArr = result.getTpArr();
-        int countMile = 0, perIndex = 0;
+        int perIndex = 0;
+        long countMile = 0L;
         double sigma = 0.0D;//∑
         long totalTime = 0L;
         for (int i = 0, writerIdx = sortedRecords.writerIndex(); i < writerIdx; ) {
@@ -64,9 +65,9 @@ public final class MethodMetricsCalculator {
             int count = sortedRecords._getInt(i++);
 
             totalTime += timeCost * count;
-
             countMile += count;
-            int index = topPerIndexArr[perIndex];
+
+            long index = topPerIndexArr[perIndex];
             if (countMile >= index) {
                 topPerArr[perIndex] = timeCost;
                 perIndex++;
@@ -95,16 +96,18 @@ public final class MethodMetricsCalculator {
         return metrics;
     }
 
-    private static int[] getTopPercentileIndexArr(int totalCount) {
-        int[] result = threadLocalIntArr.get();
+    private static long[] getTopPercentileIndexArr(long totalCount) {
+        long[] result = LONG_ARR_TL.get();
         double[] percentiles = MethodMetrics.getPercentiles();
+        assert result.length == percentiles.length;
+
         for (int i = 0; i < percentiles.length; ++i) {
             result[i] = getIndex(totalCount, percentiles[i]);
         }
         return result;
     }
 
-    private static int getIndex(int totalCount, double percentile) {
-        return (int) Math.ceil(totalCount * percentile);
+    private static long getIndex(long totalCount, double percentile) {
+        return (long) Math.ceil(totalCount * percentile);
     }
 }

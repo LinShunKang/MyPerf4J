@@ -1,5 +1,7 @@
 package cn.myperf4j.base.buffer;
 
+import java.util.Arrays;
+
 /**
  * Created by LinShunkang on 2019/06/12
  */
@@ -82,5 +84,14 @@ public class IntBuf {
 
     public IntBufPool intBufPool() {
         return pool;
+    }
+
+    @Override
+    public String toString() {
+        return "IntBuf{" +
+                "buf=" + Arrays.toString(buf) +
+                ", writerIndex=" + writerIndex +
+                ", pool=" + pool +
+                '}';
     }
 }

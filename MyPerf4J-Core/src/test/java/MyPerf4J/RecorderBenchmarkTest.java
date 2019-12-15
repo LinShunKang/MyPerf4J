@@ -5,6 +5,7 @@ import cn.myperf4j.core.MethodMetricsCalculator;
 import cn.myperf4j.core.recorder.Recorder;
 import cn.myperf4j.core.recorder.AccurateRecorder;
 import cn.myperf4j.core.recorder.Recorders;
+import cn.myperf4j.core.recorder.RoughRecorder;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReferenceArray;
@@ -17,6 +18,7 @@ public class RecorderBenchmarkTest {
     public static void main(String[] args) {
         AtomicReferenceArray<Recorder> recorderArr = new AtomicReferenceArray<>(1);
         Recorder recorder = AccurateRecorder.getInstance(0, 100, 50);
+//        Recorder recorder = RoughRecorder.getInstance(0, 100);
         recorderArr.set(0, recorder);
 
         Recorders recorders = new Recorders(recorderArr);
@@ -40,6 +42,14 @@ public class RecorderBenchmarkTest {
 
         recorder.resetRecord();
         multiThreadBenchmark(recorders, times, 8);
+        System.out.println(MethodMetricsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime()));
+
+        recorder.resetRecord();
+        multiThreadBenchmark(recorders, times, 16);
+        System.out.println(MethodMetricsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime()));
+
+        recorder.resetRecord();
+        multiThreadBenchmark(recorders, times, 32);
         System.out.println(MethodMetricsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime()));
     }
 
