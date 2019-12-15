@@ -31,13 +31,13 @@ public class MethodMetrics extends Metrics {
 
     private int minTime = -1;//ms
 
-    private double avgTime = -1.0F;//ms
+    private double avgTime = -1.0D;//ms
 
     private int maxTime = -1;//ms
 
     private double stdDev = 0.0D;//Standard Deviation
 
-    private int totalCount = -1;//ms
+    private long totalCount = -1L;
 
     private MethodMetrics(MethodTag methodTag, int methodTagId, long startMillTime, long stopMillTime) {
         this.methodTag = methodTag;
@@ -86,11 +86,11 @@ public class MethodMetrics extends Metrics {
         this.stdDev = stdDev;
     }
 
-    public int getTotalCount() {
+    public long getTotalCount() {
         return totalCount;
     }
 
-    public void setTotalCount(int totalCount) {
+    public void setTotalCount(long totalCount) {
         this.totalCount = totalCount;
     }
 

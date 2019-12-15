@@ -22,11 +22,16 @@ public abstract class Recorder {
     public abstract void recordTime(long startNanoTime, long endNanoTime);
 
     /**
-     * 为了节省内存的使用，利用int[]作为返回结果
+     * 为了节省内存的使用，利用 IntBuf 作为返回结果
      *
-     * @param intBuf : intBuf.capacity为effectiveRecordCount的两倍!!! 其中，第0位存timeCost，第1位存count，第2位存timeCost，第3位存count，以此类推
+     * @param intBuf : intBuf.capacity 为 effectiveRecordCount 的两倍!!!
+     *               其中：
+     *               第 0 位存 timeCost，第 1 位存 count，
+     *               第 2 位存 timeCost，第 3 位存 count，
+     *               以此类推
+     * @return 总请求数
      */
-    public abstract int fillSortedRecords(IntBuf intBuf);
+    public abstract long fillSortedRecords(IntBuf intBuf);
 
     /**
      * 获取有效的记录的个数
