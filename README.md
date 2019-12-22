@@ -99,7 +99,7 @@ DemoDAO.getId2(long)         DynamicProxy          DAO  3274139     0.00        
 </div>
 
 ## 项目捐赠
-如果 MyPerf4J 对您有帮助，可以请我喝杯咖啡 : )
+如果 MyPerf4J 对您有帮助，可以使用微信扫描下面的赞赏码，请我喝杯咖啡 : )
 <div align="center">
 <img src="https://github.com/LinShunKang/Objects/blob/master/logos/WechatIMG16.jpeg?raw=true" width="260" height="260"/>
 </div>
