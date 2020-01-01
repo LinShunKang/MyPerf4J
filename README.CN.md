@@ -42,7 +42,7 @@ MyPerf4J 为每个应用收集数十个监控指标，所有的监控指标都�
 MyPerf4J 采用 JavaAgent 配置方式，**透明化**接入应用，对应用代码完全**没有侵入**。
 
 ### 下载
-* 下载并解压 [MyPerf4J-ASM.zip](https://github.com/LinShunKang/Objects/blob/master/zips/CN/MyPerf4J-ASM-2.9.0.zip?raw=true)
+* 下载并解压 [MyPerf4J-ASM.zip](https://github.com/LinShunKang/Objects/blob/master/zips/CN/MyPerf4J-ASM-2.10.0-SNAPSHOT.zip?raw=true)
 * 阅读解压出的 `README` 文件
 * 修改解压出的 `MyPerf4J.properties` 配置文件中 `AppName`、`IncludePackages` 和 `xxxMetricsFile` 的配置值
 
@@ -58,12 +58,14 @@ MyPerf4J 采用 JavaAgent 配置方式，**透明化**接入应用，对应用�
 ### 运行
 启动应用，监控日志输出到 /path/to/log/method_metrics.log:
 ```
-MyPerf4J Method Metrics [2019-06-02 23:44:30, 2019-06-02 23:44:40]
-Method[4]                            Type        Level      RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count     TP50     TP90     TP95     TP99    TP999   TP9999    TP100
-DemoServiceImpl.getId1(long)      General      Service  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
-DemoServiceImpl.getId2(long)      General      Service  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
-DemoDAO.getId1(long)         DynamicProxy          DAO  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
-DemoDAO.getId2(long)         DynamicProxy          DAO  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
+MyPerf4J Method Metrics [2020-01-01 12:49:57, 2020-01-01 12:49:58]
+Method[6]                            Type        Level  TimePercent      RPS  Avg(ms)  Min(ms)  Max(ms)    StdDev    Count     TP50     TP90     TP95     TP99    TP999   TP9999
+DemoServiceImpl.getId2(long)      General      Service      322.50%     6524     0.49        0        1     0.50      6524        0        1        1        1        1        1
+DemoServiceImpl.getId3(long)      General      Service      296.10%     4350     0.68        0        1     0.47      4350        1        1        1        1        1        1
+DemoServiceImpl.getId4(long)      General      Service      164.60%     2176     0.76        0        1     0.43      2176        1        1        1        1        1        1
+DemoServiceImpl.getId1(long)      General      Service        0.00%     8704     0.00        0        0     0.00      8704        0        0        0        0        0        0
+DemoDAO.getId1(long)         DynamicProxy          DAO        0.00%     2176     0.00        0        0     0.00      2176        0        0        0        0        0        0
+DemoDAO.getId2()             DynamicProxy          DAO        0.00%     2176     0.00        0        0     0.00      2176        0        0        0        0        0        0
 ```
 
 ### 卸载

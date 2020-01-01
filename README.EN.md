@@ -42,7 +42,7 @@ This is a list of what it currently monitors:
 MyPerf4J adopts JavaAgent configuration mode, **transparent** access application, and the application code is completely **no-intrusive**.
 
 ### Download
-* Download and unzip [MyPerf4J-ASM.zip](https://github.com/LinShunKang/Objects/blob/master/zips/EN/MyPerf4J-ASM-2.9.0.zip?raw=true)
+* Download and unzip [MyPerf4J-ASM.zip](https://github.com/LinShunKang/Objects/blob/master/zips/EN/MyPerf4J-ASM-2.10.0-SNAPSHOT.zip?raw=true)
 * Read the `README` file
 * Modify `AppName`, `IncludePackages` and `xxxMetricsFile` in `MyPerf4J.properties` 
 
@@ -56,12 +56,14 @@ Add the following two parameters to the JVM startup parameters
 ### Run
 Start your application, the output is to /path/to/log/method_metrics.log:
 ```
-MyPerf4J Method Metrics [2019-06-02 23:44:30, 2019-06-02 23:44:40]
-Method[4]                            Type        Level      RPS  Avg(ms)  Min(ms)  Max(ms)   StdDev     Count     TP50     TP90     TP95     TP99    TP999   TP9999    TP100
-DemoServiceImpl.getId1(long)      General      Service  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
-DemoServiceImpl.getId2(long)      General      Service  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
-DemoDAO.getId1(long)         DynamicProxy          DAO  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
-DemoDAO.getId2(long)         DynamicProxy          DAO  3274139     0.00        0        0     0.00  32741398        0        0        0        0        0        0        0
+MyPerf4J Method Metrics [2020-01-01 12:49:57, 2020-01-01 12:49:58]
+Method[6]                            Type        Level  TimePercent      RPS  Avg(ms)  Min(ms)  Max(ms)    StdDev    Count     TP50     TP90     TP95     TP99    TP999   TP9999
+DemoServiceImpl.getId2(long)      General      Service      322.50%     6524     0.49        0        1     0.50      6524        0        1        1        1        1        1
+DemoServiceImpl.getId3(long)      General      Service      296.10%     4350     0.68        0        1     0.47      4350        1        1        1        1        1        1
+DemoServiceImpl.getId4(long)      General      Service      164.60%     2176     0.76        0        1     0.43      2176        1        1        1        1        1        1
+DemoServiceImpl.getId1(long)      General      Service        0.00%     8704     0.00        0        0     0.00      8704        0        0        0        0        0        0
+DemoDAO.getId1(long)         DynamicProxy          DAO        0.00%     2176     0.00        0        0     0.00      2176        0        0        0        0        0        0
+DemoDAO.getId2()             DynamicProxy          DAO        0.00%     2176     0.00        0        0     0.00      2176        0        0        0        0        0        0
 ```
 
 ### Uninstall
