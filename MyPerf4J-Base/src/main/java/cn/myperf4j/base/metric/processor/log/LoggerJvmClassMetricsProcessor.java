@@ -2,7 +2,7 @@ package cn.myperf4j.base.metric.processor.log;
 
 import cn.myperf4j.base.metric.JvmClassMetrics;
 import cn.myperf4j.base.metric.formatter.JvmClassMetricsFormatter;
-import cn.myperf4j.base.metric.formatter.impl.DefaultJvmClassMetricsFormatter;
+import cn.myperf4j.base.metric.formatter.impl.DefJvmClassMetricsFormatter;
 import cn.myperf4j.base.metric.processor.AbstractJvmClassMetricsProcessor;
 import cn.myperf4j.base.util.Logger;
 
@@ -17,7 +17,7 @@ public class LoggerJvmClassMetricsProcessor extends AbstractJvmClassMetricsProce
 
     private ConcurrentHashMap<Long, List<JvmClassMetrics>> metricsMap = new ConcurrentHashMap<>(8);
 
-    private JvmClassMetricsFormatter metricsFormatter = new DefaultJvmClassMetricsFormatter();
+    private JvmClassMetricsFormatter metricsFormatter = new DefJvmClassMetricsFormatter();
 
     @Override
     public void beforeProcess(long processId, long startMillis, long stopMillis) {

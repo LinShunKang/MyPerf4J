@@ -1,7 +1,7 @@
 package cn.myperf4j.base.metric.processor.log;
 
 import cn.myperf4j.base.metric.MethodMetrics;
-import cn.myperf4j.base.metric.formatter.impl.DefaultMethodMetricsFormatter;
+import cn.myperf4j.base.metric.formatter.impl.DefMethodMetricsFormatter;
 import cn.myperf4j.base.metric.formatter.MethodMetricsFormatter;
 import cn.myperf4j.base.metric.processor.AbstractMethodMetricsProcessor;
 import cn.myperf4j.base.util.Logger;
@@ -17,7 +17,7 @@ public class LoggerMethodMetricsProcessor extends AbstractMethodMetricsProcessor
 
     private ConcurrentHashMap<Long, List<MethodMetrics>> metricsMap = new ConcurrentHashMap<>(8);
 
-    private MethodMetricsFormatter formatter = new DefaultMethodMetricsFormatter();
+    private MethodMetricsFormatter formatter = new DefMethodMetricsFormatter();
 
     @Override
     public void beforeProcess(long processId, long startMillis, long stopMillis) {

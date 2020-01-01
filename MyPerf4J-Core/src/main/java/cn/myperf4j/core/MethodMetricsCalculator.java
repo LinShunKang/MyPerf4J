@@ -78,8 +78,9 @@ public final class MethodMetricsCalculator {
 
         double avgTime = ((double) totalTime) / totalCount;
         result.setAvgTime(avgTime);
-
         result.setStdDev(Math.sqrt((sigma / totalCount) - Math.pow(avgTime, 2.0)));
+        result.setTotalTime(totalTime);
+        result.setTotalTimePercent((double) totalTime / (stopTime - startTime));
 
         return reviseStatistic(result);
     }

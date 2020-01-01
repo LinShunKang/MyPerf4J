@@ -11,7 +11,7 @@ import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
 /**
  * Created by LinShunkang on 2018/8/21
  */
-public final class DefaultJvmFileDescMetricsFormatter implements JvmFileDescMetricsFormatter {
+public final class DefJvmFileDescMetricsFormatter implements JvmFileDescMetricsFormatter {
 
     @Override
     public String format(List<JvmFileDescriptorMetrics> metricsList, long startMillis, long stopMillis) {
@@ -26,7 +26,13 @@ public final class DefaultJvmFileDescMetricsFormatter implements JvmFileDescMetr
         String dataFormat = "%-14d%14.2f%14s%n";
         for (int i = 0; i < metricsList.size(); ++i) {
             JvmFileDescriptorMetrics metrics = metricsList.get(i);
-            sb.append(String.format(dataFormat, metrics.getOpenCount(), metrics.getOpenPercent(), metrics.getMaxCount()));
+            sb.append(
+                    String.format(dataFormat,
+                            metrics.getOpenCount(),
+                            metrics.getOpenPercent(),
+                            metrics.getMaxCount()
+                    )
+            );
         }
         return sb.toString();
     }

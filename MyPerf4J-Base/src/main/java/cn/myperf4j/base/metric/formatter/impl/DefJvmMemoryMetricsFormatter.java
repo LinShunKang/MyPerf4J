@@ -11,7 +11,7 @@ import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
 /**
  * Created by LinShunkang on 1919/8/21
  */
-public class DefaultJvmMemoryMetricsFormatter implements JvmMemoryMetricsFormatter {
+public class DefJvmMemoryMetricsFormatter implements JvmMemoryMetricsFormatter {
 
     @Override
     public String format(List<JvmMemoryMetrics> metricsList, long startMillis, long stopMillis) {
@@ -34,23 +34,25 @@ public class DefaultJvmMemoryMetricsFormatter implements JvmMemoryMetricsFormatt
         String dataFormat = "%-14d%21.2f%12d%17.2f%12d%19.2f%12d%17.2f%13d%19.2f%13d%20.2f%15d%22.2f%15d%22.2f%n";
         for (int i = 0; i < metricsList.size(); ++i) {
             JvmMemoryMetrics metrics = metricsList.get(i);
-            sb.append(String.format(dataFormat,
-                    metrics.getSurvivorUsed(),
-                    metrics.getSurvivorUsedPercent(),
-                    metrics.getEdenUsed(),
-                    metrics.getEdenUsedPercent(),
-                    metrics.getOldGenUsed(),
-                    metrics.getOldGenUsedPercent(),
-                    metrics.getHeapUsed(),
-                    metrics.getHeapUsedPercent(),
-                    metrics.getNonHeapUsed(),
-                    metrics.getNonHeapUsedPercent(),
-                    metrics.getPermGenUsed(),
-                    metrics.getPermGenUsedPercent(),
-                    metrics.getMetaspaceUsed(),
-                    metrics.getMetaspaceUsedPercent(),
-                    metrics.getCodeCacheUsed(),
-                    metrics.getCodeCacheUsedPercent())
+            sb.append(
+                    String.format(dataFormat,
+                            metrics.getSurvivorUsed(),
+                            metrics.getSurvivorUsedPercent(),
+                            metrics.getEdenUsed(),
+                            metrics.getEdenUsedPercent(),
+                            metrics.getOldGenUsed(),
+                            metrics.getOldGenUsedPercent(),
+                            metrics.getHeapUsed(),
+                            metrics.getHeapUsedPercent(),
+                            metrics.getNonHeapUsed(),
+                            metrics.getNonHeapUsedPercent(),
+                            metrics.getPermGenUsed(),
+                            metrics.getPermGenUsedPercent(),
+                            metrics.getMetaspaceUsed(),
+                            metrics.getMetaspaceUsedPercent(),
+                            metrics.getCodeCacheUsed(),
+                            metrics.getCodeCacheUsedPercent()
+                    )
             );
         }
         return sb.toString();
