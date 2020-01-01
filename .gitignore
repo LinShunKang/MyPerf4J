@@ -2,6 +2,7 @@
 .project
 .settings
 target
+*.class
 *.iml
 .idea
 .idea/*.xml

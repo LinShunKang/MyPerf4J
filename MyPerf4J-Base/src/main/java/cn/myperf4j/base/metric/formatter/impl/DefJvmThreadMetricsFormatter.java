@@ -11,7 +11,7 @@ import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
 /**
  * Created by LinShunkang on 2018/8/21
  */
-public class DefaultJvmThreadMetricsFormatter implements JvmThreadMetricsFormatter {
+public class DefJvmThreadMetricsFormatter implements JvmThreadMetricsFormatter {
 
     @Override
     public String format(List<JvmThreadMetrics> metricsList, long startMillis, long stopMillis) {
@@ -26,18 +26,20 @@ public class DefaultJvmThreadMetricsFormatter implements JvmThreadMetricsFormatt
         String dataFormat = "%-14s%14d%14d%14d%14d%14d%14d%14d%14d%14d%n";
         for (int i = 0; i < metricsList.size(); ++i) {
             JvmThreadMetrics metrics = metricsList.get(i);
-            sb.append(String.format(dataFormat,
-                    metrics.getTotalStarted(),
-                    metrics.getActive(),
-                    metrics.getPeak(),
-                    metrics.getDaemon(),
-                    metrics.getNews(),
-                    metrics.getRunnable(),
-                    metrics.getBlocked(),
-                    metrics.getWaiting(),
-                    metrics.getTimedWaiting(),
-                    metrics.getTerminated()
-            ));
+            sb.append(
+                    String.format(dataFormat,
+                            metrics.getTotalStarted(),
+                            metrics.getActive(),
+                            metrics.getPeak(),
+                            metrics.getDaemon(),
+                            metrics.getNews(),
+                            metrics.getRunnable(),
+                            metrics.getBlocked(),
+                            metrics.getWaiting(),
+                            metrics.getTimedWaiting(),
+                            metrics.getTerminated()
+                    )
+            );
         }
         return sb.toString();
     }

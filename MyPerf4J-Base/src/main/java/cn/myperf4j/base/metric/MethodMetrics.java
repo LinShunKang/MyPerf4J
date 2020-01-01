@@ -39,6 +39,10 @@ public class MethodMetrics extends Metrics {
 
     private long totalCount = -1L;
 
+    private long totalTime = -1L;
+
+    private double totalTimePercent = 0.0D;
+
     private MethodMetrics(MethodTag methodTag, int methodTagId, long startMillTime, long stopMillTime) {
         this.methodTag = methodTag;
         this.methodTagId = methodTagId;
@@ -92,6 +96,22 @@ public class MethodMetrics extends Metrics {
 
     public void setTotalCount(long totalCount) {
         this.totalCount = totalCount;
+    }
+
+    public long getTotalTime() {
+        return totalTime;
+    }
+
+    public void setTotalTime(long totalTime) {
+        this.totalTime = totalTime;
+    }
+
+    public double getTotalTimePercent() {
+        return totalTimePercent;
+    }
+
+    public void setTotalTimePercent(double totalTimePercent) {
+        this.totalTimePercent = totalTimePercent;
     }
 
     public int getTP50() {
@@ -149,6 +169,8 @@ public class MethodMetrics extends Metrics {
                 ", maxTime=" + maxTime +
                 ", stdDev=" + stdDev +
                 ", totalCount=" + totalCount +
+                ", totalTime=" + totalTime +
+                ", totalTimePercent=" + totalTimePercent +
                 '}';
     }
 

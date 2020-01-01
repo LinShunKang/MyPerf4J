@@ -13,15 +13,13 @@ import cn.myperf4j.base.util.NumFormatUtils;
 
 /**
  * 注意：
- * 1、该Processor只是利用MethodMetrics生成InfluxDB的LineProtocol，并把LineProtocol写到磁盘的指定文件
- * 2、该Processor把'类名'和'类名.方法名'为索引(Tag)，各个性能指标为列数据(Field)
+ * 1、该 Processor 只是利用 MethodMetrics 生成 InfluxDB 的 LineProtocol，并把 LineProtocol 写到磁盘的指定文件
+ * 2、该 Processor 把'类名'和'类名.方法名'为索引(Tag)，各个性能指标为列数据(Field)
  * <p>
- * 至于日志的收集和InfluxDB的写入，推荐使用官方的Telegraf(https://portal.influxdata.com/downloads)
- * 推荐在Telegraf配置文件中为不同的服务配置不同的数据库(Database)
+ * 至于日志的收集和 InfluxDB 的写入，推荐使用官方的 Telegraf(https://portal.influxdata.com/downloads)
+ * 推荐在 Telegraf 配置文件中为不同的服务配置不同的数据库(Database)
  */
 public class InfluxMethodMetricsProcessor extends AbstractMethodMetricsProcessor {
-
-    private static final int MAX_LENGTH = 512;
 
     private ThreadLocal<StringBuilder> sbThreadLocal = new ThreadLocal<StringBuilder>() {
         @Override
@@ -41,11 +39,6 @@ public class InfluxMethodMetricsProcessor extends AbstractMethodMetricsProcessor
     }
 
     private String createLineProtocol(MethodMetrics methodMetrics, long startNanos, StringBuilder sb) {
-        int suitSize = getSuitSize(methodMetrics);
-        if (suitSize > MAX_LENGTH) {
-            sb = new StringBuilder(suitSize);
-        }
-
         MethodTag methodTag = methodMetrics.getMethodTag();
         String methodDesc = LineProtocolUtils.processTagOrField(methodTag.getSimpleDesc());
         sb.append("method_metrics")
@@ -54,11 +47,12 @@ public class InfluxMethodMetricsProcessor extends AbstractMethodMetricsProcessor
                 .append(",Method=").append(methodDesc)
                 .append(",Type=").append(methodTag.getType())
                 .append(",Level=").append(methodTag.getLevel())
-                .append(" RPS=").append(methodMetrics.getRPS()).append('i')
-                .append(",Avg=").append(NumFormatUtils.formatDouble(methodMetrics.getAvgTime()))
+                .append(" TotalTimePercent=").append(methodMetrics.getTotalTimePercent())
+                .append(",RPS=").append(methodMetrics.getRPS()).append('i')
+                .append(",Avg=").append(NumFormatUtils.doubleFormat(methodMetrics.getAvgTime()))
                 .append(",Min=").append(methodMetrics.getMinTime()).append('i')
                 .append(",Max=").append(methodMetrics.getMaxTime()).append('i')
-                .append(",StdDev=").append(NumFormatUtils.formatDouble(methodMetrics.getStdDev()))
+                .append(",StdDev=").append(NumFormatUtils.doubleFormat(methodMetrics.getStdDev()))
                 .append(",Count=").append(methodMetrics.getTotalCount()).append('i')
                 .append(",TP50=").append(methodMetrics.getTP50()).append('i')
                 .append(",TP90=").append(methodMetrics.getTP90()).append('i')
@@ -66,31 +60,8 @@ public class InfluxMethodMetricsProcessor extends AbstractMethodMetricsProcessor
                 .append(",TP99=").append(methodMetrics.getTP99()).append('i')
                 .append(",TP999=").append(methodMetrics.getTP999()).append('i')
                 .append(",TP9999=").append(methodMetrics.getTP9999()).append('i')
-                .append(",TP100=").append(methodMetrics.getTP100()).append('i')
                 .append(' ').append(startNanos);
         return sb.toString();
-    }
-
-    private int getSuitSize(MethodMetrics methodMetrics) {
-        MethodTag methodTag = methodMetrics.getMethodTag();
-        return methodTag.getSimpleClassName().length()
-                + 8 + methodTag.getSimpleDesc().length()//Method
-                + 6 + methodTag.getType().length()//Type
-                + 5 + 6 + 1//RPS
-                + 5 + 7 //Avg
-                + 5 + 3 + 1//Min
-                + 5 + 5 + 1//Max
-                + 8 + 7//StdDev
-                + 7 + 8 + 1//Count
-                + 6 + 5 + 1//TP50
-                + 6 + 5 + 1//TP90
-                + 6 + 5 + 1//TP95
-                + 6 + 5 + 1//TP99
-                + 7 + 5 + 1//TP999
-                + 8 + 5 + 1//TP9999
-                + 7 + 5 + 1//TP100
-                + 1 + 21//startNanos
-                ;
     }
 
 }

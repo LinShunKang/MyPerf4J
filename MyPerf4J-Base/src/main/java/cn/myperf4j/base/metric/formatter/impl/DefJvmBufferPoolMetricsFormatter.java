@@ -11,7 +11,7 @@ import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
 /**
  * Created by LinShunkang on 1919/8/21
  */
-public class DefaultJvmBufferPoolMetricsFormatter implements JvmBufferPoolMetricsFormatter {
+public class DefJvmBufferPoolMetricsFormatter implements JvmBufferPoolMetricsFormatter {
 
     @Override
     public String format(List<JvmBufferPoolMetrics> metricsList, long startMillis, long stopMillis) {
@@ -26,11 +26,14 @@ public class DefaultJvmBufferPoolMetricsFormatter implements JvmBufferPoolMetric
         String dataFormat = "%-19s%19d%19d%19d%n";
         for (int i = 0; i < metricsList.size(); ++i) {
             JvmBufferPoolMetrics metrics = metricsList.get(i);
-            sb.append(String.format(dataFormat,
-                    metrics.getName(),
-                    metrics.getCount(),
-                    metrics.getMemoryUsed(),
-                    metrics.getMemoryCapacity()));
+            sb.append(
+                    String.format(dataFormat,
+                            metrics.getName(),
+                            metrics.getCount(),
+                            metrics.getMemoryUsed(),
+                            metrics.getMemoryCapacity()
+                    )
+            );
         }
         return sb.toString();
     }

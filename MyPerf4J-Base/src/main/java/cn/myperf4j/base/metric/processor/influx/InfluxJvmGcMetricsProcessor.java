@@ -32,12 +32,12 @@ public class InfluxJvmGcMetricsProcessor extends AbstractJvmGcMetricsProcessor {
                 .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
                 .append(" YoungGcCount=").append(metrics.getYoungGcCount()).append('i')
                 .append(",YoungGcTime=").append(metrics.getYoungGcTime()).append('i')
-                .append(",AvgYoungGcTime=").append(NumFormatUtils.formatDouble(metrics.getAvgYoungGcTime()))
+                .append(",AvgYoungGcTime=").append(NumFormatUtils.doubleFormat(metrics.getAvgYoungGcTime()))
                 .append(",FullGcCount=").append(metrics.getFullGcCount()).append('i')
                 .append(",FullGcTime=").append(metrics.getFullGcTime()).append('i')
                 .append(",ZGcTime=").append(metrics.getZGcTime()).append('i')
                 .append(",ZGcCount=").append(metrics.getZGcCount()).append('i')
-                .append(",AvgZGcTime=").append(NumFormatUtils.formatDouble(metrics.getAvgZGcTime()))
+                .append(",AvgZGcTime=").append(NumFormatUtils.doubleFormat(metrics.getAvgZGcTime()))
                 .append(' ').append(startNanos);
         return sb.toString();
     }
