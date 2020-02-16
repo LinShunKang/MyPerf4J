@@ -27,9 +27,7 @@ public final class MethodMetricsCalculator {
             int diffCount = recorder.getDiffCount();
             intBuf = intBufPool.acquire(diffCount << 1);
             long totalCount = recorder.fillSortedRecords(intBuf);
-            MethodMetrics methodMetrics = calPerfStats(recorder, methodTag, startTime, stopTime, intBuf, totalCount, diffCount);
-            MethodMetricsHistogram.recordMetrics(methodMetrics);
-            return methodMetrics;
+            return calPerfStats(recorder, methodTag, startTime, stopTime, intBuf, totalCount, diffCount);
         } catch (Exception e) {
             Logger.error("MethodMetricsCalculator.calPerfStats(" + recorder + ", " + methodTag + ", " + startTime + ", " + stopTime + "): infBuf=" + intBuf, e);
         } finally {

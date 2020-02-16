@@ -20,19 +20,21 @@ public class MethodMetricsInfo {
         this.tp99Sum = tp99;
         this.tp999Sum = tp999;
         this.tp9999Sum = tp9999;
-        this.count = 0;
+        this.count = isValid(tp95, tp99, tp999, tp9999) ? 1 : 0;
+    }
+
+    private boolean isValid(int tp95, int tp99, int tp999, int tp9999) {
+        return tp95 >= 0 && tp99 >= 0 && tp999 >= 0 && tp9999 >= 0;
     }
 
     public void add(int tp95, int tp99, int tp999, int tp9999) {
-        tp95Sum += tp95;
-        tp99Sum += tp99;
-        tp999Sum += tp999;
-        tp9999Sum += tp9999;
-        count++;
-    }
-
-    public long getTp999Sum() {
-        return tp999Sum;
+        if (isValid(tp95, tp99, tp999, tp9999)) {
+            tp95Sum += tp95;
+            tp99Sum += tp99;
+            tp999Sum += tp999;
+            tp9999Sum += tp9999;
+            count++;
+        }
     }
 
     public long getTp95Sum() {
@@ -41,6 +43,10 @@ public class MethodMetricsInfo {
 
     public long getTp99Sum() {
         return tp99Sum;
+    }
+
+    public long getTp999Sum() {
+        return tp999Sum;
     }
 
     public long getTp9999Sum() {

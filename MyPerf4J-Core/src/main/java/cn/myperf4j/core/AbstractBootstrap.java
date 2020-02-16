@@ -433,7 +433,7 @@ public abstract class AbstractBootstrap {
             ProfilingConfig config = ProfilingConfig.getInstance();
             LightWeightScheduler.dispatchScheduleTask(maintainer, config.getMethodMilliTimeSlice());
             LightWeightScheduler.dispatchScheduleTask(jvmMetricsScheduler(), config.getJvmMilliTimeSlice());
-            LightWeightScheduler.dispatchScheduleTask(buildSysGenProfilingScheduler(), 10 * 60 * 1000);//10min
+            LightWeightScheduler.dispatchScheduleTask(buildSysGenProfilingScheduler(), 60 * 1000);//1min
             return true;
         } catch (Exception e) {
             Logger.error("AbstractBootstrap.initScheduler()", e);

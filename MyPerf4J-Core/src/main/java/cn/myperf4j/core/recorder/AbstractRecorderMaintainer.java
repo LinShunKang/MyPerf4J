@@ -10,12 +10,16 @@ import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.util.ThreadUtils;
 import cn.myperf4j.base.Scheduler;
 import cn.myperf4j.core.MethodMetricsCalculator;
+import cn.myperf4j.core.MethodMetricsHistogram;
 import cn.myperf4j.core.MethodTagMaintainer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReferenceArray;
+
+import static cn.myperf4j.base.constant.PropertyKeys.BACKUP_RECORDERS_COUNT;
+import static cn.myperf4j.base.constant.PropertyKeys.METHOD_MILLI_TIME_SLICE;
 
 /**
  * Created by LinShunkang on 2018/4/25
@@ -127,7 +131,7 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
                 @Override
                 public void run() {
                     if (tmpCurRecorders.isWriting()) {
-                        Logger.warn("RecorderMaintainer.backgroundExecutor the tmpCurRecorders is writing!!! Please increase `MillTimeSlice` or increase `RecorderTurntableNum`!!!P1");
+                        Logger.warn("RecorderMaintainer.backgroundExecutor the tmpCurRecorders is writing!!! Please increase `" + METHOD_MILLI_TIME_SLICE + "` or increase `" + BACKUP_RECORDERS_COUNT + "`!!!P1");
                         return;
                     }
 
@@ -136,18 +140,22 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
                         methodMetricsProcessor.beforeProcess(tmpCurRecorders.getStartTime(), tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
                         int actualSize = methodTagMaintainer.getMethodTagCount();
                         for (int i = 0; i < actualSize; ++i) {
-                            Recorder recorder = tmpCurRecorders.getRecorder(i);
-                            if (recorder == null || !recorder.hasRecord()) {
-                                continue;
+                            if (tmpCurRecorders.isWriting()) {
+                                Logger.warn("RecorderMaintainer.backgroundExecutor the tmpCurRecorders is writing!!! Please increase `" + METHOD_MILLI_TIME_SLICE + "` or increase `" + BACKUP_RECORDERS_COUNT + "`!!!P2");
+                                break;
                             }
 
-                            if (tmpCurRecorders.isWriting()) {
-                                Logger.warn("RecorderMaintainer.backgroundExecutor the tmpCurRecorders is writing!!! Please increase `MillTimeSlice` or increase `RecorderTurntableNum`!!!P2");
-                                break;
+                            Recorder recorder = tmpCurRecorders.getRecorder(i);
+                            if (recorder == null) {
+                                continue;
+                            } else if (!recorder.hasRecord()) {
+                                MethodMetricsHistogram.recordNoneMetrics(recorder.getMethodTagId());
+                                continue;
                             }
 
                             MethodTag methodTag = methodTagMaintainer.getMethodTag(recorder.getMethodTagId());
                             MethodMetrics metrics = MethodMetricsCalculator.calPerfStats(recorder, methodTag, tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
+                            MethodMetricsHistogram.recordMetrics(metrics);
                             methodMetricsProcessor.process(metrics, tmpCurRecorders.getStartTime(), tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
                         }
                     } catch (Exception e) {
