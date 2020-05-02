@@ -21,9 +21,9 @@ public final class JvmMemoryCollector {
         long metaspaceUsed = 0L, metaSpaceMax = 0L;
         long codeCacheUsed = 0L, codeCacheMax = 0L;
 
-        List<MemoryPoolMXBean> memPoolMXBeanList = ManagementFactory.getMemoryPoolMXBeans();
-        for (int i = 0; i < memPoolMXBeanList.size(); i++) {
-            MemoryPoolMXBean memoryPool = memPoolMXBeanList.get(i);
+        List<MemoryPoolMXBean> mxBeanList = ManagementFactory.getMemoryPoolMXBeans();
+        for (int i = 0; i < mxBeanList.size(); i++) {
+            MemoryPoolMXBean memoryPool = mxBeanList.get(i);
             MemoryUsage usage = memoryPool.getUsage();
             String poolName = memoryPool.getName();
             if (poolName.endsWith("Perm Gen")) {

@@ -6,24 +6,29 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 
-import static java.lang.Thread.State.*;
+import static java.lang.Thread.State.BLOCKED;
+import static java.lang.Thread.State.NEW;
+import static java.lang.Thread.State.RUNNABLE;
 import static java.lang.Thread.State.TERMINATED;
+import static java.lang.Thread.State.TIMED_WAITING;
+import static java.lang.Thread.State.WAITING;
 
 /**
  * Created by LinShunkang on 2019/07/08
  */
 public final class JvmThreadCollector {
 
-    public static JvmThreadMetrics collectThreadMetrics() {
-        ThreadMXBean bean = ManagementFactory.getThreadMXBean();
+    private static final ThreadMXBean THREAD_MX_BEAN = ManagementFactory.getThreadMXBean();
 
+    public static JvmThreadMetrics collectThreadMetrics() {
         int news = 0;
         int runnable = 0;
         int blocked = 0;
         int waiting = 0;
         int timedWaiting = 0;
         int terminated = 0;
-        ThreadInfo[] threadInfoArr = bean.getThreadInfo(bean.getAllThreadIds(), 0);
+        ThreadMXBean mxBean = THREAD_MX_BEAN;
+        ThreadInfo[] threadInfoArr = mxBean.getThreadInfo(mxBean.getAllThreadIds(), 0);
         for (int i = 0; i < threadInfoArr.length; ++i) {
             ThreadInfo threadInfo = threadInfoArr[i];
             if (threadInfo == null) {
@@ -47,10 +52,10 @@ public final class JvmThreadCollector {
         }
 
         return new JvmThreadMetrics(
-                bean.getTotalStartedThreadCount(),
-                bean.getThreadCount(),
-                bean.getPeakThreadCount(),
-                bean.getDaemonThreadCount(),
+                mxBean.getTotalStartedThreadCount(),
+                mxBean.getThreadCount(),
+                mxBean.getPeakThreadCount(),
+                mxBean.getDaemonThreadCount(),
                 news,
                 runnable,
                 blocked,

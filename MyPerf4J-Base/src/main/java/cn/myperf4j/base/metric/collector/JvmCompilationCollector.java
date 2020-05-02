@@ -10,15 +10,17 @@ import java.lang.management.ManagementFactory;
  */
 public final class JvmCompilationCollector {
 
-    private static volatile long lastCompilationTime = 0L;
+    private static volatile long lastTime = 0L;
+
+    private static final CompilationMXBean COMPILATION_MX_BEAN = ManagementFactory.getCompilationMXBean();
 
     public static JvmCompilationMetrics collectCompilationMetrics() {
-        CompilationMXBean mxBean = ManagementFactory.getCompilationMXBean();
+        CompilationMXBean mxBean = COMPILATION_MX_BEAN;
         if (mxBean != null && mxBean.isCompilationTimeMonitoringSupported()) {
-            long totalCompilationTime = mxBean.getTotalCompilationTime();
-            JvmCompilationMetrics metrics = new JvmCompilationMetrics(totalCompilationTime - lastCompilationTime, totalCompilationTime);
-            lastCompilationTime = totalCompilationTime;
-            return metrics;
+            long totalTime = mxBean.getTotalCompilationTime();
+            long timeInterval = totalTime - lastTime;
+            lastTime = totalTime;
+            return new JvmCompilationMetrics(timeInterval, totalTime);
         }
         return new JvmCompilationMetrics(0L, 0L);
     }

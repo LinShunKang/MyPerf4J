@@ -72,7 +72,7 @@ public class RoughRecorder extends Recorder {
     }
 
     @Override
-    public synchronized void resetRecord() {
+    public void resetRecord() {
         AtomicIntegerArray timingArr = this.timingArr;
         for (int i = 0; i < timingArr.length(); ++i) {
             timingArr.set(i, 0);

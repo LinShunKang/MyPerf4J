@@ -9,7 +9,7 @@ import cn.myperf4j.base.metric.processor.AbstractJvmCompilationProcessor;
  */
 public class InfluxJvmCompilationMetricsProcessor extends AbstractJvmCompilationProcessor {
 
-    private ThreadLocal<StringBuilder> sbThreadLocal = new ThreadLocal<StringBuilder>() {
+    private static final ThreadLocal<StringBuilder> SB_TL = new ThreadLocal<StringBuilder>() {
         @Override
         protected StringBuilder initialValue() {
             return new StringBuilder(128);
@@ -18,7 +18,7 @@ public class InfluxJvmCompilationMetricsProcessor extends AbstractJvmCompilation
 
     @Override
     public void process(JvmCompilationMetrics metrics, long processId, long startMillis, long stopMillis) {
-        StringBuilder sb = sbThreadLocal.get();
+        StringBuilder sb = SB_TL.get();
         try {
             logger.log(createLineProtocol(metrics, startMillis * 1000 * 1000L, sb));
         } finally {

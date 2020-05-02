@@ -28,7 +28,7 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
 
     protected List<Recorders> recordersList;
 
-    private MethodTagMaintainer methodTagMaintainer = MethodTagMaintainer.getInstance();
+    private final MethodTagMaintainer methodTagMaintainer = MethodTagMaintainer.getInstance();
 
     private int curIndex = 0;
 
@@ -40,23 +40,23 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
 
     private boolean accurateMode;
 
-    public boolean initial(MethodMetricsProcessor processor, boolean accurateMode, int backupRecordersCount) {
+    public boolean initial(MethodMetricsProcessor processor, boolean accurateMode, int bakRecordersCnt) {
         this.methodMetricsProcessor = processor;
         this.accurateMode = accurateMode;
-        backupRecordersCount = getFitBackupRecordersCount(backupRecordersCount);
+        bakRecordersCnt = getFitBakRecordersCnt(bakRecordersCnt);
 
-        if (!initRecorders(backupRecordersCount)) {
+        if (!initRecorders(bakRecordersCnt)) {
             return false;
         }
 
-        if (!initBackgroundTask(backupRecordersCount)) {
+        if (!initBackgroundTask(bakRecordersCnt)) {
             return false;
         }
 
         return initOther();
     }
 
-    private int getFitBackupRecordersCount(int backupRecordersCount) {
+    private int getFitBakRecordersCnt(int backupRecordersCount) {
         if (backupRecordersCount < PropertyValues.MIN_BACKUP_RECORDERS_COUNT) {
             return PropertyValues.MIN_BACKUP_RECORDERS_COUNT;
         } else if (backupRecordersCount > PropertyValues.MAX_BACKUP_RECORDERS_COUNT) {
@@ -175,4 +175,8 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
         return (idx + 1) % maxIdx;
     }
 
+    @Override
+    public String name() {
+        return "RecorderMaintainer";
+    }
 }

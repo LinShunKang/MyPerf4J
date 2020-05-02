@@ -142,7 +142,7 @@ public class AccurateRecorder extends Recorder {
     }
 
     @Override
-    public synchronized void resetRecord() {
+    public void resetRecord() {
 //        AtomicInteger[] busyTimingArr = this.busyTimingArr;
 //        for (int i = 0; i < busyTimingArr.length; i++) {
 //            busyTimingArr[i].set(0);

@@ -470,6 +470,11 @@ public abstract class AbstractBootstrap {
                     MethodMetricsHistogram.buildSysGenProfilingFile();
                 }
             }
+
+            @Override
+            public String name() {
+                return "ProfilingFileGenerator";
+            }
         };
     }
 

@@ -11,10 +11,11 @@ import java.lang.management.OperatingSystemMXBean;
  */
 public final class JvmFileDescCollector {
 
+    private static final OperatingSystemMXBean SYSTEM_MX_BEAN = ManagementFactory.getOperatingSystemMXBean();
+
     public static JvmFileDescriptorMetrics collectFileDescMetrics() {
-        OperatingSystemMXBean systemMXBean = ManagementFactory.getOperatingSystemMXBean();
-        if (systemMXBean instanceof UnixOperatingSystemMXBean) {
-            UnixOperatingSystemMXBean unixMXBean = (UnixOperatingSystemMXBean) systemMXBean;
+        if (SYSTEM_MX_BEAN instanceof UnixOperatingSystemMXBean) {
+            UnixOperatingSystemMXBean unixMXBean = (UnixOperatingSystemMXBean) SYSTEM_MX_BEAN;
             return new JvmFileDescriptorMetrics(unixMXBean.getOpenFileDescriptorCount(), unixMXBean.getMaxFileDescriptorCount());
         }
         return new JvmFileDescriptorMetrics(0L, 0L);

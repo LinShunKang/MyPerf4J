@@ -27,43 +27,23 @@ public class RecorderBenchmark {
     public void setup() {
         roughRecorder = RoughRecorder.getInstance(0, 1024);
         accurateRecorder = AccurateRecorder.getInstance(1, 1024, 64);
-//        startNanos = System.nanoTime();
-//        endNanos = System.nanoTime();
     }
 
     @Benchmark
     public void roughRecorderBench() {
         roughRecorder.recordTime(0L, 1000000000L);
-//        roughRecorder.recordTime(0L, 1000000000L);
-//        roughRecorder.recordTime(0L, 1000000000L);
-//        roughRecorder.recordTime(0L, 1000000000L);
-//        roughRecorder.recordTime(0L, 1000000000L);
-//        roughRecorder.recordTime(0L, 1000000000L);
-//        roughRecorder.recordTime(0L, 2000000000L);
-//        roughRecorder.recordTime(0L, 2000000000L);
-//        roughRecorder.recordTime(0L, 2000000000L);
-//        roughRecorder.recordTime(0L, 3000000000L);
     }
 
     @Benchmark
     public void accurateRecorderBench() {
         accurateRecorder.recordTime(0L, 1000000000L);
-//        accurateRecorder.recordTime(0L, 1000000000L);
-//        accurateRecorder.recordTime(0L, 1000000000L);
-//        accurateRecorder.recordTime(0L, 1000000000L);
-//        accurateRecorder.recordTime(0L, 1000000000L);
-//        accurateRecorder.recordTime(0L, 1000000000L);
-//        accurateRecorder.recordTime(0L, 2000000000L);
-//        accurateRecorder.recordTime(0L, 2000000000L);
-//        accurateRecorder.recordTime(0L, 2000000000L);
-//        accurateRecorder.recordTime(0L, 3000000000L);
     }
 
     public static void main(String[] args) throws RunnerException {
         // 使用一个单独进程执行测试，执行3遍warmup，然后执行5遍测试
         Options opt = new OptionsBuilder()
                 .include(RecorderBenchmark.class.getSimpleName())
-                .forks(1)
+                .forks(2)
                 .threads(8)
                 .warmupIterations(3)
                 .measurementIterations(5)

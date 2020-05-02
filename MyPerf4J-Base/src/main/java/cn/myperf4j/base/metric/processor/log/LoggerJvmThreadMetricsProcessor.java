@@ -15,9 +15,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class LoggerJvmThreadMetricsProcessor extends AbstractJvmThreadMetricsProcessor {
 
-    private ConcurrentHashMap<Long, List<JvmThreadMetrics>> metricsMap = new ConcurrentHashMap<>(8);
+    private final ConcurrentHashMap<Long, List<JvmThreadMetrics>> metricsMap = new ConcurrentHashMap<>(8);
 
-    private JvmThreadMetricsFormatter metricsFormatter = new DefJvmThreadMetricsFormatter();
+    private static final JvmThreadMetricsFormatter METRICS_FORMATTER = new DefJvmThreadMetricsFormatter();
 
     @Override
     public void beforeProcess(long processId, long startMillis, long stopMillis) {
@@ -38,7 +38,7 @@ public class LoggerJvmThreadMetricsProcessor extends AbstractJvmThreadMetricsPro
     public void afterProcess(long processId, long startMillis, long stopMillis) {
         List<JvmThreadMetrics> metricsList = metricsMap.remove(processId);
         if (metricsList != null) {
-            logger.logAndFlush(metricsFormatter.format(metricsList, startMillis, stopMillis));
+            logger.logAndFlush(METRICS_FORMATTER.format(metricsList, startMillis, stopMillis));
         } else {
             Logger.error("LoggerJvmThreadMetricsProcessor.afterProcess(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
         }

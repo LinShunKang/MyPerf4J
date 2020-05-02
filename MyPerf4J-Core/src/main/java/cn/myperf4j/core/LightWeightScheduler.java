@@ -82,27 +82,26 @@ public class LightWeightScheduler {
                 }
                 nextTimeSliceEndTime = ((currentMills / millTimeSlice) * millTimeSlice) + millTimeSlice;
 
-                runTasks(currentMills);
+                runAllTasks(currentMills);
             }
         }, initialDelay, period, unit);
     }
 
-    private void runTasks(long currentMills) {
-        try {
-            long lastTimeSliceStartTime = currentMills - millTimeSlice;
-            for (int i = 0; i < schedulerList.size(); ++i) {
-                runTask(schedulerList.get(i), lastTimeSliceStartTime);
-            }
-        } finally {
-            Logger.debug("LightWeightScheduler.runTasks() cost: " + (System.currentTimeMillis() - currentMills) + "ms");
+    private void runAllTasks(long currentMills) {
+        long lastTimeSliceStartTime = currentMills - millTimeSlice;
+        for (int i = 0; i < schedulerList.size(); ++i) {
+            runTask(schedulerList.get(i), lastTimeSliceStartTime);
         }
     }
 
     private void runTask(Scheduler scheduler, long lastTimeSliceStartTime) {
+        long startMills = System.currentTimeMillis();
         try {
             scheduler.run(lastTimeSliceStartTime, millTimeSlice);
         } catch (Exception e) {
             Logger.error("LightWeightScheduler.runTask(" + scheduler + ", " + lastTimeSliceStartTime + ")", e);
+        } finally {
+            Logger.debug("LightWeightScheduler.runTask(" + scheduler.name() + ", " + lastTimeSliceStartTime + ") cost: " + (System.currentTimeMillis() - startMills) + "ms");
         }
     }
 

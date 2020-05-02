@@ -14,19 +14,19 @@ import java.util.List;
  */
 public class JvmMetricsScheduler implements Scheduler {
 
-    private JvmClassMetricsProcessor classMetricsProcessor;
+    private final JvmClassMetricsProcessor classMetricsProcessor;
 
-    private JvmGcMetricsProcessor gcMetricsProcessor;
+    private final JvmGcMetricsProcessor gcMetricsProcessor;
 
-    private JvmMemoryMetricsProcessor memoryMetricsProcessor;
+    private final JvmMemoryMetricsProcessor memoryMetricsProcessor;
 
-    private JvmBufferPoolMetricsProcessor bufferPoolMetricsProcessor;
+    private final JvmBufferPoolMetricsProcessor bufferPoolMetricsProcessor;
 
-    private JvmThreadMetricsProcessor threadMetricsProcessor;
+    private final JvmThreadMetricsProcessor threadMetricsProcessor;
 
-    private JvmCompilationProcessor compilationProcessor;
+    private final JvmCompilationProcessor compilationProcessor;
 
-    private JvmFileDescProcessor fileDescProcessor;
+    private final JvmFileDescProcessor fileDescProcessor;
 
     public JvmMetricsScheduler(JvmClassMetricsProcessor classMetricsProcessor,
                                JvmGcMetricsProcessor gcMetricsProcessor,
@@ -55,6 +55,11 @@ public class JvmMetricsScheduler implements Scheduler {
         processThreadMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
         processCompilationMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
         processFileDescMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
+    }
+
+    @Override
+    public String name() {
+        return "JvmMetricsCollector";
     }
 
     private void processClassMetrics(long processId, long startMillis, long stopMillis) {
