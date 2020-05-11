@@ -15,9 +15,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class LoggerJvmMemoryMetricsProcessor extends AbstractJvmMemoryMetricsProcessor {
 
-    private final ConcurrentHashMap<Long, List<JvmMemoryMetrics>> metricsMap = new ConcurrentHashMap<>(8);
-
     private static final JvmMemoryMetricsFormatter METRICS_FORMATTER = new DefJvmMemoryMetricsFormatter();
+
+    private final ConcurrentHashMap<Long, List<JvmMemoryMetrics>> metricsMap = new ConcurrentHashMap<>(8);
 
     @Override
     public void beforeProcess(long processId, long startMillis, long stopMillis) {

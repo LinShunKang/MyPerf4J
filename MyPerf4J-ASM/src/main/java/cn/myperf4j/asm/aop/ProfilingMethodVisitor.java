@@ -18,15 +18,15 @@ public class ProfilingMethodVisitor extends AdviceAdapter {
 
     private static final MethodTagMaintainer methodTagMaintainer = MethodTagMaintainer.getInstance();
 
-    private AbstractRecorderMaintainer maintainer = ASMRecorderMaintainer.getInstance();
+    private final AbstractRecorderMaintainer maintainer = ASMRecorderMaintainer.getInstance();
 
-    private ProfilingConfig profilingConfig = ProfilingConfig.getInstance();
+    private final ProfilingConfig profilingConfig = ProfilingConfig.getInstance();
 
-    private String innerClassName;
+    private final String innerClassName;
 
-    private String methodName;
+    private final String methodName;
 
-    private int methodTagId;
+    private final int methodTagId;
 
     private int startTimeIdentifier;
 

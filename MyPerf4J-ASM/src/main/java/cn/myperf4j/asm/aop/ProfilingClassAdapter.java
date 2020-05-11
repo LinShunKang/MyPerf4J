@@ -30,7 +30,7 @@ public class ProfilingClassAdapter extends ClassVisitor {
 
     private boolean isInvocationHandler;
 
-    private List<String> fieldNameList = new ArrayList<>();
+    private final List<String> fieldNameList = new ArrayList<>();
 
     public ProfilingClassAdapter(final ClassVisitor cv, String innerClassName) {
         super(ASM5, cv);

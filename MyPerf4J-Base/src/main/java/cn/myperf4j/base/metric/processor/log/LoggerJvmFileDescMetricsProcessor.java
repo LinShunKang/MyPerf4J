@@ -15,9 +15,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class LoggerJvmFileDescMetricsProcessor extends AbstractJvmFileDescProcessor {
 
-    private final ConcurrentHashMap<Long, List<JvmFileDescriptorMetrics>> metricsMap = new ConcurrentHashMap<>(8);
-
     private static final JvmFileDescMetricsFormatter METRICS_FORMATTER = new DefJvmFileDescMetricsFormatter();
+
+    private final ConcurrentHashMap<Long, List<JvmFileDescriptorMetrics>> metricsMap = new ConcurrentHashMap<>(8);
 
     @Override
     public void beforeProcess(long processId, long startMillis, long stopMillis) {
