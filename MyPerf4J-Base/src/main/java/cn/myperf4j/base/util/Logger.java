@@ -37,7 +37,7 @@ public final class Logger {
     }
 
     private static String getPrefix(String logLevel) {
-        return getToMillisStr(new Date()) + PREFIX + logLevel;
+        return getToMillisStr(new Date()) + PREFIX + logLevel + "[" + Thread.currentThread().getName() + "] ";
     }
 
     private static String getToMillisStr(Date date) {
