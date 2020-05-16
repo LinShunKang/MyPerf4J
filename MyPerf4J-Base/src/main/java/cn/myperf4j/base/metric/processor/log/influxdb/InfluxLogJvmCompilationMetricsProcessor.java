@@ -1,4 +1,4 @@
-package cn.myperf4j.base.metric.processor.influx;
+package cn.myperf4j.base.metric.processor.log.influxdb;
 
 import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.metric.JvmCompilationMetrics;
@@ -7,7 +7,7 @@ import cn.myperf4j.base.metric.processor.AbstractJvmCompilationProcessor;
 /**
  * Created by LinShunkang on 2019/11/09
  */
-public class InfluxJvmCompilationMetricsProcessor extends AbstractJvmCompilationProcessor {
+public class InfluxLogJvmCompilationMetricsProcessor extends AbstractJvmCompilationProcessor {
 
     private static final ThreadLocal<StringBuilder> SB_TL = new ThreadLocal<StringBuilder>() {
         @Override

@@ -1,4 +1,4 @@
-package cn.myperf4j.base.metric.processor.log;
+package cn.myperf4j.base.metric.processor.log.standard;
 
 import cn.myperf4j.base.metric.JvmThreadMetrics;
 import cn.myperf4j.base.metric.formatter.JvmThreadMetricsFormatter;
@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by LinShunkang on 2018/8/25
  */
-public class LoggerJvmThreadMetricsProcessor extends AbstractJvmThreadMetricsProcessor {
+public class StdLogJvmThreadMetricsProcessor extends AbstractJvmThreadMetricsProcessor {
 
     private static final JvmThreadMetricsFormatter METRICS_FORMATTER = new DefJvmThreadMetricsFormatter();
 
@@ -30,7 +30,7 @@ public class LoggerJvmThreadMetricsProcessor extends AbstractJvmThreadMetricsPro
         if (metricsList != null) {
             metricsList.add(metrics);
         } else {
-            Logger.error("LoggerJvmThreadMetricsProcessor.process(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
+            Logger.error("StdLogJvmThreadMetricsProcessor.process(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
         }
     }
 
@@ -40,7 +40,7 @@ public class LoggerJvmThreadMetricsProcessor extends AbstractJvmThreadMetricsPro
         if (metricsList != null) {
             logger.logAndFlush(METRICS_FORMATTER.format(metricsList, startMillis, stopMillis));
         } else {
-            Logger.error("LoggerJvmThreadMetricsProcessor.afterProcess(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
+            Logger.error("StdLogJvmThreadMetricsProcessor.afterProcess(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
         }
     }
 }
