@@ -50,21 +50,15 @@ public final class HttpClient {
         conn.setUseCaches(false);
 
         configureHeaders(request, conn);
-
-        //        conn.setRequestProperty("Connection", "Keep-Alive");
-//        conn.setRequestProperty("Charset", UTF_8.name());
-//        conn.setRequestProperty("User-Agent", "MyPerf4J");
-//        conn.setRequestProperty("Content-Type", "application/json;charset=utf-8");
-
         writeBody(request, conn);
         return conn;
     }
 
     private void configureHeaders(HttpRequest request, HttpURLConnection conn) {
         HttpHeaders headers = request.getHeaders();
-        List<String> headerNames = headers.names();
-        for (int i = 0; i < headerNames.size(); i++) {
-            String name = headerNames.get(i);
+        List<String> names = headers.names();
+        for (int i = 0; i < names.size(); i++) {
+            String name = names.get(i);
             List<String> values = headers.getValues(name);
             if (ListUtils.isEmpty(values)) {
                 continue;

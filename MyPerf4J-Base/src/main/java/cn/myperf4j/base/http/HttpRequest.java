@@ -1,5 +1,6 @@
 package cn.myperf4j.base.http;
 
+import cn.myperf4j.base.util.ArrayUtils;
 import cn.myperf4j.base.util.MapUtils;
 import cn.myperf4j.base.util.StrUtils;
 
@@ -15,7 +16,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 public final class HttpRequest {
 
-    private final ThreadLocal<StringBuilder> SB_TL = new ThreadLocal<StringBuilder>() {
+    private static final byte[] EMPTY_BODY = {};
+
+    private static final ThreadLocal<StringBuilder> SB_TL = new ThreadLocal<StringBuilder>() {
         @Override
         protected StringBuilder initialValue() {
             return new StringBuilder(512);
@@ -131,6 +134,7 @@ public final class HttpRequest {
         public Builder() {
             this.method = GET;
             this.headers = HttpHeaders.defaultHeaders();
+            this.body = EMPTY_BODY;
         }
 
         public Builder host(String host) {
@@ -174,11 +178,11 @@ public final class HttpRequest {
         }
 
         public Builder head() {
-            return method(HEAD, null);
+            return method(HEAD, EMPTY_BODY);
         }
 
         public Builder get() {
-            return method(GET, null);
+            return method(GET, EMPTY_BODY);
         }
 
         public Builder post(byte[] body) {
@@ -194,11 +198,11 @@ public final class HttpRequest {
                 throw new IllegalArgumentException("method is null!");
             }
 
-            if (body != null && !method.isPermitsBody()) {
+            if (ArrayUtils.isNotEmpty(body) && !method.isPermitsBody()) {
                 throw new IllegalArgumentException("method " + method + " must not have a request body!");
             }
 
-            if (body == null && method.isPermitsBody()) {
+            if (ArrayUtils.isEmpty(body) && method.isPermitsBody()) {
                 throw new IllegalArgumentException("method " + method + " must have a request body!");
             }
 

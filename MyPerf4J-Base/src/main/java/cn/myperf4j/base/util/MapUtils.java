@@ -12,6 +12,12 @@ public final class MapUtils {
 
     private static final float DEFAULT_LOAD_FACTOR = 0.75f;
 
+    public static <K, V> Map<K, V> of(K k, V v) {
+        Map<K, V> map = createHashMap(1);
+        map.put(k, v);
+        return map;
+    }
+
     public static <K, V> Map<K, V> createHashMap(int keyNum) {
         return new HashMap<>(getFitCapacity(keyNum));
     }
@@ -43,4 +49,5 @@ public final class MapUtils {
     public static <K, V> boolean isNotEmpty(Map<K, V> map) {
         return !isEmpty(map);
     }
+
 }
