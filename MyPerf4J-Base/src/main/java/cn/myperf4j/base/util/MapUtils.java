@@ -35,4 +35,12 @@ public final class MapUtils {
     public static int getFitCapacity(int keyNum, float loadFactor) {
         return (int) (keyNum / loadFactor) + 1;
     }
+
+    public static <K, V> boolean isEmpty(Map<K, V> map) {
+        return map == null || map.isEmpty();
+    }
+
+    public static <K, V> boolean isNotEmpty(Map<K, V> map) {
+        return !isEmpty(map);
+    }
 }

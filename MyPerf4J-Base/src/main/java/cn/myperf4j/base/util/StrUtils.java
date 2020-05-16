@@ -13,6 +13,10 @@ public final class StrUtils {
         return str == null || str.isEmpty();
     }
 
+    public static boolean isNotEmpty(String str) {
+        return !isEmpty(str);
+    }
+
     public static boolean isBlank(String str) {
         if (str == null || str.isEmpty()) {
             return true;

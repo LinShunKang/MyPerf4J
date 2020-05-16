@@ -19,12 +19,12 @@ import java.util.Set;
 public final class PkgExpUtils {
 
     public static Set<String> parse(String expStr) {
-        int leftIdx = expStr.indexOf("[");
+        int leftIdx = expStr.indexOf('[');
         if (leftIdx < 0) {
             return SetUtils.of(expStr);
         }
 
-        int rightIdx = expStr.indexOf("]", leftIdx);
+        int rightIdx = expStr.indexOf(']', leftIdx);
         if (rightIdx < 0) {
             throw new IllegalArgumentException("PkgExpUtils.parse(\"" + expStr + "\"): '[' always paired with ']'");
         }

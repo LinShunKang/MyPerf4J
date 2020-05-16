@@ -14,6 +14,7 @@ public final class IOUtils {
                 closeable.close();
             }
         } catch (IOException e) {
+            Logger.warn("IOUtils.closeQuietly(): " + e.getMessage());
         }
     }
 }
