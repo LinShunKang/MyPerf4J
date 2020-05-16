@@ -90,7 +90,7 @@ public class MethodMetricsHistogram {
         fileWriter.write(methodTag.getFullDesc());
         fileWriter.write('=');
 
-        fileWriter.write(mostTimeThreshold + ':' + calOutThresholdCount(mostTimeThreshold));
+        fileWriter.write(mostTimeThreshold + ":" + calOutThresholdCount(mostTimeThreshold));
         fileWriter.newLine();
     }
 
