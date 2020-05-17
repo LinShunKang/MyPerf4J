@@ -1,15 +1,16 @@
-package cn.myperf4j.base.metric.processor;
+package cn.myperf4j.base.metric.processor.log;
 
 import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.log.ILogger;
 import cn.myperf4j.base.log.LoggerFactory;
+import cn.myperf4j.base.metric.processor.JvmCompilationProcessor;
 
 /**
- * Created by LinShunkang on 2018/8/25
+ * Created by LinShunkang on 2019/11/09
  */
-public abstract class AbstractJvmClassMetricsProcessor implements JvmClassMetricsProcessor {
+public abstract class AbstractLogJvmCompilationProcessor implements JvmCompilationProcessor {
 
-    protected ILogger logger = LoggerFactory.getLogger(ProfilingConfig.getInstance().getClassMetricsFile());
+    protected ILogger logger = LoggerFactory.getLogger(ProfilingConfig.getInstance().getCompilationMetricsFile());
 
     @Override
     public void beforeProcess(long processId, long startMillis, long stopMillis) {
@@ -20,4 +21,5 @@ public abstract class AbstractJvmClassMetricsProcessor implements JvmClassMetric
     public void afterProcess(long processId, long startMillis, long stopMillis) {
         logger.flushLog();
     }
+
 }

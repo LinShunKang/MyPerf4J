@@ -1,4 +1,4 @@
-package cn.myperf4j.base.metric.formatter.impl;
+package cn.myperf4j.base.metric.formatter.standard;
 
 import cn.myperf4j.base.metric.JvmBufferPoolMetrics;
 import cn.myperf4j.base.metric.formatter.JvmBufferPoolMetricsFormatter;
@@ -11,7 +11,7 @@ import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
 /**
  * Created by LinShunkang on 1919/8/21
  */
-public class DefJvmBufferPoolMetricsFormatter implements JvmBufferPoolMetricsFormatter {
+public class StdJvmBufferPoolMetricsFormatter implements JvmBufferPoolMetricsFormatter {
 
     @Override
     public String format(List<JvmBufferPoolMetrics> metricsList, long startMillis, long stopMillis) {

@@ -1,15 +1,16 @@
-package cn.myperf4j.base.metric.processor;
+package cn.myperf4j.base.metric.processor.log;
 
 import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.log.ILogger;
 import cn.myperf4j.base.log.LoggerFactory;
+import cn.myperf4j.base.metric.processor.JvmThreadMetricsProcessor;
 
 /**
  * Created by LinShunkang on 2018/8/25
  */
-public abstract class AbstractJvmGcMetricsProcessor implements JvmGcMetricsProcessor {
+public abstract class AbstractLogJvmThreadMetricsProcessor implements JvmThreadMetricsProcessor {
 
-    protected ILogger logger = LoggerFactory.getLogger(ProfilingConfig.getInstance().getGcMetricsFile());
+    protected ILogger logger = LoggerFactory.getLogger(ProfilingConfig.getInstance().getThreadMetricsFile());
 
     @Override
     public void beforeProcess(long processId, long startMillis, long stopMillis) {

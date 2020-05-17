@@ -1,16 +1,26 @@
 package cn.myperf4j.base.metric.processor.discard;
 
 import cn.myperf4j.base.metric.JvmClassMetrics;
-import cn.myperf4j.base.metric.processor.AbstractJvmClassMetricsProcessor;
+import cn.myperf4j.base.metric.processor.JvmClassMetricsProcessor;
 
 
 /**
  * Created by LinShunkang on 2018/8/21
  */
-public class DiscardJvmClassMetricsProcessor extends AbstractJvmClassMetricsProcessor {
+public class DiscardJvmClassMetricsProcessor  implements JvmClassMetricsProcessor {
+
+    @Override
+    public void beforeProcess(long processId, long startMillis, long stopMillis) {
+        //empty
+    }
 
     @Override
     public void process(JvmClassMetrics metrics, long processId, long startMillis, long stopMillis) {
+        //empty
+    }
+
+    @Override
+    public void afterProcess(long processId, long startMillis, long stopMillis) {
         //empty
     }
 

@@ -1,13 +1,14 @@
-package cn.myperf4j.base.metric.processor;
+package cn.myperf4j.base.metric.processor.log;
 
 import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.log.ILogger;
 import cn.myperf4j.base.log.LoggerFactory;
+import cn.myperf4j.base.metric.processor.JvmFileDescProcessor;
 
 /**
  * Created by LinShunkang on 2019/11/09
  */
-public abstract class AbstractJvmFileDescProcessor implements JvmFileDescProcessor {
+public abstract class AbstractLogJvmFileDescProcessor implements JvmFileDescProcessor {
 
     protected ILogger logger = LoggerFactory.getLogger(ProfilingConfig.getInstance().getFileDescMetricsFile());
 

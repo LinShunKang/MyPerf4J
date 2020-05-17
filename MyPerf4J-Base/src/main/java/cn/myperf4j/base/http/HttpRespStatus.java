@@ -139,6 +139,14 @@ public class HttpRespStatus {
         return phrase;
     }
 
+    @Override
+    public String toString() {
+        return "HttpRespStatus{" +
+                "code=" + code +
+                ", phrase='" + phrase + '\'' +
+                '}';
+    }
+
     public static HttpRespStatus valueOf(int code) {
         HttpRespStatus status = valueOf0(code);
         return status != null ? status : new HttpRespStatus(code);

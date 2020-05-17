@@ -61,8 +61,10 @@ public final class HttpHeaders {
 
     public static HttpHeaders defaultHeaders() {
         HttpHeaders headers = new HttpHeaders(6);
+        headers.set("User-Agent", "MyPerf4J");
         headers.set("Connection", "Keep-Alive");
         headers.set("Charset", UTF_8.name());
         return headers;
     }
+
 }

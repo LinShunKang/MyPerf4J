@@ -1,8 +1,8 @@
-package cn.myperf4j.base.metric.processor.log.standard;
+package cn.myperf4j.base.metric.processor.http.influxdb;
 
 import cn.myperf4j.base.metric.MethodMetrics;
-import cn.myperf4j.base.metric.formatter.standard.StdMethodMetricsFormatter;
 import cn.myperf4j.base.metric.formatter.MethodMetricsFormatter;
+import cn.myperf4j.base.metric.formatter.influxdb.InfluxMethodMetricsFormatter;
 import cn.myperf4j.base.metric.processor.log.AbstractLogMethodMetricsProcessor;
 import cn.myperf4j.base.util.Logger;
 
@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Created by LinShunkang on 2018/7/11
+ * Created by LinShunkang on 2020/5/17
  */
-public class StdLogMethodMetricsProcessor extends AbstractLogMethodMetricsProcessor {
+public class InfluxHttpMethodMetricsProcessor extends AbstractLogMethodMetricsProcessor {
 
-    private static final MethodMetricsFormatter METRICS_FORMATTER = new StdMethodMetricsFormatter();
+    private static final MethodMetricsFormatter METRICS_FORMATTER = new InfluxMethodMetricsFormatter();
 
     private final ConcurrentHashMap<Long, List<MethodMetrics>> metricsMap = new ConcurrentHashMap<>(8);
 
@@ -30,7 +30,7 @@ public class StdLogMethodMetricsProcessor extends AbstractLogMethodMetricsProces
         if (metricsList != null) {
             metricsList.add(metrics);
         } else {
-            Logger.error("StdLogMethodMetricsProcessor.process(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
+            Logger.error("InfluxHttpMethodMetricsProcessor.process(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
         }
     }
 
@@ -40,7 +40,8 @@ public class StdLogMethodMetricsProcessor extends AbstractLogMethodMetricsProces
         if (metricsList != null) {
             logger.logAndFlush(METRICS_FORMATTER.format(metricsList, startMillis, stopMillis));
         } else {
-            Logger.error("StdLogMethodMetricsProcessor.afterProcess(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
+            Logger.error("InfluxHttpMethodMetricsProcessor.afterProcess(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
         }
     }
+
 }

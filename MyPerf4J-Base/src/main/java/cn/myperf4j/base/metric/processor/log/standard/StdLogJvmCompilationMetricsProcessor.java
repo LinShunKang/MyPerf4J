@@ -2,8 +2,8 @@ package cn.myperf4j.base.metric.processor.log.standard;
 
 import cn.myperf4j.base.metric.JvmCompilationMetrics;
 import cn.myperf4j.base.metric.formatter.JvmCompilationMetricsFormatter;
-import cn.myperf4j.base.metric.formatter.impl.DefJvmCompilationMetricsFormatter;
-import cn.myperf4j.base.metric.processor.AbstractJvmCompilationProcessor;
+import cn.myperf4j.base.metric.formatter.standard.StdJvmCompilationMetricsFormatter;
+import cn.myperf4j.base.metric.processor.log.AbstractLogJvmCompilationProcessor;
 import cn.myperf4j.base.util.Logger;
 
 import java.util.ArrayList;
@@ -13,9 +13,9 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by LinShunkang on 2019/11/09
  */
-public class StdLogJvmCompilationMetricsProcessor extends AbstractJvmCompilationProcessor {
+public class StdLogJvmCompilationMetricsProcessor extends AbstractLogJvmCompilationProcessor {
 
-    private static final JvmCompilationMetricsFormatter METRICS_FORMATTER = new DefJvmCompilationMetricsFormatter();
+    private static final JvmCompilationMetricsFormatter METRICS_FORMATTER = new StdJvmCompilationMetricsFormatter();
 
     private final ConcurrentHashMap<Long, List<JvmCompilationMetrics>> metricsMap = new ConcurrentHashMap<>(8);
 

@@ -1,4 +1,4 @@
-package cn.myperf4j.base.metric.formatter.impl;
+package cn.myperf4j.base.metric.formatter.standard;
 
 import cn.myperf4j.base.metric.MethodMetrics;
 import cn.myperf4j.base.metric.formatter.MethodMetricsFormatter;
@@ -14,7 +14,7 @@ import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
 /**
  * Created by LinShunkang on 2018/3/30
  */
-public final class DefMethodMetricsFormatter implements MethodMetricsFormatter {
+public final class StdMethodMetricsFormatter implements MethodMetricsFormatter {
 
     @Override
     public String format(List<MethodMetrics> methodMetricsList, long startMillis, long stopMillis) {

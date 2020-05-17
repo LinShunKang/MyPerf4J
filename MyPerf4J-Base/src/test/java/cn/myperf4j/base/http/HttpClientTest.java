@@ -41,15 +41,21 @@ public class HttpClientTest {
                 .port(8086)
                 .path("/write")
                 .params(params)
-                .post("cpu_load_short,host=server01,region=us-west value=0.64 1434055562000000000")
+                .post("cpu_load_short,host=server01,region=us-west value=0.64 1434055562000000000\n" +
+                        "cpu_load_short,host=server02,region=us-west value=0.96 1434055562000000000")
                 .build();
-        try (HttpResponse resp = httpClient.execute(req)) {
-            HttpHeaders headers = resp.getHeaders();
-            System.out.println("Status=" + resp.getStatus());
-            System.out.println("Connection=" + headers.get("Connection"));
-            System.out.println(resp.getBodyString());
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        for (int i = 0; i < 10; i++) {
+            try (HttpResponse resp = httpClient.execute(req)) {
+                HttpHeaders headers = resp.getHeaders();
+                System.out.println("Status=" + resp.getStatus());
+                System.out.println("Connection=" + headers.get("Connection"));
+                System.out.println(resp.getBodyString());
+                System.out.println();
+//                TimeUnit.SECONDS.sleep(3);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

@@ -1,38 +1,22 @@
 package cn.myperf4j.base.metric.processor.log.influxdb;
 
-import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.metric.JvmCompilationMetrics;
-import cn.myperf4j.base.metric.processor.AbstractJvmCompilationProcessor;
+import cn.myperf4j.base.metric.formatter.JvmCompilationMetricsFormatter;
+import cn.myperf4j.base.metric.formatter.influxdb.InfluxJvmCompilationMetricsFormatter;
+import cn.myperf4j.base.metric.processor.log.AbstractLogJvmCompilationProcessor;
+
+import java.util.Collections;
 
 /**
  * Created by LinShunkang on 2019/11/09
  */
-public class InfluxLogJvmCompilationMetricsProcessor extends AbstractJvmCompilationProcessor {
+public class InfluxLogJvmCompilationMetricsProcessor extends AbstractLogJvmCompilationProcessor {
 
-    private static final ThreadLocal<StringBuilder> SB_TL = new ThreadLocal<StringBuilder>() {
-        @Override
-        protected StringBuilder initialValue() {
-            return new StringBuilder(128);
-        }
-    };
+    private static final JvmCompilationMetricsFormatter METRICS_FORMATTER = new InfluxJvmCompilationMetricsFormatter();
 
     @Override
     public void process(JvmCompilationMetrics metrics, long processId, long startMillis, long stopMillis) {
-        StringBuilder sb = SB_TL.get();
-        try {
-            logger.log(createLineProtocol(metrics, startMillis * 1000 * 1000L, sb));
-        } finally {
-            sb.setLength(0);
-        }
-    }
-
-    private String createLineProtocol(JvmCompilationMetrics metrics, long startNanos, StringBuilder sb) {
-        sb.append("jvm_compilation_metrics")
-                .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
-                .append(" Time=").append(metrics.getTime()).append('i')
-                .append(",TotalTime=").append(metrics.getTotalTime()).append('i')
-                .append(' ').append(startNanos);
-        return sb.toString();
+        logger.log(METRICS_FORMATTER.format(Collections.singletonList(metrics), startMillis, stopMillis));
     }
 
 }

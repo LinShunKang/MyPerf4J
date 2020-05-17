@@ -1,4 +1,4 @@
-package cn.myperf4j.base.metric.formatter.impl;
+package cn.myperf4j.base.metric.formatter.standard;
 
 import cn.myperf4j.base.metric.JvmGcMetrics;
 import cn.myperf4j.base.metric.formatter.JvmGCMetricsFormatter;
@@ -11,7 +11,7 @@ import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
 /**
  * Created by LinShunkang on 2018/8/21
  */
-public class DefJvmGcMetricsFormatter implements JvmGCMetricsFormatter {
+public class StdJvmGcMetricsFormatter implements JvmGCMetricsFormatter {
 
     @Override
     public String format(List<JvmGcMetrics> metricsList, long startMillis, long stopMillis) {

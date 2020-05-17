@@ -1,38 +1,22 @@
 package cn.myperf4j.base.metric.processor.log.influxdb;
 
-import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.metric.JvmFileDescriptorMetrics;
-import cn.myperf4j.base.metric.processor.AbstractJvmFileDescProcessor;
+import cn.myperf4j.base.metric.formatter.JvmFileDescMetricsFormatter;
+import cn.myperf4j.base.metric.formatter.influxdb.InfluxJvmFileDescMetricsFormatter;
+import cn.myperf4j.base.metric.processor.log.AbstractLogJvmFileDescProcessor;
+
+import java.util.Collections;
 
 /**
  * Created by LinShunkang on 2019/11/09
  */
-public class InfluxLogJvmFileDescMetricsProcessor extends AbstractJvmFileDescProcessor {
+public class InfluxLogJvmFileDescMetricsProcessor extends AbstractLogJvmFileDescProcessor {
 
-    private static final ThreadLocal<StringBuilder> SB_TL = new ThreadLocal<StringBuilder>() {
-        @Override
-        protected StringBuilder initialValue() {
-            return new StringBuilder(128);
-        }
-    };
+    private static final JvmFileDescMetricsFormatter METRICS_FORMATTER = new InfluxJvmFileDescMetricsFormatter();
 
     @Override
     public void process(JvmFileDescriptorMetrics metrics, long processId, long startMillis, long stopMillis) {
-        StringBuilder sb = SB_TL.get();
-        try {
-            logger.log(createLineProtocol(metrics, startMillis * 1000 * 1000L, sb));
-        } finally {
-            sb.setLength(0);
-        }
-    }
-
-    private String createLineProtocol(JvmFileDescriptorMetrics metrics, long startNanos, StringBuilder sb) {
-        sb.append("jvm_file_descriptor_metrics")
-                .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
-                .append(" OpenCount=").append(metrics.getOpenCount()).append('i')
-                .append(",OpenPercent=").append(metrics.getOpenPercent())
-                .append(' ').append(startNanos);
-        return sb.toString();
+        logger.log(METRICS_FORMATTER.format(Collections.singletonList(metrics), startMillis, stopMillis));
     }
 
 }

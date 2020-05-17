@@ -1,4 +1,4 @@
-package cn.myperf4j.base.metric.formatter.impl;
+package cn.myperf4j.base.metric.formatter.standard;
 
 import cn.myperf4j.base.metric.JvmMemoryMetrics;
 import cn.myperf4j.base.metric.formatter.JvmMemoryMetricsFormatter;
@@ -11,7 +11,7 @@ import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
 /**
  * Created by LinShunkang on 1919/8/21
  */
-public class DefJvmMemoryMetricsFormatter implements JvmMemoryMetricsFormatter {
+public class StdJvmMemoryMetricsFormatter implements JvmMemoryMetricsFormatter {
 
     @Override
     public String format(List<JvmMemoryMetrics> metricsList, long startMillis, long stopMillis) {
