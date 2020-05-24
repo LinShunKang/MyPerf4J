@@ -4,12 +4,13 @@ import cn.myperf4j.base.MethodTag;
 import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.metric.MethodMetrics;
 import cn.myperf4j.base.metric.formatter.MethodMetricsFormatter;
-import cn.myperf4j.base.util.IpUtils;
-import cn.myperf4j.base.util.LineProtocolUtils;
 import cn.myperf4j.base.util.ListUtils;
-import cn.myperf4j.base.util.NumFormatUtils;
 
 import java.util.List;
+
+import static cn.myperf4j.base.util.IpUtils.getLocalhostName;
+import static cn.myperf4j.base.util.LineProtocolUtils.processTagOrField;
+import static cn.myperf4j.base.util.NumFormatUtils.doubleFormat;
 
 /**
  * Created by LinShunkang on 2020/5/17
@@ -45,20 +46,20 @@ public final class InfluxMethodMetricsFormatter implements MethodMetricsFormatte
 
     private void appendLineProtocol(MethodMetrics metrics, long startNanos, StringBuilder sb) {
         MethodTag methodTag = metrics.getMethodTag();
-        String methodDesc = LineProtocolUtils.processTagOrField(methodTag.getSimpleDesc());
+        String methodDesc = processTagOrField(methodTag.getSimpleDesc());
         sb.append("method_metrics")
                 .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
                 .append(",ClassName=").append(methodTag.getSimpleClassName())
                 .append(",Method=").append(methodDesc)
                 .append(",Type=").append(methodTag.getType())
                 .append(",Level=").append(methodTag.getLevel())
-                .append(",host=").append(IpUtils.getLocalhostName())
+                .append(",host=").append(processTagOrField(getLocalhostName()))
                 .append(" TotalTimePercent=").append(metrics.getTotalTimePercent())
                 .append(",RPS=").append(metrics.getRPS()).append('i')
-                .append(",Avg=").append(NumFormatUtils.doubleFormat(metrics.getAvgTime()))
+                .append(",Avg=").append(doubleFormat(metrics.getAvgTime()))
                 .append(",Min=").append(metrics.getMinTime()).append('i')
                 .append(",Max=").append(metrics.getMaxTime()).append('i')
-                .append(",StdDev=").append(NumFormatUtils.doubleFormat(metrics.getStdDev()))
+                .append(",StdDev=").append(doubleFormat(metrics.getStdDev()))
                 .append(",Count=").append(metrics.getTotalCount()).append('i')
                 .append(",TP50=").append(metrics.getTP50()).append('i')
                 .append(",TP90=").append(metrics.getTP90()).append('i')
@@ -68,6 +69,5 @@ public final class InfluxMethodMetricsFormatter implements MethodMetricsFormatte
                 .append(",TP9999=").append(metrics.getTP9999()).append('i')
                 .append(' ').append(startNanos);
     }
-
 
 }

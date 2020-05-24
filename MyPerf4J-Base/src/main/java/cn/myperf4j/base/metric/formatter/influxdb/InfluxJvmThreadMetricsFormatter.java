@@ -3,9 +3,11 @@ package cn.myperf4j.base.metric.formatter.influxdb;
 import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.metric.JvmThreadMetrics;
 import cn.myperf4j.base.metric.formatter.JvmThreadMetricsFormatter;
-import cn.myperf4j.base.util.IpUtils;
 
 import java.util.List;
+
+import static cn.myperf4j.base.util.IpUtils.getLocalhostName;
+import static cn.myperf4j.base.util.LineProtocolUtils.processTagOrField;
 
 /**
  * Created by LinShunkang on 2020/5/17
@@ -38,7 +40,7 @@ public class InfluxJvmThreadMetricsFormatter implements JvmThreadMetricsFormatte
     private void appendLineProtocol(JvmThreadMetrics metrics, long startNanos, StringBuilder sb) {
         sb.append("jvm_thread_metrics")
                 .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
-                .append(",host=").append(IpUtils.getLocalhostName())
+                .append(",host=").append(processTagOrField(getLocalhostName()))
                 .append(" TotalStarted=").append(metrics.getTotalStarted()).append('i')
                 .append(",Active=").append(metrics.getActive()).append('i')
                 .append(",Peak=").append(metrics.getPeak()).append('i')

@@ -3,10 +3,12 @@ package cn.myperf4j.base.metric.formatter.influxdb;
 import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.metric.JvmMemoryMetrics;
 import cn.myperf4j.base.metric.formatter.JvmMemoryMetricsFormatter;
-import cn.myperf4j.base.util.IpUtils;
-import cn.myperf4j.base.util.NumFormatUtils;
 
 import java.util.List;
+
+import static cn.myperf4j.base.util.IpUtils.getLocalhostName;
+import static cn.myperf4j.base.util.LineProtocolUtils.processTagOrField;
+import static cn.myperf4j.base.util.NumFormatUtils.doubleFormat;
 
 /**
  * Created by LinShunkang on 2020/5/17
@@ -39,21 +41,21 @@ public class InfluxJvmMemoryMetricsFormatter implements JvmMemoryMetricsFormatte
     private void appendLineProtocol(JvmMemoryMetrics metrics, long startNanos, StringBuilder sb) {
         sb.append("jvm_memory_metrics_v2")
                 .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
-                .append(",host=").append(IpUtils.getLocalhostName())
+                .append(",host=").append(processTagOrField(getLocalhostName()))
                 .append(" HeapUsed=").append(metrics.getHeapUsed()).append('i')
-                .append(",HeapUsedPercent=").append(NumFormatUtils.doubleFormat(metrics.getHeapUsedPercent()))
+                .append(",HeapUsedPercent=").append(doubleFormat(metrics.getHeapUsedPercent()))
                 .append(",NonHeapUsed=").append(metrics.getNonHeapUsed()).append('i')
-                .append(",NonHeapUsedPercent=").append(NumFormatUtils.doubleFormat(metrics.getNonHeapUsedPercent()))
+                .append(",NonHeapUsedPercent=").append(doubleFormat(metrics.getNonHeapUsedPercent()))
                 .append(",PermGenUsed=").append(metrics.getPermGenUsed()).append('i')
-                .append(",PermGenUsedPercent=").append(NumFormatUtils.doubleFormat(metrics.getPermGenUsedPercent()))
+                .append(",PermGenUsedPercent=").append(doubleFormat(metrics.getPermGenUsedPercent()))
                 .append(",MetaspaceUsed=").append(metrics.getMetaspaceUsed()).append('i')
-                .append(",MetaspaceUsedPercent=").append(NumFormatUtils.doubleFormat(metrics.getMetaspaceUsedPercent()))
+                .append(",MetaspaceUsedPercent=").append(doubleFormat(metrics.getMetaspaceUsedPercent()))
                 .append(",CodeCacheUsed=").append(metrics.getCodeCacheUsed()).append('i')
-                .append(",CodeCacheUsedPercent=").append(NumFormatUtils.doubleFormat(metrics.getCodeCacheUsedPercent()))
+                .append(",CodeCacheUsedPercent=").append(doubleFormat(metrics.getCodeCacheUsedPercent()))
                 .append(",OldGenUsed=").append(metrics.getOldGenUsed()).append('i')
-                .append(",OldGenUsedPercent=").append(NumFormatUtils.doubleFormat(metrics.getOldGenUsedPercent()))
+                .append(",OldGenUsedPercent=").append(doubleFormat(metrics.getOldGenUsedPercent()))
                 .append(",EdenUsed=").append(metrics.getEdenUsed()).append('i')
-                .append(",EdenUsedPercent=").append(NumFormatUtils.doubleFormat(metrics.getEdenUsedPercent()))
+                .append(",EdenUsedPercent=").append(doubleFormat(metrics.getEdenUsedPercent()))
                 .append(",SurvivorUsed=").append(metrics.getSurvivorUsed()).append('i')
                 .append(",SurvivorUsedPercent=").append(metrics.getSurvivorUsedPercent())
                 .append(' ').append(startNanos);

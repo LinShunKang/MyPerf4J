@@ -3,10 +3,12 @@ package cn.myperf4j.base.metric.formatter.influxdb;
 import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.metric.JvmGcMetrics;
 import cn.myperf4j.base.metric.formatter.JvmGcMetricsFormatter;
-import cn.myperf4j.base.util.IpUtils;
-import cn.myperf4j.base.util.NumFormatUtils;
 
 import java.util.List;
+
+import static cn.myperf4j.base.util.IpUtils.getLocalhostName;
+import static cn.myperf4j.base.util.LineProtocolUtils.processTagOrField;
+import static cn.myperf4j.base.util.NumFormatUtils.doubleFormat;
 
 /**
  * Created by LinShunkang on 2020/5/17
@@ -39,15 +41,15 @@ public class InfluxJvmGcMetricsFormatter implements JvmGcMetricsFormatter {
     private void appendLineProtocol(JvmGcMetrics metrics, long startNanos, StringBuilder sb) {
         sb.append("jvm_gc_metrics_v2")
                 .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
-                .append(",host=").append(IpUtils.getLocalhostName())
+                .append(",host=").append(processTagOrField(getLocalhostName()))
                 .append(" YoungGcCount=").append(metrics.getYoungGcCount()).append('i')
                 .append(",YoungGcTime=").append(metrics.getYoungGcTime()).append('i')
-                .append(",AvgYoungGcTime=").append(NumFormatUtils.doubleFormat(metrics.getAvgYoungGcTime()))
+                .append(",AvgYoungGcTime=").append(doubleFormat(metrics.getAvgYoungGcTime()))
                 .append(",FullGcCount=").append(metrics.getFullGcCount()).append('i')
                 .append(",FullGcTime=").append(metrics.getFullGcTime()).append('i')
                 .append(",ZGcTime=").append(metrics.getZGcTime()).append('i')
                 .append(",ZGcCount=").append(metrics.getZGcCount()).append('i')
-                .append(",AvgZGcTime=").append(NumFormatUtils.doubleFormat(metrics.getAvgZGcTime()))
+                .append(",AvgZGcTime=").append(doubleFormat(metrics.getAvgZGcTime()))
                 .append(' ').append(startNanos);
     }
 
