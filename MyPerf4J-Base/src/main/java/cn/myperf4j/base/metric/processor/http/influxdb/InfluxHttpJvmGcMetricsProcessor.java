@@ -1,9 +1,11 @@
-package cn.myperf4j.base.metric.processor.log.standard;
+package cn.myperf4j.base.metric.processor.http.influxdb;
 
+import cn.myperf4j.base.influxdb.InfluxDbClient;
+import cn.myperf4j.base.influxdb.InfluxDbClientFactory;
 import cn.myperf4j.base.metric.JvmGcMetrics;
 import cn.myperf4j.base.metric.formatter.JvmGcMetricsFormatter;
-import cn.myperf4j.base.metric.formatter.standard.StdJvmGcMetricsFormatter;
-import cn.myperf4j.base.metric.processor.log.AbstractLogJvmGcMetricsProcessor;
+import cn.myperf4j.base.metric.formatter.influxdb.InfluxJvmGcMetricsFormatter;
+import cn.myperf4j.base.metric.processor.JvmGcMetricsProcessor;
 import cn.myperf4j.base.util.Logger;
 
 import java.util.ArrayList;
@@ -11,11 +13,13 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Created by LinShunkang on 2018/8/25
+ * Created by LinShunkang on 2020/05/23
  */
-public class StdLogJvmGcMetricsProcessor extends AbstractLogJvmGcMetricsProcessor {
+public class InfluxHttpJvmGcMetricsProcessor implements JvmGcMetricsProcessor {
 
-    private static final JvmGcMetricsFormatter METRICS_FORMATTER = new StdJvmGcMetricsFormatter();
+    private static final JvmGcMetricsFormatter METRICS_FORMATTER = new InfluxJvmGcMetricsFormatter();
+
+    private static final InfluxDbClient CLIENT = InfluxDbClientFactory.getClient();
 
     private final ConcurrentHashMap<Long, List<JvmGcMetrics>> metricsMap = new ConcurrentHashMap<>(8);
 
@@ -30,7 +34,7 @@ public class StdLogJvmGcMetricsProcessor extends AbstractLogJvmGcMetricsProcesso
         if (metricsList != null) {
             metricsList.add(metrics);
         } else {
-            Logger.error("StdLogJvmGcMetricsProcessor.process(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
+            Logger.error("InfluxHttpJvmGcMetricsProcessor.process(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
         }
     }
 
@@ -38,9 +42,10 @@ public class StdLogJvmGcMetricsProcessor extends AbstractLogJvmGcMetricsProcesso
     public void afterProcess(long processId, long startMillis, long stopMillis) {
         List<JvmGcMetrics> metricsList = metricsMap.remove(processId);
         if (metricsList != null) {
-            logger.logAndFlush(METRICS_FORMATTER.format(metricsList, startMillis, stopMillis));
+            CLIENT.writeMetricsAsync(METRICS_FORMATTER.format(metricsList, startMillis, stopMillis));
         } else {
-            Logger.error("StdLogJvmGcMetricsProcessor.afterProcess(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
+            Logger.error("InfluxHttpJvmGcMetricsProcessor.afterProcess(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
         }
     }
+
 }

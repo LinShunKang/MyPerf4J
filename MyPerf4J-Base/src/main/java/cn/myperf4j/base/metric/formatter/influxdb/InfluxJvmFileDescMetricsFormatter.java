@@ -3,6 +3,7 @@ package cn.myperf4j.base.metric.formatter.influxdb;
 import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.metric.JvmFileDescriptorMetrics;
 import cn.myperf4j.base.metric.formatter.JvmFileDescMetricsFormatter;
+import cn.myperf4j.base.util.IpUtils;
 
 import java.util.List;
 
@@ -37,6 +38,7 @@ public final class InfluxJvmFileDescMetricsFormatter implements JvmFileDescMetri
     private void appendLineProtocol(JvmFileDescriptorMetrics metrics, long startNanos, StringBuilder sb) {
         sb.append("jvm_file_descriptor_metrics")
                 .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
+                .append(",host=").append(IpUtils.getLocalhostName())
                 .append(" OpenCount=").append(metrics.getOpenCount()).append('i')
                 .append(",OpenPercent=").append(metrics.getOpenPercent())
                 .append(' ').append(startNanos);

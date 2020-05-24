@@ -15,34 +15,34 @@ public class ProfilingFilter {
     /**
      * 不需要注入的 Package前缀 集合
      */
-    private static Set<String> excludePackagePrefix = new HashSet<>();
+    private static final Set<String> excludePackagePrefix = new HashSet<>();
 
     /**
      * 不需要注入的 Package表达式 集合
      */
-    private static Set<String> excludePackageExp = new HashSet<>();
+    private static final Set<String> excludePackageExp = new HashSet<>();
 
     /**
      * 需要注入的 Package前缀 集合
      */
-    private static Set<String> includePackagePrefix = new HashSet<>();
+    private static final Set<String> includePackagePrefix = new HashSet<>();
 
     /**
      * 需要注入的 Package表达式 集合
      */
-    private static Set<String> includePackageExp = new HashSet<>();
+    private static final Set<String> includePackageExp = new HashSet<>();
 
 
     /**
      * 不需要注入的 method 集合
      */
-    private static Set<String> excludeMethods = new HashSet<>();
+    private static final Set<String> excludeMethods = new HashSet<>();
 
 
     /**
      * 不注入的 ClassLoader 集合
      */
-    private static Set<String> excludeClassLoader = new HashSet<>();
+    private static final Set<String> excludeClassLoader = new HashSet<>();
 
     static {
         // 默认不注入的 package

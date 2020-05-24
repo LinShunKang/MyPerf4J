@@ -9,7 +9,9 @@ public interface PropertyKeys {
 
     String PRO_FILE_DIR = "MyPerf4JPropDIR";
 
-    String APP_NAME = "AppName";
+    String APP_NAME = "app_name";
+
+    String DEBUG = "debug";
 
     String METRICS_PROCESS_TYPE = "MetricsProcessorType";
 
@@ -66,4 +68,80 @@ public interface PropertyKeys {
 
     String PROFILING_OUT_THRESHOLD_COUNT = "ProfilingOutThresholdCount";
 
+
+    interface Metrics {
+
+        String EXPORTER = "metrics.exporter";
+
+        String TIME_SLICE_METHOD = "metrics.time_slice.method";
+
+        String TIME_SLICE_JVM = "metrics.time_slice.jvm";
+
+        String SHOW_PARAMS = "metrics.method.show_params";
+
+        String CLASS_LEVEL_MAPPING = "metrics.method.class_level_mapping";
+
+        String LOG_METHOD = "metrics.log.method";
+
+        String LOG_CLASS_LOADING = "metrics.log.class_loading";
+
+        String LOG_GC = "metrics.log.gc";
+
+        String LOG_MEMORY = "metrics.log.memory";
+
+        String LOG_BUFF_POOL = "metrics.log.buff_pool";
+
+        String LOG_THREAD = "metrics.log.thread";
+
+        String LOG_FILE_DESC = "metrics.log.file_desc";
+
+        String LOG_COMPILATION = "metrics.log.compilation";
+
+    }
+
+    interface InfluxDB {
+
+        String HOST = "influxdb.host";
+
+        String PORT = "influxdb.port";
+
+        String DATABASE = "influxdb.database";
+
+        String USERNAME = "influxdb.username";
+
+        String PASSWORD = "influxdb.password";
+
+        String CONN_TIMEOUT = "influxdb.conn_timeout";
+
+        String READ_TIMEOUT = "influxdb.READ_TIMEOUT";
+
+    }
+
+    interface Filter {
+
+        String PACKAGES_INCLUDE = "filter.packages.include";
+
+        String PACKAGES_EXCLUDE = "filter.packages.exclude";
+
+        String METHODS_EXCLUDE = "filter.methods.exclude";
+
+        String METHODS_EXCLUDE_PRIVATE = "filter.methods.exclude_private";
+
+        String CLASS_LOADERS_EXCLUDE = "filter.class_loaders.exclude";
+
+    }
+
+    interface Recorder {
+
+        String MODE = "recorder.mode";
+
+        String BACKUP_COUNT = "recorder.backup_count";
+
+        String SIZE_TIMING_ARR = "recorder.size.timing_arr";
+
+        String SIZE_TIMING_MAP = "recorder.size.timing_map";
+
+        String PARAMS_FILE = "recorder.params_file";
+
+    }
 }

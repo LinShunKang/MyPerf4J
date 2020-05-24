@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public class HttpClientTest {
 
-    private final HttpClient httpClient = new HttpClient(1000, 2000);
+    private final HttpClient httpClient = new HttpClient.Builder().build();
 
     @Test
     public void testGet() {

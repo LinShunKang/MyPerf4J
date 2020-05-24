@@ -5,6 +5,6 @@ import cn.myperf4j.base.metric.JvmCompilationMetrics;
 /**
  * Created by LinShunkang on 2019/11/09
  */
-public interface JvmCompilationProcessor extends MetricsProcessor<JvmCompilationMetrics> {
+public interface JvmCompilationMetricsProcessor extends MetricsProcessor<JvmCompilationMetrics> {
 
 }

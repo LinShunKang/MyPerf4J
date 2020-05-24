@@ -3,6 +3,7 @@ package cn.myperf4j.base.metric.formatter.influxdb;
 import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.metric.JvmMemoryMetrics;
 import cn.myperf4j.base.metric.formatter.JvmMemoryMetricsFormatter;
+import cn.myperf4j.base.util.IpUtils;
 import cn.myperf4j.base.util.NumFormatUtils;
 
 import java.util.List;
@@ -38,6 +39,7 @@ public class InfluxJvmMemoryMetricsFormatter implements JvmMemoryMetricsFormatte
     private void appendLineProtocol(JvmMemoryMetrics metrics, long startNanos, StringBuilder sb) {
         sb.append("jvm_memory_metrics_v2")
                 .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
+                .append(",host=").append(IpUtils.getLocalhostName())
                 .append(" HeapUsed=").append(metrics.getHeapUsed()).append('i')
                 .append(",HeapUsedPercent=").append(NumFormatUtils.doubleFormat(metrics.getHeapUsedPercent()))
                 .append(",NonHeapUsed=").append(metrics.getNonHeapUsed()).append('i')

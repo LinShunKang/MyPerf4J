@@ -4,7 +4,9 @@ import cn.myperf4j.base.MethodTag;
 import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.metric.MethodMetrics;
 import cn.myperf4j.base.metric.formatter.MethodMetricsFormatter;
+import cn.myperf4j.base.util.IpUtils;
 import cn.myperf4j.base.util.LineProtocolUtils;
+import cn.myperf4j.base.util.ListUtils;
 import cn.myperf4j.base.util.NumFormatUtils;
 
 import java.util.List;
@@ -17,12 +19,16 @@ public final class InfluxMethodMetricsFormatter implements MethodMetricsFormatte
     private static final ThreadLocal<StringBuilder> SB_TL = new ThreadLocal<StringBuilder>() {
         @Override
         protected StringBuilder initialValue() {
-            return new StringBuilder(2048);
+            return new StringBuilder(32 * 1024);
         }
     };
 
     @Override
     public String format(List<MethodMetrics> metricsList, long startMillis, long stopMillis) {
+        if (ListUtils.isEmpty(metricsList)) {
+            return "";
+        }
+
         StringBuilder sb = SB_TL.get();
         try {
             long startNanos = startMillis * 1000 * 1000L;
@@ -46,6 +52,7 @@ public final class InfluxMethodMetricsFormatter implements MethodMetricsFormatte
                 .append(",Method=").append(methodDesc)
                 .append(",Type=").append(methodTag.getType())
                 .append(",Level=").append(methodTag.getLevel())
+                .append(",host=").append(IpUtils.getLocalhostName())
                 .append(" TotalTimePercent=").append(metrics.getTotalTimePercent())
                 .append(",RPS=").append(metrics.getRPS()).append('i')
                 .append(",Avg=").append(NumFormatUtils.doubleFormat(metrics.getAvgTime()))

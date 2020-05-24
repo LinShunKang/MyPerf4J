@@ -24,17 +24,17 @@ public class JvmMetricsScheduler implements Scheduler {
 
     private final JvmThreadMetricsProcessor threadMetricsProcessor;
 
-    private final JvmCompilationProcessor compilationProcessor;
+    private final JvmCompilationMetricsProcessor compilationProcessor;
 
-    private final JvmFileDescProcessor fileDescProcessor;
+    private final JvmFileDescMetricsProcessor fileDescProcessor;
 
     public JvmMetricsScheduler(JvmClassMetricsProcessor classMetricsProcessor,
                                JvmGcMetricsProcessor gcMetricsProcessor,
                                JvmMemoryMetricsProcessor memoryMetricsProcessor,
                                JvmBufferPoolMetricsProcessor bufferPoolMetricsProcessor,
                                JvmThreadMetricsProcessor threadMetricsProcessor,
-                               JvmCompilationProcessor compilationProcessor,
-                               JvmFileDescProcessor fileDescProcessor) {
+                               JvmCompilationMetricsProcessor compilationProcessor,
+                               JvmFileDescMetricsProcessor fileDescProcessor) {
         this.classMetricsProcessor = classMetricsProcessor;
         this.gcMetricsProcessor = gcMetricsProcessor;
         this.memoryMetricsProcessor = memoryMetricsProcessor;

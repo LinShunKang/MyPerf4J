@@ -9,6 +9,8 @@ public interface ClassLevels {
 
     String INTERCEPTOR = "Interceptor";
 
+    String PRODUCER = "Producer";
+
     String CONSUMER = "Consumer";
 
     String LISTENER = "Listener";

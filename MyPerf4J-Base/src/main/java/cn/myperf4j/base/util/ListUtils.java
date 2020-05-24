@@ -39,8 +39,7 @@ public final class ListUtils {
             throw new IllegalArgumentException(limit + " <= 0");
         }
 
-        int toIndex = fromIndex + limit;
-        toIndex = Math.min(list.size(), toIndex);
+        int toIndex = Math.min(list.size(), fromIndex + limit);
         return list.subList(fromIndex, toIndex);
     }
 

@@ -32,6 +32,10 @@ public final class Logger {
         Logger.debugEnable = debugEnable;
     }
 
+    public static boolean isDebugEnable() {
+        return debugEnable;
+    }
+
     public static void info(String msg) {
         System.out.println(getPrefix(INFO_LEVEL) + msg);
     }

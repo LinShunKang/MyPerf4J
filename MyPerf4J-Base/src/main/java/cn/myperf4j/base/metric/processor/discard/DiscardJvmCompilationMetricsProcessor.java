@@ -1,12 +1,12 @@
 package cn.myperf4j.base.metric.processor.discard;
 
 import cn.myperf4j.base.metric.JvmCompilationMetrics;
-import cn.myperf4j.base.metric.processor.JvmCompilationProcessor;
+import cn.myperf4j.base.metric.processor.JvmCompilationMetricsProcessor;
 
 /**
  * Created by LinShunkang on 2019/11/09
  */
-public class DiscardJvmCompilationProcessor  implements JvmCompilationProcessor {
+public class DiscardJvmCompilationMetricsProcessor implements JvmCompilationMetricsProcessor {
 
     @Override
     public void beforeProcess(long processId, long startMillis, long stopMillis) {

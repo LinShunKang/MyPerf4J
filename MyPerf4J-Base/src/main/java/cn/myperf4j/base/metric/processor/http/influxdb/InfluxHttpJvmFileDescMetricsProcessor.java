@@ -1,9 +1,11 @@
-package cn.myperf4j.base.metric.processor.log.standard;
+package cn.myperf4j.base.metric.processor.http.influxdb;
 
+import cn.myperf4j.base.influxdb.InfluxDbClient;
+import cn.myperf4j.base.influxdb.InfluxDbClientFactory;
 import cn.myperf4j.base.metric.JvmFileDescriptorMetrics;
 import cn.myperf4j.base.metric.formatter.JvmFileDescMetricsFormatter;
-import cn.myperf4j.base.metric.formatter.standard.StdJvmFileDescMetricsFormatter;
-import cn.myperf4j.base.metric.processor.log.AbstractLogJvmFileDescMetricsProcessor;
+import cn.myperf4j.base.metric.formatter.influxdb.InfluxJvmFileDescMetricsFormatter;
+import cn.myperf4j.base.metric.processor.JvmFileDescMetricsProcessor;
 import cn.myperf4j.base.util.Logger;
 
 import java.util.ArrayList;
@@ -11,11 +13,13 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Created by LinShunkang on 2019/11/09
+ * Created by LinShunkang on 2020/05/23
  */
-public class StdLogJvmFileDescMetricsProcessor extends AbstractLogJvmFileDescMetricsProcessor {
+public class InfluxHttpJvmFileDescMetricsProcessor implements JvmFileDescMetricsProcessor {
 
-    private static final JvmFileDescMetricsFormatter METRICS_FORMATTER = new StdJvmFileDescMetricsFormatter();
+    private static final JvmFileDescMetricsFormatter METRICS_FORMATTER = new InfluxJvmFileDescMetricsFormatter();
+
+    private static final InfluxDbClient CLIENT = InfluxDbClientFactory.getClient();
 
     private final ConcurrentHashMap<Long, List<JvmFileDescriptorMetrics>> metricsMap = new ConcurrentHashMap<>(8);
 
@@ -30,7 +34,7 @@ public class StdLogJvmFileDescMetricsProcessor extends AbstractLogJvmFileDescMet
         if (metricsList != null) {
             metricsList.add(metrics);
         } else {
-            Logger.error("StdLogJvmFileDescMetricsProcessor.process(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
+            Logger.error("InfluxHttpJvmFileDescProcessor.process(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
         }
     }
 
@@ -38,9 +42,10 @@ public class StdLogJvmFileDescMetricsProcessor extends AbstractLogJvmFileDescMet
     public void afterProcess(long processId, long startMillis, long stopMillis) {
         List<JvmFileDescriptorMetrics> metricsList = metricsMap.remove(processId);
         if (metricsList != null) {
-            logger.logAndFlush(METRICS_FORMATTER.format(metricsList, startMillis, stopMillis));
+            CLIENT.writeMetricsAsync(METRICS_FORMATTER.format(metricsList, startMillis, stopMillis));
         } else {
-            Logger.error("StdLogJvmFileDescMetricsProcessor.afterProcess(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
+            Logger.error("InfluxHttpJvmFileDescProcessor.afterProcess(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
         }
     }
+
 }

@@ -121,22 +121,38 @@ public class HttpRespStatus {
 
     private final String phrase;
 
+    private final String simpleString;
+
+    private final HttpStatusClass statusClass;
+
     public HttpRespStatus(int code) {
         this.code = code;
-        this.phrase = HttpStatusClass.valueOf(code).getDefaultPhrase() + '(' + code + ')';
+        this.statusClass = HttpStatusClass.valueOf(code);
+        this.phrase = this.statusClass.getDefaultPhrase() + "(" + code + ")";
+        this.simpleString = "'" + code + " " + phrase + "'";
     }
 
     public HttpRespStatus(int code, String phrase) {
         this.code = code;
+        this.statusClass = HttpStatusClass.valueOf(code);
         this.phrase = phrase;
+        this.simpleString = "'" + code + " " + phrase + "'";
     }
 
-    public int getCode() {
+    public int code() {
         return code;
     }
 
-    public String getPhrase() {
+    public String phrase() {
         return phrase;
+    }
+
+    public HttpStatusClass statusClass() {
+        return statusClass;
+    }
+
+    public String simpleString() {
+        return simpleString;
     }
 
     @Override

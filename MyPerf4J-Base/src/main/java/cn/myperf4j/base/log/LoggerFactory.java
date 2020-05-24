@@ -8,7 +8,7 @@ import java.util.Map;
 
 public final class LoggerFactory {
 
-    private static final ProfilingConfig config = ProfilingConfig.getInstance();
+    private static final ProfilingConfig CONFIG = ProfilingConfig.getInstance();
 
     private static final Map<String, ILogger> LOGGER_MAP = new HashMap<>();
 
@@ -41,7 +41,7 @@ public final class LoggerFactory {
             return logger;
         }
 
-        logger = new AutoRollingLogger(logFile, config.getLogRollingTimeUnit(), config.getLogReserveCount());
+        logger = new AutoRollingLogger(logFile, CONFIG.getLogRollingTimeUnit(), CONFIG.getLogReserveCount());
         LOGGER_MAP.put(logFile, logger);
         return logger;
     }

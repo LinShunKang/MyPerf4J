@@ -22,8 +22,8 @@ public class JvmMetricsSchedulerTest {
         JvmMemoryMetricsProcessor memoryProcessor = MetricsProcessorFactory.getMemoryMetricsProcessor(processorType);
         JvmThreadMetricsProcessor threadProcessor = MetricsProcessorFactory.getThreadMetricsProcessor(processorType);
         JvmBufferPoolMetricsProcessor bufferPoolProcessor = MetricsProcessorFactory.getBufferPoolMetricsProcessor(processorType);
-        JvmCompilationProcessor compilationProcessor = MetricsProcessorFactory.getCompilationProcessor(processorType);
-        JvmFileDescProcessor fileDescProcessor = MetricsProcessorFactory.getFileDescProcessor(processorType);
+        JvmCompilationMetricsProcessor compilationProcessor = MetricsProcessorFactory.getCompilationProcessor(processorType);
+        JvmFileDescMetricsProcessor fileDescProcessor = MetricsProcessorFactory.getFileDescProcessor(processorType);
         Scheduler scheduler = new JvmMetricsScheduler(
                 classProcessor,
                 gcProcessor,

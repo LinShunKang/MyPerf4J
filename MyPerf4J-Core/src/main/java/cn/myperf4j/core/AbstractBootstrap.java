@@ -2,8 +2,11 @@ package cn.myperf4j.core;
 
 import cn.myperf4j.base.config.LevelMappingFilter;
 import cn.myperf4j.base.config.ProfilingConfig;
+import cn.myperf4j.base.config.ProfilingConfig.InfluxDBConfig;
+import cn.myperf4j.base.config.ProfilingConfig.MetricsConfig;
 import cn.myperf4j.base.config.ProfilingFilter;
 import cn.myperf4j.base.constant.PropertyKeys;
+import cn.myperf4j.base.constant.PropertyKeys.InfluxDB;
 import cn.myperf4j.base.constant.PropertyValues;
 import cn.myperf4j.base.metric.processor.*;
 import cn.myperf4j.base.util.ExecutorManager;
@@ -158,6 +161,7 @@ public abstract class AbstractBootstrap {
             initMetricsFileConfig(config);
             initLogConfig(config);
             initTimeSliceConfig(config);
+            initInfluxDBConfig(config);
             initRecorderConfig(config);
             initFiltersConfig(config);
             initProfilingParamsConfig(config);
@@ -183,6 +187,10 @@ public abstract class AbstractBootstrap {
     }
 
     private void initMetricsFileConfig(ProfilingConfig config) {
+        MetricsConfig metricsConfig = new MetricsConfig();
+        config.metricsConfig(metricsConfig);
+
+        metricsConfig.metricsProcessorType(MyProperties.getInt(PropertyKeys.METRICS_PROCESS_TYPE, PropertyValues.METRICS_PROCESS_TYPE_STDOUT));
         config.setMetricsProcessorType(MyProperties.getInt(PropertyKeys.METRICS_PROCESS_TYPE, PropertyValues.METRICS_PROCESS_TYPE_STDOUT));
         if (config.getMetricsProcessorType() == PropertyValues.METRICS_PROCESS_TYPE_STDOUT) {
             config.setMethodMetricsFile(PropertyValues.STDOUT_FILE);
@@ -214,6 +222,20 @@ public abstract class AbstractBootstrap {
         config.setMilliTimeSlice(MyProperties.getLong(PropertyKeys.MILLI_TIME_SLICE, PropertyValues.DEFAULT_TIME_SLICE));
         config.setMethodMilliTimeSlice(MyProperties.getLong(PropertyKeys.METHOD_MILLI_TIME_SLICE, config.getMilliTimeSlice()));
         config.setJvmMilliTimeSlice(MyProperties.getLong(PropertyKeys.JVM_MILLI_TIME_SLICE, config.getMilliTimeSlice()));
+    }
+
+    //TODO:LSK 需要先判断 是否需要读取 InfluxDBConfig
+    private void initInfluxDBConfig(ProfilingConfig config) {
+        InfluxDBConfig influxDB = new InfluxDBConfig();
+        config.influxDBConfig(influxDB);
+
+        influxDB.host(MyProperties.getStr(InfluxDB.HOST));
+        influxDB.port(MyProperties.getInt(InfluxDB.PORT, 8086));
+        influxDB.database(MyProperties.getStr(InfluxDB.DATABASE));
+        influxDB.username(MyProperties.getStr(InfluxDB.USERNAME));
+        influxDB.password(MyProperties.getStr(InfluxDB.PASSWORD));
+        influxDB.connectTimeout(MyProperties.getInt(InfluxDB.CONN_TIMEOUT, 1000));
+        influxDB.readTimeout(MyProperties.getInt(InfluxDB.READ_TIMEOUT, 3000));
     }
 
     private void initRecorderConfig(ProfilingConfig config) {
@@ -448,8 +470,8 @@ public abstract class AbstractBootstrap {
         JvmMemoryMetricsProcessor memoryProcessor = MetricsProcessorFactory.getMemoryMetricsProcessor(processorType);
         JvmBufferPoolMetricsProcessor bufferPoolProcessor = MetricsProcessorFactory.getBufferPoolMetricsProcessor(processorType);
         JvmThreadMetricsProcessor threadProcessor = MetricsProcessorFactory.getThreadMetricsProcessor(processorType);
-        JvmCompilationProcessor compilationProcessor = MetricsProcessorFactory.getCompilationProcessor(processorType);
-        JvmFileDescProcessor fileDescProcessor = MetricsProcessorFactory.getFileDescProcessor(processorType);
+        JvmCompilationMetricsProcessor compilationProcessor = MetricsProcessorFactory.getCompilationProcessor(processorType);
+        JvmFileDescMetricsProcessor fileDescProcessor = MetricsProcessorFactory.getFileDescProcessor(processorType);
         return new JvmMetricsScheduler(
                 classProcessor,
                 gcProcessor,

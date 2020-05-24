@@ -3,14 +3,14 @@ package cn.myperf4j.base.metric.processor.log.influxdb;
 import cn.myperf4j.base.metric.JvmFileDescriptorMetrics;
 import cn.myperf4j.base.metric.formatter.JvmFileDescMetricsFormatter;
 import cn.myperf4j.base.metric.formatter.influxdb.InfluxJvmFileDescMetricsFormatter;
-import cn.myperf4j.base.metric.processor.log.AbstractLogJvmFileDescProcessor;
+import cn.myperf4j.base.metric.processor.log.AbstractLogJvmFileDescMetricsProcessor;
 
 import java.util.Collections;
 
 /**
  * Created by LinShunkang on 2019/11/09
  */
-public class InfluxLogJvmFileDescMetricsProcessor extends AbstractLogJvmFileDescProcessor {
+public class InfluxLogJvmFileDescMetricsProcessor extends AbstractLogJvmFileDescMetricsProcessor {
 
     private static final JvmFileDescMetricsFormatter METRICS_FORMATTER = new InfluxJvmFileDescMetricsFormatter();
 

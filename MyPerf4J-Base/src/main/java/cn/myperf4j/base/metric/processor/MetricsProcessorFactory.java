@@ -2,11 +2,19 @@ package cn.myperf4j.base.metric.processor;
 
 import cn.myperf4j.base.metric.processor.discard.DiscardJvmBufferPoolMetricsProcessor;
 import cn.myperf4j.base.metric.processor.discard.DiscardJvmClassMetricsProcessor;
-import cn.myperf4j.base.metric.processor.discard.DiscardJvmCompilationProcessor;
-import cn.myperf4j.base.metric.processor.discard.DiscardJvmFileDescProcessor;
+import cn.myperf4j.base.metric.processor.discard.DiscardJvmCompilationMetricsProcessor;
+import cn.myperf4j.base.metric.processor.discard.DiscardJvmFileDescMetricsProcessor;
 import cn.myperf4j.base.metric.processor.discard.DiscardJvmGcMetricsProcessor;
 import cn.myperf4j.base.metric.processor.discard.DiscardJvmMemoryMetricsProcessor;
 import cn.myperf4j.base.metric.processor.discard.DiscardJvmThreadMetricsProcessor;
+import cn.myperf4j.base.metric.processor.http.influxdb.InfluxHttpJvmBufferPoolMetricsProcessor;
+import cn.myperf4j.base.metric.processor.http.influxdb.InfluxHttpJvmClassMetricsProcessor;
+import cn.myperf4j.base.metric.processor.http.influxdb.InfluxHttpJvmCompilationMetricsProcessor;
+import cn.myperf4j.base.metric.processor.http.influxdb.InfluxHttpJvmFileDescMetricsProcessor;
+import cn.myperf4j.base.metric.processor.http.influxdb.InfluxHttpJvmGcMetricsProcessor;
+import cn.myperf4j.base.metric.processor.http.influxdb.InfluxHttpJvmMemoryMetricsProcessor;
+import cn.myperf4j.base.metric.processor.http.influxdb.InfluxHttpJvmThreadMetricsProcessor;
+import cn.myperf4j.base.metric.processor.http.influxdb.InfluxHttpMethodMetricsProcessor;
 import cn.myperf4j.base.metric.processor.log.influxdb.InfluxLogJvmBufferPoolMetricsProcessor;
 import cn.myperf4j.base.metric.processor.log.influxdb.InfluxLogJvmClassMetricsProcessor;
 import cn.myperf4j.base.metric.processor.log.influxdb.InfluxLogJvmCompilationMetricsProcessor;
@@ -25,6 +33,7 @@ import cn.myperf4j.base.metric.processor.log.standard.StdLogJvmThreadMetricsProc
 import cn.myperf4j.base.metric.processor.log.standard.StdLogMethodMetricsProcessor;
 
 import static cn.myperf4j.base.constant.PropertyValues.METRICS_PROCESS_TYPE_INFLUX_DB;
+import static cn.myperf4j.base.constant.PropertyValues.METRICS_PROCESS_TYPE_INFLUX_DB_HTTP;
 import static cn.myperf4j.base.constant.PropertyValues.METRICS_PROCESS_TYPE_LOGGER;
 import static cn.myperf4j.base.constant.PropertyValues.METRICS_PROCESS_TYPE_STDOUT;
 
@@ -37,6 +46,8 @@ public class MetricsProcessorFactory {
                 return new StdLogJvmClassMetricsProcessor();
             case METRICS_PROCESS_TYPE_INFLUX_DB:
                 return new InfluxLogJvmClassMetricsProcessor();
+            case METRICS_PROCESS_TYPE_INFLUX_DB_HTTP:
+                return new InfluxHttpJvmClassMetricsProcessor();
             default:
                 return new DiscardJvmClassMetricsProcessor();
         }
@@ -49,6 +60,8 @@ public class MetricsProcessorFactory {
                 return new StdLogJvmGcMetricsProcessor();
             case METRICS_PROCESS_TYPE_INFLUX_DB:
                 return new InfluxLogJvmGcMetricsProcessor();
+            case METRICS_PROCESS_TYPE_INFLUX_DB_HTTP:
+                return new InfluxHttpJvmGcMetricsProcessor();
             default:
                 return new DiscardJvmGcMetricsProcessor();
         }
@@ -61,6 +74,8 @@ public class MetricsProcessorFactory {
                 return new StdLogJvmMemoryMetricsProcessor();
             case METRICS_PROCESS_TYPE_INFLUX_DB:
                 return new InfluxLogJvmMemoryMetricsProcessor();
+            case METRICS_PROCESS_TYPE_INFLUX_DB_HTTP:
+                return new InfluxHttpJvmMemoryMetricsProcessor();
             default:
                 return new DiscardJvmMemoryMetricsProcessor();
         }
@@ -73,6 +88,8 @@ public class MetricsProcessorFactory {
                 return new StdLogJvmBufferPoolMetricsProcessor();
             case METRICS_PROCESS_TYPE_INFLUX_DB:
                 return new InfluxLogJvmBufferPoolMetricsProcessor();
+            case METRICS_PROCESS_TYPE_INFLUX_DB_HTTP:
+                return new InfluxHttpJvmBufferPoolMetricsProcessor();
             default:
                 return new DiscardJvmBufferPoolMetricsProcessor();
         }
@@ -85,6 +102,8 @@ public class MetricsProcessorFactory {
                 return new StdLogJvmThreadMetricsProcessor();
             case METRICS_PROCESS_TYPE_INFLUX_DB:
                 return new InfluxLogJvmThreadMetricsProcessor();
+            case METRICS_PROCESS_TYPE_INFLUX_DB_HTTP:
+                return new InfluxHttpJvmThreadMetricsProcessor();
             default:
                 return new DiscardJvmThreadMetricsProcessor();
         }
@@ -94,32 +113,38 @@ public class MetricsProcessorFactory {
         switch (processorType) {
             case METRICS_PROCESS_TYPE_INFLUX_DB:
                 return new InfluxLogMethodMetricsProcessor();
+            case METRICS_PROCESS_TYPE_INFLUX_DB_HTTP:
+                return new InfluxHttpMethodMetricsProcessor();
             default:
                 return new StdLogMethodMetricsProcessor();
         }
     }
 
-    public static JvmFileDescProcessor getFileDescProcessor(int processorType) {
+    public static JvmFileDescMetricsProcessor getFileDescProcessor(int processorType) {
         switch (processorType) {
             case METRICS_PROCESS_TYPE_STDOUT:
             case METRICS_PROCESS_TYPE_LOGGER:
                 return new StdLogJvmFileDescMetricsProcessor();
             case METRICS_PROCESS_TYPE_INFLUX_DB:
                 return new InfluxLogJvmFileDescMetricsProcessor();
+            case METRICS_PROCESS_TYPE_INFLUX_DB_HTTP:
+                return new InfluxHttpJvmFileDescMetricsProcessor();
             default:
-                return new DiscardJvmFileDescProcessor();
+                return new DiscardJvmFileDescMetricsProcessor();
         }
     }
 
-    public static JvmCompilationProcessor getCompilationProcessor(int processorType) {
+    public static JvmCompilationMetricsProcessor getCompilationProcessor(int processorType) {
         switch (processorType) {
             case METRICS_PROCESS_TYPE_STDOUT:
             case METRICS_PROCESS_TYPE_LOGGER:
                 return new StdLogJvmCompilationMetricsProcessor();
             case METRICS_PROCESS_TYPE_INFLUX_DB:
                 return new InfluxLogJvmCompilationMetricsProcessor();
+            case METRICS_PROCESS_TYPE_INFLUX_DB_HTTP:
+                return new InfluxHttpJvmCompilationMetricsProcessor();
             default:
-                return new DiscardJvmCompilationProcessor();
+                return new DiscardJvmCompilationMetricsProcessor();
         }
     }
 

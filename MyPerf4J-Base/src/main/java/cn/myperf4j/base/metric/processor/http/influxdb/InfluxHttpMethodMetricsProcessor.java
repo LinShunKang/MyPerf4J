@@ -1,9 +1,12 @@
 package cn.myperf4j.base.metric.processor.http.influxdb;
 
+import cn.myperf4j.base.influxdb.InfluxDbClient;
+import cn.myperf4j.base.influxdb.InfluxDbClientFactory;
 import cn.myperf4j.base.metric.MethodMetrics;
 import cn.myperf4j.base.metric.formatter.MethodMetricsFormatter;
 import cn.myperf4j.base.metric.formatter.influxdb.InfluxMethodMetricsFormatter;
-import cn.myperf4j.base.metric.processor.log.AbstractLogMethodMetricsProcessor;
+import cn.myperf4j.base.metric.processor.MethodMetricsProcessor;
+import cn.myperf4j.base.util.ListUtils;
 import cn.myperf4j.base.util.Logger;
 
 import java.util.ArrayList;
@@ -11,11 +14,15 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Created by LinShunkang on 2020/5/17
+ * Created by LinShunkang on 2020/05/17
  */
-public class InfluxHttpMethodMetricsProcessor extends AbstractLogMethodMetricsProcessor {
+public class InfluxHttpMethodMetricsProcessor implements MethodMetricsProcessor {
+
+    private static final int BATCH_SIZE = 64;
 
     private static final MethodMetricsFormatter METRICS_FORMATTER = new InfluxMethodMetricsFormatter();
+
+    private static final InfluxDbClient CLIENT = InfluxDbClientFactory.getClient();
 
     private final ConcurrentHashMap<Long, List<MethodMetrics>> metricsMap = new ConcurrentHashMap<>(8);
 
@@ -37,10 +44,18 @@ public class InfluxHttpMethodMetricsProcessor extends AbstractLogMethodMetricsPr
     @Override
     public void afterProcess(long processId, long startMillis, long stopMillis) {
         List<MethodMetrics> metricsList = metricsMap.remove(processId);
-        if (metricsList != null) {
-            logger.logAndFlush(METRICS_FORMATTER.format(metricsList, startMillis, stopMillis));
-        } else {
+        if (ListUtils.isEmpty(metricsList)) {
             Logger.error("InfluxHttpMethodMetricsProcessor.afterProcess(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
+            return;
+        }
+
+        if (metricsList.size() <= BATCH_SIZE) {
+            CLIENT.writeMetricsAsync(METRICS_FORMATTER.format(metricsList, startMillis, stopMillis));
+        } else {
+            List<List<MethodMetrics>> partition = ListUtils.partition(metricsList, BATCH_SIZE);
+            for (int i = 0; i < partition.size(); i++) {
+                CLIENT.writeMetricsAsync(METRICS_FORMATTER.format(partition.get(i), startMillis, stopMillis));
+            }
         }
     }
 

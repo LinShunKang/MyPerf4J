@@ -3,6 +3,7 @@ package cn.myperf4j.base.metric.formatter.influxdb;
 import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.metric.JvmCompilationMetrics;
 import cn.myperf4j.base.metric.formatter.JvmCompilationMetricsFormatter;
+import cn.myperf4j.base.util.IpUtils;
 
 import java.util.List;
 
@@ -37,6 +38,7 @@ public final class InfluxJvmCompilationMetricsFormatter implements JvmCompilatio
     private void appendLineProtocol(JvmCompilationMetrics metrics, long startNanos, StringBuilder sb) {
         sb.append("jvm_compilation_metrics")
                 .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
+                .append(",host=").append(IpUtils.getLocalhostName())
                 .append(" Time=").append(metrics.getTime()).append('i')
                 .append(",TotalTime=").append(metrics.getTotalTime()).append('i')
                 .append(' ').append(startNanos);

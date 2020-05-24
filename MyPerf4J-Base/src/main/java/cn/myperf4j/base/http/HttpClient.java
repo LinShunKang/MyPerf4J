@@ -1,5 +1,6 @@
 package cn.myperf4j.base.http;
 
+import cn.myperf4j.base.util.ArrayUtils;
 import cn.myperf4j.base.util.ListUtils;
 
 import java.io.BufferedOutputStream;
@@ -19,9 +20,9 @@ public final class HttpClient {
 
     private final int readTimeout;
 
-    public HttpClient(int connectTimeout, int readTimeout) {
-        this.connectTimeout = connectTimeout;
-        this.readTimeout = readTimeout;
+    public HttpClient(Builder builder) {
+        this.connectTimeout = builder.connectTimeout;
+        this.readTimeout = builder.readTimeout;
     }
 
     public HttpResponse execute(HttpRequest request) throws IOException {
@@ -30,7 +31,7 @@ public final class HttpClient {
 
         HttpHeaders headers = new HttpHeaders(urlConn.getHeaderFields());
         HttpRespStatus status = HttpRespStatus.valueOf(urlConn.getResponseCode());
-        if (HttpStatusClass.SUCCESS.contains(status.getCode())) {
+        if (HttpStatusClass.SUCCESS.contains(status.code())) {
             return new HttpResponse(status, headers, urlConn.getInputStream());
         } else {
             return new HttpResponse(status, headers, urlConn.getErrorStream());
@@ -73,11 +74,42 @@ public final class HttpClient {
     private void writeBody(HttpRequest request, HttpURLConnection conn) throws IOException {
         HttpMethod method = request.getMethod();
         byte[] body = request.getBody();
-        if (method.isPermitsBody() && body != null && body.length > 0) {
-            try (BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(conn.getOutputStream())) {
-                bufferedOutputStream.write(body);
+        if (method.isPermitsBody() && ArrayUtils.isNotEmpty(body)) {
+            try (BufferedOutputStream bufferedOs = new BufferedOutputStream(conn.getOutputStream())) {
+                bufferedOs.write(body);
             }
         }
+    }
+
+    public static class Builder {
+
+        private static final int DEFAULT_CONNECT_TIMEOUT = 1000;
+
+        private static final int DEFAULT_READ_TIMEOUT = 3000;
+
+        private int connectTimeout;
+
+        private int readTimeout;
+
+        public Builder() {
+            this.connectTimeout = DEFAULT_CONNECT_TIMEOUT;
+            this.readTimeout = DEFAULT_READ_TIMEOUT;
+        }
+
+        public Builder connectTimeout(int connectTimeout) {
+            this.connectTimeout = connectTimeout;
+            return this;
+        }
+
+        public Builder readTimeout(int readTimeout) {
+            this.readTimeout = readTimeout;
+            return this;
+        }
+
+        public HttpClient build() {
+            return new HttpClient(this);
+        }
+
     }
 
 }

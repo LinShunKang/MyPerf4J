@@ -2,7 +2,8 @@ package cn.myperf4j.base.metric.formatter.influxdb;
 
 import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.metric.JvmGcMetrics;
-import cn.myperf4j.base.metric.formatter.JvmGCMetricsFormatter;
+import cn.myperf4j.base.metric.formatter.JvmGcMetricsFormatter;
+import cn.myperf4j.base.util.IpUtils;
 import cn.myperf4j.base.util.NumFormatUtils;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
 /**
  * Created by LinShunkang on 2020/5/17
  */
-public class InfluxJvmGcMetricsFormatter implements JvmGCMetricsFormatter {
+public class InfluxJvmGcMetricsFormatter implements JvmGcMetricsFormatter {
 
     private static final ThreadLocal<StringBuilder> SB_TL = new ThreadLocal<StringBuilder>() {
         @Override
@@ -38,6 +39,7 @@ public class InfluxJvmGcMetricsFormatter implements JvmGCMetricsFormatter {
     private void appendLineProtocol(JvmGcMetrics metrics, long startNanos, StringBuilder sb) {
         sb.append("jvm_gc_metrics_v2")
                 .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
+                .append(",host=").append(IpUtils.getLocalhostName())
                 .append(" YoungGcCount=").append(metrics.getYoungGcCount()).append('i')
                 .append(",YoungGcTime=").append(metrics.getYoungGcTime()).append('i')
                 .append(",AvgYoungGcTime=").append(NumFormatUtils.doubleFormat(metrics.getAvgYoungGcTime()))

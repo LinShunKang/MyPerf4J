@@ -3,14 +3,14 @@ package cn.myperf4j.base.metric.processor.log;
 import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.log.ILogger;
 import cn.myperf4j.base.log.LoggerFactory;
-import cn.myperf4j.base.metric.processor.JvmCompilationProcessor;
+import cn.myperf4j.base.metric.processor.JvmFileDescMetricsProcessor;
 
 /**
  * Created by LinShunkang on 2019/11/09
  */
-public abstract class AbstractLogJvmCompilationProcessor implements JvmCompilationProcessor {
+public abstract class AbstractLogJvmFileDescMetricsProcessor implements JvmFileDescMetricsProcessor {
 
-    protected ILogger logger = LoggerFactory.getLogger(ProfilingConfig.getInstance().getCompilationMetricsFile());
+    protected ILogger logger = LoggerFactory.getLogger(ProfilingConfig.getInstance().getFileDescMetricsFile());
 
     @Override
     public void beforeProcess(long processId, long startMillis, long stopMillis) {

@@ -24,7 +24,7 @@ public class HttpRespStatusTest {
         Assert.assertEquals(BAD_REQUEST, HttpRespStatus.valueOf(400));
         Assert.assertEquals(INTERNAL_SERVER_ERROR, HttpRespStatus.valueOf(500));
 
-        Assert.assertEquals(100, HttpRespStatus.valueOf(100).getCode());
-        Assert.assertEquals(200, HttpRespStatus.valueOf(200).getCode());
+        Assert.assertEquals(100, HttpRespStatus.valueOf(100).code());
+        Assert.assertEquals(200, HttpRespStatus.valueOf(200).code());
     }
 }

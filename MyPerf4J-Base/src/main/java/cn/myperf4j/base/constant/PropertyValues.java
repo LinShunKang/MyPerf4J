@@ -21,6 +21,8 @@ public interface PropertyValues {
 
     int METRICS_PROCESS_TYPE_INFLUX_DB = 2;
 
+    int METRICS_PROCESS_TYPE_INFLUX_DB_HTTP = 3;//TODO:LSK 临时的！！！
+
     int DEFAULT_LOG_RESERVE_COUNT = 7;
 
     String LOG_ROLLING_TIME_MINUTELY = "MINUTELY";
@@ -46,5 +48,19 @@ public interface PropertyValues {
     char ELE_KV_SEPARATOR = ':';
 
     char ARR_ELE_SEPARATOR = ',';
+
+
+    interface Metrics {
+
+        String PROCESSOR_LOG_STDOUT = "log.stdout";
+
+        String PROCESSOR_LOG_STANDARD = "log.standard";
+
+        String PROCESSOR_LOG_INFLUX_DB = "log.influxdb";
+
+        String PROCESSOR_HTTP_INFLUX_DB = "http.influxdb";
+
+    }
+
 
 }
