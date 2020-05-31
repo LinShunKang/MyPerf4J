@@ -1,5 +1,7 @@
 package cn.myperf4j.base.constant;
 
+import cn.myperf4j.base.config.ConfigKey;
+
 /**
  * Created by LinShunkang on 2018/4/27
  */
@@ -7,141 +9,92 @@ public interface PropertyKeys {
 
     String PRO_FILE_NAME = "MyPerf4JPropFile";
 
-    String PRO_FILE_DIR = "MyPerf4JPropDIR";
+    interface Basic {
 
-    String APP_NAME = "app_name";
+        ConfigKey APP_NAME = ConfigKey.of("app_name", "AppName");
 
-    String DEBUG = "debug";
+        ConfigKey DEBUG = ConfigKey.of("debug", "Debug.PrintDebugLog");
 
-    String METRICS_PROCESS_TYPE = "MetricsProcessorType";
+        ConfigKey PROPERTIES_FILE_DIR = ConfigKey.of("properties.dir", "MyPerf4JPropDIR");
 
-    String METHOD_METRICS_FILE = "MethodMetricsFile";
-
-    String CLASS_METRICS_FILE = "ClassMetricsFile";
-
-    String GC_METRICS_FILE = "GCMetricsFile";
-
-    String MEM_METRICS_FILE = "MemMetricsFile";
-
-    String BUF_POOL_METRICS_FILE = "BufPoolMetricsFile";
-
-    String THREAD_METRICS_FILE = "ThreadMetricsFile";
-
-    String FILE_DESC_METRICS_FILE = "FileDescMetricsFile";
-
-    String COMPILATION_METRICS_FILE = "CompilationMetricsFile";
-
-    String LOG_ROLLING_TIME_TIME_UNIT = "LogRollingTimeUnit";
-
-    String LOG_RESERVE_COUNT = "LogReserveCount";
-
-    String RECORDER_MODE = "RecorderMode";
-
-    String BACKUP_RECORDERS_COUNT = "BackupRecordersCount";
-
-    @Deprecated
-    String MILLI_TIME_SLICE = "MilliTimeSlice";
-
-    String METHOD_MILLI_TIME_SLICE = "MethodMilliTimeSlice";
-
-    String JVM_MILLI_TIME_SLICE = "JvmMilliTimeSlice";
-
-    String SHOW_METHOD_PARAMS = "ShowMethodParams";
-
-    String CLASS_LEVEL_MAPPING = "ClassLevelMapping";
-
-    String FILTER_INCLUDE_PACKAGES = "IncludePackages";
-
-    String FILTER_EXCLUDE_PACKAGES = "ExcludePackages";
-
-    String DEBUG_PRINT_DEBUG_LOG = "Debug.PrintDebugLog";
-
-    String FILTER_EXCLUDE_METHODS = "ExcludeMethods";
-
-    String EXCLUDE_PRIVATE_METHODS = "ExcludePrivateMethod";
-
-    String FILTER_INCLUDE_CLASS_LOADERS = "ExcludeClassLoaders";
-
-    String PROFILING_PARAMS_FILE_NAME = "ProfilingParamsFile";
-
-    String PROFILING_TIME_THRESHOLD = "ProfilingTimeThreshold";
-
-    String PROFILING_OUT_THRESHOLD_COUNT = "ProfilingOutThresholdCount";
-
+    }
 
     interface Metrics {
 
-        String EXPORTER = "metrics.exporter";
+        ConfigKey EXPORTER = ConfigKey.of("metrics.exporter", "MetricsProcessorType");
 
-        String TIME_SLICE_METHOD = "metrics.time_slice.method";
+        ConfigKey TIME_SLICE_METHOD = ConfigKey.of("metrics.time_slice.method", "MethodMilliTimeSlice");
 
-        String TIME_SLICE_JVM = "metrics.time_slice.jvm";
+        ConfigKey TIME_SLICE_JVM = ConfigKey.of("metrics.time_slice.jvm", "JvmMilliTimeSlice");
 
-        String SHOW_PARAMS = "metrics.method.show_params";
+        ConfigKey METHOD_SHOW_PARAMS = ConfigKey.of("metrics.method.show_params", "ShowMethodParams");
 
-        String CLASS_LEVEL_MAPPING = "metrics.method.class_level_mapping";
+        ConfigKey CLASS_LEVEL_MAPPINGS = ConfigKey.of("metrics.method.class_level_mappings", "ClassLevelMapping");
 
-        String LOG_METHOD = "metrics.log.method";
+        ConfigKey LOG_METHOD = ConfigKey.of("metrics.log.method", "MethodMetricsFile");
 
-        String LOG_CLASS_LOADING = "metrics.log.class_loading";
+        ConfigKey LOG_CLASS_LOADING = ConfigKey.of("metrics.log.class_loading", "ClassMetricsFile");
 
-        String LOG_GC = "metrics.log.gc";
+        ConfigKey LOG_GC = ConfigKey.of("metrics.log.gc", "GCMetricsFile");
 
-        String LOG_MEMORY = "metrics.log.memory";
+        ConfigKey LOG_MEMORY = ConfigKey.of("metrics.log.memory", "MemMetricsFile");
 
-        String LOG_BUFF_POOL = "metrics.log.buff_pool";
+        ConfigKey LOG_BUFF_POOL = ConfigKey.of("metrics.log.buff_pool", "BufPoolMetricsFile");
 
-        String LOG_THREAD = "metrics.log.thread";
+        ConfigKey LOG_THREAD = ConfigKey.of("metrics.log.thread", "ThreadMetricsFile");
 
-        String LOG_FILE_DESC = "metrics.log.file_desc";
+        ConfigKey LOG_FILE_DESC = ConfigKey.of("metrics.log.file_desc", "FileDescMetricsFile");
 
-        String LOG_COMPILATION = "metrics.log.compilation";
+        ConfigKey LOG_COMPILATION = ConfigKey.of("metrics.log.compilation", "CompilationMetricsFile");
+
+        ConfigKey LOG_ROLLING_TIME_UNIT = ConfigKey.of("metrics.log.rolling.time_unit", "LogRollingTimeUnit");
+
+        ConfigKey LOG_RESERVE_COUNT = ConfigKey.of("metrics.log.reserve.count", "LogReserveCount");
 
     }
 
     interface InfluxDB {
 
-        String HOST = "influxdb.host";
+        ConfigKey HOST = ConfigKey.of("influxdb.host", "influxdb.host");
 
-        String PORT = "influxdb.port";
+        ConfigKey PORT = ConfigKey.of("influxdb.port", "influxdb.port");
 
-        String DATABASE = "influxdb.database";
+        ConfigKey DATABASE = ConfigKey.of("influxdb.database", "influxdb.database");
 
-        String USERNAME = "influxdb.username";
+        ConfigKey USERNAME = ConfigKey.of("influxdb.username", "influxdb.username");
 
-        String PASSWORD = "influxdb.password";
+        ConfigKey PASSWORD = ConfigKey.of("influxdb.password", "influxdb.password");
 
-        String CONN_TIMEOUT = "influxdb.conn_timeout";
+        ConfigKey CONN_TIMEOUT = ConfigKey.of("influxdb.conn_timeout", "influxdb.conn_timeout");
 
-        String READ_TIMEOUT = "influxdb.READ_TIMEOUT";
+        ConfigKey READ_TIMEOUT = ConfigKey.of("influxdb.read_timeout", "influxdb.read_timeout");
 
     }
 
     interface Filter {
 
-        String PACKAGES_INCLUDE = "filter.packages.include";
+        ConfigKey PACKAGES_INCLUDE = ConfigKey.of("filter.packages.include", "IncludePackages");
 
-        String PACKAGES_EXCLUDE = "filter.packages.exclude";
+        ConfigKey PACKAGES_EXCLUDE = ConfigKey.of("filter.packages.exclude", "ExcludePackages");
 
-        String METHODS_EXCLUDE = "filter.methods.exclude";
+        ConfigKey METHODS_EXCLUDE = ConfigKey.of("filter.methods.exclude", "ExcludeMethods");
 
-        String METHODS_EXCLUDE_PRIVATE = "filter.methods.exclude_private";
+        ConfigKey METHODS_EXCLUDE_PRIVATE = ConfigKey.of("filter.methods.exclude_private", "ExcludePrivateMethod");
 
-        String CLASS_LOADERS_EXCLUDE = "filter.class_loaders.exclude";
+        ConfigKey CLASS_LOADERS_EXCLUDE = ConfigKey.of("filter.class_loaders.exclude", "ExcludeClassLoaders");
 
     }
 
     interface Recorder {
 
-        String MODE = "recorder.mode";
+        ConfigKey BACKUP_COUNT = ConfigKey.of("recorders.backup_count", "BackupRecordersCount");
 
-        String BACKUP_COUNT = "recorder.backup_count";
+        ConfigKey MODE = ConfigKey.of("recorder.mode", "RecorderMode");
 
-        String SIZE_TIMING_ARR = "recorder.size.timing_arr";
+        ConfigKey SIZE_TIMING_ARR = ConfigKey.of("recorder.size.timing_arr", "ProfilingTimeThreshold");
 
-        String SIZE_TIMING_MAP = "recorder.size.timing_map";
-
-        String PARAMS_FILE = "recorder.params_file";
+        ConfigKey SIZE_TIMING_MAP = ConfigKey.of("recorder.size.timing_map", "ProfilingOutThresholdCount");
 
     }
+
 }

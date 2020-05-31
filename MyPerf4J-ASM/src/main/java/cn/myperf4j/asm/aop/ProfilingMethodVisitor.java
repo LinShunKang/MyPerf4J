@@ -2,6 +2,8 @@ package cn.myperf4j.asm.aop;
 
 import cn.myperf4j.asm.ASMRecorderMaintainer;
 import cn.myperf4j.base.MethodTag;
+import cn.myperf4j.base.config.MetricsConfig;
+import cn.myperf4j.base.config.RecorderConfig;
 import cn.myperf4j.core.recorder.AbstractRecorderMaintainer;
 import cn.myperf4j.core.MethodTagMaintainer;
 import cn.myperf4j.base.config.ProfilingConfig;
@@ -20,7 +22,9 @@ public class ProfilingMethodVisitor extends AdviceAdapter {
 
     private final AbstractRecorderMaintainer maintainer = ASMRecorderMaintainer.getInstance();
 
-    private final ProfilingConfig profilingConfig = ProfilingConfig.getInstance();
+    private final MetricsConfig metricsConf = ProfilingConfig.metricsConfig();
+
+    private final RecorderConfig recorderConf = ProfilingConfig.recorderConfig();
 
     private final String innerClassName;
 
@@ -46,14 +50,14 @@ public class ProfilingMethodVisitor extends AdviceAdapter {
     }
 
     private MethodTag getMethodTag(String fullClassName, String simpleClassName, String classLevel, String methodName, String humanMethodDesc) {
-        String methodParamDesc = profilingConfig.isShowMethodParams() ? humanMethodDesc : "";
+        String methodParamDesc = metricsConf.showMethodParams() ? humanMethodDesc : "";
         return MethodTag.getGeneralInstance(fullClassName, simpleClassName, classLevel, methodName, methodParamDesc);
     }
 
     @Override
     protected void onMethodEnter() {
         if (profiling()) {
-            maintainer.addRecorder(methodTagId, profilingConfig.getProfilingParam(innerClassName + "/" + methodName));
+            maintainer.addRecorder(methodTagId, recorderConf.getProfilingParam(innerClassName + "/" + methodName));
 
             mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "nanoTime", "()J", false);
             startTimeIdentifier = newLocal(Type.LONG_TYPE);

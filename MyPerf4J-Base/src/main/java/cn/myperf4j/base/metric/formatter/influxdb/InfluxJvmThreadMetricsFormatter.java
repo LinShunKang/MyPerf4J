@@ -39,7 +39,7 @@ public class InfluxJvmThreadMetricsFormatter implements JvmThreadMetricsFormatte
 
     private void appendLineProtocol(JvmThreadMetrics metrics, long startNanos, StringBuilder sb) {
         sb.append("jvm_thread_metrics")
-                .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
+                .append(",AppName=").append(ProfilingConfig.basicConfig().appName())
                 .append(",host=").append(processTagOrField(getLocalhostName()))
                 .append(" TotalStarted=").append(metrics.getTotalStarted()).append('i')
                 .append(",Active=").append(metrics.getActive()).append('i')

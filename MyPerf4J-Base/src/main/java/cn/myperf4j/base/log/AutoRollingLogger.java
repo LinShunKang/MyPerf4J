@@ -1,6 +1,6 @@
 package cn.myperf4j.base.log;
 
-import cn.myperf4j.base.constant.PropertyValues;
+import cn.myperf4j.base.constant.PropertyValues.Metrics;
 import cn.myperf4j.base.file.AutoRollingFileWriter;
 import cn.myperf4j.base.file.DailyRollingFileWriter;
 import cn.myperf4j.base.file.HourlyRollingFileWriter;
@@ -14,10 +14,10 @@ public class AutoRollingLogger implements ILogger {
 
     AutoRollingLogger(String logFile, String rollingTimeUnit, int reserveFileCount) {
         switch (rollingTimeUnit.toUpperCase()) {
-            case PropertyValues.LOG_ROLLING_TIME_HOURLY:
+            case Metrics.LOG_ROLLING_HOURLY:
                 this.writer = new HourlyRollingFileWriter(logFile, reserveFileCount);
                 break;
-            case PropertyValues.LOG_ROLLING_TIME_MINUTELY:
+            case Metrics.LOG_ROLLING_MINUTELY:
                 this.writer = new MinutelyRollingFileWriter(logFile, reserveFileCount);
                 break;
             default:

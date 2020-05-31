@@ -39,7 +39,7 @@ public final class InfluxJvmClassMetricsFormatter implements JvmClassMetricsForm
 
     private void appendLineProtocol(JvmClassMetrics metrics, long startNanos, StringBuilder sb) {
         sb.append("jvm_class_metrics")
-                .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
+                .append(",AppName=").append(ProfilingConfig.basicConfig().appName())
                 .append(",host=").append(processTagOrField(getLocalhostName()))
                 .append(" Total=").append(metrics.getTotal()).append('i')
                 .append(",Loaded=").append(metrics.getLoaded()).append('i')

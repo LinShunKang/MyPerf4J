@@ -39,7 +39,7 @@ public final class InfluxJvmFileDescMetricsFormatter implements JvmFileDescMetri
 
     private void appendLineProtocol(JvmFileDescriptorMetrics metrics, long startNanos, StringBuilder sb) {
         sb.append("jvm_file_descriptor_metrics")
-                .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
+                .append(",AppName=").append(ProfilingConfig.basicConfig().appName())
                 .append(",host=").append(processTagOrField(getLocalhostName()))
                 .append(" OpenCount=").append(metrics.getOpenCount()).append('i')
                 .append(",OpenPercent=").append(metrics.getOpenPercent())

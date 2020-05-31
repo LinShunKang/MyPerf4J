@@ -42,7 +42,7 @@ public class MethodMetricsHistogram {
 
     public static void buildSysGenProfilingFile() {
         long startMills = System.currentTimeMillis();
-        String filePath = ProfilingConfig.getInstance().getSysProfilingParamsFile();
+        String filePath = ProfilingConfig.basicConfig().sysProfilingParamsFile();
         String tempFilePath = filePath + "_tmp";
         File tempFile = new File(tempFilePath);
         try (BufferedWriter fileWriter = new BufferedWriter(new FileWriter(tempFile, false), 8 * 1024)) {

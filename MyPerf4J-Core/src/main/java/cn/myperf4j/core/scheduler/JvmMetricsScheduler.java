@@ -3,7 +3,7 @@ package cn.myperf4j.core.scheduler;
 import cn.myperf4j.base.Scheduler;
 import cn.myperf4j.base.metric.*;
 import cn.myperf4j.base.metric.collector.*;
-import cn.myperf4j.base.metric.processor.*;
+import cn.myperf4j.base.metric.exporter.*;
 import cn.myperf4j.base.util.Logger;
 
 import java.lang.management.*;
@@ -14,27 +14,27 @@ import java.util.List;
  */
 public class JvmMetricsScheduler implements Scheduler {
 
-    private final JvmClassMetricsProcessor classMetricsProcessor;
+    private final JvmClassMetricsExporter classMetricsProcessor;
 
-    private final JvmGcMetricsProcessor gcMetricsProcessor;
+    private final JvmGcMetricsExporter gcMetricsProcessor;
 
-    private final JvmMemoryMetricsProcessor memoryMetricsProcessor;
+    private final JvmMemoryMetricsExporter memoryMetricsProcessor;
 
-    private final JvmBufferPoolMetricsProcessor bufferPoolMetricsProcessor;
+    private final JvmBufferPoolMetricsExporter bufferPoolMetricsProcessor;
 
-    private final JvmThreadMetricsProcessor threadMetricsProcessor;
+    private final JvmThreadMetricsExporter threadMetricsProcessor;
 
-    private final JvmCompilationMetricsProcessor compilationProcessor;
+    private final JvmCompilationMetricsExporter compilationProcessor;
 
-    private final JvmFileDescMetricsProcessor fileDescProcessor;
+    private final JvmFileDescMetricsExporter fileDescProcessor;
 
-    public JvmMetricsScheduler(JvmClassMetricsProcessor classMetricsProcessor,
-                               JvmGcMetricsProcessor gcMetricsProcessor,
-                               JvmMemoryMetricsProcessor memoryMetricsProcessor,
-                               JvmBufferPoolMetricsProcessor bufferPoolMetricsProcessor,
-                               JvmThreadMetricsProcessor threadMetricsProcessor,
-                               JvmCompilationMetricsProcessor compilationProcessor,
-                               JvmFileDescMetricsProcessor fileDescProcessor) {
+    public JvmMetricsScheduler(JvmClassMetricsExporter classMetricsProcessor,
+                               JvmGcMetricsExporter gcMetricsProcessor,
+                               JvmMemoryMetricsExporter memoryMetricsProcessor,
+                               JvmBufferPoolMetricsExporter bufferPoolMetricsProcessor,
+                               JvmThreadMetricsExporter threadMetricsProcessor,
+                               JvmCompilationMetricsExporter compilationProcessor,
+                               JvmFileDescMetricsExporter fileDescProcessor) {
         this.classMetricsProcessor = classMetricsProcessor;
         this.gcMetricsProcessor = gcMetricsProcessor;
         this.memoryMetricsProcessor = memoryMetricsProcessor;

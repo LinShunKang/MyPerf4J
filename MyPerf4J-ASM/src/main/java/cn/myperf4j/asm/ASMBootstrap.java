@@ -1,6 +1,7 @@
 package cn.myperf4j.asm;
 
 import cn.myperf4j.asm.aop.ProfilingAspect;
+import cn.myperf4j.base.config.RecorderConfig;
 import cn.myperf4j.core.AbstractBootstrap;
 import cn.myperf4j.core.recorder.AbstractRecorderMaintainer;
 import cn.myperf4j.base.config.ProfilingConfig;
@@ -24,11 +25,9 @@ public class ASMBootstrap extends AbstractBootstrap {
 
     @Override
     public AbstractRecorderMaintainer doInitRecorderMaintainer() {
-        boolean accurateMode = ProfilingConfig.getInstance().isAccurateMode();
-        int backupRecorderCount = ProfilingConfig.getInstance().getBackupRecorderCount();
-
+        RecorderConfig recorderConf = ProfilingConfig.recorderConfig();
         ASMRecorderMaintainer maintainer = ASMRecorderMaintainer.getInstance();
-        if (maintainer.initial(processor, accurateMode, backupRecorderCount)) {
+        if (maintainer.initial(processor, recorderConf.accurateMode(), recorderConf.backupCount())) {
             return maintainer;
         }
         return null;

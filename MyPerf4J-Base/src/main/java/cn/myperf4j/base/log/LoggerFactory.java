@@ -1,14 +1,15 @@
 package cn.myperf4j.base.log;
 
+import cn.myperf4j.base.config.MetricsConfig;
 import cn.myperf4j.base.config.ProfilingConfig;
-import cn.myperf4j.base.constant.PropertyValues;
+import cn.myperf4j.base.constant.PropertyValues.Metrics;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public final class LoggerFactory {
 
-    private static final ProfilingConfig CONFIG = ProfilingConfig.getInstance();
+    private static final MetricsConfig METRICS_CONFIG = ProfilingConfig.metricsConfig();
 
     private static final Map<String, ILogger> LOGGER_MAP = new HashMap<>();
 
@@ -30,9 +31,9 @@ public final class LoggerFactory {
     public static synchronized ILogger getLogger(String logFile) {
         logFile = logFile.trim();
 
-        if (logFile.equalsIgnoreCase(PropertyValues.NULL_FILE)) {
+        if (logFile.equalsIgnoreCase(Metrics.NULL_FILE)) {
             return new NullLogger();
-        } else if (logFile.equalsIgnoreCase(PropertyValues.STDOUT_FILE)) {
+        } else if (logFile.equalsIgnoreCase(Metrics.STDOUT_FILE)) {
             return new StdoutLogger();
         }
 
@@ -41,7 +42,7 @@ public final class LoggerFactory {
             return logger;
         }
 
-        logger = new AutoRollingLogger(logFile, CONFIG.getLogRollingTimeUnit(), CONFIG.getLogReserveCount());
+        logger = new AutoRollingLogger(logFile, METRICS_CONFIG.logRollingTimeUnit(), METRICS_CONFIG.logReserveCount());
         LOGGER_MAP.put(logFile, logger);
         return logger;
     }

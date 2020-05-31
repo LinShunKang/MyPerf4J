@@ -48,7 +48,7 @@ public final class InfluxMethodMetricsFormatter implements MethodMetricsFormatte
         MethodTag methodTag = metrics.getMethodTag();
         String methodDesc = processTagOrField(methodTag.getSimpleDesc());
         sb.append("method_metrics")
-                .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
+                .append(",AppName=").append(ProfilingConfig.basicConfig().appName())
                 .append(",ClassName=").append(methodTag.getSimpleClassName())
                 .append(",Method=").append(methodDesc)
                 .append(",Type=").append(methodTag.getType())

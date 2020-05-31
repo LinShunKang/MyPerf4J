@@ -39,7 +39,7 @@ public final class InfluxJvmCompilationMetricsFormatter implements JvmCompilatio
 
     private void appendLineProtocol(JvmCompilationMetrics metrics, long startNanos, StringBuilder sb) {
         sb.append("jvm_compilation_metrics")
-                .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
+                .append(",AppName=").append(ProfilingConfig.basicConfig().appName())
                 .append(",host=").append(processTagOrField(getLocalhostName()))
                 .append(" Time=").append(metrics.getTime()).append('i')
                 .append(",TotalTime=").append(metrics.getTotalTime()).append('i')

@@ -1,17 +1,21 @@
 package cn.myperf4j.core;
 
+import cn.myperf4j.base.config.BasicConfig;
+import cn.myperf4j.base.config.FilterConfig;
+import cn.myperf4j.base.config.InfluxDbConfig;
 import cn.myperf4j.base.config.LevelMappingFilter;
+import cn.myperf4j.base.config.MetricsConfig;
 import cn.myperf4j.base.config.ProfilingConfig;
-import cn.myperf4j.base.config.ProfilingConfig.InfluxDBConfig;
-import cn.myperf4j.base.config.ProfilingConfig.MetricsConfig;
 import cn.myperf4j.base.config.ProfilingFilter;
+import cn.myperf4j.base.config.RecorderConfig;
 import cn.myperf4j.base.constant.PropertyKeys;
-import cn.myperf4j.base.constant.PropertyKeys.InfluxDB;
 import cn.myperf4j.base.constant.PropertyValues;
-import cn.myperf4j.base.metric.processor.*;
+import cn.myperf4j.base.constant.PropertyValues.Separator;
+import cn.myperf4j.base.metric.exporter.*;
 import cn.myperf4j.base.util.ExecutorManager;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.config.MyProperties;
+import cn.myperf4j.base.util.NumUtils;
 import cn.myperf4j.base.util.StrUtils;
 import cn.myperf4j.core.recorder.AbstractRecorderMaintainer;
 import cn.myperf4j.core.scheduler.JvmMetricsScheduler;
@@ -26,6 +30,7 @@ import java.lang.management.RuntimeMXBean;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static cn.myperf4j.base.constant.PropertyKeys.Basic.PROPERTIES_FILE_DIR;
 import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
 
 /**
@@ -35,7 +40,7 @@ public abstract class AbstractBootstrap {
 
     private volatile boolean initStatus = false;
 
-    protected MethodMetricsProcessor processor;
+    protected MethodMetricsExporter processor;
 
     protected AbstractRecorderMaintainer maintainer;
 
@@ -97,8 +102,8 @@ public abstract class AbstractBootstrap {
             return false;
         }
 
-        if (!initPerfStatsProcessor()) {
-            Logger.error("AbstractBootstrap initPerfStatsProcessor() FAILURE!!!");
+        if (!initMethodMetricsExporter()) {
+            Logger.error("AbstractBootstrap initMethodMetricsExporter() FAILURE!!!");
             return false;
         }
 
@@ -135,7 +140,7 @@ public abstract class AbstractBootstrap {
             Properties properties = new Properties();
             properties.load(in);
 
-            properties.put(PropertyKeys.PRO_FILE_DIR, getConfigFileDir(configFilePath));
+            properties.put(PROPERTIES_FILE_DIR.key(), getConfigFileDir(configFilePath));
             return MyProperties.initial(properties);
         } catch (IOException e) {
             Logger.error("AbstractBootstrap.initProperties()", e);
@@ -155,22 +160,11 @@ public abstract class AbstractBootstrap {
 
     private boolean initProfilingConfig() {
         try {
-            ProfilingConfig config = ProfilingConfig.getInstance();
-
-            initAppName(config);
-            initMetricsFileConfig(config);
-            initLogConfig(config);
-            initTimeSliceConfig(config);
-            initInfluxDBConfig(config);
-            initRecorderConfig(config);
-            initFiltersConfig(config);
-            initProfilingParamsConfig(config);
-
-            config.setConfigFileDir(MyProperties.getStr(PropertyKeys.PRO_FILE_DIR));
-            config.setClassLevelMappings(MyProperties.getStr(PropertyKeys.CLASS_LEVEL_MAPPING, ""));
-            config.setShowMethodParams(MyProperties.getBoolean(PropertyKeys.SHOW_METHOD_PARAMS, false));
-            config.setPrintDebugLog(MyProperties.getBoolean(PropertyKeys.DEBUG_PRINT_DEBUG_LOG, false));
-
+            ProfilingConfig.basicConfig(BasicConfig.loadBasicConfig());
+            ProfilingConfig.metricsConfig(MetricsConfig.loadMetricsConfig());
+            ProfilingConfig.influxDBConfig(InfluxDbConfig.loadInfluxDbConfig());
+            ProfilingConfig.filterConfig(FilterConfig.loadFilterConfig());
+            ProfilingConfig.recorderConfig(RecorderConfig.loadRecorderConfig());
             return true;
         } catch (Exception e) {
             Logger.error("AbstractBootstrap.initProfilingConfig()", e);
@@ -178,92 +172,9 @@ public abstract class AbstractBootstrap {
         return false;
     }
 
-    private void initAppName(ProfilingConfig config) {
-        String appName = MyProperties.getStr(PropertyKeys.APP_NAME);
-        if (StrUtils.isBlank(appName)) {
-            throw new IllegalArgumentException("AppName is required!!!");
-        }
-        config.setAppName(appName);
-    }
-
-    private void initMetricsFileConfig(ProfilingConfig config) {
-        MetricsConfig metricsConfig = new MetricsConfig();
-        config.metricsConfig(metricsConfig);
-
-        metricsConfig.metricsProcessorType(MyProperties.getInt(PropertyKeys.METRICS_PROCESS_TYPE, PropertyValues.METRICS_PROCESS_TYPE_STDOUT));
-        config.setMetricsProcessorType(MyProperties.getInt(PropertyKeys.METRICS_PROCESS_TYPE, PropertyValues.METRICS_PROCESS_TYPE_STDOUT));
-        if (config.getMetricsProcessorType() == PropertyValues.METRICS_PROCESS_TYPE_STDOUT) {
-            config.setMethodMetricsFile(PropertyValues.STDOUT_FILE);
-            config.setClassMetricsFile(PropertyValues.STDOUT_FILE);
-            config.setGcMetricsFile(PropertyValues.STDOUT_FILE);
-            config.setMemoryMetricsFile(PropertyValues.STDOUT_FILE);
-            config.setBufferPoolMetricsFile(PropertyValues.STDOUT_FILE);
-            config.setThreadMetricsFile(PropertyValues.STDOUT_FILE);
-            config.setCompilationMetricsFile(PropertyValues.STDOUT_FILE);
-            config.setFileDescMetricsFile(PropertyValues.STDOUT_FILE);
-        } else {
-            config.setMethodMetricsFile(MyProperties.getStr(PropertyKeys.METHOD_METRICS_FILE, PropertyValues.DEFAULT_METRICS_FILE));
-            config.setClassMetricsFile(MyProperties.getStr(PropertyKeys.CLASS_METRICS_FILE, PropertyValues.NULL_FILE));
-            config.setGcMetricsFile(MyProperties.getStr(PropertyKeys.GC_METRICS_FILE, PropertyValues.NULL_FILE));
-            config.setMemoryMetricsFile(MyProperties.getStr(PropertyKeys.MEM_METRICS_FILE, PropertyValues.NULL_FILE));
-            config.setBufferPoolMetricsFile(MyProperties.getStr(PropertyKeys.BUF_POOL_METRICS_FILE, PropertyValues.NULL_FILE));
-            config.setThreadMetricsFile(MyProperties.getStr(PropertyKeys.THREAD_METRICS_FILE, PropertyValues.NULL_FILE));
-            config.setCompilationMetricsFile(MyProperties.getStr(PropertyKeys.COMPILATION_METRICS_FILE, PropertyValues.NULL_FILE));
-            config.setFileDescMetricsFile(MyProperties.getStr(PropertyKeys.FILE_DESC_METRICS_FILE, PropertyValues.NULL_FILE));
-        }
-    }
-
-    private void initLogConfig(ProfilingConfig config) {
-        config.setLogRollingTimeUnit(MyProperties.getStr(PropertyKeys.LOG_ROLLING_TIME_TIME_UNIT, PropertyValues.LOG_ROLLING_TIME_DAILY));
-        config.setLogReserveCount(MyProperties.getInt(PropertyKeys.LOG_RESERVE_COUNT, PropertyValues.DEFAULT_LOG_RESERVE_COUNT));
-    }
-
-    private void initTimeSliceConfig(ProfilingConfig config) {
-        config.setMilliTimeSlice(MyProperties.getLong(PropertyKeys.MILLI_TIME_SLICE, PropertyValues.DEFAULT_TIME_SLICE));
-        config.setMethodMilliTimeSlice(MyProperties.getLong(PropertyKeys.METHOD_MILLI_TIME_SLICE, config.getMilliTimeSlice()));
-        config.setJvmMilliTimeSlice(MyProperties.getLong(PropertyKeys.JVM_MILLI_TIME_SLICE, config.getMilliTimeSlice()));
-    }
-
-    //TODO:LSK 需要先判断 是否需要读取 InfluxDBConfig
-    private void initInfluxDBConfig(ProfilingConfig config) {
-        InfluxDBConfig influxDB = new InfluxDBConfig();
-        config.influxDBConfig(influxDB);
-
-        influxDB.host(MyProperties.getStr(InfluxDB.HOST));
-        influxDB.port(MyProperties.getInt(InfluxDB.PORT, 8086));
-        influxDB.database(MyProperties.getStr(InfluxDB.DATABASE));
-        influxDB.username(MyProperties.getStr(InfluxDB.USERNAME));
-        influxDB.password(MyProperties.getStr(InfluxDB.PASSWORD));
-        influxDB.connectTimeout(MyProperties.getInt(InfluxDB.CONN_TIMEOUT, 1000));
-        influxDB.readTimeout(MyProperties.getInt(InfluxDB.READ_TIMEOUT, 3000));
-    }
-
-    private void initRecorderConfig(ProfilingConfig config) {
-        config.setRecorderMode(MyProperties.getStr(PropertyKeys.RECORDER_MODE, PropertyValues.RECORDER_MODE_ACCURATE));
-        config.setBackupRecorderCount(MyProperties.getInt(PropertyKeys.BACKUP_RECORDERS_COUNT, PropertyValues.MIN_BACKUP_RECORDERS_COUNT));
-    }
-
-    private void initFiltersConfig(ProfilingConfig config) {
-        String includePackages = MyProperties.getStr(PropertyKeys.FILTER_INCLUDE_PACKAGES, "");
-        if (StrUtils.isBlank(includePackages)) {
-            throw new IllegalArgumentException("IncludePackages is required!!!");
-        }
-
-        config.setIncludePackages(includePackages);
-        config.setExcludePackages(MyProperties.getStr(PropertyKeys.FILTER_EXCLUDE_PACKAGES, ""));
-        config.setExcludeMethods(MyProperties.getStr(PropertyKeys.FILTER_EXCLUDE_METHODS, ""));
-        config.setExcludePrivateMethod(MyProperties.getBoolean(PropertyKeys.EXCLUDE_PRIVATE_METHODS, true));
-        config.setExcludeClassLoaders(MyProperties.getStr(PropertyKeys.FILTER_INCLUDE_CLASS_LOADERS, ""));
-    }
-
-    private void initProfilingParamsConfig(ProfilingConfig config) {
-        config.setProfilingParamsFile(MyProperties.getStr(PropertyKeys.PROFILING_PARAMS_FILE_NAME, ""));
-        config.setCommonProfilingParams(MyProperties.getInt(PropertyKeys.PROFILING_TIME_THRESHOLD, 1024), MyProperties.getInt(PropertyKeys.PROFILING_OUT_THRESHOLD_COUNT, 16));
-    }
-
     private boolean initLogger() {
         try {
-            Logger.setDebugEnable(ProfilingConfig.getInstance().isPrintDebugLog());
+            Logger.setDebugEnable(ProfilingConfig.basicConfig().debug());
             return true;
         } catch (Exception e) {
             Logger.error("AbstractBootstrap.initLogger()", e);
@@ -273,14 +184,15 @@ public abstract class AbstractBootstrap {
 
     private boolean initPackageFilter() {
         try {
-            String includePackages = ProfilingConfig.getInstance().getIncludePackages();
-            List<String> includeList = StrUtils.splitAsList(includePackages, PropertyValues.ELE_SEPARATOR);
+            FilterConfig filterConfig = ProfilingConfig.filterConfig();
+            String includePackages = filterConfig.includePackages();
+            List<String> includeList = StrUtils.splitAsList(includePackages, Separator.ELE);
             for (int i = 0; i < includeList.size(); i++) {
                 ProfilingFilter.addIncludePackage(includeList.get(i));
             }
 
-            String excludePackages = ProfilingConfig.getInstance().getExcludePackages();
-            List<String> excludeList = StrUtils.splitAsList(excludePackages, PropertyValues.ELE_SEPARATOR);
+            String excludePackages = filterConfig.excludePackages();
+            List<String> excludeList = StrUtils.splitAsList(excludePackages, Separator.ELE);
             for (int i = 0; i < excludeList.size(); i++) {
                 ProfilingFilter.addExcludePackage(excludeList.get(i));
             }
@@ -293,8 +205,9 @@ public abstract class AbstractBootstrap {
 
     private boolean initClassLoaderFilter() {
         try {
-            String excludeClassLoaders = ProfilingConfig.getInstance().getExcludeClassLoaders();
-            List<String> excludeList = StrUtils.splitAsList(excludeClassLoaders, PropertyValues.ELE_SEPARATOR);
+            FilterConfig filterConfig = ProfilingConfig.filterConfig();
+            String excludeClassLoaders = filterConfig.excludeClassLoaders();
+            List<String> excludeList = StrUtils.splitAsList(excludeClassLoaders, Separator.ELE);
             for (int i = 0; i < excludeList.size(); i++) {
                 ProfilingFilter.addExcludeClassLoader(excludeList.get(i));
             }
@@ -307,8 +220,9 @@ public abstract class AbstractBootstrap {
 
     private boolean initMethodFilter() {
         try {
-            String excludeMethods = ProfilingConfig.getInstance().getExcludeMethods();
-            List<String> excludeList = StrUtils.splitAsList(excludeMethods, PropertyValues.ELE_SEPARATOR);
+            FilterConfig filterConfig = ProfilingConfig.filterConfig();
+            String excludeMethods = filterConfig.excludeMethods();
+            List<String> excludeList = StrUtils.splitAsList(excludeMethods, Separator.ELE);
             for (int i = 0; i < excludeList.size(); i++) {
                 ProfilingFilter.addExcludeMethods(excludeList.get(i));
             }
@@ -322,16 +236,17 @@ public abstract class AbstractBootstrap {
     //MethodLevelMapping=Controller:[*Controller];Api:[*Api,*ApiImpl];
     private boolean initClassLevelMapping() {
         try {
-            String levelMappings = ProfilingConfig.getInstance().getClassLevelMappings();
+            MetricsConfig metricsConfig = ProfilingConfig.metricsConfig();
+            String levelMappings = metricsConfig.classLevelMapping();
             if (StrUtils.isBlank(levelMappings)) {
                 Logger.info("ClassLevelMapping is blank, so use default mappings.");
                 return true;
             }
 
-            List<String> mappingPairs = StrUtils.splitAsList(levelMappings, PropertyValues.ELE_SEPARATOR);
+            List<String> mappingPairs = StrUtils.splitAsList(levelMappings, Separator.ELE);
             for (int i = 0; i < mappingPairs.size(); ++i) {
                 String mappingPair = mappingPairs.get(i);
-                List<String> pairs = StrUtils.splitAsList(mappingPair, PropertyValues.ELE_KV_SEPARATOR);
+                List<String> pairs = StrUtils.splitAsList(mappingPair, Separator.ELE_KV);
                 if (pairs.size() != 2) {
                     Logger.warn("MethodLevelMapping is not correct: " + mappingPair);
                     continue;
@@ -349,13 +264,13 @@ public abstract class AbstractBootstrap {
     //Api:[*Api,*ApiImpl]
     private List<String> getMappingExpList(String expStr) {
         expStr = expStr.substring(1, expStr.length() - 1);
-        return StrUtils.splitAsList(expStr, PropertyValues.ARR_ELE_SEPARATOR);
+        return StrUtils.splitAsList(expStr, Separator.ARR_ELE);
     }
 
-    private boolean initPerfStatsProcessor() {
+    private boolean initMethodMetricsExporter() {
         try {
-            int processorType = ProfilingConfig.getInstance().getMetricsProcessorType();
-            processor = MetricsProcessorFactory.getMethodMetricsProcessor(processorType);
+            String exporter = ProfilingConfig.metricsConfig().metricsExporter();
+            processor = MetricsExporterFactory.getMethodMetricsExporter(exporter);
             return true;
         } catch (Exception e) {
             Logger.error("AbstractBootstrap.initPerfStatsProcessor()", e);
@@ -365,14 +280,9 @@ public abstract class AbstractBootstrap {
 
     private boolean initProfilingParams() {
         try {
-            ProfilingConfig config = ProfilingConfig.getInstance();
-            if (config.isAccurateMode()) {
-                addProfilingParams(config, config.getSysProfilingParamsFile());
-            }
-
-            String manualProfilingParamFile = config.getProfilingParamsFile();
-            if (StrUtils.isNotBlank(manualProfilingParamFile)) {
-                addProfilingParams(config, manualProfilingParamFile);
+            RecorderConfig recorderConf = ProfilingConfig.recorderConfig();
+            if (recorderConf.accurateMode()) {
+                addProfilingParams(recorderConf, ProfilingConfig.basicConfig().sysProfilingParamsFile());
             }
             return true;
         } catch (Exception e) {
@@ -381,15 +291,15 @@ public abstract class AbstractBootstrap {
         return false;
     }
 
-    private void addProfilingParams(ProfilingConfig config, String filePath) {
+    private void addProfilingParams(RecorderConfig recorderConf, String filePath) {
         File sysFile = new File(filePath);
         if (sysFile.exists() && sysFile.isFile()) {
             Logger.info("Loading " + sysFile.getName() + " to init profiling params.");
-            addProfilingParams0(config, filePath);
+            addProfilingParams0(recorderConf, filePath);
         }
     }
 
-    private void addProfilingParams0(ProfilingConfig config, String profilingParamFile) {
+    private void addProfilingParams0(RecorderConfig recorderConf, String profilingParamFile) {
         try (InputStream in = new FileInputStream(profilingParamFile)) {
             Properties properties = new Properties();
             properties.load(in);
@@ -406,22 +316,13 @@ public abstract class AbstractBootstrap {
                     continue;
                 }
 
-                int timeThreshold = getInt(strList.get(0).trim(), 1000);
-                int outThresholdCount = getInt(strList.get(1).trim(), 64);
-                config.addProfilingParam(key.replace('.', '/'), timeThreshold, outThresholdCount);
+                int timeThreshold = NumUtils.parseInt(strList.get(0).trim(), 1000);
+                int outThresholdCount = NumUtils.parseInt(strList.get(1).trim(), 64);
+                recorderConf.addProfilingParam(key.replace('.', '/'), timeThreshold, outThresholdCount);
             }
         } catch (Exception e) {
             Logger.error("AbstractBootstrap.addProfilingParams(" + profilingParamFile + ")", e);
         }
-    }
-
-    private int getInt(String str, int defaultValue) {
-        try {
-            return Integer.parseInt(str);
-        } catch (Exception e) {
-            Logger.error("AbstractBootstrap.getInt(" + str + ")", e);
-        }
-        return defaultValue;
     }
 
     private boolean initRecorderMaintainer() {
@@ -452,9 +353,9 @@ public abstract class AbstractBootstrap {
 
     private boolean initScheduler() {
         try {
-            ProfilingConfig config = ProfilingConfig.getInstance();
-            LightWeightScheduler.dispatchScheduleTask(maintainer, config.getMethodMilliTimeSlice());
-            LightWeightScheduler.dispatchScheduleTask(jvmMetricsScheduler(), config.getJvmMilliTimeSlice());
+            MetricsConfig metricsConfig = ProfilingConfig.metricsConfig();
+            LightWeightScheduler.dispatchScheduleTask(maintainer, metricsConfig.methodMilliTimeSlice());
+            LightWeightScheduler.dispatchScheduleTask(jvmMetricsScheduler(), metricsConfig.jvmMilliTimeSlice());
             LightWeightScheduler.dispatchScheduleTask(buildSysGenProfilingScheduler(), 60 * 1000);//1min
             return true;
         } catch (Exception e) {
@@ -464,22 +365,22 @@ public abstract class AbstractBootstrap {
     }
 
     private Scheduler jvmMetricsScheduler() {
-        int processorType = ProfilingConfig.getInstance().getMetricsProcessorType();
-        JvmClassMetricsProcessor classProcessor = MetricsProcessorFactory.getClassMetricsProcessor(processorType);
-        JvmGcMetricsProcessor gcProcessor = MetricsProcessorFactory.getGcMetricsProcessor(processorType);
-        JvmMemoryMetricsProcessor memoryProcessor = MetricsProcessorFactory.getMemoryMetricsProcessor(processorType);
-        JvmBufferPoolMetricsProcessor bufferPoolProcessor = MetricsProcessorFactory.getBufferPoolMetricsProcessor(processorType);
-        JvmThreadMetricsProcessor threadProcessor = MetricsProcessorFactory.getThreadMetricsProcessor(processorType);
-        JvmCompilationMetricsProcessor compilationProcessor = MetricsProcessorFactory.getCompilationProcessor(processorType);
-        JvmFileDescMetricsProcessor fileDescProcessor = MetricsProcessorFactory.getFileDescProcessor(processorType);
+        String exporter = ProfilingConfig.metricsConfig().metricsExporter();
+        JvmClassMetricsExporter classExporter = MetricsExporterFactory.getClassMetricsExporter(exporter);
+        JvmGcMetricsExporter gcExporter = MetricsExporterFactory.getGcMetricsExporter(exporter);
+        JvmMemoryMetricsExporter memoryExporter = MetricsExporterFactory.getMemoryMetricsExporter(exporter);
+        JvmBufferPoolMetricsExporter bufferPoolExporter = MetricsExporterFactory.getBufferPoolMetricsExporter(exporter);
+        JvmThreadMetricsExporter threadExporter = MetricsExporterFactory.getThreadMetricsExporter(exporter);
+        JvmCompilationMetricsExporter compilationExporter = MetricsExporterFactory.getCompilationExporter(exporter);
+        JvmFileDescMetricsExporter fileDescExporter = MetricsExporterFactory.getFileDescExporter(exporter);
         return new JvmMetricsScheduler(
-                classProcessor,
-                gcProcessor,
-                memoryProcessor,
-                bufferPoolProcessor,
-                threadProcessor,
-                compilationProcessor,
-                fileDescProcessor
+                classExporter,
+                gcExporter,
+                memoryExporter,
+                bufferPoolExporter,
+                threadExporter,
+                compilationExporter,
+                fileDescExporter
         );
     }
 

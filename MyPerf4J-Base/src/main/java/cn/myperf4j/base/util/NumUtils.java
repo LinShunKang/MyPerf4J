@@ -12,4 +12,12 @@ public final class NumUtils {
         return 0D;
     }
 
+    public static int parseInt(String str, int defaultValue) {
+        try {
+            return Integer.parseInt(str);
+        } catch (Exception e) {
+            Logger.error("NumUtils.parseInt(" + str + ", " + defaultValue + ")", e);
+        }
+        return defaultValue;
+    }
 }

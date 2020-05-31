@@ -1,10 +1,12 @@
 package cn.myperf4j.core.recorder;
 
+import cn.myperf4j.base.constant.PropertyKeys;
+import cn.myperf4j.base.constant.PropertyKeys.Metrics;
 import cn.myperf4j.base.metric.MethodMetrics;
 import cn.myperf4j.base.MethodTag;
 import cn.myperf4j.base.config.ProfilingParams;
 import cn.myperf4j.base.constant.PropertyValues;
-import cn.myperf4j.base.metric.processor.MethodMetricsProcessor;
+import cn.myperf4j.base.metric.exporter.MethodMetricsExporter;
 import cn.myperf4j.base.util.ExecutorManager;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.util.ThreadUtils;
@@ -18,13 +20,12 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
-import static cn.myperf4j.base.constant.PropertyKeys.BACKUP_RECORDERS_COUNT;
-import static cn.myperf4j.base.constant.PropertyKeys.METHOD_MILLI_TIME_SLICE;
-
 /**
  * Created by LinShunkang on 2018/4/25
  */
 public abstract class AbstractRecorderMaintainer implements Scheduler {
+
+    private volatile boolean initialState = false;
 
     protected List<Recorders> recordersList;
 
@@ -36,12 +37,12 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
 
     private ThreadPoolExecutor backgroundExecutor;
 
-    private MethodMetricsProcessor methodMetricsProcessor;
+    private MethodMetricsExporter methodMetricsExporter;
 
     private boolean accurateMode;
 
-    public boolean initial(MethodMetricsProcessor processor, boolean accurateMode, int bakRecordersCnt) {
-        this.methodMetricsProcessor = processor;
+    public boolean initial(MethodMetricsExporter processor, boolean accurateMode, int bakRecordersCnt) {
+        this.methodMetricsExporter = processor;
         this.accurateMode = accurateMode;
         bakRecordersCnt = getFitBakRecordersCnt(bakRecordersCnt);
 
@@ -53,14 +54,14 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
             return false;
         }
 
-        return initOther();
+        return initialState = initOther();
     }
 
     private int getFitBakRecordersCnt(int backupRecordersCount) {
-        if (backupRecordersCount < PropertyValues.MIN_BACKUP_RECORDERS_COUNT) {
-            return PropertyValues.MIN_BACKUP_RECORDERS_COUNT;
-        } else if (backupRecordersCount > PropertyValues.MAX_BACKUP_RECORDERS_COUNT) {
-            return PropertyValues.MAX_BACKUP_RECORDERS_COUNT;
+        if (backupRecordersCount < PropertyValues.Recorder.MIN_BACKUP_RECORDERS_COUNT) {
+            return PropertyValues.Recorder.MIN_BACKUP_RECORDERS_COUNT;
+        } else if (backupRecordersCount > PropertyValues.Recorder.MAX_BACKUP_RECORDERS_COUNT) {
+            return PropertyValues.Recorder.MAX_BACKUP_RECORDERS_COUNT;
         }
         return backupRecordersCount;
     }
@@ -112,6 +113,11 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
     @Override
     public void run(long lastTimeSliceStartTime, long millTimeSlice) {
         try {
+            if (!initialState) {
+                Logger.warn("AbstractRecorderMaintainer.run(long, long): initialState is false!");
+                return;
+            }
+
             final Recorders tmpCurRecorders = curRecorders;
             tmpCurRecorders.setStartTime(lastTimeSliceStartTime);
             tmpCurRecorders.setStopTime(lastTimeSliceStartTime + millTimeSlice);
@@ -131,17 +137,22 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
                 @Override
                 public void run() {
                     if (tmpCurRecorders.isWriting()) {
-                        Logger.warn("RecorderMaintainer.backgroundExecutor the tmpCurRecorders is writing!!! Please increase `" + METHOD_MILLI_TIME_SLICE + "` or increase `" + BACKUP_RECORDERS_COUNT + "`!!!P1");
+                        Logger.warn("RecorderMaintainer.backgroundExecutor the tmpCurRecorders is writing!!! " +
+                                "Please increase `" + Metrics.TIME_SLICE_METHOD +
+                                "` or increase `" + PropertyKeys.Recorder.BACKUP_COUNT + "`!!!P1");
                         return;
                     }
 
                     long start = System.currentTimeMillis();
                     try {
-                        methodMetricsProcessor.beforeProcess(tmpCurRecorders.getStartTime(), tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
+                        methodMetricsExporter.beforeProcess(tmpCurRecorders.getStartTime(),
+                                tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
                         int actualSize = methodTagMaintainer.getMethodTagCount();
                         for (int i = 0; i < actualSize; ++i) {
                             if (tmpCurRecorders.isWriting()) {
-                                Logger.warn("RecorderMaintainer.backgroundExecutor the tmpCurRecorders is writing!!! Please increase `" + METHOD_MILLI_TIME_SLICE + "` or increase `" + BACKUP_RECORDERS_COUNT + "`!!!P2");
+                                Logger.warn("RecorderMaintainer.backgroundExecutor the tmpCurRecorders is " +
+                                        "writing!!! Please increase `" + Metrics.TIME_SLICE_METHOD +
+                                        "` or increase `" + PropertyKeys.Recorder.BACKUP_COUNT + "`!!!P2");
                                 break;
                             }
 
@@ -154,15 +165,19 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
                             }
 
                             MethodTag methodTag = methodTagMaintainer.getMethodTag(recorder.getMethodTagId());
-                            MethodMetrics metrics = MethodMetricsCalculator.calPerfStats(recorder, methodTag, tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
+                            MethodMetrics metrics = MethodMetricsCalculator.calPerfStats(recorder, methodTag,
+                                    tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
                             MethodMetricsHistogram.recordMetrics(metrics);
-                            methodMetricsProcessor.process(metrics, tmpCurRecorders.getStartTime(), tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
+                            methodMetricsExporter.process(metrics, tmpCurRecorders.getStartTime(),
+                                    tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
                         }
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
                         Logger.error("RecorderMaintainer.backgroundExecutor error", e);
                     } finally {
-                        methodMetricsProcessor.afterProcess(tmpCurRecorders.getStartTime(), tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
-                        Logger.debug("RecorderMaintainer.backgroundProcessor finished!!! cost: " + (System.currentTimeMillis() - start) + "ms");
+                        methodMetricsExporter.afterProcess(tmpCurRecorders.getStartTime(),
+                                tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
+                        Logger.debug("RecorderMaintainer.backgroundProcessor finished!!! cost: " +
+                                (System.currentTimeMillis() - start) + "ms");
                     }
                 }
             });

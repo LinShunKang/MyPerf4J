@@ -1,6 +1,7 @@
 package cn.myperf4j.core;
 
 import cn.myperf4j.base.MethodTag;
+import cn.myperf4j.base.config.MetricsConfig;
 import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.util.TypeDescUtils;
@@ -17,16 +18,15 @@ public class MethodTagMaintainer extends AbstractMethodTagMaintainer {
 
     public static final int MAX_NUM = 1024 * 32;
 
+    private static final MethodTagMaintainer instance = new MethodTagMaintainer();
+
+    private static final MetricsConfig metricsConfig = ProfilingConfig.metricsConfig();
+
     private final AtomicInteger index = new AtomicInteger(0);
 
     private final AtomicReferenceArray<MethodTag> methodTagArr = new AtomicReferenceArray<>(MAX_NUM);
 
     private final ConcurrentHashMap<Method, Integer> methodMap = new ConcurrentHashMap<>(4096);
-
-    private static final MethodTagMaintainer instance = new MethodTagMaintainer();
-
-    private static final ProfilingConfig profilingConfig = ProfilingConfig.getInstance();
-
 
     private MethodTagMaintainer() {
         //empty
@@ -73,7 +73,7 @@ public class MethodTagMaintainer extends AbstractMethodTagMaintainer {
     }
 
     private static MethodTag createMethodTag(Method method) {
-        String methodParamDesc = profilingConfig.isShowMethodParams() ? TypeDescUtils.getMethodParamsDesc(method) : "";
+        String methodParamDesc = metricsConfig.showMethodParams() ? TypeDescUtils.getMethodParamsDesc(method) : "";
         Class<?> declaringClass = method.getDeclaringClass();
         return MethodTag.getDynamicProxyInstance(declaringClass.getName(), declaringClass.getSimpleName(), method.getName(), methodParamDesc);
     }

@@ -1,7 +1,8 @@
 package cn.myperf4j.base.test;
 
+import cn.myperf4j.base.config.MetricsConfig;
 import cn.myperf4j.base.config.ProfilingConfig;
-import cn.myperf4j.base.constant.PropertyValues;
+import cn.myperf4j.base.constant.PropertyValues.Metrics;
 import cn.myperf4j.base.log.ILogger;
 import cn.myperf4j.base.log.LoggerFactory;
 import org.junit.Assert;
@@ -11,11 +12,12 @@ public class ILoggerTest {
 
     @Test
     public void test() {
-        ProfilingConfig.getInstance().setLogRollingTimeUnit(PropertyValues.LOG_ROLLING_TIME_MINUTELY);
-        ProfilingConfig.getInstance().setLogReserveCount(PropertyValues.DEFAULT_LOG_RESERVE_COUNT);
+        ProfilingConfig.metricsConfig(MetricsConfig.loadMetricsConfig());
+        ProfilingConfig.metricsConfig().logRollingTimeUnit(Metrics.LOG_ROLLING_MINUTELY);
+        ProfilingConfig.metricsConfig().logReserveCount(Metrics.DEFAULT_LOG_RESERVE_COUNT);
 
         test(LoggerFactory.getLogger("/tmp/testLogger.log"));
-        test(LoggerFactory.getLogger(PropertyValues.NULL_FILE));
+        test(LoggerFactory.getLogger(Metrics.NULL_FILE));
     }
 
     private void test(ILogger logger) {

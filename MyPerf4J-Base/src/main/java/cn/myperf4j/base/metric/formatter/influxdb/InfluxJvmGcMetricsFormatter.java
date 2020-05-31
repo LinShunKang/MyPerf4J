@@ -40,7 +40,7 @@ public class InfluxJvmGcMetricsFormatter implements JvmGcMetricsFormatter {
 
     private void appendLineProtocol(JvmGcMetrics metrics, long startNanos, StringBuilder sb) {
         sb.append("jvm_gc_metrics_v2")
-                .append(",AppName=").append(ProfilingConfig.getInstance().getAppName())
+                .append(",AppName=").append(ProfilingConfig.basicConfig().appName())
                 .append(",host=").append(processTagOrField(getLocalhostName()))
                 .append(" YoungGcCount=").append(metrics.getYoungGcCount()).append('i')
                 .append(",YoungGcTime=").append(metrics.getYoungGcTime()).append('i')

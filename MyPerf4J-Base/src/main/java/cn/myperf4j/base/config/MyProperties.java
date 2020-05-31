@@ -20,6 +20,14 @@ public final class MyProperties {
         return true;
     }
 
+    public static String getStr(ConfigKey confKey) {
+        String str = getStr(confKey.key());
+        if (str != null) {
+            return str;
+        }
+        return getStr(confKey.legacyKey());
+    }
+
     public static String getStr(String key) {
         checkState();
 
@@ -43,6 +51,16 @@ public final class MyProperties {
         properties.setProperty(key, value);
     }
 
+    public static String getStr(ConfigKey confKey, String defaultValue) {
+        checkState();
+
+        String result = getStr(confKey);
+        if (result != null) {
+            return result;
+        }
+        return defaultValue;
+    }
+
     public static String getStr(String key, String defaultValue) {
         checkState();
 
@@ -51,6 +69,42 @@ public final class MyProperties {
             return result;
         }
         return defaultValue;
+    }
+
+    public static int getInt(ConfigKey confKey, int defaultValue) {
+        checkState();
+
+        Integer result = getInt(confKey.key());
+        if (result != null) {
+            return result;
+        }
+        return getInt(confKey.legacyKey(), defaultValue);
+    }
+
+    public static Integer getInt(ConfigKey confKey) {
+        checkState();
+
+        Integer result = getInt(confKey.key());
+        if (result != null) {
+            return result;
+        }
+        return getInt(confKey.legacyKey());
+    }
+
+    public static Integer getInt(String key) {
+        checkState();
+
+        String result = getStr(key);
+        if (result == null) {
+            return null;
+        }
+
+        try {
+            return Integer.valueOf(result);
+        } catch (Exception e) {
+            Logger.error("MyProperties.getInt(" + key + ")", e);
+        }
+        return null;
     }
 
     public static int getInt(String key, int defaultValue) {
@@ -67,6 +121,32 @@ public final class MyProperties {
             Logger.error("MyProperties.getInt(" + key + ", " + defaultValue + ")", e);
         }
         return defaultValue;
+    }
+
+    public static long getLong(ConfigKey confKey, long defaultValue) {
+        checkState();
+
+        Long l = getLong(confKey.key());
+        if (l != null) {
+            return l;
+        }
+        return getLong(confKey.legacyKey(), defaultValue);
+    }
+
+    public static Long getLong(String key) {
+        checkState();
+
+        String result = getStr(key);
+        if (result == null) {
+            return null;
+        }
+
+        try {
+            return Long.valueOf(result);
+        } catch (Exception e) {
+            Logger.error("MyProperties.getLong(" + key + ")", e);
+        }
+        return null;
     }
 
     public static long getLong(String key, long defaultValue) {
@@ -102,6 +182,26 @@ public final class MyProperties {
             throw new IllegalArgumentException("isSame(" + key + ", null): expectValue must not null!!!");
         }
         return expectValue.equals(getStr(key));
+    }
+
+    public static boolean getBoolean(ConfigKey confKey, boolean defaultValue) {
+        checkState();
+
+        Boolean result = getBoolean(confKey.key());
+        if (result != null) {
+            return result;
+        }
+        return getBoolean(confKey.legacyKey(), defaultValue);
+    }
+
+    public static Boolean getBoolean(String key) {
+        checkState();
+
+        String result = getStr(key);
+        if (result != null) {
+            return result.equalsIgnoreCase("true");
+        }
+        return null;
     }
 
     public static boolean getBoolean(String key, boolean defaultValue) {

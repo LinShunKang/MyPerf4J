@@ -1,6 +1,6 @@
 package cn.myperf4j.core;
 
-import cn.myperf4j.base.constant.PropertyValues;
+import cn.myperf4j.base.constant.PropertyValues.Metrics;
 import cn.myperf4j.base.util.ExecutorManager;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.util.ThreadUtils;
@@ -59,10 +59,10 @@ public class LightWeightScheduler {
     }
 
     private static long getFitMillTimeSlice(long millTimeSlice) {
-        if (millTimeSlice < PropertyValues.MIN_TIME_SLICE) {
-            return PropertyValues.MIN_TIME_SLICE;
-        } else if (millTimeSlice > PropertyValues.MAX_TIME_SLICE) {
-            return PropertyValues.MAX_TIME_SLICE;
+        if (millTimeSlice < Metrics.MIN_TIME_SLICE) {
+            return Metrics.MIN_TIME_SLICE;
+        } else if (millTimeSlice > Metrics.MAX_TIME_SLICE) {
+            return Metrics.MAX_TIME_SLICE;
         }
         return millTimeSlice;
     }

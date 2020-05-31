@@ -39,7 +39,7 @@ public class DynamicClassAdapter extends ClassVisitor {
 
     private boolean isNeedVisit(int access, String name) {
         //不对私有方法进行注入
-        if ((access & ACC_PRIVATE) != 0 && ProfilingConfig.getInstance().isExcludePrivateMethod()) {
+        if ((access & ACC_PRIVATE) != 0 && ProfilingConfig.filterConfig().excludePrivateMethod()) {
             return false;
         }
 
