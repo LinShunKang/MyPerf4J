@@ -8,16 +8,15 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
  */
 public class Recorders {
 
-    private AtomicReferenceArray<Recorder> recorderArr;
+    private final AtomicReferenceArray<Recorder> recorderArr;
 
-    private AtomicInteger recorderCount;
+    private final AtomicInteger recorderCount;
 
     private volatile boolean writing = false;
 
     private volatile long startTime;
 
     private volatile long stopTime;
-
 
     public Recorders(AtomicReferenceArray<Recorder> recorderArr) {
         this.recorderArr = recorderArr;
