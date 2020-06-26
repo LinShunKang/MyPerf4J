@@ -52,9 +52,9 @@ public final class MethodMetricsCalculator {
         result.setMinTime(sortedRecords._getInt(0));
         result.setMaxTime(sortedRecords._getInt(sortedRecords.writerIndex() - 2));
 
-        long[] topPerIndexArr = getTopPercentileIndexArr(totalCount);
-        int[] topPerArr = result.getTpArr();
-        int perIndex = 0;
+        long[] tpIndexArr = getTopPercentileIndexArr(totalCount);
+        int[] tpArr = result.getTpArr();
+        int tpIndex = 0;
         long countMile = 0L;
         double sigma = 0.0D;//∑
         long totalTime = 0L;
@@ -65,10 +65,8 @@ public final class MethodMetricsCalculator {
             totalTime += timeCost * count;
             countMile += count;
 
-            long index = topPerIndexArr[perIndex];
-            if (countMile >= index) {
-                topPerArr[perIndex] = timeCost;
-                perIndex++;
+            while (tpIndex < tpIndexArr.length && countMile >= tpIndexArr[tpIndex]) {
+                tpArr[tpIndex++] = timeCost;
             }
 
             sigma += count * Math.pow(timeCost, 2.0);
