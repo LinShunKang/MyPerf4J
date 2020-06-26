@@ -10,9 +10,7 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
 
 /**
  * Created by LinShunkang on 2018/3/13
- */
-
-/**
+ * <p>
  * 默认使用该类作为 MyPerf4J 的 Recorder
  * 该类用于精确存储某一个方法在指定时间片内的响应时间
  * 为了减小内存占用，利用 数组+Map 的方式:
@@ -20,10 +18,6 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
  * 2、将大于 mostTimeThreshold 的响应时间记录到 Map 中。
  */
 public class AccurateRecorder extends Recorder {
-
-//    private static final int BUSY_THRESHOLD = 10;
-//
-//    private final AtomicInteger[] busyTimingArr;
 
     private final AtomicIntegerArray timingArr;
 
@@ -33,19 +27,10 @@ public class AccurateRecorder extends Recorder {
 
     private AccurateRecorder(int methodTagId, int mostTimeThreshold, int outThresholdCount) {
         super(methodTagId);
-//        this.busyTimingArr = createBusyTimingArr();
         this.timingArr = new AtomicIntegerArray(mostTimeThreshold + 1);
         this.timingMap = new ConcurrentHashMap<>(MapUtils.getFitCapacity(outThresholdCount));
         this.diffCount = new AtomicInteger(0);
     }
-
-//    private AtomicInteger[] createBusyTimingArr() {
-//        AtomicInteger[] result = new AtomicInteger[BUSY_THRESHOLD];
-//        for (int i = 0; i < BUSY_THRESHOLD; i++) {
-//            result[i] = new AtomicInteger(0);
-//        }
-//        return result;
-//    }
 
     @Override
     public void recordTime(long startNanoTime, long endNanoTime) {
@@ -53,15 +38,7 @@ public class AccurateRecorder extends Recorder {
             return;
         }
 
-        int elapsedTime = (int) ((endNanoTime - startNanoTime) / 1000000);
-//        if (elapsedTime < BUSY_THRESHOLD) {
-//            int oldValue = busyTimingArr[elapsedTime].incrementAndGet();
-//            if (oldValue <= 0) {
-//                diffCount.incrementAndGet();
-//            }
-//            return;
-//        }
-
+        int elapsedTime = (int) ((endNanoTime - startNanoTime) / 1_000_000);
         if (elapsedTime < timingArr.length()) {
             int oldValue = timingArr.getAndIncrement(elapsedTime);
             if (oldValue <= 0) {
@@ -87,15 +64,6 @@ public class AccurateRecorder extends Recorder {
     @Override
     public long fillSortedRecords(IntBuf intBuf) {
         long totalCount = 0L;
-//        AtomicInteger[] busyTimingArr = this.busyTimingArr;
-//        for (int i = 0; i < busyTimingArr.length; i++) {
-//            int count = busyTimingArr[i].get();
-//            if (count > 0) {
-//                intBuf.write(i, count);
-//                totalCount += count;
-//            }
-//        }
-
         AtomicIntegerArray timingArr = this.timingArr;
         for (int i = 0; i < timingArr.length(); ++i) {
             int count = timingArr.get(i);
@@ -143,10 +111,9 @@ public class AccurateRecorder extends Recorder {
 
     @Override
     public void resetRecord() {
-//        AtomicInteger[] busyTimingArr = this.busyTimingArr;
-//        for (int i = 0; i < busyTimingArr.length; i++) {
-//            busyTimingArr[i].set(0);
-//        }
+        if (!hasRecord()) {
+            return;
+        }
 
         AtomicIntegerArray timingArr = this.timingArr;
         for (int i = 0; i < timingArr.length(); ++i) {

@@ -7,9 +7,7 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
 
 /**
  * Created by LinShunkang on 2018/3/25
- */
-
-/**
+ * <p>
  * MyPerf4J默认使用的是 AccurateRecorder，如果需要使用 RoughRecorder，则在配置文件里加上 RecorderMode=rough
  * <p>
  * 该类用于粗略存储某一个方法在指定时间片内的响应时间
@@ -73,6 +71,10 @@ public class RoughRecorder extends Recorder {
 
     @Override
     public void resetRecord() {
+        if (!hasRecord()) {
+            return;
+        }
+
         AtomicIntegerArray timingArr = this.timingArr;
         for (int i = 0; i < timingArr.length(); ++i) {
             timingArr.set(i, 0);
