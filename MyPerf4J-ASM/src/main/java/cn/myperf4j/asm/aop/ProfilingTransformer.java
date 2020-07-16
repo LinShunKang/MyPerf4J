@@ -1,5 +1,6 @@
 package cn.myperf4j.asm.aop;
 
+import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.config.ProfilingFilter;
 import cn.myperf4j.base.util.Logger;
 import org.objectweb.asm.ClassReader;
@@ -44,30 +45,32 @@ public class ProfilingTransformer implements ClassFileTransformer {
     private byte[] getBytes(ClassLoader loader,
                             String className,
                             byte[] classFileBuffer) {
-        if (needComputeMaxs(loader)) {
-            ClassReader cr = new ClassReader(classFileBuffer);
-            ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);
-            ClassVisitor cv = new ProfilingClassAdapter(cw, className);
-            cr.accept(cv, ClassReader.EXPAND_FRAMES);
-            return cw.toByteArray();
-        } else {
-            ClassReader cr = new ClassReader(classFileBuffer);
-            ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_FRAMES);
-            ClassVisitor cv = new ProfilingClassAdapter(cw, className);
-            cr.accept(cv, ClassReader.EXPAND_FRAMES);
-            return cw.toByteArray();
-        }
+        ClassReader cr = new ClassReader(classFileBuffer);
+        ClassWriter cw = new ClassWriter(cr, getComputeMode(loader));
+        ClassVisitor cv = new ProfilingClassAdapter(cw, className);
+        cr.accept(cv, ClassReader.EXPAND_FRAMES);
+        return cw.toByteArray();
     }
 
-    private boolean needComputeMaxs(ClassLoader classLoader) {
-        if (classLoader == null) {
-            return false;
+    private int getComputeMode(ClassLoader classLoader) {
+
+        Integer computeMode = ProfilingConfig.basicConfig().asmComputeMode();
+
+        if(computeMode != null) {
+            return computeMode;
         }
 
-        String loaderName = getClassLoaderName(classLoader);
-        return loaderName.equals("org.apache.catalina.loader.WebappClassLoader")
-                || loaderName.equals("org.apache.catalina.loader.ParallelWebappClassLoader")
-                || loaderName.equals("org.springframework.boot.loader.LaunchedURLClassLoader");
+        if (classLoader != null) {
+
+            String loaderName = getClassLoaderName(classLoader);
+
+            if(loaderName.equals("org.apache.catalina.loader.WebappClassLoader")
+                    || loaderName.equals("org.apache.catalina.loader.ParallelWebappClassLoader")
+                    || loaderName.equals("org.springframework.boot.loader.LaunchedURLClassLoader")) {
+                return ClassWriter.COMPUTE_MAXS;
+            }
+        }
+        return ClassWriter.COMPUTE_FRAMES;
     }
 
     private String getClassLoaderName(ClassLoader classLoader) {

@@ -4,9 +4,11 @@ import cn.myperf4j.base.util.StrUtils;
 
 import static cn.myperf4j.base.config.MyProperties.getBoolean;
 import static cn.myperf4j.base.config.MyProperties.getStr;
+import static cn.myperf4j.base.config.MyProperties.getInt;
 import static cn.myperf4j.base.constant.PropertyKeys.Basic.APP_NAME;
 import static cn.myperf4j.base.constant.PropertyKeys.Basic.PROPERTIES_FILE_DIR;
 import static cn.myperf4j.base.constant.PropertyKeys.Basic.DEBUG;
+import static cn.myperf4j.base.constant.PropertyKeys.Basic.ASM_COMPUTE_MODE;
 
 /**
  * Created by LinShunkang on 2020/05/24
@@ -18,6 +20,8 @@ public class BasicConfig {
     private String configFileDir;
 
     private boolean debug;
+
+    private Integer asmComputeMode;
 
     public String appName() {
         return appName;
@@ -46,6 +50,14 @@ public class BasicConfig {
         this.debug = debug;
     }
 
+    public Integer asmComputeMode() {
+        return asmComputeMode;
+    }
+
+    public void asmComputeMode(Integer asmComputeMode) {
+        this.asmComputeMode = asmComputeMode;
+    }
+
     public String sysProfilingParamsFile() {
         return configFileDir + "." + appName + "_SysGenProfilingFile";
     }
@@ -69,6 +81,7 @@ public class BasicConfig {
         config.appName(appName);
         config.debug(getBoolean(DEBUG, false));
         config.configFileDir(getStr(PROPERTIES_FILE_DIR));
+        config.asmComputeMode(getInt(ASM_COMPUTE_MODE));
         return config;
     }
 
