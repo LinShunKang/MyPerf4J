@@ -6,7 +6,6 @@ import cn.myperf4j.base.metric.formatter.JvmBufferPoolMetricsFormatter;
 
 import java.util.List;
 
-import static cn.myperf4j.base.util.IpUtils.getLocalhostName;
 import static cn.myperf4j.base.util.LineProtocolUtils.processTagOrField;
 
 /**
@@ -41,7 +40,7 @@ public class InfluxJvmBufferPoolMetricsFormatter implements JvmBufferPoolMetrics
         sb.append("jvm_buffer_pool_metrics_v2")
                 .append(",AppName=").append(ProfilingConfig.basicConfig().appName())
                 .append(",PoolName=").append(metrics.getName())
-                .append(",host=").append(processTagOrField(getLocalhostName()))
+                .append(",host=").append(processTagOrField(ProfilingConfig.basicConfig().hostname()))
                 .append(" Count=").append(metrics.getCount()).append('i')
                 .append(",MemoryUsed=").append(metrics.getMemoryUsed()).append('i')
                 .append(",MemoryCapacity=").append(metrics.getMemoryCapacity()).append('i')

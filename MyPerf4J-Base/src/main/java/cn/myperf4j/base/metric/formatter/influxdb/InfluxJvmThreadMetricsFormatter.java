@@ -6,7 +6,6 @@ import cn.myperf4j.base.metric.formatter.JvmThreadMetricsFormatter;
 
 import java.util.List;
 
-import static cn.myperf4j.base.util.IpUtils.getLocalhostName;
 import static cn.myperf4j.base.util.LineProtocolUtils.processTagOrField;
 
 /**
@@ -40,7 +39,7 @@ public class InfluxJvmThreadMetricsFormatter implements JvmThreadMetricsFormatte
     private void appendLineProtocol(JvmThreadMetrics metrics, long startNanos, StringBuilder sb) {
         sb.append("jvm_thread_metrics")
                 .append(",AppName=").append(ProfilingConfig.basicConfig().appName())
-                .append(",host=").append(processTagOrField(getLocalhostName()))
+                .append(",host=").append(processTagOrField(ProfilingConfig.basicConfig().hostname()))
                 .append(" TotalStarted=").append(metrics.getTotalStarted()).append('i')
                 .append(",Active=").append(metrics.getActive()).append('i')
                 .append(",Peak=").append(metrics.getPeak()).append('i')

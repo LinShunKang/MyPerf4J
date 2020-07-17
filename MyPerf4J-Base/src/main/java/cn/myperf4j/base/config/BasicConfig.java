@@ -1,14 +1,12 @@
 package cn.myperf4j.base.config;
 
+import cn.myperf4j.base.util.IpUtils;
 import cn.myperf4j.base.util.StrUtils;
 
 import static cn.myperf4j.base.config.MyProperties.getBoolean;
 import static cn.myperf4j.base.config.MyProperties.getStr;
 import static cn.myperf4j.base.config.MyProperties.getInt;
-import static cn.myperf4j.base.constant.PropertyKeys.Basic.APP_NAME;
-import static cn.myperf4j.base.constant.PropertyKeys.Basic.PROPERTIES_FILE_DIR;
-import static cn.myperf4j.base.constant.PropertyKeys.Basic.DEBUG;
-import static cn.myperf4j.base.constant.PropertyKeys.Basic.ASM_COMPUTE_MODE;
+import static cn.myperf4j.base.constant.PropertyKeys.Basic.*;
 
 /**
  * Created by LinShunkang on 2020/05/24
@@ -20,6 +18,8 @@ public class BasicConfig {
     private String configFileDir;
 
     private boolean debug;
+
+    private String hostname;
 
     private Integer asmComputeMode;
 
@@ -48,6 +48,14 @@ public class BasicConfig {
 
     public void debug(boolean debug) {
         this.debug = debug;
+    }
+
+    public String hostname() {
+        return this.hostname;
+    }
+
+    public void hostname(String hostname) {
+        this.hostname = hostname;
     }
 
     public Integer asmComputeMode() {
@@ -81,6 +89,7 @@ public class BasicConfig {
         config.appName(appName);
         config.debug(getBoolean(DEBUG, false));
         config.configFileDir(getStr(PROPERTIES_FILE_DIR));
+        config.hostname(getStr(HOSTNAME, IpUtils.getLocalhostName()));
         config.asmComputeMode(getInt(ASM_COMPUTE_MODE));
         return config;
     }

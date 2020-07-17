@@ -6,7 +6,6 @@ import cn.myperf4j.base.metric.formatter.JvmGcMetricsFormatter;
 
 import java.util.List;
 
-import static cn.myperf4j.base.util.IpUtils.getLocalhostName;
 import static cn.myperf4j.base.util.LineProtocolUtils.processTagOrField;
 import static cn.myperf4j.base.util.NumFormatUtils.doubleFormat;
 
@@ -41,7 +40,7 @@ public class InfluxJvmGcMetricsFormatter implements JvmGcMetricsFormatter {
     private void appendLineProtocol(JvmGcMetrics metrics, long startNanos, StringBuilder sb) {
         sb.append("jvm_gc_metrics_v2")
                 .append(",AppName=").append(ProfilingConfig.basicConfig().appName())
-                .append(",host=").append(processTagOrField(getLocalhostName()))
+                .append(",host=").append(processTagOrField(ProfilingConfig.basicConfig().hostname()))
                 .append(" YoungGcCount=").append(metrics.getYoungGcCount()).append('i')
                 .append(",YoungGcTime=").append(metrics.getYoungGcTime()).append('i')
                 .append(",AvgYoungGcTime=").append(doubleFormat(metrics.getAvgYoungGcTime()))

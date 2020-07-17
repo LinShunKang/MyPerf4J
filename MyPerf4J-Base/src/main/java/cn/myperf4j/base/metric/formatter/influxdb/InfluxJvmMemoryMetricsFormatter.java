@@ -6,7 +6,6 @@ import cn.myperf4j.base.metric.formatter.JvmMemoryMetricsFormatter;
 
 import java.util.List;
 
-import static cn.myperf4j.base.util.IpUtils.getLocalhostName;
 import static cn.myperf4j.base.util.LineProtocolUtils.processTagOrField;
 import static cn.myperf4j.base.util.NumFormatUtils.doubleFormat;
 
@@ -41,7 +40,7 @@ public class InfluxJvmMemoryMetricsFormatter implements JvmMemoryMetricsFormatte
     private void appendLineProtocol(JvmMemoryMetrics metrics, long startNanos, StringBuilder sb) {
         sb.append("jvm_memory_metrics_v2")
                 .append(",AppName=").append(ProfilingConfig.basicConfig().appName())
-                .append(",host=").append(processTagOrField(getLocalhostName()))
+                .append(",host=").append(processTagOrField(ProfilingConfig.basicConfig().hostname()))
                 .append(" HeapUsed=").append(metrics.getHeapUsed()).append('i')
                 .append(",HeapUsedPercent=").append(doubleFormat(metrics.getHeapUsedPercent()))
                 .append(",NonHeapUsed=").append(metrics.getNonHeapUsed()).append('i')

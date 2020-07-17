@@ -8,7 +8,6 @@ import cn.myperf4j.base.util.ListUtils;
 
 import java.util.List;
 
-import static cn.myperf4j.base.util.IpUtils.getLocalhostName;
 import static cn.myperf4j.base.util.LineProtocolUtils.processTagOrField;
 import static cn.myperf4j.base.util.NumFormatUtils.doubleFormat;
 
@@ -53,7 +52,7 @@ public final class InfluxMethodMetricsFormatter implements MethodMetricsFormatte
                 .append(",Method=").append(methodDesc)
                 .append(",Type=").append(methodTag.getType())
                 .append(",Level=").append(methodTag.getLevel())
-                .append(",host=").append(processTagOrField(getLocalhostName()))
+                .append(",host=").append(processTagOrField(ProfilingConfig.basicConfig().hostname()))
                 .append(" TotalTimePercent=").append(metrics.getTotalTimePercent())
                 .append(",RPS=").append(metrics.getRPS()).append('i')
                 .append(",Avg=").append(doubleFormat(metrics.getAvgTime()))

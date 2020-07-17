@@ -6,7 +6,6 @@ import cn.myperf4j.base.metric.formatter.JvmClassMetricsFormatter;
 
 import java.util.List;
 
-import static cn.myperf4j.base.util.IpUtils.getLocalhostName;
 import static cn.myperf4j.base.util.LineProtocolUtils.processTagOrField;
 
 /**
@@ -40,7 +39,7 @@ public final class InfluxJvmClassMetricsFormatter implements JvmClassMetricsForm
     private void appendLineProtocol(JvmClassMetrics metrics, long startNanos, StringBuilder sb) {
         sb.append("jvm_class_metrics")
                 .append(",AppName=").append(ProfilingConfig.basicConfig().appName())
-                .append(",host=").append(processTagOrField(getLocalhostName()))
+                .append(",host=").append(processTagOrField(ProfilingConfig.basicConfig().hostname()))
                 .append(" Total=").append(metrics.getTotal()).append('i')
                 .append(",Loaded=").append(metrics.getLoaded()).append('i')
                 .append(",Unloaded=").append(metrics.getUnloaded()).append('i')

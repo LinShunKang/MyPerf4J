@@ -6,7 +6,6 @@ import cn.myperf4j.base.metric.formatter.JvmFileDescMetricsFormatter;
 
 import java.util.List;
 
-import static cn.myperf4j.base.util.IpUtils.getLocalhostName;
 import static cn.myperf4j.base.util.LineProtocolUtils.processTagOrField;
 
 /**
@@ -40,7 +39,7 @@ public final class InfluxJvmFileDescMetricsFormatter implements JvmFileDescMetri
     private void appendLineProtocol(JvmFileDescriptorMetrics metrics, long startNanos, StringBuilder sb) {
         sb.append("jvm_file_descriptor_metrics")
                 .append(",AppName=").append(ProfilingConfig.basicConfig().appName())
-                .append(",host=").append(processTagOrField(getLocalhostName()))
+                .append(",host=").append(processTagOrField(ProfilingConfig.basicConfig().hostname()))
                 .append(" OpenCount=").append(metrics.getOpenCount()).append('i')
                 .append(",OpenPercent=").append(metrics.getOpenPercent())
                 .append(' ').append(startNanos);

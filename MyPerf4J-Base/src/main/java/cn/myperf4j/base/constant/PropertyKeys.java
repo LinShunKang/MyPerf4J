@@ -17,7 +17,9 @@ public interface PropertyKeys {
 
         ConfigKey PROPERTIES_FILE_DIR = ConfigKey.of("properties.dir", "MyPerf4JPropDIR");
 
-        ConfigKey ASM_COMPUTE_MODE = ConfigKey.of("asm.compute_mode", "ASM.ComputeMode");
+        ConfigKey ASM_COMPUTE_MODE = ConfigKey.of("asm.compute_mode", "asm.compute_mode");
+
+        ConfigKey HOSTNAME = ConfigKey.of("hostname", "hostname");
 
     }
 
