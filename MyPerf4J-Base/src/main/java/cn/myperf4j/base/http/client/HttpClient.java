@@ -1,5 +1,10 @@
-package cn.myperf4j.base.http;
+package cn.myperf4j.base.http.client;
 
+import cn.myperf4j.base.http.HttpHeaders;
+import cn.myperf4j.base.http.HttpMethod;
+import cn.myperf4j.base.http.HttpRequest;
+import cn.myperf4j.base.http.HttpRespStatus;
+import cn.myperf4j.base.http.HttpResponse;
 import cn.myperf4j.base.util.ArrayUtils;
 import cn.myperf4j.base.util.ListUtils;
 
@@ -10,6 +15,8 @@ import java.net.URL;
 import java.util.List;
 
 import static cn.myperf4j.base.http.HttpMethod.POST;
+import static cn.myperf4j.base.http.HttpStatusClass.SUCCESS;
+import static cn.myperf4j.base.util.InputStreamUtils.toBytes;
 
 /**
  * Created by LinShunkang on 2020/05/15
@@ -31,10 +38,10 @@ public final class HttpClient {
 
         HttpHeaders headers = new HttpHeaders(urlConn.getHeaderFields());
         HttpRespStatus status = HttpRespStatus.valueOf(urlConn.getResponseCode());
-        if (HttpStatusClass.SUCCESS.contains(status.code())) {
-            return new HttpResponse(status, headers, urlConn.getInputStream());
+        if (SUCCESS.contains(status.code())) {
+            return new HttpResponse(status, headers, toBytes(urlConn.getInputStream()));
         } else {
-            return new HttpResponse(status, headers, urlConn.getErrorStream());
+            return new HttpResponse(status, headers, toBytes(urlConn.getErrorStream()));
         }
     }
 

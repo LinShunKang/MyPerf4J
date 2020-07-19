@@ -1,26 +1,24 @@
 package cn.myperf4j.base.http;
 
-import cn.myperf4j.base.util.InputStreamUtils;
+import java.util.Arrays;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InputStream;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Created by LinShunkang on 2020/05/15
  */
-public final class HttpResponse implements Closeable {
+public final class HttpResponse {
 
     private final HttpRespStatus status;
 
     private final HttpHeaders headers;
 
-    private final InputStream inputStream;
+    private final byte[] body;
 
-    public HttpResponse(HttpRespStatus status, HttpHeaders headers, InputStream inputStream) {
+    public HttpResponse(HttpRespStatus status, HttpHeaders headers, byte[] body) {
         this.status = status;
         this.headers = headers;
-        this.inputStream = inputStream;
+        this.body = body;
     }
 
     public HttpRespStatus getStatus() {
@@ -31,22 +29,20 @@ public final class HttpResponse implements Closeable {
         return headers;
     }
 
-    public String getBodyString() throws IOException {
-        return InputStreamUtils.toString(inputStream);
+    public byte[] getBody() {
+        return body;
     }
 
-    @Override
-    public void close() throws IOException {
-        if (inputStream != null) {
-            inputStream.close();
-        }
+    public String getBodyString() {
+        return new String(body, 0, body.length, UTF_8);
     }
 
     @Override
     public String toString() {
         return "HttpResponse{" +
                 "status=" + status +
-                ", body='" + inputStream + '\'' +
+                ", headers=" + headers +
+                ", body=" + Arrays.toString(body) +
                 '}';
     }
 }
