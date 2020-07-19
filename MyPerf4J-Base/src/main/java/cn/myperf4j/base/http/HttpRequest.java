@@ -4,6 +4,7 @@ import cn.myperf4j.base.util.ArrayUtils;
 import cn.myperf4j.base.util.MapUtils;
 import cn.myperf4j.base.util.StrUtils;
 
+import java.util.List;
 import java.util.Map;
 
 import static cn.myperf4j.base.http.HttpMethod.GET;
@@ -25,9 +26,9 @@ public final class HttpRequest {
         }
     };
 
-    private final String host;
+    private final String remoteHost;
 
-    private final int port;
+    private final int remotePort;
 
     private final HttpMethod method;
 
@@ -35,15 +36,15 @@ public final class HttpRequest {
 
     private final String path;
 
-    private final Map<String, String> params;
+    private final Map<String, List<String>> params;
 
     private final byte[] body;
 
     private String url;
 
     public HttpRequest(Builder builder) {
-        this.host = builder.host;
-        this.port = builder.port;
+        this.remoteHost = builder.remoteHost;
+        this.remotePort = builder.remotePort;
         this.method = builder.method;
         this.headers = builder.headers;
         this.path = builder.path;
@@ -52,12 +53,12 @@ public final class HttpRequest {
         this.url = "";
     }
 
-    public String getHost() {
-        return host;
+    public String getRemoteHost() {
+        return remoteHost;
     }
 
-    public int getPort() {
-        return port;
+    public int getRemotePort() {
+        return remotePort;
     }
 
     public HttpMethod getMethod() {
@@ -72,7 +73,7 @@ public final class HttpRequest {
         return path;
     }
 
-    public Map<String, String> getParams() {
+    public Map<String, List<String>> getParams() {
         return params;
     }
 
@@ -90,14 +91,17 @@ public final class HttpRequest {
     private String createUrl() {
         StringBuilder sb = SB_TL.get();
         try {
-            sb.append("http://").append(host).append(':').append(port).append(path);
+            sb.append("http://").append(remoteHost).append(':').append(remotePort).append(path);
             if (MapUtils.isEmpty(params)) {
                 return sb.toString();
             }
 
             sb.append('?');
-            for (Map.Entry<String, String> param : params.entrySet()) {
-                sb.append(param.getKey()).append('=').append(param.getValue()).append('&');
+            for (Map.Entry<String, List<String>> param : params.entrySet()) {
+                final List<String> values = param.getValue();
+                for (int i = 0; i < values.size(); i++) {
+                    sb.append(param.getKey()).append('=').append(values.get(i)).append('&');
+                }
             }
             return sb.substring(0, sb.length() - 1);
         } finally {
@@ -108,8 +112,8 @@ public final class HttpRequest {
     @Override
     public String toString() {
         return "HttpRequest{" +
-                "host='" + host + '\'' +
-                ", port=" + port +
+                "host='" + remoteHost + '\'' +
+                ", port=" + remotePort +
                 ", path='" + path + '\'' +
                 ", params=" + params +
                 '}';
@@ -117,17 +121,17 @@ public final class HttpRequest {
 
     public static class Builder {
 
-        private String host;
+        private String remoteHost;
 
-        private int port;
+        private int remotePort;
 
         private HttpMethod method;
 
-        private final HttpHeaders headers;
+        private HttpHeaders headers;
 
         private String path;
 
-        private Map<String, String> params;
+        private Map<String, List<String>> params;
 
         private byte[] body;
 
@@ -137,22 +141,21 @@ public final class HttpRequest {
             this.body = EMPTY_BODY;
         }
 
-        public Builder host(String host) {
-            if (StrUtils.isBlank(host)) {
-                throw new IllegalArgumentException("host is blank!");
+        public Builder remoteHost(String remoteHost) {
+            if (StrUtils.isBlank(remoteHost)) {
+                throw new IllegalArgumentException("remoteHost is blank!");
             }
-            this.host = host;
+            this.remoteHost = remoteHost;
             return this;
         }
 
-        public Builder port(int port) {
-            if (port <= 0 || port > 65535) {
-                throw new IllegalArgumentException("port=" + port + " is invalid!");
+        public Builder remotePort(int remotePort) {
+            if (remotePort <= 0 || remotePort > 65535) {
+                throw new IllegalArgumentException("remotePort=" + remotePort + " is invalid!");
             }
-            this.port = port;
+            this.remotePort = remotePort;
             return this;
         }
-
 
         public Builder path(String path) {
             if (StrUtils.isBlank(path)) {
@@ -162,18 +165,23 @@ public final class HttpRequest {
             return this;
         }
 
-        public Builder params(Map<String, String> params) {
+        public Builder params(Map<String, List<String>> params) {
             this.params = params;
             return this;
         }
 
+        public Builder headers(Map<String, List<String>> headers) {
+            this.headers = new HttpHeaders(headers);
+            return this;
+        }
+
         public Builder header(String name, String value) {
-            headers.set(name, value);
+            this.headers.set(name, value);
             return this;
         }
 
         public Builder addHeader(String name, String value) {
-            headers.add(name, value);
+            this.headers.add(name, value);
             return this;
         }
 

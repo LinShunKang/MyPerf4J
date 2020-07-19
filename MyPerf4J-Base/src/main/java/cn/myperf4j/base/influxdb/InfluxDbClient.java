@@ -1,6 +1,6 @@
 package cn.myperf4j.base.influxdb;
 
-import cn.myperf4j.base.http.HttpClient;
+import cn.myperf4j.base.http.client.HttpClient;
 import cn.myperf4j.base.http.HttpRequest;
 import cn.myperf4j.base.http.HttpRespStatus;
 import cn.myperf4j.base.http.HttpResponse;
@@ -18,6 +18,7 @@ import static cn.myperf4j.base.http.HttpStatusClass.INFORMATIONAL;
 import static cn.myperf4j.base.http.HttpStatusClass.SUCCESS;
 import static cn.myperf4j.base.util.ThreadUtils.newThreadFactory;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Collections.singletonList;
 
 /**
  * Created by LinShunkang on 2020/05/18
@@ -70,13 +71,14 @@ public final class InfluxDbClient {
 
     public boolean createDatabase() {
         HttpRequest req = new HttpRequest.Builder()
-                .host(host)
-                .port(port)
+                .remoteHost(host)
+                .remotePort(port)
                 .path("/query")
                 .header("Authorization", authorization)
                 .post("q=CREATE DATABASE " + database)
                 .build();
-        try (HttpResponse response = httpClient.execute(req)) {
+        try {
+            HttpResponse response = httpClient.execute(req);
             Logger.info("InfluxDbClient create database '" + database + "' response.status=" + response.getStatus());
 
             if (response.getStatus().statusClass() == SUCCESS) {
@@ -109,14 +111,15 @@ public final class InfluxDbClient {
         @Override
         public void run() {
             HttpRequest req = new HttpRequest.Builder()
-                    .host(host)
-                    .port(port)
+                    .remoteHost(host)
+                    .remotePort(port)
                     .path("/write")
                     .header("Authorization", authorization)
-                    .params(MapUtils.of("db", database))
+                    .params(MapUtils.of("db", singletonList(database)))
                     .post(content)
                     .build();
-            try (HttpResponse response = httpClient.execute(req)) {
+            try {
+                HttpResponse response = httpClient.execute(req);
                 HttpRespStatus status = response.getStatus();
                 if (status.statusClass() == SUCCESS && Logger.isDebugEnable()) {
                     Logger.debug("ReqTask.run(): respStatus=" + status.simpleString() + ", reqBody=" + content);

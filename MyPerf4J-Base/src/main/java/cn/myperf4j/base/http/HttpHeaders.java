@@ -59,6 +59,10 @@ public final class HttpHeaders {
         return new ArrayList<>(headers.keySet());
     }
 
+    public Map<String, List<String>> headers() {
+        return headers;
+    }
+
     public static HttpHeaders defaultHeaders() {
         HttpHeaders headers = new HttpHeaders(6);
         headers.set("User-Agent", "MyPerf4J");

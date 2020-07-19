@@ -5,6 +5,7 @@ package cn.myperf4j.base.http;
  */
 public enum HttpMethod {
 
+    UNKNOWN("UNKNOWN", false),
     HEAD("HEAD", false),
     GET("GET", false),
     POST("POST", true),
@@ -25,6 +26,19 @@ public enum HttpMethod {
 
     public boolean isPermitsBody() {
         return permitsBody;
+    }
+
+    public static HttpMethod parse(String name) {
+        switch (name) {
+            case "HEAD":
+                return HEAD;
+            case "GET":
+                return GET;
+            case "POST":
+                return POST;
+            default:
+                return UNKNOWN;
+        }
     }
 
 }

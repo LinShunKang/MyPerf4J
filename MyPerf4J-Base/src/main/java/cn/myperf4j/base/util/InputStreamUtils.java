@@ -40,4 +40,22 @@ public final class InputStreamUtils {
             result.reset();
         }
     }
+
+    public static byte[] toBytes(InputStream inputStream) throws IOException {
+        if (inputStream == null) {
+            return null;
+        }
+
+        ByteArrayOutputStream result = OP_TL.get();
+        byte[] buffer = BYTES_TL.get();
+        try {
+            int length;
+            while ((length = inputStream.read(buffer)) != -1) {
+                result.write(buffer, 0, length);
+            }
+            return result.toByteArray();
+        } finally {
+            result.reset();
+        }
+    }
 }
