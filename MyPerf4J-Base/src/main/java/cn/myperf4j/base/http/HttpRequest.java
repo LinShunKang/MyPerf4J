@@ -26,39 +26,25 @@ public final class HttpRequest {
         }
     };
 
-    private final String remoteHost;
-
-    private final int remotePort;
+    private final String url;
 
     private final HttpMethod method;
 
     private final HttpHeaders headers;
 
-    private final String path;
-
     private final Map<String, List<String>> params;
 
     private final byte[] body;
 
-    private String url;
+    private String fullUrl;
 
     public HttpRequest(Builder builder) {
-        this.remoteHost = builder.remoteHost;
-        this.remotePort = builder.remotePort;
+        this.url = builder.url;
         this.method = builder.method;
         this.headers = builder.headers;
-        this.path = builder.path;
         this.params = builder.params;
         this.body = builder.body;
-        this.url = "";
-    }
-
-    public String getRemoteHost() {
-        return remoteHost;
-    }
-
-    public int getRemotePort() {
-        return remotePort;
+        this.fullUrl = "";
     }
 
     public HttpMethod getMethod() {
@@ -67,10 +53,6 @@ public final class HttpRequest {
 
     public HttpHeaders getHeaders() {
         return headers;
-    }
-
-    public String getPath() {
-        return path;
     }
 
     public Map<String, List<String>> getParams() {
@@ -82,21 +64,34 @@ public final class HttpRequest {
     }
 
     public String getUrl() {
-        if (StrUtils.isNotEmpty(url)) {
-            return url;
-        }
-        return url = createUrl();
+        return url;
     }
 
-    private String createUrl() {
+    public String getFullUrl() {
+        if (StrUtils.isNotEmpty(fullUrl)) {
+            return fullUrl;
+        }
+        return fullUrl = createFullUrl();
+    }
+
+    private String createFullUrl() {
         StringBuilder sb = SB_TL.get();
         try {
-            sb.append("http://").append(remoteHost).append(':').append(remotePort).append(path);
+            if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                sb.append("http://");
+            }
+            sb.append(url);
+
             if (MapUtils.isEmpty(params)) {
                 return sb.toString();
             }
 
-            sb.append('?');
+            if (!StrUtils.isContains(url, '?')) {
+                sb.append('?');
+            } else if (!StrUtils.isEndWith(url, '?')) {
+                sb.append('&');
+            }
+
             for (Map.Entry<String, List<String>> param : params.entrySet()) {
                 final List<String> values = param.getValue();
                 for (int i = 0; i < values.size(); i++) {
@@ -112,24 +107,20 @@ public final class HttpRequest {
     @Override
     public String toString() {
         return "HttpRequest{" +
-                "host='" + remoteHost + '\'' +
-                ", port=" + remotePort +
-                ", path='" + path + '\'' +
+                "url='" + url + '\'' +
+                ", method=" + method +
+                ", headers=" + headers +
                 ", params=" + params +
                 '}';
     }
 
     public static class Builder {
 
-        private String remoteHost;
-
-        private int remotePort;
+        private String url;
 
         private HttpMethod method;
 
         private HttpHeaders headers;
-
-        private String path;
 
         private Map<String, List<String>> params;
 
@@ -141,27 +132,11 @@ public final class HttpRequest {
             this.body = EMPTY_BODY;
         }
 
-        public Builder remoteHost(String remoteHost) {
-            if (StrUtils.isBlank(remoteHost)) {
-                throw new IllegalArgumentException("remoteHost is blank!");
+        public Builder url(String url) {
+            if (StrUtils.isBlank(url)) {
+                throw new IllegalArgumentException("url is blank!");
             }
-            this.remoteHost = remoteHost;
-            return this;
-        }
-
-        public Builder remotePort(int remotePort) {
-            if (remotePort <= 0 || remotePort > 65535) {
-                throw new IllegalArgumentException("remotePort=" + remotePort + " is invalid!");
-            }
-            this.remotePort = remotePort;
-            return this;
-        }
-
-        public Builder path(String path) {
-            if (StrUtils.isBlank(path)) {
-                throw new IllegalArgumentException("path is blank!");
-            }
-            this.path = path;
+            this.url = url;
             return this;
         }
 
@@ -220,8 +195,8 @@ public final class HttpRequest {
         }
 
         public HttpRequest build() {
-            if (path == null) {
-                throw new IllegalStateException("path is null");
+            if (url == null) {
+                throw new IllegalStateException("url is null!");
             }
             return new HttpRequest(this);
         }

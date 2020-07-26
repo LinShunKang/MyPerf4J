@@ -6,7 +6,6 @@ import cn.myperf4j.base.http.HttpRespStatus;
 import cn.myperf4j.base.http.HttpResponse;
 import cn.myperf4j.base.util.Base64;
 import cn.myperf4j.base.util.Logger;
-import cn.myperf4j.base.util.MapUtils;
 import cn.myperf4j.base.util.StrUtils;
 
 import java.io.IOException;
@@ -18,7 +17,6 @@ import static cn.myperf4j.base.http.HttpStatusClass.INFORMATIONAL;
 import static cn.myperf4j.base.http.HttpStatusClass.SUCCESS;
 import static cn.myperf4j.base.util.ThreadUtils.newThreadFactory;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Collections.singletonList;
 
 /**
  * Created by LinShunkang on 2020/05/18
@@ -34,9 +32,9 @@ public final class InfluxDbClient {
             newThreadFactory("MyPerf4J-InfluxDbClient_"),
             new ThreadPoolExecutor.DiscardOldestPolicy());
 
-    private final String host;
+    private final String url;
 
-    private final int port;
+    private final String writeReqUrl;
 
     private final String database;
 
@@ -49,8 +47,8 @@ public final class InfluxDbClient {
     protected final HttpClient httpClient;
 
     public InfluxDbClient(Builder builder) {
-        this.host = builder.host;
-        this.port = builder.port;
+        this.url = "http://" + builder.host + ":" + builder.port;
+        this.writeReqUrl = url + "/write?db=" + builder.database;
         this.database = builder.database;
         this.username = builder.username;
         this.password = builder.password;
@@ -71,9 +69,7 @@ public final class InfluxDbClient {
 
     public boolean createDatabase() {
         HttpRequest req = new HttpRequest.Builder()
-                .remoteHost(host)
-                .remotePort(port)
-                .path("/query")
+                .url(url + "/query")
                 .header("Authorization", authorization)
                 .post("q=CREATE DATABASE " + database)
                 .build();
@@ -111,11 +107,8 @@ public final class InfluxDbClient {
         @Override
         public void run() {
             HttpRequest req = new HttpRequest.Builder()
-                    .remoteHost(host)
-                    .remotePort(port)
-                    .path("/write")
+                    .url(writeReqUrl)
                     .header("Authorization", authorization)
-                    .params(MapUtils.of("db", singletonList(database)))
                     .post(content)
                     .build();
             try {

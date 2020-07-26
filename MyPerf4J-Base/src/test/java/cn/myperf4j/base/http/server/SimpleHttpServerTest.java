@@ -7,10 +7,13 @@ import cn.myperf4j.base.http.HttpRespStatus;
 import cn.myperf4j.base.http.HttpResponse;
 import cn.myperf4j.base.http.client.HttpClient;
 import cn.myperf4j.base.util.MapUtils;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.concurrent.TimeUnit;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -19,12 +22,16 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 public class SimpleHttpServerTest {
 
+    private static final String RESP_STR = "Hello, SimpleHttpServer";
+
+    private static final int PORT = 1024;
+
     private static final HttpClient httpClient = new HttpClient.Builder().build();
 
-    private static final SimpleHttpServer server = new SimpleHttpServer(1024, new Dispatcher() {
+    private static final SimpleHttpServer server = new SimpleHttpServer(PORT, new Dispatcher() {
         @Override
         public HttpResponse dispatch(HttpRequest request) {
-            return new HttpResponse(HttpRespStatus.OK, defaultHeaders(), "Hello, SimpleHttpServer".getBytes(UTF_8));
+            return new HttpResponse(HttpRespStatus.OK, defaultHeaders(), RESP_STR.getBytes(UTF_8));
         }
 
         private HttpHeaders defaultHeaders() {
@@ -36,19 +43,25 @@ public class SimpleHttpServerTest {
         }
     });
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    @BeforeClass
+    public static void start() {
         server.startAsync();
-        TimeUnit.SECONDS.sleep(1);
+    }
 
+    @AfterClass
+    public static void stop() {
+        server.stop();
+    }
+
+    @Test
+    public void test() throws IOException {
         for (int i = 0; i < 10; i++) {
             final HttpResponse response = httpClient.execute(new Builder()
-                    .remoteHost("127.0.0.1")
-                    .remotePort(1024)
-                    .path("/test")
+                    .url("127.0.0.1:" + PORT + "/test")
                     .get()
                     .params(MapUtils.of("k1", Collections.singletonList("v1")))
                     .build());
-            System.out.println(response.getBodyString());
+            Assert.assertEquals(RESP_STR, response.getBodyString());
         }
     }
 }

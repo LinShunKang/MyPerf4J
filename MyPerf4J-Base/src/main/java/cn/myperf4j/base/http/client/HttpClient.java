@@ -46,7 +46,7 @@ public final class HttpClient {
     }
 
     private HttpURLConnection createConnection(HttpRequest request) throws IOException {
-        URL url = new URL(request.getUrl());
+        URL url = new URL(request.getFullUrl());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setConnectTimeout(connectTimeout);
         conn.setReadTimeout(readTimeout);

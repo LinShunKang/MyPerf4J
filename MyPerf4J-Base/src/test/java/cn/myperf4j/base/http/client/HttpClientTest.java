@@ -6,9 +6,9 @@ import cn.myperf4j.base.http.HttpResponse;
 import cn.myperf4j.base.http.server.Dispatcher;
 import cn.myperf4j.base.http.server.SimpleHttpServer;
 import cn.myperf4j.base.util.MapUtils;
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -27,11 +27,11 @@ public class HttpClientTest {
 
     private static final HttpClient httpClient = new HttpClient.Builder().build();
 
-    private SimpleHttpServer server;
+    private static SimpleHttpServer server;
 
-    @Before
-    public void init() {
-        server = new SimpleHttpServer(8086, new Dispatcher() {
+    @BeforeClass
+    public static void init() {
+        server = new SimpleHttpServer(8686, new Dispatcher() {
             @Override
             public HttpResponse dispatch(HttpRequest request) {
                 System.out.println("Dispatcher.dispatch(): request.body=" + new String(request.getBody()));
@@ -41,17 +41,17 @@ public class HttpClientTest {
         server.startAsync();
     }
 
-    @After
-    public void clean() {
-        server.stop();
+    @AfterClass
+    public static void clean() {
+        if (server != null) {
+            server.stop();
+        }
     }
 
     @Test
     public void testGet() {
         HttpRequest req = new HttpRequest.Builder()
-                .remoteHost("www.baidu.com")
-                .remotePort(80)
-                .path("/")
+                .url("http://www.baidu.com")
 //                .header("Connection", "close")
                 .get()
                 .build();
@@ -72,9 +72,7 @@ public class HttpClientTest {
         params.put("db", Collections.singletonList("http"));
 
         HttpRequest req = new HttpRequest.Builder()
-                .remoteHost("localhost")
-                .remotePort(8086)
-                .path("/write")
+                .url("localhost:8686/write")
                 .params(params)
                 .post("cpu_load_short,host=server01,region=us-west value=0.64 1434055562000000000\n" +
                         "cpu_load_short,host=server02,region=us-west value=0.96 1434055562000000000")
