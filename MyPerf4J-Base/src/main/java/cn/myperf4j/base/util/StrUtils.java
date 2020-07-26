@@ -75,6 +75,14 @@ public final class StrUtils {
         return !isBlank(str);
     }
 
+    public static boolean isContains(String str, char ch) {
+        return isNotEmpty(str) && str.indexOf(ch) >= 0;
+    }
+
+    public static boolean isEndWith(String str, char ch) {
+        return isNotEmpty(str) && str.charAt(str.length() - 1) == ch;
+    }
+
     public static List<String> splitAsList(final String str, final char separatorChar) {
         if (str == null || str.isEmpty()) {
             return Collections.emptyList();

@@ -69,6 +69,13 @@ public class SimpleHttpServer {
 
     private static class DispatchHandler implements HttpHandler {
 
+        private static final ThreadLocal<StringBuilder> URL_SB = new ThreadLocal<StringBuilder>() {
+            @Override
+            protected StringBuilder initialValue() {
+                return new StringBuilder(128);
+            }
+        };
+
         private final Dispatcher dispatcher;
 
         public DispatchHandler(Dispatcher dispatcher) {
@@ -104,16 +111,28 @@ public class SimpleHttpServer {
         }
 
         private HttpRequest parseHttpRequest(HttpExchange exchange, HttpMethod httpMethod) throws IOException {
-            final HttpContext context = exchange.getHttpContext();
             final URI uri = exchange.getRequestURI();
             final Builder reqBuilder = new Builder()
-//                    .remoteHost(uri.getHost())
-//                    .remotePort(uri.getPort())
-                    .path(context.getPath())
+                    .url(buildUrl(exchange))
                     .headers(exchange.getRequestHeaders())
                     .params(parseParams(uri.getRawQuery()))
                     .method(httpMethod, toBytes(exchange.getRequestBody()));
             return reqBuilder.build();
+        }
+
+        private String buildUrl(HttpExchange exchange) {
+            final StringBuilder sb = URL_SB.get();
+            try {
+                final InetSocketAddress localAddr = exchange.getLocalAddress();
+                final URI uri = exchange.getRequestURI();
+                sb.append("http://")
+                        .append(localAddr.getHostString()).append(':').append(localAddr.getPort())
+                        .append(uri.getPath()).append('?')
+                        .append(uri.getRawQuery());
+                return sb.toString();
+            } finally {
+                sb.setLength(0);
+            }
         }
 
         private Map<String, List<String>> parseParams(String rawQuery) {
@@ -122,7 +141,6 @@ public class SimpleHttpServer {
             }
             return new QueryStringDecoder(rawQuery, UTF_8, false).parameters();
         }
-
     }
 
 }
