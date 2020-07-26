@@ -32,6 +32,10 @@ public final class LevelMappingFilter {
         LEVEL_EXPS_MAP.put(ClassLevels.UTILS, Collections.singletonList("*Utils"));
     }
 
+    private LevelMappingFilter() {
+        //empty
+    }
+
     /**
      * 根据 simpleClassName 返回 ClassLevel
      */
@@ -51,5 +55,4 @@ public final class LevelMappingFilter {
     public static void putLevelMapping(String classLevel, List<String> expList) {
         LEVEL_EXPS_MAP.put(classLevel, expList);
     }
-
 }

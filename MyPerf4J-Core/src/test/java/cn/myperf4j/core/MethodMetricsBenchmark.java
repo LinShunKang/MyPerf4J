@@ -11,7 +11,11 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 /**
  * Created by LinShunkang on 2019/06/22
  */
-public class MethodMetricsBenchmark {
+public final class MethodMetricsBenchmark {
+
+    private MethodMetricsBenchmark() {
+        //empty
+    }
 
     public static void main(String[] args) {
         Recorders recorders = new Recorders(new AtomicReferenceArray<Recorder>(10));
@@ -34,10 +38,10 @@ public class MethodMetricsBenchmark {
         long tmp = 0L;
         start = System.nanoTime();
         for (int i = 0; i < 1000000; ++i) {
-            MethodMetrics methodMetrics = MethodMetricsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime());
+            MethodMetrics methodMetrics = MethodMetricsCalculator.calPerfStats(recorder, methodTag,
+                    recorders.getStartTime(), recorders.getStopTime());
             tmp += methodMetrics.getRPS();
         }
         System.out.println("tmp=" + tmp + ", totalCost=" + (System.nanoTime() - start) / 1000_000 + "ms");
     }
-
 }

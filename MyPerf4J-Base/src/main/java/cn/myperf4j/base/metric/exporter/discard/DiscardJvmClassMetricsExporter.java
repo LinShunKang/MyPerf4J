@@ -22,5 +22,4 @@ public class DiscardJvmClassMetricsExporter implements JvmClassMetricsExporter {
     public void afterProcess(long processId, long startMillis, long stopMillis) {
         //empty
     }
-
 }

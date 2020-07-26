@@ -16,7 +16,7 @@ public final class Logger {
         }
     };
 
-    private static boolean debugEnable = false;
+    private static boolean debugEnable;
 
     private static final String PREFIX = " [MyPerf4J] ";
 
@@ -27,6 +27,10 @@ public final class Logger {
     private static final String WARN_LEVEL = "WARN ";
 
     private static final String ERROR_LEVEL = "ERROR ";
+
+    private Logger() {
+        //empty
+    }
 
     public static void setDebugEnable(boolean debugEnable) {
         Logger.debugEnable = debugEnable;
@@ -68,5 +72,4 @@ public final class Logger {
             throwable.printStackTrace();
         }
     }
-
 }

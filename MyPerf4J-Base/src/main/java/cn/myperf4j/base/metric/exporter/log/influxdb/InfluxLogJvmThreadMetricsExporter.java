@@ -18,5 +18,4 @@ public class InfluxLogJvmThreadMetricsExporter extends AbstractLogJvmThreadMetri
     public void process(JvmThreadMetrics metrics, long processId, long startMillis, long stopMillis) {
         logger.log(METRICS_FORMATTER.format(Collections.singletonList(metrics), startMillis, stopMillis));
     }
-
 }

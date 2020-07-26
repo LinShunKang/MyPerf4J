@@ -21,6 +21,10 @@ public final class NumFormatUtils {
         }
     };
 
+    private NumFormatUtils() {
+        //empty
+    }
+
     public static String doubleFormat(double num) {
         return DECIMAL_FORMAT.get().format(num);
     }

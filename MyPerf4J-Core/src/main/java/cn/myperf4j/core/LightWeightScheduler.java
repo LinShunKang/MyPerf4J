@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by LinShunkang on 2018/8/22
  */
-public class LightWeightScheduler {
+public final class LightWeightScheduler {
 
     private static final ScheduledThreadPoolExecutor scheduledExecutor = new ScheduledThreadPoolExecutor(2,
             ThreadUtils.newThreadFactory("MyPerf4J-LightWeightScheduler-"),
@@ -35,7 +35,7 @@ public class LightWeightScheduler {
 
     private final long millTimeSlice;
 
-    private volatile long nextTimeSliceEndTime = 0L;
+    private volatile long nextTimeSliceEndTime;
 
     private LightWeightScheduler(List<Scheduler> schedulerList,
                                  long initialDelay,
@@ -101,7 +101,8 @@ public class LightWeightScheduler {
         } catch (Exception e) {
             Logger.error("LightWeightScheduler.runTask(" + scheduler + ", " + lastTimeSliceStartTime + ")", e);
         } finally {
-            Logger.debug("LightWeightScheduler.runTask(" + scheduler.name() + ", " + lastTimeSliceStartTime + ") cost: " + (System.currentTimeMillis() - startMills) + "ms");
+            Logger.debug("LightWeightScheduler.runTask(" + scheduler.name() + ", " + lastTimeSliceStartTime
+                    + ") cost: " + (System.currentTimeMillis() - startMills) + "ms");
         }
     }
 

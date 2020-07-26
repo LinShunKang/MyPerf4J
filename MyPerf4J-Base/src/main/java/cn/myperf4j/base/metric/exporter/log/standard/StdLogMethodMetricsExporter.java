@@ -30,7 +30,8 @@ public class StdLogMethodMetricsExporter extends AbstractLogMethodMetricsExporte
         if (metricsList != null) {
             metricsList.add(metrics);
         } else {
-            Logger.error("StdLogMethodMetricsExporter.process(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
+            Logger.error("StdLogMethodMetricsExporter.process(" + processId + ", " + startMillis + ", "
+                    + stopMillis + "): metricsList is null!!!");
         }
     }
 
@@ -40,7 +41,8 @@ public class StdLogMethodMetricsExporter extends AbstractLogMethodMetricsExporte
         if (metricsList != null) {
             logger.logAndFlush(METRICS_FORMATTER.format(metricsList, startMillis, stopMillis));
         } else {
-            Logger.error("StdLogMethodMetricsExporter.afterProcess(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
+            Logger.error("StdLogMethodMetricsExporter.afterProcess(" + processId + ", " + startMillis + ", "
+                    + stopMillis + "): metricsList is null!!!");
         }
     }
 }

@@ -5,13 +5,21 @@ import cn.myperf4j.core.recorder.Recorder;
 import cn.myperf4j.core.recorder.AccurateRecorder;
 import cn.myperf4j.core.recorder.Recorders;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
 /**
  * Created by LinShunkang on 2018/4/19
  */
-public class RecorderBenchmarkTest {
+public final class RecorderBenchmarkTest {
+
+    private RecorderBenchmarkTest() {
+        //empty
+    }
 
     public static void main(String[] args) {
         AtomicReferenceArray<Recorder> recorderArr = new AtomicReferenceArray<>(1);
@@ -23,32 +31,39 @@ public class RecorderBenchmarkTest {
         MethodTag methodTag = MethodTag.getGeneralInstance("", "", "", "", "");
 
         int times = 100000000;
-        singleThreadBenchmark(recorders, times / 10);//warm up
-        System.out.println(MethodMetricsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime()));
+        singleThreadBenchmark(recorders, times / 10); //warm up
+        System.out.println(MethodMetricsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(),
+                recorders.getStopTime()));
 
         recorder.resetRecord();
         singleThreadBenchmark(recorders, times);
-        System.out.println(MethodMetricsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime()));
+        System.out.println(MethodMetricsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(),
+                recorders.getStopTime()));
 
         recorder.resetRecord();
         multiThreadBenchmark(recorders, times, 2);
-        System.out.println(MethodMetricsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime()));
+        System.out.println(MethodMetricsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(),
+                recorders.getStopTime()));
 
         recorder.resetRecord();
         multiThreadBenchmark(recorders, times, 4);
-        System.out.println(MethodMetricsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime()));
+        System.out.println(MethodMetricsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(),
+                recorders.getStopTime()));
 
         recorder.resetRecord();
         multiThreadBenchmark(recorders, times, 8);
-        System.out.println(MethodMetricsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime()));
+        System.out.println(MethodMetricsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(),
+                recorders.getStopTime()));
 
         recorder.resetRecord();
         multiThreadBenchmark(recorders, times, 16);
-        System.out.println(MethodMetricsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime()));
+        System.out.println(MethodMetricsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(),
+                recorders.getStopTime()));
 
         recorder.resetRecord();
         multiThreadBenchmark(recorders, times, 32);
-        System.out.println(MethodMetricsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime()));
+        System.out.println(MethodMetricsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(),
+                recorders.getStopTime()));
     }
 
     private static void singleThreadBenchmark(Recorders recorders, int times) {
@@ -66,7 +81,8 @@ public class RecorderBenchmarkTest {
     }
 
     private static void multiThreadBenchmark(final Recorders recorders, final int times, int threadCount) {
-        ThreadPoolExecutor executor = new ThreadPoolExecutor(threadCount, threadCount, 1, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>(1));
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(threadCount, threadCount, 1, TimeUnit.MINUTES,
+                new LinkedBlockingQueue<Runnable>(1));
         final CountDownLatch countDownLatch = new CountDownLatch(threadCount);
         recorders.setStartTime(System.currentTimeMillis());
         for (int i = 0; i < threadCount; ++i) {

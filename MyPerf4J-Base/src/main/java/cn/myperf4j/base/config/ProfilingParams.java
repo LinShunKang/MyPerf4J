@@ -3,9 +3,9 @@ package cn.myperf4j.base.config;
 /**
  * Created by LinShunkang on 2018/4/28
  */
-public class ProfilingParams {
+public final class ProfilingParams {
 
-    private int mostTimeThreshold;//UNIT: ms
+    private int mostTimeThreshold; //UNIT: ms
 
     private int outThresholdCount;
 

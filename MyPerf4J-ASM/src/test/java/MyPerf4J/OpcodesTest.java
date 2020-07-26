@@ -1,11 +1,13 @@
 package MyPerf4J;
 
+import org.junit.Test;
 
 import static org.objectweb.asm.Opcodes.*;
 
 public class OpcodesTest {
 
-    public static void main(String[] args) {
+    @Test
+    public void test() {
         int num = 4161;
 
         if ((num & ACC_PUBLIC) != 0) {

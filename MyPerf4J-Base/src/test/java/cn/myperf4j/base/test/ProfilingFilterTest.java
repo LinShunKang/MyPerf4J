@@ -5,6 +5,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import static cn.myperf4j.base.config.ProfilingFilter.isNotNeedInjectClassLoader;
+import static cn.myperf4j.base.config.ProfilingFilter.isNotNeedInjectMethod;
+
 /**
  * Created by LinShunkang on 2018/10/28
  */
@@ -28,19 +31,18 @@ public class ProfilingFilterTest {
         Assert.assertTrue(ProfilingFilter.isNeedInject("org/junit/Before"));
         Assert.assertTrue(ProfilingFilter.isNotNeedInject("org/junit/rules/ErrorCollector"));
 
-        Assert.assertTrue(ProfilingFilter.isNotNeedInjectMethod("toString"));
-        Assert.assertTrue(ProfilingFilter.isNotNeedInjectMethod("hello"));
-        Assert.assertFalse(ProfilingFilter.isNotNeedInjectMethod("assertFalse"));
+        Assert.assertTrue(isNotNeedInjectMethod("toString"));
+        Assert.assertTrue(isNotNeedInjectMethod("hello"));
+        Assert.assertFalse(isNotNeedInjectMethod("assertFalse"));
 
-        Assert.assertFalse(ProfilingFilter.isNotNeedInjectMethod("Demo.getId1(ClassA$ClassB)"));
-        Assert.assertTrue(ProfilingFilter.isNotNeedInjectMethod("Demo.getId1()"));
-        Assert.assertTrue(ProfilingFilter.isNotNeedInjectMethod("Demo.getId1(ClassA$ClassB,long)"));
-        Assert.assertTrue(ProfilingFilter.isNotNeedInjectMethod("Demo.getId1(long)"));
-        Assert.assertTrue(ProfilingFilter.isNotNeedInjectMethod("Demo.getId1(long,int)"));
+        Assert.assertFalse(isNotNeedInjectMethod("Demo.getId1(ClassA$ClassB)"));
+        Assert.assertTrue(isNotNeedInjectMethod("Demo.getId1()"));
+        Assert.assertTrue(isNotNeedInjectMethod("Demo.getId1(ClassA$ClassB,long)"));
+        Assert.assertTrue(isNotNeedInjectMethod("Demo.getId1(long)"));
+        Assert.assertTrue(isNotNeedInjectMethod("Demo.getId1(long,int)"));
 
-
-        Assert.assertTrue(ProfilingFilter.isNotNeedInjectClassLoader("org.apache.catalina.loader.WebappClassLoader"));
-        Assert.assertFalse(ProfilingFilter.isNotNeedInjectClassLoader("org.springframework.boot.loader.LaunchedURLClassLoader"));
+        Assert.assertTrue(isNotNeedInjectClassLoader("org.apache.catalina.loader.WebappClassLoader"));
+        Assert.assertFalse(isNotNeedInjectClassLoader("org.springframework.boot.loader.LaunchedURLClassLoader"));
     }
 
     @Test
@@ -51,8 +53,6 @@ public class ProfilingFilterTest {
         ProfilingFilter.addIncludePackage("cn.junit.test.*");
         Assert.assertTrue(ProfilingFilter.isNeedInject("cn/junit/test/a"));
         Assert.assertTrue(ProfilingFilter.isNeedInject("cn/junit/test/2"));
-
-
 
         Assert.assertFalse(ProfilingFilter.isNotNeedInject("com/junit/test/a"));
         Assert.assertFalse(ProfilingFilter.isNotNeedInject("com/junit/test2"));

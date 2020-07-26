@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 /**
  * Created by LinShunkang on 2018/5/20
  */
-public class MethodTagMaintainer extends AbstractMethodTagMaintainer {
+public final class MethodTagMaintainer extends AbstractMethodTagMaintainer {
 
     public static final int MAX_NUM = 1024 * 32;
 
@@ -40,7 +40,8 @@ public class MethodTagMaintainer extends AbstractMethodTagMaintainer {
     public int addMethodTag(MethodTag methodTag) {
         int methodId = index.getAndIncrement();
         if (methodId > MAX_NUM) {
-            Logger.warn("MethodTagMaintainer.addMethodTag(" + methodTag + "): methodId > MAX_NUM: " + methodId + " > " + MAX_NUM + ", ignored!!!");
+            Logger.warn("MethodTagMaintainer.addMethodTag(" + methodTag + "): methodId > MAX_NUM: "
+                    + methodId + " > " + MAX_NUM + ", ignored!!!");
             return -1;
         }
 
@@ -75,7 +76,10 @@ public class MethodTagMaintainer extends AbstractMethodTagMaintainer {
     private static MethodTag createMethodTag(Method method) {
         String methodParamDesc = metricsConfig.showMethodParams() ? TypeDescUtils.getMethodParamsDesc(method) : "";
         Class<?> declaringClass = method.getDeclaringClass();
-        return MethodTag.getDynamicProxyInstance(declaringClass.getName(), declaringClass.getSimpleName(), method.getName(), methodParamDesc);
+        return MethodTag.getDynamicProxyInstance(declaringClass.getName(),
+                declaringClass.getSimpleName(),
+                method.getName(),
+                methodParamDesc);
     }
 
     @Override

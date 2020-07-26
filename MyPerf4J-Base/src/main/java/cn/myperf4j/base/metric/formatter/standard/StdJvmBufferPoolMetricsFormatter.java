@@ -17,7 +17,8 @@ public class StdJvmBufferPoolMetricsFormatter implements JvmBufferPoolMetricsFor
     public String format(List<JvmBufferPoolMetrics> metricsList, long startMillis, long stopMillis) {
         String dataTitleFormat = "%-19s%19s%19s%19s%n";
         StringBuilder sb = new StringBuilder((metricsList.size() + 2) * (3 * 19 + 64));
-        sb.append("MyPerf4J JVM BufferPool Metrics [").append(DateFormatUtils.format(startMillis)).append(", ").append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
+        sb.append("MyPerf4J JVM BufferPool Metrics [").append(DateFormatUtils.format(startMillis)).append(", ")
+                .append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
         sb.append(String.format(dataTitleFormat, "Name", "Count", "MemoryUsed", "MemoryCapacity"));
         if (metricsList.isEmpty()) {
             return sb.toString();
@@ -37,5 +38,4 @@ public class StdJvmBufferPoolMetricsFormatter implements JvmBufferPoolMetricsFor
         }
         return sb.toString();
     }
-
 }

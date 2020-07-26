@@ -5,6 +5,10 @@ package cn.myperf4j.base.util;
  */
 public final class StrMatchUtils {
 
+    private StrMatchUtils() {
+        //empty
+    }
+
     /**
      * 该方法用于判断 str 是否满足 exp 表达式
      * 注意：目前只处理 '*' 作为模糊匹配
@@ -16,21 +20,21 @@ public final class StrMatchUtils {
     public static boolean isMatch(String str, String exp) {
         int strIndex = 0;
         int expIndex = 0;
-        int starIndex = -1;//记录上一个 '*' 的位置
+        int starIndex = -1; //记录上一个 '*' 的位置
 
         while (strIndex < str.length()) {
             char pkgChar = str.charAt(strIndex);
             char expChar = expIndex < exp.length() ? exp.charAt(expIndex) : '\0';
-            if (pkgChar == expChar) {//字符相等
+            if (pkgChar == expChar) { //字符相等
                 strIndex++;
                 expIndex++;
-            } else if (expChar == '*') {//遇到'*', 记录'*'的位置，并记录 expIndex 和 match
+            } else if (expChar == '*') { //遇到'*', 记录'*'的位置，并记录 expIndex 和 match
                 starIndex = expIndex;
                 expIndex++;
-            } else if (starIndex != -1) {//不是上述两种情况，无法匹配，因此回溯
+            } else if (starIndex != -1) { //不是上述两种情况，无法匹配，因此回溯
                 expIndex = starIndex + 1;
                 strIndex++;
-            } else {//其他情况， 直接返回false
+            } else { //其他情况， 直接返回false
                 return false;
             }
         }
@@ -43,11 +47,4 @@ public final class StrMatchUtils {
         //若 exp 尾部全部为 '*'，说明匹配
         return expIndex == exp.length();
     }
-
-    public static void main(String[] args) {
-        System.out.println(isMatch("cn.myperf4j.config.abc", "cn.myperf4j*abc"));
-        System.out.println(isMatch("cn.myperf4j.config.abc", "*.myperf4j*abc"));
-        System.out.println(isMatch("cn.myperf4j.config.abc", "*.myperf4j*a*c"));
-    }
-
 }

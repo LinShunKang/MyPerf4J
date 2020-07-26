@@ -45,5 +45,4 @@ public final class InfluxJvmFileDescMetricsFormatter implements JvmFileDescMetri
                 .append(",OpenPercent=").append(metrics.getOpenPercent())
                 .append(' ').append(startNanos);
     }
-
 }

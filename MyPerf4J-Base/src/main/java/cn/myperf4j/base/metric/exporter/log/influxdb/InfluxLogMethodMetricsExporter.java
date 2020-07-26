@@ -18,5 +18,4 @@ public class InfluxLogMethodMetricsExporter extends AbstractLogMethodMetricsExpo
     public void process(MethodMetrics metrics, long processId, long startMillis, long stopMillis) {
         logger.log(METRICS_FORMATTER.format(Collections.singletonList(metrics), startMillis, stopMillis));
     }
-
 }

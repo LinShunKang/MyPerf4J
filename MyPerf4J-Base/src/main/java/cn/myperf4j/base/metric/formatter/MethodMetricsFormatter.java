@@ -7,5 +7,4 @@ import cn.myperf4j.base.metric.MethodMetrics;
  */
 public interface MethodMetricsFormatter extends MetricsFormatter<MethodMetrics> {
 
-
 }

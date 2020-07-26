@@ -13,12 +13,17 @@ public final class JvmFileDescCollector {
 
     private static final OperatingSystemMXBean SYSTEM_MX_BEAN = ManagementFactory.getOperatingSystemMXBean();
 
+    private JvmFileDescCollector() {
+        //empty
+    }
+
     public static JvmFileDescriptorMetrics collectFileDescMetrics() {
         if (SYSTEM_MX_BEAN instanceof UnixOperatingSystemMXBean) {
             UnixOperatingSystemMXBean unixMXBean = (UnixOperatingSystemMXBean) SYSTEM_MX_BEAN;
-            return new JvmFileDescriptorMetrics(unixMXBean.getOpenFileDescriptorCount(), unixMXBean.getMaxFileDescriptorCount());
+            return new JvmFileDescriptorMetrics(unixMXBean.
+                    getOpenFileDescriptorCount(),
+                    unixMXBean.getMaxFileDescriptorCount());
         }
         return new JvmFileDescriptorMetrics(0L, 0L);
     }
-
 }

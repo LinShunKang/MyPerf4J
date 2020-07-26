@@ -47,5 +47,4 @@ public class InfluxJvmBufferPoolMetricsFormatter implements JvmBufferPoolMetrics
                 .append(",MemoryCapacity=").append(metrics.getMemoryCapacity()).append('i')
                 .append(' ').append(startNanos);
     }
-
 }

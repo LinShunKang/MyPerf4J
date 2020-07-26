@@ -17,7 +17,8 @@ public final class StdJvmClassMetricsFormatter implements JvmClassMetricsFormatt
     public String format(List<JvmClassMetrics> metricsList, long startMillis, long stopMillis) {
         String dataTitleFormat = "%-10s%10s%10s%n";
         StringBuilder sb = new StringBuilder((metricsList.size() + 2) * (12 * 3 + 64));
-        sb.append("MyPerf4J JVM Class Metrics [").append(DateFormatUtils.format(startMillis)).append(", ").append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
+        sb.append("MyPerf4J JVM Class Metrics [").append(DateFormatUtils.format(startMillis)).append(", ")
+                .append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
         sb.append(String.format(dataTitleFormat, "Total", "Loaded", "Unloaded"));
         if (metricsList.isEmpty()) {
             return sb.toString();
@@ -36,5 +37,4 @@ public final class StdJvmClassMetricsFormatter implements JvmClassMetricsFormatt
         }
         return sb.toString();
     }
-
 }

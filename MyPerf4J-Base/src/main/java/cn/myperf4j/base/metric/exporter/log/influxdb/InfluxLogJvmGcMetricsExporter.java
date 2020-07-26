@@ -18,5 +18,4 @@ public class InfluxLogJvmGcMetricsExporter extends AbstractLogJvmGcMetricsExport
     public void process(JvmGcMetrics metrics, long processId, long startMillis, long stopMillis) {
         logger.log(METRICS_FORMATTER.format(Collections.singletonList(metrics), startMillis, stopMillis));
     }
-
 }

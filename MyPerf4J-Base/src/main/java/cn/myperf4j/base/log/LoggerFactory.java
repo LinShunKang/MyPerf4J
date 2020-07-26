@@ -28,6 +28,10 @@ public final class LoggerFactory {
         }));
     }
 
+    private LoggerFactory() {
+        //empty
+    }
+
     public static synchronized ILogger getLogger(String logFile) {
         logFile = logFile.trim();
 

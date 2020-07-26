@@ -11,14 +11,12 @@ import cn.myperf4j.base.metric.Metrics;
  */
 public interface MetricsExporter<T extends Metrics> {
 
-
     /**
      * 在每一轮统计指标开始处理前调用
      *
      * @param processId : 本轮统计的唯一ID
      */
     void beforeProcess(long processId, long startMillis, long stopMillis);
-
 
     /**
      * @param metrics     : 本轮统计的某一个指标
@@ -28,12 +26,10 @@ public interface MetricsExporter<T extends Metrics> {
      */
     void process(T metrics, long processId, long startMillis, long stopMillis);
 
-
     /**
      * 在每一轮统计指标开始处理前调用
      *
      * @param processId : 本轮统计的唯一ID
      */
     void afterProcess(long processId, long startMillis, long stopMillis);
-
 }

@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by LinShunkang on 2019/06/13
  */
-public class IntBufPool {
+public final class IntBufPool {
 
     private static final int ONE_K = 1024;
     private static final int TEN_K = 10 * 1024;
@@ -20,14 +20,17 @@ public class IntBufPool {
     private static final int TEN_K_COUNT = 2;
     private static final int ONE_HUNDRED_K_COUNT = 1;
 
-    private final BlockingQueue<IntBuf> oneKQueue = new LinkedTransferQueue<>();//用于存放int[1024]，理论上可以容纳512个不同的响应时间
+    //用于存放int[1024]，理论上可以容纳512个不同的响应时间
+    private final BlockingQueue<IntBuf> oneKQueue = new LinkedTransferQueue<>();
 
-    private final BlockingQueue<IntBuf> tenKQueue = new LinkedTransferQueue<>();//用于存放int[10 * 1024]，理论上可以容纳5120个不同的响应时间
+    //用于存放int[10 * 1024]，理论上可以容纳5120个不同的响应时间
+    private final BlockingQueue<IntBuf> tenKQueue = new LinkedTransferQueue<>();
 
-    private final BlockingQueue<IntBuf> oneHundredKQueue = new LinkedTransferQueue<>();//用于存放int[100 * 1024]，理论上可以容纳51200个不同的响应时间
+    //用于存放int[100 * 1024]，理论上可以容纳51200个不同的响应时间
+    private final BlockingQueue<IntBuf> oneHundredKQueue = new LinkedTransferQueue<>();
 
     private static class IntBufPoolHolder {
-        private final static IntBufPool instance = new IntBufPool();
+        private static final IntBufPool instance = new IntBufPool();
     }
 
     public static IntBufPool getInstance() {
@@ -85,5 +88,4 @@ public class IntBufPool {
             Logger.error("IntBufPool.release(" + buf.capacity() + ")", e);
         }
     }
-
 }

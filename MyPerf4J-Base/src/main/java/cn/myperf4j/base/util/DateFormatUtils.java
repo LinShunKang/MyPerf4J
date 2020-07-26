@@ -7,7 +7,7 @@ import java.util.Date;
 /**
  * Created by LinShunkang on 2018/8/22
  */
-public class DateFormatUtils {
+public final class DateFormatUtils {
 
     private static final ThreadLocal<DateFormat> DEFAULT_DATE_FORMAT = new ThreadLocal<DateFormat>() {
         @Override
@@ -16,8 +16,11 @@ public class DateFormatUtils {
         }
     };
 
+    private DateFormatUtils() {
+        //empty
+    }
 
     public static String format(long millis) {
-        return DEFAULT_DATE_FORMAT.get().format((new Date(millis)));
+        return DEFAULT_DATE_FORMAT.get().format(new Date(millis));
     }
 }

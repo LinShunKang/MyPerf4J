@@ -4,7 +4,11 @@ import cn.myperf4j.asm.ASMRecorderMaintainer;
 import cn.myperf4j.asm.aop.ProfilingAspect;
 import cn.myperf4j.base.config.ProfilingParams;
 import cn.myperf4j.bench.EnvUtils;
-import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.CompilerControl;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
 
 /**
  * Created by LinShunkang on 2019/08/31
@@ -41,5 +45,4 @@ public class AbstractBench {
     public int emptyMethod() {
         return 1000;
     }
-
 }

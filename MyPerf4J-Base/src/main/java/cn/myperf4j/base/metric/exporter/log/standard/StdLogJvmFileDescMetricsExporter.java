@@ -30,7 +30,8 @@ public class StdLogJvmFileDescMetricsExporter extends AbstractLogJvmFileDescMetr
         if (metricsList != null) {
             metricsList.add(metrics);
         } else {
-            Logger.error("StdLogJvmFileDescMetricsExporter.process(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
+            Logger.error("StdLogJvmFileDescMetricsExporter.process(" + processId + ", " + startMillis + ", "
+                    + stopMillis + "): metricsList is null!!!");
         }
     }
 
@@ -40,7 +41,8 @@ public class StdLogJvmFileDescMetricsExporter extends AbstractLogJvmFileDescMetr
         if (metricsList != null) {
             logger.logAndFlush(METRICS_FORMATTER.format(metricsList, startMillis, stopMillis));
         } else {
-            Logger.error("StdLogJvmFileDescMetricsExporter.afterProcess(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
+            Logger.error("StdLogJvmFileDescMetricsExporter.afterProcess(" + processId + ", " + startMillis + ", "
+                    + stopMillis + "): metricsList is null!!!");
         }
     }
 }

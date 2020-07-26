@@ -5,7 +5,7 @@ import cn.myperf4j.base.config.LevelMappingFilter;
 /**
  * Created by LinShunkang on 2018/7/13
  */
-public class MethodTag {
+public final class MethodTag {
 
     private static final String TYPE_GENERAL = "General";
 
@@ -25,12 +25,17 @@ public class MethodTag {
 
     private final String level;
 
-    private MethodTag(String fullClassName, String simpleClassName, String methodName, String methodParamDesc, String type, String level) {
+    private MethodTag(String fullClassName,
+                      String simpleClassName,
+                      String methodName,
+                      String methodParamDesc,
+                      String type,
+                      String level) {
         this.simpleClassName = simpleClassName;
         this.methodName = methodName;
         this.methodParamDesc = methodParamDesc;
-        this.fullDescription = fullClassName + "." + methodName;
-        this.description = simpleClassName + "." + methodName + methodParamDesc;
+        this.fullDescription = fullClassName + '.' + methodName;
+        this.description = simpleClassName + '.' + methodName + methodParamDesc;
         this.type = type;
         this.level = level;
     }
@@ -74,11 +79,18 @@ public class MethodTag {
                 '}';
     }
 
-    public static MethodTag getGeneralInstance(String fullClassName, String simpleClassName, String classLevel, String methodName, String methodParamDesc) {
+    public static MethodTag getGeneralInstance(String fullClassName,
+                                               String simpleClassName,
+                                               String classLevel,
+                                               String methodName,
+                                               String methodParamDesc) {
         return new MethodTag(fullClassName, simpleClassName, methodName, methodParamDesc, TYPE_GENERAL, classLevel);
     }
 
-    public static MethodTag getDynamicProxyInstance(String fullClassName, String className, String methodName, String methodParamDesc) {
+    public static MethodTag getDynamicProxyInstance(String fullClassName,
+                                                    String className,
+                                                    String methodName,
+                                                    String methodParamDesc) {
         String classLevel = LevelMappingFilter.getClassLevel(className);
         return new MethodTag(fullClassName, className, methodName, methodParamDesc, TYPE_DYNAMIC_PROXY, classLevel);
     }

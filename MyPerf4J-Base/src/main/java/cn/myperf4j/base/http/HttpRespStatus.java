@@ -7,7 +7,8 @@ public class HttpRespStatus {
 
     public static final HttpRespStatus CONTINUE = new HttpRespStatus(100, "Continue");
 
-    public static final HttpRespStatus SWITCHING_PROTOCOLS = new HttpRespStatus(101, "Switching Protocols");
+    public static final HttpRespStatus SWITCHING_PROTOCOLS = new HttpRespStatus(101,
+            "Switching Protocols");
 
     public static final HttpRespStatus PROCESSING = new HttpRespStatus(102, "Processing");
 
@@ -17,7 +18,8 @@ public class HttpRespStatus {
 
     public static final HttpRespStatus ACCEPTED = new HttpRespStatus(202, "Accepted");
 
-    public static final HttpRespStatus NON_AUTHORITATIVE_INFORMATION = new HttpRespStatus(203, "Non-Authoritative Information");
+    public static final HttpRespStatus NON_AUTHORITATIVE_INFORMATION = new HttpRespStatus(203,
+            "Non-Authoritative Information");
 
     public static final HttpRespStatus NO_CONTENT = new HttpRespStatus(204, "No Content");
 
@@ -57,7 +59,8 @@ public class HttpRespStatus {
 
     public static final HttpRespStatus NOT_ACCEPTABLE = new HttpRespStatus(406, "Not Acceptable");
 
-    public static final HttpRespStatus PROXY_AUTHENTICATION_REQUIRED = new HttpRespStatus(407, "Proxy Authentication Required");
+    public static final HttpRespStatus PROXY_AUTHENTICATION_REQUIRED = new HttpRespStatus(407,
+            "Proxy Authentication Required");
 
     public static final HttpRespStatus REQUEST_TIMEOUT = new HttpRespStatus(408, "Request Timeout");
 
@@ -69,53 +72,67 @@ public class HttpRespStatus {
 
     public static final HttpRespStatus PRECONDITION_FAILED = new HttpRespStatus(412, "Precondition Failed");
 
-    public static final HttpRespStatus REQUEST_ENTITY_TOO_LARGE = new HttpRespStatus(413, "Request Entity Too Large");
+    public static final HttpRespStatus REQUEST_ENTITY_TOO_LARGE = new HttpRespStatus(413,
+            "Request Entity Too Large");
 
-    public static final HttpRespStatus REQUEST_URI_TOO_LONG = new HttpRespStatus(414, "Request-URI Too Long");
+    public static final HttpRespStatus REQUEST_URI_TOO_LONG = new HttpRespStatus(414,
+            "Request-URI Too Long");
 
-    public static final HttpRespStatus UNSUPPORTED_MEDIA_TYPE = new HttpRespStatus(415, "Unsupported Media Type");
+    public static final HttpRespStatus UNSUPPORTED_MEDIA_TYPE = new HttpRespStatus(415,
+            "Unsupported Media Type");
 
-    public static final HttpRespStatus REQUESTED_RANGE_NOT_SATISFIABLE = new HttpRespStatus(416, "Requested Range Not Satisfiable");
+    public static final HttpRespStatus REQUESTED_RANGE_NOT_SATISFIABLE = new HttpRespStatus(416,
+            "Requested Range Not Satisfiable");
 
     public static final HttpRespStatus EXPECTATION_FAILED = new HttpRespStatus(417, "Expectation Failed");
 
     public static final HttpRespStatus MISDIRECTED_REQUEST = new HttpRespStatus(421, "Misdirected Request");
 
-    public static final HttpRespStatus UNPROCESSABLE_ENTITY = new HttpRespStatus(422, "Unprocessable Entity");
+    public static final HttpRespStatus UNPROCESSABLE_ENTITY = new HttpRespStatus(422,
+            "Unprocessable Entity");
 
     public static final HttpRespStatus LOCKED = new HttpRespStatus(423, "Locked");
 
     public static final HttpRespStatus FAILED_DEPENDENCY = new HttpRespStatus(424, "Failed Dependency");
 
-    public static final HttpRespStatus UNORDERED_COLLECTION = new HttpRespStatus(425, "Unordered Collection");
+    public static final HttpRespStatus UNORDERED_COLLECTION = new HttpRespStatus(425,
+            "Unordered Collection");
 
     public static final HttpRespStatus UPGRADE_REQUIRED = new HttpRespStatus(426, "Upgrade Required");
 
-    public static final HttpRespStatus PRECONDITION_REQUIRED = new HttpRespStatus(428, "Precondition Required");
+    public static final HttpRespStatus PRECONDITION_REQUIRED = new HttpRespStatus(428,
+            "Precondition Required");
 
     public static final HttpRespStatus TOO_MANY_REQUESTS = new HttpRespStatus(429, "Too Many Requests");
 
-    public static final HttpRespStatus REQUEST_HEADER_FIELDS_TOO_LARGE = new HttpRespStatus(431, "Request Header Fields Too Large");
+    public static final HttpRespStatus REQUEST_HEADER_FIELDS_TOO_LARGE = new HttpRespStatus(431,
+            "Request Header Fields Too Large");
 
-    public static final HttpRespStatus INTERNAL_SERVER_ERROR = new HttpRespStatus(500, "Internal Server Error");
+    public static final HttpRespStatus INTERNAL_SERVER_ERROR = new HttpRespStatus(500,
+            "Internal Server Error");
 
     public static final HttpRespStatus NOT_IMPLEMENTED = new HttpRespStatus(501, "Not Implemented");
 
     public static final HttpRespStatus BAD_GATEWAY = new HttpRespStatus(502, "Bad Gateway");
 
-    public static final HttpRespStatus SERVICE_UNAVAILABLE = new HttpRespStatus(503, "Service Unavailable");
+    public static final HttpRespStatus SERVICE_UNAVAILABLE = new HttpRespStatus(503,
+            "Service Unavailable");
 
     public static final HttpRespStatus GATEWAY_TIMEOUT = new HttpRespStatus(504, "Gateway Timeout");
 
-    public static final HttpRespStatus HTTP_VERSION_NOT_SUPPORTED = new HttpRespStatus(505, "HTTP Version Not Supported");
+    public static final HttpRespStatus HTTP_VERSION_NOT_SUPPORTED = new HttpRespStatus(505,
+            "HTTP Version Not Supported");
 
-    public static final HttpRespStatus VARIANT_ALSO_NEGOTIATES = new HttpRespStatus(506, "Variant Also Negotiates");
+    public static final HttpRespStatus VARIANT_ALSO_NEGOTIATES = new HttpRespStatus(506,
+            "Variant Also Negotiates");
 
-    public static final HttpRespStatus INSUFFICIENT_STORAGE = new HttpRespStatus(507, "Insufficient Storage");
+    public static final HttpRespStatus INSUFFICIENT_STORAGE = new HttpRespStatus(507,
+            "Insufficient Storage");
 
     public static final HttpRespStatus NOT_EXTENDED = new HttpRespStatus(510, "Not Extended");
 
-    public static final HttpRespStatus NETWORK_AUTHENTICATION_REQUIRED = new HttpRespStatus(511, "Network Authentication Required");
+    public static final HttpRespStatus NETWORK_AUTHENTICATION_REQUIRED = new HttpRespStatus(511,
+            "Network Authentication Required");
 
     private final int code;
 

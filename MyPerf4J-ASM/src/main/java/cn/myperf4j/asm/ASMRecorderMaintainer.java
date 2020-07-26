@@ -24,7 +24,8 @@ public class ASMRecorderMaintainer extends AbstractRecorderMaintainer {
     public void addRecorder(int methodTagId, ProfilingParams params) {
         for (int i = 0; i < recordersList.size(); ++i) {
             Recorders recorders = recordersList.get(i);
-            recorders.setRecorder(methodTagId, createRecorder(methodTagId, params.getMostTimeThreshold(), params.getOutThresholdCount()));
+            recorders.setRecorder(methodTagId,
+                    createRecorder(methodTagId, params.getMostTimeThreshold(), params.getOutThresholdCount()));
         }
     }
 }

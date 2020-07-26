@@ -70,5 +70,4 @@ public final class HttpHeaders {
         headers.set("Charset", UTF_8.name());
         return headers;
     }
-
 }

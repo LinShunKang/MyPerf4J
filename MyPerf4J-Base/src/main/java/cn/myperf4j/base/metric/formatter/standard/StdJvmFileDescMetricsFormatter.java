@@ -17,7 +17,8 @@ public final class StdJvmFileDescMetricsFormatter implements JvmFileDescMetricsF
     public String format(List<JvmFileDescriptorMetrics> metricsList, long startMillis, long stopMillis) {
         String dataTitleFormat = "%-14s%14s%14s%n";
         StringBuilder sb = new StringBuilder((metricsList.size() + 2) * (12 * 2 + 24));
-        sb.append("MyPerf4J JVM FileDescriptor Metrics [").append(DateFormatUtils.format(startMillis)).append(", ").append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
+        sb.append("MyPerf4J JVM FileDescriptor Metrics [").append(DateFormatUtils.format(startMillis)).append(", ")
+                .append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
         sb.append(String.format(dataTitleFormat, "OpenCount", "OpenPercent", "MaxPercent"));
         if (metricsList.isEmpty()) {
             return sb.toString();
@@ -36,5 +37,4 @@ public final class StdJvmFileDescMetricsFormatter implements JvmFileDescMetricsF
         }
         return sb.toString();
     }
-
 }

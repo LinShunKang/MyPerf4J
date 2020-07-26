@@ -37,7 +37,8 @@ public class InfluxHttpMethodMetricsExporter implements MethodMetricsExporter {
         if (metricsList != null) {
             metricsList.add(metrics);
         } else {
-            Logger.error("InfluxHttpMethodMetricsExporter.process(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
+            Logger.error("InfluxHttpMethodMetricsExporter.process(" + processId + ", " + startMillis + ", "
+                    + stopMillis + "): metricsList is null!!!");
         }
     }
 
@@ -45,7 +46,8 @@ public class InfluxHttpMethodMetricsExporter implements MethodMetricsExporter {
     public void afterProcess(long processId, long startMillis, long stopMillis) {
         List<MethodMetrics> metricsList = metricsMap.remove(processId);
         if (ListUtils.isEmpty(metricsList)) {
-            Logger.warn("InfluxHttpMethodMetricsExporter.afterProcess(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is empty!!!");
+            Logger.warn("InfluxHttpMethodMetricsExporter.afterProcess(" + processId + ", " + startMillis + ", "
+                    + stopMillis + "): metricsList is empty!!!");
             return;
         }
 
@@ -58,5 +60,4 @@ public class InfluxHttpMethodMetricsExporter implements MethodMetricsExporter {
             }
         }
     }
-
 }

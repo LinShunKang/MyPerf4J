@@ -3,7 +3,7 @@ package cn.myperf4j.base.config;
 /**
  * Created by LinShunkang on 2018/5/12
  */
-public class ProfilingConfig {
+public final class ProfilingConfig {
 
     private static BasicConfig BASIC_CONFIG;
 
@@ -14,6 +14,10 @@ public class ProfilingConfig {
     private static InfluxDbConfig INFLUX_DB_CONFIG;
 
     private static RecorderConfig RECORDER_CONFIG;
+
+    private ProfilingConfig() {
+        //empty
+    }
 
     public static BasicConfig basicConfig() {
         return BASIC_CONFIG;
@@ -54,5 +58,4 @@ public class ProfilingConfig {
     public static void recorderConfig(RecorderConfig recorderConfig) {
         RECORDER_CONFIG = recorderConfig;
     }
-
 }

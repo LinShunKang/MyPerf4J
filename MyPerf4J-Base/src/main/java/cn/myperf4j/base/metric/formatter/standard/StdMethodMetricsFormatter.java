@@ -23,8 +23,11 @@ public final class StdMethodMetricsFormatter implements MethodMetricsFormatter {
 
         String dataTitleFormat = "%-" + maxApiLength + "s%13s%13s%13s%9s%9s%9s%9s%10s%9s%9s%9s%9s%9s%9s%9s%n";
         StringBuilder sb = new StringBuilder((methodMetricsList.size() + 2) * (9 * 11 + 1 + maxApiLength));
-        sb.append("MyPerf4J Method Metrics [").append(DateFormatUtils.format(startMillis)).append(", ").append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
-        sb.append(String.format(dataTitleFormat, "Method[" + methodMetricsList.size() + "]", "Type", "Level", "TimePercent", "RPS", "Avg(ms)", "Min(ms)", "Max(ms)", "StdDev", "Count", "TP50", "TP90", "TP95", "TP99", "TP999", "TP9999"));
+        sb.append("MyPerf4J Method Metrics [").append(DateFormatUtils.format(startMillis)).append(", ")
+                .append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
+        sb.append(String.format(dataTitleFormat, "Method[" + methodMetricsList.size() + "]", "Type", "Level",
+                "TimePercent", "RPS", "Avg(ms)", "Min(ms)", "Max(ms)", "StdDev", "Count", "TP50", "TP90", "TP95",
+                "TP99", "TP999", "TP9999"));
         if (methodMetricsList.isEmpty()) {
             return sb.toString();
         }
@@ -85,5 +88,4 @@ public final class StdMethodMetricsFormatter implements MethodMetricsFormatter {
             }
         });
     }
-
 }

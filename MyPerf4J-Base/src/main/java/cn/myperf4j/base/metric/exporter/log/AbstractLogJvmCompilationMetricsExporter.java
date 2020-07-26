@@ -21,5 +21,4 @@ public abstract class AbstractLogJvmCompilationMetricsExporter implements JvmCom
     public void afterProcess(long processId, long startMillis, long stopMillis) {
         logger.flushLog();
     }
-
 }

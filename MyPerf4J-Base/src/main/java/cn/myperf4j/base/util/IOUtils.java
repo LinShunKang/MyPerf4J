@@ -8,6 +8,10 @@ import java.io.IOException;
  */
 public final class IOUtils {
 
+    private IOUtils() {
+        //empty
+    }
+
     public static void closeQuietly(Closeable closeable) {
         try {
             if (closeable != null) {

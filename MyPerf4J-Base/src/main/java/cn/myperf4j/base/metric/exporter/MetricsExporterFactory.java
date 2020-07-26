@@ -37,7 +37,11 @@ import static cn.myperf4j.base.constant.PropertyValues.Metrics.EXPORTER_LOG_INFL
 import static cn.myperf4j.base.constant.PropertyValues.Metrics.EXPORTER_LOG_STANDARD;
 import static cn.myperf4j.base.constant.PropertyValues.Metrics.EXPORTER_LOG_STDOUT;
 
-public class MetricsExporterFactory {
+public final class MetricsExporterFactory {
+
+    private MetricsExporterFactory() {
+        //empty
+    }
 
     public static JvmClassMetricsExporter getClassMetricsExporter(String exporter) {
         switch (exporter) {
@@ -147,5 +151,4 @@ public class MetricsExporterFactory {
                 return new DiscardJvmCompilationMetricsExporter();
         }
     }
-
 }

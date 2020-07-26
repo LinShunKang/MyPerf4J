@@ -18,7 +18,6 @@ public class QueryStringDecoderTest {
         QueryStringDecoder appDecoder = new QueryStringDecoder(encodedURL, StandardCharsets.UTF_8, true);
         Map<String, List<String>> params = appDecoder.parameters();
         System.out.println(params);
-
     }
 
     @Test
@@ -28,5 +27,4 @@ public class QueryStringDecoderTest {
         Map<String, List<String>> params = appDecoder.parameters();
         System.out.println(params);
     }
-
 }

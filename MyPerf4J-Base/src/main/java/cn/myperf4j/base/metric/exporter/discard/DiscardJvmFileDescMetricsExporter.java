@@ -22,5 +22,4 @@ public class DiscardJvmFileDescMetricsExporter implements JvmFileDescMetricsExpo
     public void afterProcess(long processId, long startMillis, long stopMillis) {
         //empty
     }
-
 }

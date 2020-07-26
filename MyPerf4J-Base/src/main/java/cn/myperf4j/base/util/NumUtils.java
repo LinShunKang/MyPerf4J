@@ -5,6 +5,10 @@ package cn.myperf4j.base.util;
  */
 public final class NumUtils {
 
+    private NumUtils() {
+        //empty
+    }
+
     public static double getPercent(double curNum, double maxNum) {
         if (curNum > 0L && maxNum > 0L) {
             return (100D * curNum) / maxNum;

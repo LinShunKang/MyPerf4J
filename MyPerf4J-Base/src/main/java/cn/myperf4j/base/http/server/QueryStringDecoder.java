@@ -235,7 +235,7 @@ public class QueryStringDecoder {
 
         private final byte[] bytes;
 
-        public TempBuf(int bufSize) {
+        TempBuf(int bufSize) {
             this.chars = new char[bufSize];
             this.bytes = new byte[bufSize];
         }

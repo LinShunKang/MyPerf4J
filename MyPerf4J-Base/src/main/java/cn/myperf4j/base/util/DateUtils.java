@@ -5,6 +5,10 @@ import java.util.Date;
 
 public final class DateUtils {
 
+    private DateUtils() {
+        //empty
+    }
+
     public static boolean isSameDay(Date date1, Date date2) {
         Calendar cal1 = Calendar.getInstance();
         cal1.setTime(date1);
@@ -43,11 +47,4 @@ public final class DateUtils {
                 && cal1.get(Calendar.HOUR_OF_DAY) == cal2.get(Calendar.HOUR_OF_DAY)
                 && cal1.get(Calendar.MINUTE) == cal2.get(Calendar.MINUTE);
     }
-
-    public static void main(String[] args) {
-        System.out.println(isSameDay(new Date(), new Date()));
-
-        System.out.println(isSameMinute(new Date(), new Date()));
-    }
-
 }

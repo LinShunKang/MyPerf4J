@@ -17,7 +17,8 @@ public class StdJvmMemoryMetricsFormatter implements JvmMemoryMetricsFormatter {
     public String format(List<JvmMemoryMetrics> metricsList, long startMillis, long stopMillis) {
         String dataTitleFormat = "%-14s%21s%12s%17s%12s%19s%12s%17s%13s%19s%13s%20s%15s%22s%15s%22s%n";
         StringBuilder sb = new StringBuilder((metricsList.size() + 2) * (9 * 19 + 64));
-        sb.append("MyPerf4J JVM Memory Metrics [").append(DateFormatUtils.format(startMillis)).append(", ").append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
+        sb.append("MyPerf4J JVM Memory Metrics [").append(DateFormatUtils.format(startMillis)).append(", ")
+                .append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
         sb.append(String.format(dataTitleFormat,
                 "SurvivorUsed", "SurvivorUsedPercent",
                 "EdenUsed", "EdenUsedPercent",
@@ -57,5 +58,4 @@ public class StdJvmMemoryMetricsFormatter implements JvmMemoryMetricsFormatter {
         }
         return sb.toString();
     }
-
 }

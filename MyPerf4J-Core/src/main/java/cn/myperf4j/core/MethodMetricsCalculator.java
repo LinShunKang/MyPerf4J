@@ -21,6 +21,10 @@ public final class MethodMetricsCalculator {
 
     private static final IntBufPool intBufPool = IntBufPool.getInstance();
 
+    private MethodMetricsCalculator() {
+        //empty
+    }
+
     public static MethodMetrics calPerfStats(Recorder recorder, MethodTag methodTag, long startTime, long stopTime) {
         IntBuf intBuf = null;
         try {
@@ -29,7 +33,8 @@ public final class MethodMetricsCalculator {
             long totalCount = recorder.fillSortedRecords(intBuf);
             return calPerfStats(recorder, methodTag, startTime, stopTime, intBuf, totalCount, diffCount);
         } catch (Exception e) {
-            Logger.error("MethodMetricsCalculator.calPerfStats(" + recorder + ", " + methodTag + ", " + startTime + ", " + stopTime + "): infBuf=" + intBuf, e);
+            Logger.error("MethodMetricsCalculator.calPerfStats(" + recorder + ", " + methodTag + ", "
+                    + startTime + ", " + stopTime + "): infBuf=" + intBuf, e);
         } finally {
             intBufPool.release(intBuf);
         }
@@ -56,7 +61,7 @@ public final class MethodMetricsCalculator {
         int[] tpArr = result.getTpArr();
         int tpIndex = 0;
         long countMile = 0L;
-        double sigma = 0.0D;//∑
+        double sigma = 0.0D; //∑
         long totalTime = 0L;
         for (int i = 0, writerIdx = sortedRecords.writerIndex(); i < writerIdx; ) {
             int timeCost = sortedRecords._getInt(i++);

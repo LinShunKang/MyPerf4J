@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
  * 注意：由于该 Recorder 会将大于 mostTimeThreshold 的响应时间记录为 mostTimeThreshold+1
  * 所以为了保证 RoughRecorder 记录的准确性，请把 mostTimeThreshold 设置的偏大一些。
  */
-public class RoughRecorder extends Recorder {
+public final class RoughRecorder extends Recorder {
 
     private final AtomicIntegerArray timingArr;
 

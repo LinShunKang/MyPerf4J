@@ -20,7 +20,6 @@ public class MyPropertiesTest extends BaseTest {
         Assert.assertEquals(MyProperties.getStr(Metrics.EXPORTER), BaseTest.METRICS_EXPORTER);
         Assert.assertEquals(MyProperties.getStr(Filter.PACKAGES_INCLUDE), BaseTest.INCLUDE_PACKAGES);
 
-
         MyProperties.setStr("key", "value");
         Assert.assertEquals(MyProperties.getStr("key"), "value");
         Assert.assertTrue(MyProperties.isSame("key", "value"));
@@ -29,5 +28,4 @@ public class MyPropertiesTest extends BaseTest {
         Assert.assertEquals(MyProperties.getLong("long", 1), 1000);
         Assert.assertEquals(MyProperties.getLong("long", 1, 10000), 10000);
     }
-
 }

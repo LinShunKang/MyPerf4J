@@ -12,9 +12,14 @@ public final class JvmClassCollector {
 
     private static final ClassLoadingMXBean CLASS_LOADING_MX_BEAN = ManagementFactory.getClassLoadingMXBean();
 
-    public static JvmClassMetrics collectClassMetrics() {
-        ClassLoadingMXBean mxBean = CLASS_LOADING_MX_BEAN;
-        return new JvmClassMetrics(mxBean.getTotalLoadedClassCount(), mxBean.getLoadedClassCount(), mxBean.getUnloadedClassCount());
+    private JvmClassCollector() {
+        //empty
     }
 
+    public static JvmClassMetrics collectClassMetrics() {
+        ClassLoadingMXBean mxBean = CLASS_LOADING_MX_BEAN;
+        return new JvmClassMetrics(mxBean.getTotalLoadedClassCount(),
+                mxBean.getLoadedClassCount(),
+                mxBean.getUnloadedClassCount());
+    }
 }

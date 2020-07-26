@@ -1,5 +1,7 @@
 package cn.myperf4j.base.test;
 
+import org.junit.Test;
+
 import java.lang.management.CompilationMXBean;
 import java.lang.management.ManagementFactory;
 
@@ -8,7 +10,8 @@ import java.lang.management.ManagementFactory;
  */
 public class CompilationTest {
 
-    public static void main(String[] args) {
+    @Test
+    public void test() {
         CompilationMXBean mxBean = ManagementFactory.getCompilationMXBean();
         System.out.println(mxBean.getName());
         System.out.println(mxBean.getObjectName());

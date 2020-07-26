@@ -7,9 +7,9 @@ public class JvmCompilationMetrics extends Metrics {
 
     private static final long serialVersionUID = 4067660607211597333L;
 
-    private final long time;//UNIT: ms
+    private final long time; //UNIT: ms
 
-    private final long totalTime;//UNIT: ms
+    private final long totalTime; //UNIT: ms
 
     public JvmCompilationMetrics(long time, long totalTime) {
         this.time = time;

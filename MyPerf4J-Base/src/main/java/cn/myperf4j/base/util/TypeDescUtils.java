@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
  */
 public final class TypeDescUtils {
 
-    private static ThreadLocal<StringBuilder> SB_TL = new ThreadLocal<StringBuilder>() {
+    private static final ThreadLocal<StringBuilder> SB_TL = new ThreadLocal<StringBuilder>() {
         @Override
         protected StringBuilder initialValue() {
             return new StringBuilder(128);
@@ -18,7 +18,8 @@ public final class TypeDescUtils {
     private static final char[] TYPE_DESCRIPTOR = {'Z', 'C', 'B', 'S', 'I', 'F', 'J', 'D', '[', 'L'};
 
     //Java 类型
-    private static final String[] JAVA_TYPE_DESC = {"boolean", "char", "byte", "short", "int", "float", "long", "double", "[]", "Object"};
+    private static final String[] JAVA_TYPE_DESC = {"boolean", "char", "byte", "short", "int", "float",
+            "long", "double", "[]", "Object"};
 
     private static final byte[] TYPE_DESCRIPTOR_BIT_MAP = new byte[128];
 
@@ -30,6 +31,10 @@ public final class TypeDescUtils {
             TYPE_DESCRIPTOR_BIT_MAP[ch] = 1;
             JAVA_TYPE_DESC_MAP[ch] = JAVA_TYPE_DESC[i];
         }
+    }
+
+    private TypeDescUtils() {
+        //empty
     }
 
     /**
@@ -103,13 +108,15 @@ public final class TypeDescUtils {
                 return idx + 1;
             } else if (ch == ')') {
                 //理论上永远走不到这里
-                Logger.error("TypeDescUtils.processDescriptor(" + descriptor + ", " + idx + ", " + sb + ") Should never arrive here!!! 1");
+                Logger.error("TypeDescUtils.processDescriptor(" + descriptor + ", " + idx + ", " + sb
+                        + ") Should never arrive here!!! 1");
                 return -1;
             }
         }
 
         //理论上永远走不到这里
-        Logger.error("TypeDescUtils.processDescriptor(" + descriptor + ", " + idx + ", " + sb + ") Should never arrive here!!! 2");
+        Logger.error("TypeDescUtils.processDescriptor(" + descriptor + ", " + idx + ", " + sb
+                + ") Should never arrive here!!! 2");
         return -1;
     }
 
@@ -158,5 +165,4 @@ public final class TypeDescUtils {
         int idx = innerClassName.lastIndexOf('/');
         return innerClassName.substring(idx + 1);
     }
-
 }

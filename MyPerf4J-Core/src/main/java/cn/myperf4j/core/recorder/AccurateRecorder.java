@@ -3,7 +3,10 @@ package cn.myperf4j.core.recorder;
 import cn.myperf4j.base.buffer.IntBuf;
 import cn.myperf4j.base.util.MapUtils;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
@@ -17,7 +20,7 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
  * 1、将小于等于 mostTimeThreshold 的响应时间记录在数组中；
  * 2、将大于 mostTimeThreshold 的响应时间记录到 Map 中。
  */
-public class AccurateRecorder extends Recorder {
+public final class AccurateRecorder extends Recorder {
 
     private final AtomicIntegerArray timingArr;
 
@@ -96,11 +99,11 @@ public class AccurateRecorder extends Recorder {
 
         for (int i = writerIndex - 1; i >= offset; --i) {
             int count = intBuf.getInt(i);
-            int keyIdx = (i << 1) - offset;//2 * (i - offset) + offset
+            int keyIdx = (i << 1) - offset; //2 * (i - offset) + offset
             intBuf.setInt(keyIdx, count);
             intBuf.setInt(keyIdx + 1, timingMap.get(count).get());
         }
-        intBuf.writerIndex((writerIndex << 1) - offset);//writerIndex + (writerIndex - offset)
+        intBuf.writerIndex((writerIndex << 1) - offset); //writerIndex + (writerIndex - offset)
         return totalCount;
     }
 
@@ -120,7 +123,7 @@ public class AccurateRecorder extends Recorder {
             timingArr.set(i, 0);
         }
 
-        Iterator<Map.Entry<Integer, AtomicInteger>> iterator = timingMap.entrySet().iterator();
+        Iterator<Entry<Integer, AtomicInteger>> iterator = timingMap.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<Integer, AtomicInteger> entry = iterator.next();
             if ((entry.getKey() > 1.5 * timingArr.length())

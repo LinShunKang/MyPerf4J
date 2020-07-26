@@ -45,5 +45,4 @@ public final class InfluxJvmCompilationMetricsFormatter implements JvmCompilatio
                 .append(",TotalTime=").append(metrics.getTotalTime()).append('i')
                 .append(' ').append(startNanos);
     }
-
 }

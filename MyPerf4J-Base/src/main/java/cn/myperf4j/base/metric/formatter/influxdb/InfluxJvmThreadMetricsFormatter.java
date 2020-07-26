@@ -53,5 +53,4 @@ public class InfluxJvmThreadMetricsFormatter implements JvmThreadMetricsFormatte
                 .append(",Terminated=").append(metrics.getTerminated()).append('i')
                 .append(' ').append(startNanos);
     }
-
 }

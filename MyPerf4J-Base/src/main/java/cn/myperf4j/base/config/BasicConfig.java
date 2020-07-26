@@ -71,5 +71,4 @@ public class BasicConfig {
         config.configFileDir(getStr(PROPERTIES_FILE_DIR));
         return config;
     }
-
 }

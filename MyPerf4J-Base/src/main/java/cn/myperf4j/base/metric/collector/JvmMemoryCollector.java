@@ -13,6 +13,10 @@ import java.util.List;
  */
 public final class JvmMemoryCollector {
 
+    private JvmMemoryCollector() {
+        //empty
+    }
+
     public static JvmMemoryMetrics collectMemoryMetrics() {
         long oldGenUsed = 0L, oldGenMax = 0L;
         long permGenUsed = 0L, permGenMax = 0L;
@@ -66,5 +70,4 @@ public final class JvmMemoryCollector {
                 edenUsed, edenMax,
                 survivorUsed, survivorMax);
     }
-
 }

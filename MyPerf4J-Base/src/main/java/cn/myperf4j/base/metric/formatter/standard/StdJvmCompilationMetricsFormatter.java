@@ -17,7 +17,8 @@ public final class StdJvmCompilationMetricsFormatter implements JvmCompilationMe
     public String format(List<JvmCompilationMetrics> metricsList, long startMillis, long stopMillis) {
         String dataTitleFormat = "%-16s%16s%n";
         StringBuilder sb = new StringBuilder((metricsList.size() + 2) * (16 + 24));
-        sb.append("MyPerf4J JVM Compilation Metrics [").append(DateFormatUtils.format(startMillis)).append(", ").append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
+        sb.append("MyPerf4J JVM Compilation Metrics [").append(DateFormatUtils.format(startMillis)).append(", ")
+                .append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
         sb.append(String.format(dataTitleFormat, "Time(ms)", "TotalTime(ms)"));
         if (metricsList.isEmpty()) {
             return sb.toString();
@@ -30,5 +31,4 @@ public final class StdJvmCompilationMetricsFormatter implements JvmCompilationMe
         }
         return sb.toString();
     }
-
 }

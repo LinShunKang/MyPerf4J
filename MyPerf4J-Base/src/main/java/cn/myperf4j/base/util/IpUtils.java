@@ -5,7 +5,7 @@ import java.net.InetAddress;
 /**
  * Created by LinShunkang on 2020/05/23
  */
-public class IpUtils {
+public final class IpUtils {
 
     private static String LOCALHOST_NAME = "";
 
@@ -17,6 +17,10 @@ public class IpUtils {
         } catch (Exception e) {
             Logger.error("IpUtils.static initializer()", e);
         }
+    }
+
+    private IpUtils() {
+        //empty
     }
 
     public static String getLocalhostName() {
