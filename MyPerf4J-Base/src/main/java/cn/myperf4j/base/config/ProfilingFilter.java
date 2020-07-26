@@ -10,7 +10,7 @@ import java.util.Set;
 /**
  * Created by LinShunkang on 2018/4/24
  */
-public class ProfilingFilter {
+public final class ProfilingFilter {
 
     /**
      * 不需要注入的 Package前缀 集合
@@ -32,12 +32,10 @@ public class ProfilingFilter {
      */
     private static final Set<String> includePackageExp = new HashSet<>();
 
-
     /**
      * 不需要注入的 method 集合
      */
     private static final Set<String> excludeMethods = new HashSet<>();
-
 
     /**
      * 不注入的 ClassLoader 集合
@@ -56,26 +54,30 @@ public class ProfilingFilter {
         excludePackagePrefix.add("cn/myperf4j/");
 
         // 默认注入的 package
-        includePackagePrefix.add("net/paoding/rose/jade/context/JadeInvocationHandler");//Jade
-        includePackagePrefix.add("org/apache/ibatis/binding/MapperProxy");//Mybatis
-        includePackagePrefix.add("com/alibaba/dubbo/rpc/proxy/InvokerInvocationHandler");//DUBBO
-        includePackagePrefix.add("org/apache/dubbo/rpc/proxy/InvokerInvocationHandler");//DUBBO
-        includePackagePrefix.add("com/alipay/sofa/rpc/proxy/jdk/JDKInvocationHandler");//SOFA jdk-proxy
-        includePackagePrefix.add("com/weibo/api/motan/proxy/RefererInvocationHandler");//Motan
+        includePackagePrefix.add("net/paoding/rose/jade/context/JadeInvocationHandler"); //Jade
+        includePackagePrefix.add("org/apache/ibatis/binding/MapperProxy"); //Mybatis
+        includePackagePrefix.add("com/alibaba/dubbo/rpc/proxy/InvokerInvocationHandler"); //DUBBO
+        includePackagePrefix.add("org/apache/dubbo/rpc/proxy/InvokerInvocationHandler"); //DUBBO
+        includePackagePrefix.add("com/alipay/sofa/rpc/proxy/jdk/JDKInvocationHandler"); //SOFA jdk-proxy
+        includePackagePrefix.add("com/weibo/api/motan/proxy/RefererInvocationHandler"); //Motan
 
         //默认不注入的method
         excludeMethods.add("main");
         excludeMethods.add("premain");
-        excludeMethods.add("getClass");//java.lang.Object
-        excludeMethods.add("hashCode");//java.lang.Object
-        excludeMethods.add("equals");//java.lang.Object
-        excludeMethods.add("clone");//java.lang.Object
-        excludeMethods.add("toString");//java.lang.Object
-        excludeMethods.add("notify");//java.lang.Object
-        excludeMethods.add("notifyAll");//java.lang.Object
-        excludeMethods.add("wait");//java.lang.Object
-        excludeMethods.add("finalize");//java.lang.Object
-        excludeMethods.add("afterPropertiesSet");//spring
+        excludeMethods.add("getClass"); //java.lang.Object
+        excludeMethods.add("hashCode"); //java.lang.Object
+        excludeMethods.add("equals"); //java.lang.Object
+        excludeMethods.add("clone"); //java.lang.Object
+        excludeMethods.add("toString"); //java.lang.Object
+        excludeMethods.add("notify"); //java.lang.Object
+        excludeMethods.add("notifyAll"); //java.lang.Object
+        excludeMethods.add("wait"); //java.lang.Object
+        excludeMethods.add("finalize"); //java.lang.Object
+        excludeMethods.add("afterPropertiesSet"); //spring
+    }
+
+    private ProfilingFilter() {
+        //empty
     }
 
     /**
@@ -161,7 +163,6 @@ public class ProfilingFilter {
         return new HashSet<>(includePackagePrefix);
     }
 
-
     /**
      * @param methodName
      * @return : true->需要修改字节码  false->不需要修改字节码
@@ -200,14 +201,12 @@ public class ProfilingFilter {
         return new HashSet<>(excludeMethods);
     }
 
-
     /**
      * @param classLoader
      */
     public static void addExcludeClassLoader(String classLoader) {
         excludeClassLoader.add(classLoader);
     }
-
 
     /**
      * 是否是不需要注入的类加载器

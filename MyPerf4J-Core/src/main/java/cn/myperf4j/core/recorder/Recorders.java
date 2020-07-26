@@ -12,7 +12,7 @@ public class Recorders {
 
     private final AtomicInteger recorderCount;
 
-    private volatile boolean writing = false;
+    private volatile boolean writing;
 
     private volatile long startTime;
 

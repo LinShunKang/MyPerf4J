@@ -20,9 +20,11 @@ public final class InfluxDbClientFactory {
             .readTimeout(CONFIG.readTimeout())
             .build();
 
+    private InfluxDbClientFactory() {
+        //empty
+    }
+
     public static InfluxDbClient getClient() {
         return CLIENT;
     }
-
-
 }

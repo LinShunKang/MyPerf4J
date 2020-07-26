@@ -104,5 +104,4 @@ public class JvmThreadMetrics extends Metrics {
                 ", terminated=" + terminated +
                 "} " + super.toString();
     }
-
 }

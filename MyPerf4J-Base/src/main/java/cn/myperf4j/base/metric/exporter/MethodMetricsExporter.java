@@ -7,5 +7,4 @@ import cn.myperf4j.base.metric.MethodMetrics;
  */
 public interface MethodMetricsExporter extends MetricsExporter<MethodMetrics> {
 
-
 }

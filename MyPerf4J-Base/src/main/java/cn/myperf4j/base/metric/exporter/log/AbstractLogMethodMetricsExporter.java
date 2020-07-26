@@ -12,7 +12,6 @@ public abstract class AbstractLogMethodMetricsExporter implements MethodMetricsE
 
     protected ILogger logger = LoggerFactory.getLogger(ProfilingConfig.metricsConfig().methodMetricsFile());
 
-
     @Override
     public void beforeProcess(long processId, long startMillis, long stopMillis) {
         //empty

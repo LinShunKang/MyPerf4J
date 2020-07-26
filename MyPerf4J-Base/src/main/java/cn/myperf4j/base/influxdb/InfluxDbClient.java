@@ -100,7 +100,7 @@ public final class InfluxDbClient {
 
         private final String content;
 
-        public ReqTask(String content) {
+        ReqTask(String content) {
             this.content = content;
         }
 
@@ -189,5 +189,4 @@ public final class InfluxDbClient {
             return new InfluxDbClient(this);
         }
     }
-
 }

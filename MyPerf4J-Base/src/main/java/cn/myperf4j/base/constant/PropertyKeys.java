@@ -16,7 +16,6 @@ public interface PropertyKeys {
         ConfigKey DEBUG = ConfigKey.of("debug", "Debug.PrintDebugLog");
 
         ConfigKey PROPERTIES_FILE_DIR = ConfigKey.of("properties.dir", "MyPerf4JPropDIR");
-
     }
 
     interface Metrics {
@@ -50,7 +49,6 @@ public interface PropertyKeys {
         ConfigKey LOG_ROLLING_TIME_UNIT = ConfigKey.of("metrics.log.rolling.time_unit", "LogRollingTimeUnit");
 
         ConfigKey LOG_RESERVE_COUNT = ConfigKey.of("metrics.log.reserve.count", "LogReserveCount");
-
     }
 
     interface InfluxDB {
@@ -68,7 +66,6 @@ public interface PropertyKeys {
         ConfigKey CONN_TIMEOUT = ConfigKey.of("influxdb.conn_timeout", "influxdb.conn_timeout");
 
         ConfigKey READ_TIMEOUT = ConfigKey.of("influxdb.read_timeout", "influxdb.read_timeout");
-
     }
 
     interface Filter {
@@ -82,7 +79,6 @@ public interface PropertyKeys {
         ConfigKey METHODS_EXCLUDE_PRIVATE = ConfigKey.of("filter.methods.exclude_private", "ExcludePrivateMethod");
 
         ConfigKey CLASS_LOADERS_EXCLUDE = ConfigKey.of("filter.class_loaders.exclude", "ExcludeClassLoaders");
-
     }
 
     interface Recorder {
@@ -94,7 +90,5 @@ public interface PropertyKeys {
         ConfigKey SIZE_TIMING_ARR = ConfigKey.of("recorder.size.timing_arr", "ProfilingTimeThreshold");
 
         ConfigKey SIZE_TIMING_MAP = ConfigKey.of("recorder.size.timing_map", "ProfilingOutThresholdCount");
-
     }
-
 }

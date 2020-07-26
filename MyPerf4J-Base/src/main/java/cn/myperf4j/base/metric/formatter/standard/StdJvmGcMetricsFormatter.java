@@ -17,8 +17,10 @@ public class StdJvmGcMetricsFormatter implements JvmGcMetricsFormatter {
     public String format(List<JvmGcMetrics> metricsList, long startMillis, long stopMillis) {
         String dataTitleFormat = "%-15s%15s%15s%15s%15s%15s%15s%15s%n";
         StringBuilder sb = new StringBuilder((metricsList.size() + 2) * (9 * 3 + 64));
-        sb.append("MyPerf4J JVM GC Metrics [").append(DateFormatUtils.format(startMillis)).append(", ").append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
-        sb.append(String.format(dataTitleFormat, "YoungGcCount", "YoungGcTime", "AvgYoungGcTime", "FullGcCount", "FullGcTime", "ZGcCount", "ZGcTime", "AvgZGcTime"));
+        sb.append("MyPerf4J JVM GC Metrics [").append(DateFormatUtils.format(startMillis)).append(", ")
+                .append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
+        sb.append(String.format(dataTitleFormat, "YoungGcCount", "YoungGcTime", "AvgYoungGcTime", "FullGcCount",
+                "FullGcTime", "ZGcCount", "ZGcTime", "AvgZGcTime"));
         if (metricsList.isEmpty()) {
             return sb.toString();
         }

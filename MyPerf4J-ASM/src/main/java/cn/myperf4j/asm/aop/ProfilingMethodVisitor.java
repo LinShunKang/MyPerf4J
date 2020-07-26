@@ -45,11 +45,16 @@ public class ProfilingMethodVisitor extends AdviceAdapter {
                                   String humanMethodDesc) {
         super(ASM5, mv, access, name, desc);
         this.methodName = name;
-        this.methodTagId = methodTagMaintainer.addMethodTag(getMethodTag(fullClassName, simpleClassName, classLevel, name, humanMethodDesc));
+        this.methodTagId = methodTagMaintainer.addMethodTag(
+                getMethodTag(fullClassName, simpleClassName, classLevel, name, humanMethodDesc));
         this.innerClassName = innerClassName;
     }
 
-    private MethodTag getMethodTag(String fullClassName, String simpleClassName, String classLevel, String methodName, String humanMethodDesc) {
+    private MethodTag getMethodTag(String fullClassName,
+                                   String simpleClassName,
+                                   String classLevel,
+                                   String methodName,
+                                   String humanMethodDesc) {
         String methodParamDesc = metricsConf.showMethodParams() ? humanMethodDesc : "";
         return MethodTag.getGeneralInstance(fullClassName, simpleClassName, classLevel, methodName, methodParamDesc);
     }

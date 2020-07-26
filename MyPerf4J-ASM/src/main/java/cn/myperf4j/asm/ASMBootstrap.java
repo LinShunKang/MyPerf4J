@@ -11,7 +11,7 @@ import cn.myperf4j.base.util.Logger;
 /**
  * Created by LinShunkang on 2018/4/19
  */
-public class ASMBootstrap extends AbstractBootstrap {
+public final class ASMBootstrap extends AbstractBootstrap {
 
     private static final ASMBootstrap instance = new ASMBootstrap();
 
@@ -48,5 +48,4 @@ public class ASMBootstrap extends AbstractBootstrap {
         }
         return false;
     }
-
 }

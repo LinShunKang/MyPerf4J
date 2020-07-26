@@ -26,5 +26,4 @@ public interface ClassLevels {
     String UTILS = "Utils";
 
     String OTHERS = "Others";
-
 }

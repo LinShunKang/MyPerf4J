@@ -8,7 +8,13 @@ import cn.myperf4j.core.recorder.AccurateRecorder;
 import cn.myperf4j.core.recorder.Recorder;
 import cn.myperf4j.core.recorder.Recorders;
 import cn.myperf4j.core.recorder.RoughRecorder;
-import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
@@ -65,12 +71,18 @@ public class MethodMetricsBench {
 
     @Benchmark
     public MethodMetrics roughRecorder() {
-        return MethodMetricsCalculator.calPerfStats(roughRecorder, roughMethodTag, recorders.getStartTime(), recorders.getStopTime());
+        return MethodMetricsCalculator.calPerfStats(roughRecorder,
+                roughMethodTag,
+                recorders.getStartTime(),
+                recorders.getStopTime());
     }
 
     @Benchmark
     public MethodMetrics accurateRecorder() {
-        return MethodMetricsCalculator.calPerfStats(accurateRecorder, accurateMethodTag, recorders.getStartTime(), recorders.getStopTime());
+        return MethodMetricsCalculator.calPerfStats(accurateRecorder,
+                accurateMethodTag,
+                recorders.getStartTime(),
+                recorders.getStopTime());
     }
 
     public static void main(String[] args) throws RunnerException {

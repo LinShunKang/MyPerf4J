@@ -60,5 +60,4 @@ public class InfluxJvmMemoryMetricsFormatter implements JvmMemoryMetricsFormatte
                 .append(",SurvivorUsedPercent=").append(metrics.getSurvivorUsedPercent())
                 .append(' ').append(startNanos);
     }
-
 }

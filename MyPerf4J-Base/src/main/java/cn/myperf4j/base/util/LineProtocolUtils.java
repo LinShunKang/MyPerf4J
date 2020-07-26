@@ -17,6 +17,9 @@ public final class LineProtocolUtils {
 
     private static final Map<String, String> methodNameMap = new ConcurrentHashMap<>(1024);
 
+    private LineProtocolUtils() {
+        //empty
+    }
 
     /**
      * 用于把tagOrField里的 ','  ' '  '=' 转义为符合LineProtocol的格式
@@ -36,5 +39,4 @@ public final class LineProtocolUtils {
         methodNameMap.put(tagOrField, lineProtocol);
         return lineProtocol;
     }
-
 }

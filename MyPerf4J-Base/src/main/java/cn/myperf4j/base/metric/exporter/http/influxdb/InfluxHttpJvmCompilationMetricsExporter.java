@@ -34,7 +34,8 @@ public class InfluxHttpJvmCompilationMetricsExporter implements JvmCompilationMe
         if (metricsList != null) {
             metricsList.add(metrics);
         } else {
-            Logger.error("InfluxHttpJvmCompilationMetricsExporter.process(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
+            Logger.error("InfluxHttpJvmCompilationMetricsExporter.process(" + processId + ", " + startMillis
+                    + ", " + stopMillis + "): metricsList is null!!!");
         }
     }
 
@@ -44,8 +45,8 @@ public class InfluxHttpJvmCompilationMetricsExporter implements JvmCompilationMe
         if (metricsList != null) {
             CLIENT.writeMetricsAsync(METRICS_FORMATTER.format(metricsList, startMillis, stopMillis));
         } else {
-            Logger.error("InfluxHttpJvmCompilationMetricsExporter.afterProcess(" + processId + ", " + startMillis + ", " + stopMillis + "): metricsList is null!!!");
+            Logger.error("InfluxHttpJvmCompilationMetricsExporter.afterProcess(" + processId + ", " + startMillis
+                    + ", " + stopMillis + "): metricsList is null!!!");
         }
     }
-
 }

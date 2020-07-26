@@ -258,5 +258,4 @@ public class MetricsConfig {
         }
         return getStr(configKey, DEFAULT_METRICS_FILE);
     }
-
 }

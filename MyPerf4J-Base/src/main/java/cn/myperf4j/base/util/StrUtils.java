@@ -10,17 +10,9 @@ import java.util.List;
  */
 public final class StrUtils {
 
-    private static final String[] BYTE2HEX_PAD = new String[256];
-    private static final String[] BYTE2HEX_NOPAD = new String[256];
     private static final byte[] HEX2B;
 
     static {
-        // Generate the lookup table that converts a byte into a 2-digit hexadecimal integer.
-        for (int i = 0; i < BYTE2HEX_PAD.length; i++) {
-            String str = Integer.toHexString(i);
-            BYTE2HEX_PAD[i] = i > 0xf ? str : ('0' + str);
-            BYTE2HEX_NOPAD[i] = str;
-        }
         // Generate the lookup table that converts an hex char into its decimal value:
         // the size of the table is such that the JVM is capable of save any bounds-check
         // if a char type is used as an index.
@@ -48,6 +40,10 @@ public final class StrUtils {
         HEX2B['d'] = (byte) 13;
         HEX2B['e'] = (byte) 14;
         HEX2B['f'] = (byte) 15;
+    }
+
+    private StrUtils() {
+        //empty
     }
 
     public static boolean isEmpty(String str) {
@@ -139,5 +135,4 @@ public final class StrUtils {
         // set of characters (both ASCII and full-width latin letters).
         return HEX2B[c];
     }
-
 }

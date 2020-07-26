@@ -1,21 +1,24 @@
 package MyPerf4J;
 
 import cn.myperf4j.base.util.Logger;
-import cn.myperf4j.core.recorder.RoughRecorder;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.Arrays;
 import java.util.Enumeration;
 
 /**
  * Created by LinShunkang on 2018/10/17
  */
-public class ClassFileUtils {
+public final class ClassFileUtils {
 
-    public static void main(String[] args) throws IOException {
-        System.out.println(Arrays.toString(getClassFileContent(RoughRecorder.class.getName())));
+    private ClassFileUtils() {
+        //empty
     }
 
     public static byte[] getClassFileContent(String fullClassName) throws IOException {
@@ -105,6 +108,4 @@ public class ClassFileUtils {
         }
         return out.toByteArray();
     }
-
-
 }

@@ -22,5 +22,4 @@ public class DiscardJvmCompilationMetricsExporter implements JvmCompilationMetri
     public void afterProcess(long processId, long startMillis, long stopMillis) {
         //empty
     }
-
 }

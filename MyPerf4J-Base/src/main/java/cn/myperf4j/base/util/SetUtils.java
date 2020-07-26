@@ -9,6 +9,10 @@ import java.util.Set;
  */
 public final class SetUtils {
 
+    private SetUtils() {
+        //empty
+    }
+
     public static <T> Set<T> of(T... t) {
         return new HashSet<>(Arrays.asList(t));
     }
@@ -16,5 +20,4 @@ public final class SetUtils {
     public static <T> Set<T> createHashSet(int size) {
         return new HashSet<>((int) (size / .75) + 1);
     }
-
 }

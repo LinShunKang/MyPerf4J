@@ -47,7 +47,6 @@ public interface PropertyValues {
         String LOG_ROLLING_HOURLY = "HOURLY";
 
         String LOG_ROLLING_DAILY = "DAILY";
-
     }
 
     interface Recorder {
@@ -59,7 +58,6 @@ public interface PropertyValues {
         int MIN_BACKUP_RECORDERS_COUNT = 1;
 
         int MAX_BACKUP_RECORDERS_COUNT = 8;
-
     }
 
     interface Separator {
@@ -70,5 +68,4 @@ public interface PropertyValues {
 
         char ARR_ELE = ',';
     }
-
 }

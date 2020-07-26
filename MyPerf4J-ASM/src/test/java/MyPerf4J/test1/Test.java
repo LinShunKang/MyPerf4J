@@ -7,11 +7,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-
 /**
  * Created by LinShunkang on 2018/4/23
  */
-public class Test {
+public final class Test {
+
+    private Test() {
+        //empty
+    }
 
     public static void main(String[] args) throws IOException {
         test1();
@@ -29,7 +32,8 @@ public class Test {
     }
 
     private static void rewriteClass(byte[] toByte) throws IOException {
-        File tofile = new File("/Users/thinker/WorkSpace/personal/MyPerf4J/MyPerf4J-ASM/target/test-classes/MyPerf4J/Foo.class");
+        File tofile = new File("/Users/thinker/WorkSpace/personal/MyPerf4J/MyPerf4J-ASM/target/test-classes" +
+                "/MyPerf4J/Foo.class");
         FileOutputStream fout = new FileOutputStream(tofile);
         fout.write(toByte);
         fout.close();

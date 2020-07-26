@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -18,8 +19,11 @@ import java.util.concurrent.TimeUnit;
  */
 public class HttpServerTest {
 
-    // curl 'localhost:1024/start?k1=v1&k2=v2&k3=v3' -X POST -d '{"param":"value"}'
-    public static void main(String[] args) throws IOException, InterruptedException {
+    /**
+     * curl 'localhost:1024/start?k1=v1&k2=v2&k3=v3' -X POST -d '{"param":"value"}'
+     */
+    @Test
+    public void test() throws InterruptedException, IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(1024), 0);
         server.createContext("/start", new StartHandler());
         server.createContext("/", new TestHandler("/"));
@@ -28,18 +32,18 @@ public class HttpServerTest {
         server.createContext("/test/lv2/lv3", new TestHandler("/test/lv2/lv3"));
         server.start();
 
-        TimeUnit.SECONDS.sleep(60);
+        TimeUnit.SECONDS.sleep(1);
 
-        server.stop(3);
+        server.stop(1);
     }
 
     private static class StartHandler implements HttpHandler {
 
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            System.out.println("getProtocol:" + exchange.getProtocol());//协议版本
-            System.out.println("getRequestMethod:" + exchange.getRequestMethod());//请求方法GET、POST
-            System.out.println("getResponseCode:" + exchange.getResponseCode());//返回已经设置的响应code，还没设置返回-1
+            System.out.println("getProtocol:" + exchange.getProtocol()); //协议版本
+            System.out.println("getRequestMethod:" + exchange.getRequestMethod()); //请求方法GET、POST
+            System.out.println("getResponseCode:" + exchange.getResponseCode()); //返回已经设置的响应code，还没设置返回-1
 
             HttpContext context = exchange.getHttpContext();
             System.out.println("context.getPath:" + context.getPath());
@@ -60,7 +64,7 @@ public class HttpServerTest {
             System.out.println("uri.getFragment:" + uri.getFragment());
             System.out.println("uri.getHost:" + uri.getHost());
             System.out.println("uri.getPath:" + uri.getPath());
-            System.out.println("uri.getQuery:" + uri.getQuery());//url里get请求的参数
+            System.out.println("uri.getQuery:" + uri.getQuery()); //url里get请求的参数
             System.out.println("uri.getRawAuthority:" + uri.getRawAuthority());
             System.out.println("uri.getRawFragment:" + uri.getRawFragment());
             System.out.println("uri.getRawPath:" + uri.getRawPath());
@@ -86,7 +90,7 @@ public class HttpServerTest {
 
             System.out.println("getResponseHeaders:" + exchange.getResponseHeaders());
             System.out.println("ResponseCode:" + exchange.getResponseCode());
-            exchange.close();//先关闭打开的InputStream，再关闭打开的OutputStream
+            exchange.close(); //先关闭打开的InputStream，再关闭打开的OutputStream
         }
     }
 
@@ -94,7 +98,7 @@ public class HttpServerTest {
 
         private final String name;
 
-        public TestHandler(String name) {
+        TestHandler(String name) {
             this.name = name;
         }
 

@@ -14,6 +14,10 @@ public final class ExecutorManager {
 
     private static final Set<ExecutorService> executors = new HashSet<>();
 
+    private ExecutorManager() {
+        //empty
+    }
+
     public static void addExecutorService(ExecutorService executor) {
         executors.add(executor);
     }
@@ -28,5 +32,4 @@ public final class ExecutorManager {
             }
         }
     }
-
 }

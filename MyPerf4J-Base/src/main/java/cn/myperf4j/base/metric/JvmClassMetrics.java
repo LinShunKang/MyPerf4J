@@ -39,5 +39,4 @@ public class JvmClassMetrics extends Metrics {
                 ", unloaded=" + unloaded +
                 '}';
     }
-
 }

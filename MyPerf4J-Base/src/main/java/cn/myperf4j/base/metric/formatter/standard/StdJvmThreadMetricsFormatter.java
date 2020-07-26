@@ -17,8 +17,10 @@ public class StdJvmThreadMetricsFormatter implements JvmThreadMetricsFormatter {
     public String format(List<JvmThreadMetrics> metricsList, long startMillis, long stopMillis) {
         String dataTitleFormat = "%-14s%14s%14s%14s%14s%14s%14s%14s%14s%14s%n";
         StringBuilder sb = new StringBuilder((metricsList.size() + 2) * (14 * 10 + 64));
-        sb.append("MyPerf4J JVM Thread Metrics [").append(DateFormatUtils.format(startMillis)).append(", ").append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
-        sb.append(String.format(dataTitleFormat, "TotalStarted", "Active", "Peak", "Daemon", "New", "Runnable", "Blocked", "Waiting", "TimedWaiting", "Terminated"));
+        sb.append("MyPerf4J JVM Thread Metrics [").append(DateFormatUtils.format(startMillis)).append(", ")
+                .append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
+        sb.append(String.format(dataTitleFormat, "TotalStarted", "Active", "Peak", "Daemon", "New", "Runnable",
+                "Blocked", "Waiting", "TimedWaiting", "Terminated"));
         if (metricsList.isEmpty()) {
             return sb.toString();
         }

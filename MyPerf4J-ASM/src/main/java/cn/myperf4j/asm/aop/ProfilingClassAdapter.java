@@ -5,7 +5,9 @@ import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.config.ProfilingFilter;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.util.TypeDescUtils;
-import org.objectweb.asm.*;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.MethodVisitor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,7 +44,8 @@ public class ProfilingClassAdapter extends ClassVisitor {
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        Logger.debug("ProfilingClassAdapter.visit(" + version + ", " + access + ", " + name + ", " + signature + ", " + superName + ", " + Arrays.toString(interfaces) + ")");
+        Logger.debug("ProfilingClassAdapter.visit(" + version + ", " + access + ", " + name + ", "
+                + signature + ", " + superName + ", " + Arrays.toString(interfaces) + ")");
 
         super.visit(version, access, name, signature, superName, interfaces);
         this.isInterface = (access & ACC_INTERFACE) != 0;
@@ -97,12 +100,14 @@ public class ProfilingClassAdapter extends ClassVisitor {
         if (mv == null) {
             return null;
         }
-        Logger.debug("ProfilingClassAdapter.visitMethod(" + access + ", " + name + ", " + desc + ", " + signature + ", " + Arrays.toString(exceptions) + "), innerClassName=" + innerClassName);
+        Logger.debug("ProfilingClassAdapter.visitMethod(" + access + ", " + name + ", " + desc + ", "
+                + signature + ", " + Arrays.toString(exceptions) + "), innerClassName=" + innerClassName);
 
         if (isInvocationHandler && isInvokeMethod(name, desc)) {
             return new ProfilingDynamicMethodVisitor(access, name, desc, mv);
         } else {
-            return new ProfilingMethodVisitor(access, name, desc, mv, innerClassName, fullClassName, simpleClassName, classLevel, desc4Human);
+            return new ProfilingMethodVisitor(access, name, desc, mv, innerClassName, fullClassName, simpleClassName,
+                    classLevel, desc4Human);
         }
     }
 
@@ -132,6 +137,8 @@ public class ProfilingClassAdapter extends ClassVisitor {
     }
 
     private boolean isInvokeMethod(String methodName, String methodDesc) {
-        return methodName.equals("invoke") && methodDesc.equals("(Ljava/lang/Object;Ljava/lang/reflect/Method;[Ljava/lang/Object;)Ljava/lang/Object;");
+        return methodName.equals("invoke")
+                && methodDesc.equals(
+                "(Ljava/lang/Object;Ljava/lang/reflect/Method;[Ljava/lang/Object;)Ljava/lang/Object;");
     }
 }

@@ -22,5 +22,4 @@ public class DiscardJvmThreadMetricsExporter implements JvmThreadMetricsExporter
     public void afterProcess(long processId, long startMillis, long stopMillis) {
         //empty
     }
-
 }

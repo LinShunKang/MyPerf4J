@@ -19,23 +19,35 @@ import java.util.Set;
  */
 public final class JvmGcCollector {
 
-    private static final Set<String> YOUNG_GC_SET = SetUtils.of("Copy", "ParNew", "PS Scavenge", "G1 Young Generation");
+    private static final Set<String> YOUNG_GC_SET = SetUtils.of(
+            "Copy",
+            "ParNew",
+            "PS Scavenge",
+            "G1 Young Generation");
 
-    private static final Set<String> OLD_GC_SET = SetUtils.of("MarkSweepCompact", "PS MarkSweep", "ConcurrentMarkSweep", "G1 Old Generation");
+    private static final Set<String> OLD_GC_SET = SetUtils.of(
+            "MarkSweepCompact",
+            "PS MarkSweep",
+            "ConcurrentMarkSweep",
+            "G1 Old Generation");
 
     private static final Set<String> Z_GC_SET = SetUtils.of("ZGC");
 
-    private static volatile long lastYoungGcTime = 0L;
+    private static volatile long lastYoungGcTime;
 
-    private static volatile long lastYoungGcCount = 0L;
+    private static volatile long lastYoungGcCount;
 
-    private static volatile long lastOldGcTime = 0L;
+    private static volatile long lastOldGcTime;
 
-    private static volatile long lastOldGcCount = 0L;
+    private static volatile long lastOldGcCount;
 
-    private static volatile long lastZGcTime = 0L;
+    private static volatile long lastZGcTime;
 
-    private static volatile long lastZGcCount = 0L;
+    private static volatile long lastZGcCount;
+
+    private JvmGcCollector() {
+        //empty
+    }
 
     public static JvmGcMetrics collectGcMetrics() {
         long youngGcCount = 0L;
@@ -78,12 +90,5 @@ public final class JvmGcCollector {
         lastZGcCount = zGcCount;
         lastZGcTime = zGcTime;
         return jvmGcMetrics;
-    }
-
-    public static void main(String[] args) {
-        List<GarbageCollectorMXBean> gcMXBeanList = ManagementFactory.getGarbageCollectorMXBeans();
-        for (final GarbageCollectorMXBean gcMxBean : gcMXBeanList) {
-            System.out.println("Name=" + gcMxBean.getName() + ", gcTime=" + gcMxBean.getCollectionTime() + ", gcCount=" + gcMxBean.getCollectionCount());
-        }
     }
 }

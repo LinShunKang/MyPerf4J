@@ -17,7 +17,9 @@ import cn.myperf4j.core.MethodTagMaintainer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
 /**
@@ -25,13 +27,13 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
  */
 public abstract class AbstractRecorderMaintainer implements Scheduler {
 
-    private volatile boolean initialState = false;
+    private volatile boolean initialState;
 
     protected List<Recorders> recordersList;
 
     private final MethodTagMaintainer methodTagMaintainer = MethodTagMaintainer.getInstance();
 
-    private int curIndex = 0;
+    private int curIndex;
 
     private volatile Recorders curRecorders;
 

@@ -23,6 +23,10 @@ public final class InputStreamUtils {
         }
     };
 
+    private InputStreamUtils() {
+        //empty
+    }
+
     public static String toString(InputStream inputStream) throws IOException {
         if (inputStream == null) {
             return null;

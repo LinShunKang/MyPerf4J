@@ -116,7 +116,5 @@ public final class HttpClient {
         public HttpClient build() {
             return new HttpClient(this);
         }
-
     }
-
 }

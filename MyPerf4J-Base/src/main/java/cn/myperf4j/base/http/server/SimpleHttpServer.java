@@ -78,7 +78,7 @@ public class SimpleHttpServer {
 
         private final Dispatcher dispatcher;
 
-        public DispatchHandler(Dispatcher dispatcher) {
+        DispatchHandler(Dispatcher dispatcher) {
             this.dispatcher = dispatcher;
         }
 
@@ -142,5 +142,4 @@ public class SimpleHttpServer {
             return new QueryStringDecoder(rawQuery, UTF_8, false).parameters();
         }
     }
-
 }

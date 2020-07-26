@@ -11,7 +11,8 @@ import java.util.Date;
 
 /**
  * Created by LinShunkang on 2018/9/7
- * 该类参考自TProfiler: https://github.com/alibaba/TProfiler/blob/master/src/main/java/com/taobao/profile/utils/DailyRollingFileWriter.java
+ * 该类参考自TProfiler:
+ * https://github.com/alibaba/TProfiler/blob/master/src/main/java/com/taobao/profile/utils/DailyRollingFileWriter.java
  */
 public abstract class AutoRollingFileWriter {
 
@@ -54,7 +55,7 @@ public abstract class AutoRollingFileWriter {
             this.rollingFileName = formatDateFileName(fileName, lastModifiedDate);
             rollingFile(now);
         } finally {
-            clean(now, MAX_INACTIVITY_EPOCHS);//尽可能的删除过期的日志文件
+            clean(now, MAX_INACTIVITY_EPOCHS); //尽可能的删除过期的日志文件
         }
     }
 
@@ -65,7 +66,8 @@ public abstract class AutoRollingFileWriter {
             File file2Del = new File(formatDateFileName(fileName, date));
             if (file2Del.exists() && file2Del.isFile()) {
                 boolean delete = file2Del.delete();
-                Logger.info("AutoRollingFileWriter.clean(" + now + ", " + epochs + "): delete " + file2Del.getName() + " " + (delete ? "success" : "fail"));
+                Logger.info("AutoRollingFileWriter.clean(" + now + ", " + epochs + "): delete "
+                        + file2Del.getName() + " " + (delete ? "success" : "fail"));
             }
         }
     }
@@ -86,7 +88,8 @@ public abstract class AutoRollingFileWriter {
             File parent = file.getParentFile();
             if (parent != null && !parent.exists()) {
                 boolean mkdirs = parent.mkdirs();
-                Logger.info("AutoRollingFileWriter.createWriter(" + file.getName() + ", " + append + "): mkdirs=" + mkdirs);
+                Logger.info("AutoRollingFileWriter.createWriter(" + file.getName() + ", "
+                        + append + "): mkdirs=" + mkdirs);
             }
 
             bufferedWriter = new BufferedWriter(new FileWriter(file, append), 64 * 1024);
@@ -99,7 +102,8 @@ public abstract class AutoRollingFileWriter {
         try {
             String datedFilename = formatDateFileName(fileName, now);
             if (rollingFileName.equals(datedFilename)) {
-                Logger.info("AutoRollingFileWriter.rollingFile(" + now + "): rollingFile=" + rollingFileName + ", datedFilename=" + datedFilename + " return!!!");
+                Logger.info("AutoRollingFileWriter.rollingFile(" + now + "): rollingFile=" + rollingFileName
+                        + ", datedFilename=" + datedFilename + " return!!!");
                 return;
             }
 
@@ -108,17 +112,19 @@ public abstract class AutoRollingFileWriter {
             File targetFile = new File(rollingFileName);
             if (targetFile.exists()) {
                 boolean delete = targetFile.delete();
-                Logger.info("AutoRollingFileWriter.rollingFile(" + now + "): rollingFile=" + rollingFileName + ", delete=" + delete);
+                Logger.info("AutoRollingFileWriter.rollingFile(" + now + "): rollingFile=" + rollingFileName
+                        + ", delete=" + delete);
             }
 
             File file = new File(fileName);
             boolean rename = file.renameTo(targetFile);
-            Logger.info("AutoRollingFileWriter.rollingFile(" + now + "): rename " + fileName + " to " + targetFile.getName() + " " + (rename ? "success" : "fail"));
+            Logger.info("AutoRollingFileWriter.rollingFile(" + now + "): rename " + fileName + " to "
+                    + targetFile.getName() + " " + (rename ? "success" : "fail"));
 
             createWriter(new File(fileName), false);
             rollingFileName = datedFilename;
 
-            clean(now, 1);//删除最近一个过期的日志文件
+            clean(now, 1); //删除最近一个过期的日志文件
         } catch (Exception e) {
             Logger.error("AutoRollingFileWriter.rollingFile(" + now + "): rollingFile=" + rollingFileName, e);
         }

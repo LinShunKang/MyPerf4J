@@ -18,5 +18,4 @@ public class InfluxLogJvmFileDescMetricsExporter extends AbstractLogJvmFileDescM
     public void process(JvmFileDescriptorMetrics metrics, long processId, long startMillis, long stopMillis) {
         logger.log(METRICS_FORMATTER.format(Collections.singletonList(metrics), startMillis, stopMillis));
     }
-
 }

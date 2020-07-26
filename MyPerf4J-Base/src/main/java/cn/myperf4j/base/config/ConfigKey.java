@@ -3,7 +3,7 @@ package cn.myperf4j.base.config;
 /**
  * Created by LinShunkang on 2020/05/24
  */
-public class ConfigKey {
+public final class ConfigKey {
 
     private final String key;
 

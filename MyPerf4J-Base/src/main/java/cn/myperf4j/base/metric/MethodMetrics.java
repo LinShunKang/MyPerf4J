@@ -5,7 +5,7 @@ import cn.myperf4j.base.MethodTag;
 /**
  * Created by LinShunkang on 2018/3/11
  */
-public class MethodMetrics extends Metrics {
+public final class MethodMetrics extends Metrics {
 
     private static final long serialVersionUID = 7715008537772415621L;
 
@@ -17,9 +17,11 @@ public class MethodMetrics extends Metrics {
     private static final int TP_9999_IDX = 5;
     private static final int TP_100_IDX = 6;
 
-    private static final double[] TOP_PERCENTILE_ARR = {0.5D, 0.9D, 0.95D, 0.99D, 0.999D, 0.9999D, 1.0D};//注意：tpArr和TOP_PERCENTILE_ARR的大小请保持一致！！！！
+    //注意：tpArr和TOP_PERCENTILE_ARR的大小请保持一致！！！！
+    private static final double[] TOP_PERCENTILE_ARR = {0.5D, 0.9D, 0.95D, 0.99D, 0.999D, 0.9999D, 1.0D};
 
-    private final int[] tpArr = {-1, -1, -1, -1, -1, -1, -1};//注意：tpArr和TOP_PERCENTILE_ARR的大小请保持一致！！！！
+    //注意：tpArr和TOP_PERCENTILE_ARR的大小请保持一致！！！！
+    private final int[] tpArr = {-1, -1, -1, -1, -1, -1, -1};
 
     private final MethodTag methodTag;
 
@@ -29,19 +31,19 @@ public class MethodMetrics extends Metrics {
 
     private final long stopMillTime;
 
-    private int minTime = -1;//ms
+    private int minTime = -1; //ms
 
-    private double avgTime = -1.0D;//ms
+    private double avgTime = -1.0D; //ms
 
-    private int maxTime = -1;//ms
+    private int maxTime = -1; //ms
 
-    private double stdDev = 0.0D;//Standard Deviation
+    private double stdDev; //Standard Deviation
 
     private long totalCount = -1L;
 
     private long totalTime = -1L;
 
-    private double totalTimePercent = 0.0D;
+    private double totalTimePercent;
 
     private MethodMetrics(MethodTag methodTag, int methodTagId, long startMillTime, long stopMillTime) {
         this.methodTag = methodTag;
@@ -174,12 +176,14 @@ public class MethodMetrics extends Metrics {
                 '}';
     }
 
-    public static MethodMetrics getInstance(MethodTag methodTag, int methodTagId, long startMillTime, long stopMillTime) {
+    public static MethodMetrics getInstance(MethodTag methodTag,
+                                            int methodTagId,
+                                            long startMillTime,
+                                            long stopMillTime) {
         return new MethodMetrics(methodTag, methodTagId, startMillTime, stopMillTime);
     }
 
     public static double[] getPercentiles() {
         return TOP_PERCENTILE_ARR;
     }
-
 }

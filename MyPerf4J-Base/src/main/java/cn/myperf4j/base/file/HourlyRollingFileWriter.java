@@ -42,5 +42,4 @@ public class HourlyRollingFileWriter extends AutoRollingFileWriter {
     boolean isSameEpoch(Date date1, Date date2) {
         return DateUtils.isSameHour(date1, date2);
     }
-
 }

@@ -39,7 +39,8 @@ public class MethodMetricsTest {
 
         long startMillis = System.currentTimeMillis();
         MethodTag methodTag = methodTagMaintainer.getMethodTag(recorder.getMethodTagId());
-        MethodMetrics methodMetrics = MethodMetricsCalculator.calPerfStats(recorder, methodTag, startMillis, startMillis + 1000);
+        MethodMetrics methodMetrics = MethodMetricsCalculator.calPerfStats(recorder, methodTag, startMillis,
+                startMillis + 1000);
         System.out.println(methodMetrics);
 
         Assert.assertEquals(methodMetrics.getMinTime(), 1);
@@ -60,7 +61,8 @@ public class MethodMetricsTest {
 
         long startMillis = System.currentTimeMillis();
         MethodTag methodTag = methodTagMaintainer.getMethodTag(recorder.getMethodTagId());
-        MethodMetrics methodMetrics = MethodMetricsCalculator.calPerfStats(recorder, methodTag, startMillis, startMillis + 1000);
+        MethodMetrics methodMetrics = MethodMetricsCalculator.calPerfStats(recorder, methodTag, startMillis,
+                startMillis + 1000);
         System.out.println(methodMetrics);
 
         Assert.assertEquals(methodMetrics.getMinTime(), 1);
@@ -93,7 +95,8 @@ public class MethodMetricsTest {
 
         long startMillis = System.currentTimeMillis();
         MethodTag methodTag = methodTagMaintainer.getMethodTag(recorder.getMethodTagId());
-        MethodMetrics methodMetrics = MethodMetricsCalculator.calPerfStats(recorder, methodTag, startMillis, startMillis + 1000);
+        MethodMetrics methodMetrics = MethodMetricsCalculator.calPerfStats(recorder, methodTag, startMillis,
+                startMillis + 1000);
         System.out.println(methodMetrics);
 
         Assert.assertEquals(methodMetrics.getMinTime(), 1);
@@ -119,7 +122,8 @@ public class MethodMetricsTest {
 
         long startMillis = System.currentTimeMillis();
         MethodTag methodTag = methodTagMaintainer.getMethodTag(recorder.getMethodTagId());
-        MethodMetrics methodMetrics = MethodMetricsCalculator.calPerfStats(recorder, methodTag, startMillis, startMillis + 1000);
+        MethodMetrics methodMetrics = MethodMetricsCalculator.calPerfStats(recorder, methodTag, startMillis,
+                startMillis + 1000);
         System.out.println(methodMetrics);
 
         Assert.assertEquals(methodMetrics.getMinTime(), 1);
@@ -140,7 +144,8 @@ public class MethodMetricsTest {
         recorders.setStopTime(System.currentTimeMillis() + 1000);
 
         MethodTag methodTag = methodTagMaintainer.getMethodTag(recorder.getMethodTagId());
-        MethodMetrics methodMetrics = MethodMetricsCalculator.calPerfStats(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime());
+        MethodMetrics methodMetrics = MethodMetricsCalculator.calPerfStats(recorder, methodTag,
+                recorders.getStartTime(), recorders.getStopTime());
         System.out.println(methodMetrics);
         recorder.resetRecord();
 

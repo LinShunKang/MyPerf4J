@@ -30,7 +30,7 @@ public class MyClassAdapter extends ClassVisitor implements Opcodes {
                                      String desc,
                                      String signature,
                                      String[] exceptions) {
-        MethodVisitor mv = cv.visitMethod(access, name, desc, signature, exceptions);//先得到原始的方法
+        MethodVisitor mv = cv.visitMethod(access, name, desc, signature, exceptions); //先得到原始的方法
         if (isInterface || mv == null || "<init>".equals(name) || "<clinit>".equals(name)) {
             return mv;
         }

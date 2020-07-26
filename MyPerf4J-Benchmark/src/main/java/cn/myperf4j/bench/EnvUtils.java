@@ -9,7 +9,11 @@ import cn.myperf4j.base.file.MinutelyRollingFileWriter;
 /**
  * Created by LinShunkang on 2019/08/31
  */
-public class EnvUtils {
+public final class EnvUtils {
+
+    private EnvUtils() {
+        //empty
+    }
 
     public static synchronized boolean initASMBootstrap(long milliTimeSlice) {
         initProperties(milliTimeSlice);

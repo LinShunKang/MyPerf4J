@@ -51,7 +51,8 @@ public class AutoRollingLogger implements ILogger {
     }
 
     @Override
-    protected void finalize() {
+    protected void finalize() throws Throwable {
+        super.finalize();
         writer.closeFile(true);
     }
 }

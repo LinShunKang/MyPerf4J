@@ -17,12 +17,20 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by LinShunkang on 2019/07/23
  */
-public class MethodMetricsHistogram {
+public final class MethodMetricsHistogram {
 
     private static final ConcurrentHashMap<Integer, MethodMetricsInfo> METHOD_MAP = new ConcurrentHashMap<>(1024 * 8);
 
+    private MethodMetricsHistogram() {
+        //empty
+    }
+
     public static void recordMetrics(MethodMetrics metrics) {
-        recordMetrics0(metrics.getMethodTagId(), metrics.getTP95(), metrics.getTP99(), metrics.getTP999(), metrics.getTP9999());
+        recordMetrics0(metrics.getMethodTagId(),
+                metrics.getTP95(),
+                metrics.getTP99(),
+                metrics.getTP999(),
+                metrics.getTP9999());
     }
 
     public static void recordNoneMetrics(int methodTagId) {
@@ -74,11 +82,13 @@ public class MethodMetricsHistogram {
 
             File destFile = new File(filePath);
             boolean rename = tempFile.renameTo(destFile) && destFile.setReadOnly();
-            Logger.debug("MethodMetricsHistogram.buildSysGenProfilingFile(): rename " + tempFile.getName() + " to " + destFile.getName() + " " + (rename ? "success" : "fail"));
+            Logger.debug("MethodMetricsHistogram.buildSysGenProfilingFile(): rename " + tempFile.getName()
+                    + " to " + destFile.getName() + " " + (rename ? "success" : "fail"));
         } catch (Exception e) {
             Logger.error("MethodMetricsHistogram.buildSysGenProfilingFile()", e);
         } finally {
-            Logger.debug("MethodMetricsHistogram.buildSysGenProfilingFile() finished, cost=" + (System.currentTimeMillis() - startMills) + "ms");
+            Logger.debug("MethodMetricsHistogram.buildSysGenProfilingFile() finished, cost="
+                    + (System.currentTimeMillis() - startMills) + "ms");
         }
     }
 
@@ -147,5 +157,4 @@ public class MethodMetricsHistogram {
             return 128;
         }
     }
-
 }

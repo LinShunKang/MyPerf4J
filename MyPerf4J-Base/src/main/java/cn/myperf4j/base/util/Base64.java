@@ -6,7 +6,7 @@ import java.util.Arrays;
  * Created by LinShunkang on 2020/05/17
  * 说明：该类是从 JDK8 中拷贝出来的
  */
-public class Base64 {
+public final class Base64 {
 
     private Base64() {
         //empty
@@ -16,7 +16,7 @@ public class Base64 {
         return Encoder.RFC4648;
     }
 
-    public static class Encoder {
+    public static final class Encoder {
 
         private final byte[] newline;
         private final int lineMax;
@@ -66,8 +66,9 @@ public class Base64 {
                 int n = srclen % 3;
                 len = 4 * (srclen / 3) + (n == 0 ? 0 : n + 1);
             }
-            if (lineMax > 0)                                  // line separators
+            if (lineMax > 0) { // line separators
                 len += (len - 1) / lineMax * newline.length;
+            }
             return len;
         }
 
@@ -81,11 +82,12 @@ public class Base64 {
          * encoded bytes.
          */
         public byte[] encode(byte[] src) {
-            int len = outLength(src.length);          // dst array size
+            int len = outLength(src.length); // dst array size
             byte[] dst = new byte[len];
             int ret = encode0(src, 0, src.length, dst);
-            if (ret != dst.length)
+            if (ret != dst.length) {
                 return Arrays.copyOf(dst, ret);
+            }
             return dst;
         }
 
@@ -116,8 +118,9 @@ public class Base64 {
             int sp = off;
             int slen = (end - off) / 3 * 3;
             int sl = off + slen;
-            if (lineMax > 0 && slen > lineMax / 4 * 3)
+            if (lineMax > 0 && slen > lineMax / 4 * 3) {
                 slen = lineMax / 4 * 3;
+            }
             int dp = 0;
             while (sp < sl) {
                 int sl0 = Math.min(sp + slen, sl);

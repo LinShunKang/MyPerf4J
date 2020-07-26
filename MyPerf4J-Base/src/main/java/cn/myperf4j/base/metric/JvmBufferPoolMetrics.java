@@ -13,9 +13,9 @@ public class JvmBufferPoolMetrics extends Metrics {
 
     private final long count;
 
-    private final long memoryUsed;//KB
+    private final long memoryUsed; //KB
 
-    private final long memoryCapacity;//KB
+    private final long memoryCapacity; //KB
 
     public JvmBufferPoolMetrics(BufferPoolMXBean mxBean) {
         this.name = mxBean.getName();

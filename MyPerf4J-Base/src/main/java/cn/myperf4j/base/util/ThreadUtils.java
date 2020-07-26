@@ -9,13 +9,17 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public final class ThreadUtils {
 
+    private ThreadUtils() {
+        //empty
+    }
+
     public static ThreadFactory newThreadFactory(final String prefix) {
         return new ThreadFactory() {
-            AtomicInteger atomicInteger = new AtomicInteger(0);
+            final AtomicInteger threadId = new AtomicInteger(0);
 
             @Override
             public Thread newThread(Runnable r) {
-                return new Thread(r, prefix + atomicInteger.getAndIncrement());
+                return new Thread(r, prefix + threadId.getAndIncrement());
             }
         };
     }

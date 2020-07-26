@@ -11,6 +11,10 @@ public final class MyProperties {
 
     private static Properties properties;
 
+    private MyProperties() {
+        //empty
+    }
+
     public static synchronized boolean initial(Properties prop) {
         if (properties != null || prop == null) {
             return false;

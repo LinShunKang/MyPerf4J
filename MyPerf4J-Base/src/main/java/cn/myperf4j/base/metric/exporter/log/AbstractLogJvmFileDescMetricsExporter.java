@@ -21,5 +21,4 @@ public abstract class AbstractLogJvmFileDescMetricsExporter implements JvmFileDe
     public void afterProcess(long processId, long startMillis, long stopMillis) {
         logger.flushLog();
     }
-
 }

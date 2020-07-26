@@ -71,5 +71,4 @@ public enum HttpStatusClass {
         }
         return UNKNOWN;
     }
-
 }

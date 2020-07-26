@@ -21,7 +21,8 @@ public class ExpUtilsTest {
                 .containsAll(Arrays.asList("cn.myperf4j.util.Logger.abc;cn.myperf4j.util.DateUtils.abc".split(";"))));
 
         Assert.assertTrue(PkgExpUtils.parse("cn.myperf4j.util.[Logger,DateUtils].abc.[e,f]")
-                .containsAll(Arrays.asList("cn.myperf4j.util.Logger.abc.e;cn.myperf4j.util.DateUtils.abc.f;cn.myperf4j.util.Logger.abc.e;cn.myperf4j.util.DateUtils.abc.f".split(";"))));
+                .containsAll(Arrays.asList(("cn.myperf4j.util.Logger.abc.e;cn.myperf4j.util.DateUtils.abc.f;" +
+                        "cn.myperf4j.util.Logger.abc.e;cn.myperf4j.util.DateUtils.abc.f").split(";"))));
     }
 
     @Test

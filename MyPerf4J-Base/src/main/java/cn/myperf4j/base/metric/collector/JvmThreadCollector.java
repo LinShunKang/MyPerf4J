@@ -20,6 +20,10 @@ public final class JvmThreadCollector {
 
     private static final ThreadMXBean THREAD_MX_BEAN = ManagementFactory.getThreadMXBean();
 
+    private JvmThreadCollector() {
+        //empty
+    }
+
     public static JvmThreadMetrics collectThreadMetrics() {
         int news = 0;
         int runnable = 0;

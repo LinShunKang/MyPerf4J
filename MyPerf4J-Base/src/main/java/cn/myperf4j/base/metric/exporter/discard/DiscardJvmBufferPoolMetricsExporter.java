@@ -22,5 +22,4 @@ public class DiscardJvmBufferPoolMetricsExporter implements JvmBufferPoolMetrics
     public void afterProcess(long processId, long startMillis, long stopMillis) {
         //empty
     }
-
 }

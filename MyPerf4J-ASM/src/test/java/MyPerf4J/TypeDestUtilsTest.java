@@ -23,8 +23,12 @@ public class TypeDestUtilsTest {
         Assert.assertEquals(getMethodParamsDesc("(ILjava/lang/String;)[I"), "(int, String)");
         Assert.assertEquals(getMethodParamsDesc("(ILjava/lang/Map;)[I"), "(int, Map)");
         Assert.assertEquals(getMethodParamsDesc("([I)Ljava/lang/Object;"), "(int[])");
-        Assert.assertEquals(getMethodParamsDesc("([ILjava/lang/Object;[Ljava/lang/Object;[Ljava/lang/String;)Ljava/lang/Object;"), "(int[], Object, Object[], String[])");
-        Assert.assertEquals(getMethodParamsDesc("([[ILjava/lang/Object;[[[Ljava/lang/Object;[[[[[Ljava/lang/String;)Ljava/lang/Object;"), "(int[][], Object, Object[][][], String[][][][][])");
+        Assert.assertEquals(getMethodParamsDesc(
+                "([ILjava/lang/Object;[Ljava/lang/Object;[Ljava/lang/String;)Ljava/lang/Object;"),
+                "(int[], Object, Object[], String[])");
+        Assert.assertEquals(getMethodParamsDesc(
+                "([[ILjava/lang/Object;[[[Ljava/lang/Object;[[[[[Ljava/lang/String;)Ljava/lang/Object;"),
+                "(int[][], Object, Object[][][], String[][][][][])");
     }
 
     @Test

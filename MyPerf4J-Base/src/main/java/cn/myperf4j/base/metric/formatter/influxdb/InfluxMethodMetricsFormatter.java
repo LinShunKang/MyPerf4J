@@ -69,5 +69,4 @@ public final class InfluxMethodMetricsFormatter implements MethodMetricsFormatte
                 .append(",TP9999=").append(metrics.getTP9999()).append('i')
                 .append(' ').append(startNanos);
     }
-
 }

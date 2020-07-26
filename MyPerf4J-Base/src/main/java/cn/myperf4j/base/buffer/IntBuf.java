@@ -38,7 +38,8 @@ public class IntBuf {
 
     private void ensureWritable(int minWritableSize) {
         if (minWritableSize > buf.length - writerIndex) {
-            throw new IndexOutOfBoundsException("IntBuf minWritableSize(" + minWritableSize + ") + writerIndex(" + writerIndex + ") exceed buf.length(" + buf.length + ")");
+            throw new IndexOutOfBoundsException("IntBuf minWritableSize(" + minWritableSize +
+                    ") + writerIndex(" + writerIndex + ") exceed buf.length(" + buf.length + ")");
         }
     }
 

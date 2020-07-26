@@ -52,5 +52,4 @@ public class InfluxJvmGcMetricsFormatter implements JvmGcMetricsFormatter {
                 .append(",AvgZGcTime=").append(doubleFormat(metrics.getAvgZGcTime()))
                 .append(' ').append(startNanos);
     }
-
 }

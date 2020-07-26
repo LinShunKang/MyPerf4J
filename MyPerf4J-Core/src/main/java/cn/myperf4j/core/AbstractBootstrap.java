@@ -11,7 +11,15 @@ import cn.myperf4j.base.config.RecorderConfig;
 import cn.myperf4j.base.constant.PropertyKeys;
 import cn.myperf4j.base.constant.PropertyValues;
 import cn.myperf4j.base.constant.PropertyValues.Separator;
-import cn.myperf4j.base.metric.exporter.*;
+import cn.myperf4j.base.metric.exporter.JvmBufferPoolMetricsExporter;
+import cn.myperf4j.base.metric.exporter.JvmClassMetricsExporter;
+import cn.myperf4j.base.metric.exporter.JvmCompilationMetricsExporter;
+import cn.myperf4j.base.metric.exporter.JvmFileDescMetricsExporter;
+import cn.myperf4j.base.metric.exporter.JvmGcMetricsExporter;
+import cn.myperf4j.base.metric.exporter.JvmMemoryMetricsExporter;
+import cn.myperf4j.base.metric.exporter.JvmThreadMetricsExporter;
+import cn.myperf4j.base.metric.exporter.MethodMetricsExporter;
+import cn.myperf4j.base.metric.exporter.MetricsExporterFactory;
 import cn.myperf4j.base.util.ExecutorManager;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.config.MyProperties;
@@ -27,7 +35,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
-import java.util.*;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static cn.myperf4j.base.constant.PropertyKeys.Basic.PROPERTIES_FILE_DIR;
@@ -38,7 +48,7 @@ import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
  */
 public abstract class AbstractBootstrap {
 
-    private volatile boolean initStatus = false;
+    private volatile boolean initStatus;
 
     protected MethodMetricsExporter processor;
 
@@ -356,7 +366,7 @@ public abstract class AbstractBootstrap {
             MetricsConfig metricsConfig = ProfilingConfig.metricsConfig();
             LightWeightScheduler.dispatchScheduleTask(maintainer, metricsConfig.methodMilliTimeSlice());
             LightWeightScheduler.dispatchScheduleTask(jvmMetricsScheduler(), metricsConfig.jvmMilliTimeSlice());
-            LightWeightScheduler.dispatchScheduleTask(buildSysGenProfilingScheduler(), 60 * 1000);//1min
+            LightWeightScheduler.dispatchScheduleTask(buildSysGenProfilingScheduler(), 60 * 1000); //1min
             return true;
         } catch (Exception e) {
             Logger.error("AbstractBootstrap.initScheduler()", e);
@@ -389,7 +399,7 @@ public abstract class AbstractBootstrap {
             @Override
             public void run(long lastTimeSliceStartTime, long millTimeSlice) {
                 RuntimeMXBean bean = ManagementFactory.getRuntimeMXBean();
-                if (bean.getUptime() >= 60 * 60 * 1000) {//60min
+                if (bean.getUptime() >= 60 * 60 * 1000) { //60min
                     MethodMetricsHistogram.buildSysGenProfilingFile();
                 }
             }

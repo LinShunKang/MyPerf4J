@@ -17,24 +17,33 @@ public final class ProfilingAspect {
 
     private static ASMRecorderMaintainer recorderMaintainer;
 
-    private static boolean running = false;
+    private static boolean running;
+
+    private ProfilingAspect() {
+        //empty
+    }
 
     public static void profiling(final long startNanos, final int methodTagId) {
         try {
             if (!running) {
-                Logger.warn("ProfilingAspect.profiling(): methodTagId=" + methodTagId + ", methodTag=" + MethodTagMaintainer.getInstance().getMethodTag(methodTagId) + ", startNanos: " + startNanos + ", IGNORED!!!");
+                Logger.warn("ProfilingAspect.profiling(): methodTagId=" + methodTagId
+                        + ", methodTag=" + MethodTagMaintainer.getInstance().getMethodTag(methodTagId)
+                        + ", startNanos: " + startNanos + ", IGNORED!!!");
                 return;
             }
 
             Recorder recorder = recorderMaintainer.getRecorder(methodTagId);
             if (recorder == null) {
-                Logger.warn("ProfilingAspect.profiling(): methodTagId=" + methodTagId + ", methodTag=" + MethodTagMaintainer.getInstance().getMethodTag(methodTagId) + ", startNanos: " + startNanos + ", recorder is null IGNORED!!!");
+                Logger.warn("ProfilingAspect.profiling(): methodTagId=" + methodTagId
+                        + ", methodTag=" + MethodTagMaintainer.getInstance().getMethodTag(methodTagId)
+                        + ", startNanos: " + startNanos + ", recorder is null IGNORED!!!");
                 return;
             }
 
             recorder.recordTime(startNanos, System.nanoTime());
         } catch (Exception e) {
-            Logger.error("ProfilingAspect.profiling(" + startNanos + ", " + methodTagId + ", " + MethodTagMaintainer.getInstance().getMethodTag(methodTagId) + ")", e);
+            Logger.error("ProfilingAspect.profiling(" + startNanos + ", " + methodTagId + ", "
+                    + MethodTagMaintainer.getInstance().getMethodTag(methodTagId) + ")", e);
         }
     }
 
@@ -42,13 +51,15 @@ public final class ProfilingAspect {
     public static void profiling(final long startNanos, final Method method) {
         try {
             if (!running) {
-                Logger.warn("ProfilingAspect.profiling(): method=" + method + ", startNanos: " + startNanos + ", IGNORED!!!");
+                Logger.warn("ProfilingAspect.profiling(): method=" + method + ", startNanos: " + startNanos
+                        + ", IGNORED!!!");
                 return;
             }
 
             int methodTagId = methodTagMaintainer.addMethodTag(method);
             if (methodTagId < 0) {
-                Logger.warn("ProfilingAspect.profiling(): method=" + method + ", startNanos: " + startNanos + ", methodTagId < 0!!!");
+                Logger.warn("ProfilingAspect.profiling(): method=" + method + ", startNanos: " + startNanos
+                        + ", methodTagId < 0!!!");
                 return;
             }
 
@@ -71,13 +82,13 @@ public final class ProfilingAspect {
     }
 
     public static void setRecorderMaintainer(ASMRecorderMaintainer maintainer) {
-        synchronized (ProfilingAspect.class) {//强制把值刷新到主存
+        synchronized (ProfilingAspect.class) { //强制把值刷新到主存
             recorderMaintainer = maintainer;
         }
     }
 
     public static void setRunning(boolean run) {
-        synchronized (ProfilingAspect.class) {//强制把值刷新到主存
+        synchronized (ProfilingAspect.class) { //强制把值刷新到主存
             running = run;
         }
     }

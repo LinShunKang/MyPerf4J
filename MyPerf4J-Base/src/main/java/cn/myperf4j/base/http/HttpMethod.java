@@ -40,5 +40,4 @@ public enum HttpMethod {
                 return UNKNOWN;
         }
     }
-
 }

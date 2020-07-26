@@ -10,9 +10,13 @@ import java.lang.management.ManagementFactory;
  */
 public final class JvmCompilationCollector {
 
-    private static volatile long lastTime = 0L;
+    private static volatile long lastTime;
 
     private static final CompilationMXBean COMPILATION_MX_BEAN = ManagementFactory.getCompilationMXBean();
+
+    private JvmCompilationCollector() {
+        //empty
+    }
 
     public static JvmCompilationMetrics collectCompilationMetrics() {
         CompilationMXBean mxBean = COMPILATION_MX_BEAN;
@@ -24,5 +28,4 @@ public final class JvmCompilationCollector {
         }
         return new JvmCompilationMetrics(0L, 0L);
     }
-
 }
