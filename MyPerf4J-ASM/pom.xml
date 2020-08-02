@@ -21,6 +21,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-commons</artifactId>
         </dependency>
@@ -29,12 +35,6 @@
             <groupId>MyPerf4J</groupId>
             <artifactId>MyPerf4J-Core</artifactId>
             <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
