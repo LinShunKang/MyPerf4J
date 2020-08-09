@@ -43,35 +43,22 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
                 <configuration>
                     <archive>
-                        <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
-                    </archive>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <appendAssemblyId>false</appendAssemblyId>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <archive>
+                        <addMavenDescriptor>true</addMavenDescriptor>
+                        <index>true</index>
+                        <manifest>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
                         <manifestEntries>
                             <Premain-Class>cn.myperf4j.asm.PreMain</Premain-Class>
+                            <Specification-Version>${project.version}</Specification-Version>
+                            <Implementation-Version>${project.version}</Implementation-Version>
                         </manifestEntries>
                     </archive>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>assembly</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
             <plugin>
