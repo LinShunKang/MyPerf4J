@@ -1,5 +1,6 @@
 package cn.myperf4j.core;
 
+import cn.myperf4j.base.Version;
 import cn.myperf4j.base.config.BasicConfig;
 import cn.myperf4j.base.config.FilterConfig;
 import cn.myperf4j.base.config.InfluxDbConfig;
@@ -420,6 +421,6 @@ public abstract class AbstractBootstrap {
                 "  / /|_/ / / / / /_/ / _ \\/ ___/ /_/ // /___  / / " + LINE_SEPARATOR +
                 " / /  / / /_/ / ____/  __/ /  / __/__  __/ /_/ /  " + LINE_SEPARATOR +
                 "/_/  /_/\\__, /_/    \\___/_/  /_/    /_/  \\____/   " + LINE_SEPARATOR +
-                "       /____/                                     " + LINE_SEPARATOR);
+                "       /____/                                     v" + Version.getVersion() + LINE_SEPARATOR);
     }
 }
