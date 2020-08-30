@@ -122,8 +122,8 @@ public class InfluxDbConfig {
         config.database(getStr(DATABASE));
         config.username(getStr(USERNAME));
         config.password(getStr(PASSWORD));
-        config.connectTimeout(getInt(CONN_TIMEOUT, 1000));
-        config.readTimeout(getInt(READ_TIMEOUT, 3000));
+        config.connectTimeout(getInt(CONN_TIMEOUT, 3000));
+        config.readTimeout(getInt(READ_TIMEOUT, 5000));
         return config;
     }
 }
