@@ -18,6 +18,17 @@ public interface PropertyKeys {
         ConfigKey PROPERTIES_FILE_DIR = ConfigKey.of("properties.dir", "MyPerf4JPropDIR");
     }
 
+    interface HttpServer {
+
+        ConfigKey PORT = ConfigKey.of("http.server.port", "http.server.port");
+
+        ConfigKey MIN_WORKERS = ConfigKey.of("http.server.min_workers", "http.server.min_workers");
+
+        ConfigKey MAX_WORKERS = ConfigKey.of("http.server.max_workers", "http.server.max_workers");
+
+        ConfigKey ACCEPT_COUNT = ConfigKey.of("http.server.accept_count", "http.server.accept_count");
+    }
+
     interface Metrics {
 
         ConfigKey EXPORTER = ConfigKey.of("metrics.exporter", "MetricsProcessorType");

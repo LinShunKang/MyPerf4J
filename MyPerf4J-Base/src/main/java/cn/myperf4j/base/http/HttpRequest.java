@@ -26,6 +26,8 @@ public final class HttpRequest {
         }
     };
 
+    private final String path;
+
     private final String url;
 
     private final HttpMethod method;
@@ -39,6 +41,7 @@ public final class HttpRequest {
     private String fullUrl;
 
     public HttpRequest(Builder builder) {
+        this.path = builder.path;
         this.url = builder.url;
         this.method = builder.method;
         this.headers = builder.headers;
@@ -61,6 +64,10 @@ public final class HttpRequest {
 
     public byte[] getBody() {
         return body;
+    }
+
+    public String getPath() {
+        return path;
     }
 
     public String getUrl() {
@@ -104,6 +111,19 @@ public final class HttpRequest {
         }
     }
 
+    public String getParam(String key) {
+        final List<String> values = params.get(key);
+        if (values == null) {
+            return null;
+        }
+        return values.get(0);
+    }
+
+    public Boolean getBoolParam(String key) {
+        final String value = getParam(key);
+        return Boolean.valueOf(value);
+    }
+
     @Override
     public String toString() {
         return "HttpRequest{" +
@@ -115,6 +135,8 @@ public final class HttpRequest {
     }
 
     public static class Builder {
+
+        private String path;
 
         private String url;
 
@@ -130,6 +152,14 @@ public final class HttpRequest {
             this.method = GET;
             this.headers = HttpHeaders.defaultHeaders();
             this.body = EMPTY_BODY;
+        }
+
+        public Builder path(String path) {
+            if (StrUtils.isBlank(path)) {
+                throw new IllegalArgumentException("path is blank!");
+            }
+            this.path = path;
+            return this;
         }
 
         public Builder url(String url) {

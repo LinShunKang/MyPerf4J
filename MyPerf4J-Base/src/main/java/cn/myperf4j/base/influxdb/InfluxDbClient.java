@@ -5,32 +5,40 @@ import cn.myperf4j.base.http.HttpRequest;
 import cn.myperf4j.base.http.HttpRespStatus;
 import cn.myperf4j.base.http.HttpResponse;
 import cn.myperf4j.base.util.Base64;
+import cn.myperf4j.base.util.Base64.Encoder;
+import cn.myperf4j.base.util.ExecutorManager;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.util.StrUtils;
 
 import java.io.IOException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import static cn.myperf4j.base.http.HttpStatusClass.INFORMATIONAL;
 import static cn.myperf4j.base.http.HttpStatusClass.SUCCESS;
 import static cn.myperf4j.base.util.ThreadUtils.newThreadFactory;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.concurrent.TimeUnit.MINUTES;
 
 /**
  * Created by LinShunkang on 2020/05/18
  */
 public final class InfluxDbClient {
 
+    private static final Encoder BASE64_ENCODER = Base64.getEncoder();
+
     private static final ThreadPoolExecutor ASYNC_EXECUTOR = new ThreadPoolExecutor(
             1,
             2,
             3,
-            TimeUnit.MINUTES,
+            MINUTES,
             new LinkedBlockingQueue<Runnable>(1024),
             newThreadFactory("MyPerf4J-InfluxDbClient_"),
             new ThreadPoolExecutor.DiscardOldestPolicy());
+
+    static {
+        ExecutorManager.addExecutorService(ASYNC_EXECUTOR);
+    }
 
     private final String url;
 
@@ -62,7 +70,7 @@ public final class InfluxDbClient {
     private String buildAuthorization(Builder builder) {
         if (StrUtils.isNotBlank(builder.username) && StrUtils.isNotBlank(builder.password)) {
             String auth = username + ':' + password;
-            return "Basic " + Base64.getEncoder().encodeToString(auth.getBytes(UTF_8));
+            return "Basic " + BASE64_ENCODER.encodeToString(auth.getBytes(UTF_8));
         }
         return "";
     }
@@ -127,9 +135,9 @@ public final class InfluxDbClient {
 
     public static class Builder {
 
-        private static final int DEFAULT_CONNECT_TIMEOUT = 1000;
+        private static final int DEFAULT_CONNECT_TIMEOUT = 3000;
 
-        private static final int DEFAULT_READ_TIMEOUT = 3000;
+        private static final int DEFAULT_READ_TIMEOUT = 5000;
 
         private String host;
 

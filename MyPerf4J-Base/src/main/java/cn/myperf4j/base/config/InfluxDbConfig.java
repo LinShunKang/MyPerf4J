@@ -105,15 +105,13 @@ public class InfluxDbConfig {
         String host = getStr(HOST);
         if (StrUtils.isBlank(host)) {
             host = "127.0.0.1";
-            Logger.info(HOST.key() + " is not configured, " +
-                    "so use '127.0.0.1' as default host.");
+            Logger.info(HOST.key() + " is not configured, so use '127.0.0.1' as default host.");
         }
 
         Integer port = getInt(PORT);
         if (port == null) {
             port = 8086;
-            Logger.info(PORT.key() + " is not configured, " +
-                    "so use '8086' as default port.");
+            Logger.info(PORT.key() + " is not configured, so use '8086' as default port.");
         }
 
         InfluxDbConfig config = new InfluxDbConfig();

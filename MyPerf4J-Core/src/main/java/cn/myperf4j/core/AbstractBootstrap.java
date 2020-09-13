@@ -1,26 +1,20 @@
 package cn.myperf4j.core;
 
 import cn.myperf4j.base.Version;
-import cn.myperf4j.base.config.BasicConfig;
 import cn.myperf4j.base.config.FilterConfig;
-import cn.myperf4j.base.config.InfluxDbConfig;
+import cn.myperf4j.base.config.HttpServerConfig;
 import cn.myperf4j.base.config.LevelMappingFilter;
 import cn.myperf4j.base.config.MetricsConfig;
 import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.config.ProfilingFilter;
 import cn.myperf4j.base.config.RecorderConfig;
-import cn.myperf4j.base.constant.PropertyKeys;
-import cn.myperf4j.base.constant.PropertyValues;
 import cn.myperf4j.base.constant.PropertyValues.Separator;
-import cn.myperf4j.base.metric.exporter.JvmBufferPoolMetricsExporter;
-import cn.myperf4j.base.metric.exporter.JvmClassMetricsExporter;
-import cn.myperf4j.base.metric.exporter.JvmCompilationMetricsExporter;
-import cn.myperf4j.base.metric.exporter.JvmFileDescMetricsExporter;
-import cn.myperf4j.base.metric.exporter.JvmGcMetricsExporter;
-import cn.myperf4j.base.metric.exporter.JvmMemoryMetricsExporter;
-import cn.myperf4j.base.metric.exporter.JvmThreadMetricsExporter;
+import cn.myperf4j.base.http.HttpHeaders;
+import cn.myperf4j.base.http.HttpRequest;
+import cn.myperf4j.base.http.HttpResponse;
+import cn.myperf4j.base.http.server.Dispatcher;
+import cn.myperf4j.base.http.server.SimpleHttpServer;
 import cn.myperf4j.base.metric.exporter.MethodMetricsExporter;
-import cn.myperf4j.base.metric.exporter.MetricsExporterFactory;
 import cn.myperf4j.base.util.ExecutorManager;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.config.MyProperties;
@@ -41,7 +35,28 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import static cn.myperf4j.base.config.BasicConfig.loadBasicConfig;
+import static cn.myperf4j.base.config.FilterConfig.loadFilterConfig;
+import static cn.myperf4j.base.config.HttpServerConfig.loadHttpServerConfig;
+import static cn.myperf4j.base.config.InfluxDbConfig.loadInfluxDbConfig;
+import static cn.myperf4j.base.config.MetricsConfig.loadMetricsConfig;
+import static cn.myperf4j.base.config.RecorderConfig.loadRecorderConfig;
 import static cn.myperf4j.base.constant.PropertyKeys.Basic.PROPERTIES_FILE_DIR;
+import static cn.myperf4j.base.constant.PropertyKeys.PRO_FILE_NAME;
+import static cn.myperf4j.base.constant.PropertyValues.DEFAULT_PRO_FILE;
+import static cn.myperf4j.base.constant.PropertyValues.Separator.ELE;
+import static cn.myperf4j.base.constant.PropertyValues.Separator.ELE_KV;
+import static cn.myperf4j.base.http.HttpRespStatus.NOT_FOUND;
+import static cn.myperf4j.base.http.HttpRespStatus.OK;
+import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getBufferPoolMetricsExporter;
+import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getClassMetricsExporter;
+import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getCompilationExporter;
+import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getFileDescExporter;
+import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getGcMetricsExporter;
+import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getMemoryMetricsExporter;
+import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getMethodMetricsExporter;
+import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getThreadMetricsExporter;
+import static cn.myperf4j.base.util.StrUtils.splitAsList;
 import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
 
 /**
@@ -51,7 +66,7 @@ public abstract class AbstractBootstrap {
 
     private volatile boolean initStatus;
 
-    protected MethodMetricsExporter processor;
+    protected MethodMetricsExporter methodMetricsExporter;
 
     protected AbstractRecorderMaintainer maintainer;
 
@@ -138,6 +153,11 @@ public abstract class AbstractBootstrap {
             return false;
         }
 
+        if (!initHttpServer()) {
+            Logger.error("AbstractBootstrap initHttpServer() FAILURE!!!");
+            return false;
+        }
+
         if (!initOther()) {
             Logger.error("AbstractBootstrap initOther() FAILURE!!!");
             return false;
@@ -146,7 +166,7 @@ public abstract class AbstractBootstrap {
     }
 
     private boolean initProperties() {
-        String configFilePath = System.getProperty(PropertyKeys.PRO_FILE_NAME, PropertyValues.DEFAULT_PRO_FILE);
+        final String configFilePath = System.getProperty(PRO_FILE_NAME, DEFAULT_PRO_FILE);
         try (InputStream in = new FileInputStream(configFilePath)) {
             Properties properties = new Properties();
             properties.load(in);
@@ -161,21 +181,22 @@ public abstract class AbstractBootstrap {
 
     private String getConfigFileDir(String configFilePath) {
         if (System.getProperty("os.name").startsWith("windows")) {
-            int idx = configFilePath.lastIndexOf('\\');
+            final int idx = configFilePath.lastIndexOf('\\');
             return configFilePath.substring(0, idx + 1);
         }
 
-        int idx = configFilePath.lastIndexOf('/');
+        final int idx = configFilePath.lastIndexOf('/');
         return configFilePath.substring(0, idx + 1);
     }
 
     private boolean initProfilingConfig() {
         try {
-            ProfilingConfig.basicConfig(BasicConfig.loadBasicConfig());
-            ProfilingConfig.metricsConfig(MetricsConfig.loadMetricsConfig());
-            ProfilingConfig.influxDBConfig(InfluxDbConfig.loadInfluxDbConfig());
-            ProfilingConfig.filterConfig(FilterConfig.loadFilterConfig());
-            ProfilingConfig.recorderConfig(RecorderConfig.loadRecorderConfig());
+            ProfilingConfig.basicConfig(loadBasicConfig());
+            ProfilingConfig.metricsConfig(loadMetricsConfig());
+            ProfilingConfig.influxDBConfig(loadInfluxDbConfig());
+            ProfilingConfig.filterConfig(loadFilterConfig());
+            ProfilingConfig.recorderConfig(loadRecorderConfig());
+            ProfilingConfig.httpServerConfig(loadHttpServerConfig());
             return true;
         } catch (Exception e) {
             Logger.error("AbstractBootstrap.initProfilingConfig()", e);
@@ -195,15 +216,15 @@ public abstract class AbstractBootstrap {
 
     private boolean initPackageFilter() {
         try {
-            FilterConfig filterConfig = ProfilingConfig.filterConfig();
-            String includePackages = filterConfig.includePackages();
-            List<String> includeList = StrUtils.splitAsList(includePackages, Separator.ELE);
+            final FilterConfig filterConfig = ProfilingConfig.filterConfig();
+            final String includePackages = filterConfig.includePackages();
+            final List<String> includeList = splitAsList(includePackages, ELE);
             for (int i = 0; i < includeList.size(); i++) {
                 ProfilingFilter.addIncludePackage(includeList.get(i));
             }
 
-            String excludePackages = filterConfig.excludePackages();
-            List<String> excludeList = StrUtils.splitAsList(excludePackages, Separator.ELE);
+            final String excludePackages = filterConfig.excludePackages();
+            final List<String> excludeList = splitAsList(excludePackages, ELE);
             for (int i = 0; i < excludeList.size(); i++) {
                 ProfilingFilter.addExcludePackage(excludeList.get(i));
             }
@@ -216,9 +237,9 @@ public abstract class AbstractBootstrap {
 
     private boolean initClassLoaderFilter() {
         try {
-            FilterConfig filterConfig = ProfilingConfig.filterConfig();
-            String excludeClassLoaders = filterConfig.excludeClassLoaders();
-            List<String> excludeList = StrUtils.splitAsList(excludeClassLoaders, Separator.ELE);
+            final FilterConfig filterConfig = ProfilingConfig.filterConfig();
+            final String excludeClassLoaders = filterConfig.excludeClassLoaders();
+            final List<String> excludeList = splitAsList(excludeClassLoaders, ELE);
             for (int i = 0; i < excludeList.size(); i++) {
                 ProfilingFilter.addExcludeClassLoader(excludeList.get(i));
             }
@@ -231,9 +252,9 @@ public abstract class AbstractBootstrap {
 
     private boolean initMethodFilter() {
         try {
-            FilterConfig filterConfig = ProfilingConfig.filterConfig();
-            String excludeMethods = filterConfig.excludeMethods();
-            List<String> excludeList = StrUtils.splitAsList(excludeMethods, Separator.ELE);
+            final FilterConfig filterConfig = ProfilingConfig.filterConfig();
+            final String excludeMethods = filterConfig.excludeMethods();
+            final List<String> excludeList = splitAsList(excludeMethods, ELE);
             for (int i = 0; i < excludeList.size(); i++) {
                 ProfilingFilter.addExcludeMethods(excludeList.get(i));
             }
@@ -247,17 +268,17 @@ public abstract class AbstractBootstrap {
     //MethodLevelMapping=Controller:[*Controller];Api:[*Api,*ApiImpl];
     private boolean initClassLevelMapping() {
         try {
-            MetricsConfig metricsConfig = ProfilingConfig.metricsConfig();
-            String levelMappings = metricsConfig.classLevelMapping();
+            final MetricsConfig metricsConfig = ProfilingConfig.metricsConfig();
+            final String levelMappings = metricsConfig.classLevelMapping();
             if (StrUtils.isBlank(levelMappings)) {
                 Logger.info("ClassLevelMapping is blank, so use default mappings.");
                 return true;
             }
 
-            List<String> mappingPairs = StrUtils.splitAsList(levelMappings, Separator.ELE);
+            final List<String> mappingPairs = splitAsList(levelMappings, ELE);
             for (int i = 0; i < mappingPairs.size(); ++i) {
-                String mappingPair = mappingPairs.get(i);
-                List<String> pairs = StrUtils.splitAsList(mappingPair, Separator.ELE_KV);
+                final String mappingPair = mappingPairs.get(i);
+                final List<String> pairs = splitAsList(mappingPair, ELE_KV);
                 if (pairs.size() != 2) {
                     Logger.warn("MethodLevelMapping is not correct: " + mappingPair);
                     continue;
@@ -275,13 +296,13 @@ public abstract class AbstractBootstrap {
     //Api:[*Api,*ApiImpl]
     private List<String> getMappingExpList(String expStr) {
         expStr = expStr.substring(1, expStr.length() - 1);
-        return StrUtils.splitAsList(expStr, Separator.ARR_ELE);
+        return splitAsList(expStr, Separator.ARR_ELE);
     }
 
     private boolean initMethodMetricsExporter() {
         try {
-            String exporter = ProfilingConfig.metricsConfig().metricsExporter();
-            processor = MetricsExporterFactory.getMethodMetricsExporter(exporter);
+            final String exporter = ProfilingConfig.metricsConfig().metricsExporter();
+            methodMetricsExporter = getMethodMetricsExporter(exporter);
             return true;
         } catch (Exception e) {
             Logger.error("AbstractBootstrap.initPerfStatsProcessor()", e);
@@ -291,7 +312,7 @@ public abstract class AbstractBootstrap {
 
     private boolean initProfilingParams() {
         try {
-            RecorderConfig recorderConf = ProfilingConfig.recorderConfig();
+            final RecorderConfig recorderConf = ProfilingConfig.recorderConfig();
             if (recorderConf.accurateMode()) {
                 addProfilingParams(recorderConf, ProfilingConfig.basicConfig().sysProfilingParamsFile());
             }
@@ -303,7 +324,7 @@ public abstract class AbstractBootstrap {
     }
 
     private void addProfilingParams(RecorderConfig recorderConf, String filePath) {
-        File sysFile = new File(filePath);
+        final File sysFile = new File(filePath);
         if (sysFile.exists() && sysFile.isFile()) {
             Logger.info("Loading " + sysFile.getName() + " to init profiling params.");
             addProfilingParams0(recorderConf, filePath);
@@ -322,7 +343,7 @@ public abstract class AbstractBootstrap {
                     continue;
                 }
 
-                List<String> strList = StrUtils.splitAsList(value, ':');
+                List<String> strList = splitAsList(value, ':');
                 if (strList.size() != 2) {
                     continue;
                 }
@@ -364,9 +385,9 @@ public abstract class AbstractBootstrap {
 
     private boolean initScheduler() {
         try {
-            MetricsConfig metricsConfig = ProfilingConfig.metricsConfig();
-            LightWeightScheduler.dispatchScheduleTask(maintainer, metricsConfig.methodMilliTimeSlice());
-            LightWeightScheduler.dispatchScheduleTask(jvmMetricsScheduler(), metricsConfig.jvmMilliTimeSlice());
+            final MetricsConfig config = ProfilingConfig.metricsConfig();
+            LightWeightScheduler.dispatchScheduleTask(maintainer, config.methodMilliTimeSlice());
+            LightWeightScheduler.dispatchScheduleTask(buildJvmMetricsScheduler(), config.jvmMilliTimeSlice());
             LightWeightScheduler.dispatchScheduleTask(buildSysGenProfilingScheduler(), 60 * 1000); //1min
             return true;
         } catch (Exception e) {
@@ -375,23 +396,16 @@ public abstract class AbstractBootstrap {
         return false;
     }
 
-    private Scheduler jvmMetricsScheduler() {
-        String exporter = ProfilingConfig.metricsConfig().metricsExporter();
-        JvmClassMetricsExporter classExporter = MetricsExporterFactory.getClassMetricsExporter(exporter);
-        JvmGcMetricsExporter gcExporter = MetricsExporterFactory.getGcMetricsExporter(exporter);
-        JvmMemoryMetricsExporter memoryExporter = MetricsExporterFactory.getMemoryMetricsExporter(exporter);
-        JvmBufferPoolMetricsExporter bufferPoolExporter = MetricsExporterFactory.getBufferPoolMetricsExporter(exporter);
-        JvmThreadMetricsExporter threadExporter = MetricsExporterFactory.getThreadMetricsExporter(exporter);
-        JvmCompilationMetricsExporter compilationExporter = MetricsExporterFactory.getCompilationExporter(exporter);
-        JvmFileDescMetricsExporter fileDescExporter = MetricsExporterFactory.getFileDescExporter(exporter);
+    private Scheduler buildJvmMetricsScheduler() {
+        final String exporter = ProfilingConfig.metricsConfig().metricsExporter();
         return new JvmMetricsScheduler(
-                classExporter,
-                gcExporter,
-                memoryExporter,
-                bufferPoolExporter,
-                threadExporter,
-                compilationExporter,
-                fileDescExporter
+                getClassMetricsExporter(exporter),
+                getGcMetricsExporter(exporter),
+                getMemoryMetricsExporter(exporter),
+                getBufferPoolMetricsExporter(exporter),
+                getThreadMetricsExporter(exporter),
+                getCompilationExporter(exporter),
+                getFileDescExporter(exporter)
         );
     }
 
@@ -408,6 +422,40 @@ public abstract class AbstractBootstrap {
             @Override
             public String name() {
                 return "ProfilingFileGenerator";
+            }
+        };
+    }
+
+    private boolean initHttpServer() {
+        try {
+            final HttpServerConfig config = ProfilingConfig.httpServerConfig();
+            final SimpleHttpServer server = new SimpleHttpServer.Builder()
+                    .port(config.getPort())
+                    .minWorkers(config.getMinWorkers())
+                    .maxWorkers(config.getMaxWorkers())
+                    .acceptCnt(config.getAcceptCount())
+                    .dispatcher(getHttpServerDispatch())
+                    .build();
+            server.startAsync();
+            return true;
+        } catch (Exception e) {
+            Logger.error("AbstractBootstrap.initHttpServer()", e);
+        }
+        return false;
+    }
+
+    private Dispatcher getHttpServerDispatch() {
+        return new Dispatcher() {
+            @Override
+            public HttpResponse dispatch(HttpRequest request) {
+                switch (request.getPath()) {
+                    case "/switch/debugMode":
+                        Logger.setDebugEnable(request.getBoolParam("enable"));
+                        break;
+                    default:
+                        return new HttpResponse(NOT_FOUND, new HttpHeaders(0), "");
+                }
+                return new HttpResponse(OK, new HttpHeaders(0), "Success");
             }
         };
     }
