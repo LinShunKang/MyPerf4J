@@ -76,7 +76,7 @@ public final class InfluxDbClient {
     }
 
     public boolean createDatabase() {
-        HttpRequest req = new HttpRequest.Builder()
+        final HttpRequest req = new HttpRequest.Builder()
                 .url(url + "/query")
                 .header("Authorization", authorization)
                 .post("q=CREATE DATABASE " + database)
@@ -95,6 +95,10 @@ public final class InfluxDbClient {
     }
 
     public boolean writeMetricsAsync(final String content) {
+        if (StrUtils.isBlank(content)) {
+            return false;
+        }
+
         try {
             ASYNC_EXECUTOR.execute(new ReqTask(content));
             return true;
