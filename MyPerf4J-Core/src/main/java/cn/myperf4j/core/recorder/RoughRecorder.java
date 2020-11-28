@@ -1,9 +1,9 @@
 package cn.myperf4j.core.recorder;
 
 import cn.myperf4j.base.buffer.IntBuf;
+import cn.myperf4j.base.util.MyAtomicIntArray;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicIntegerArray;
 
 /**
  * Created by LinShunkang on 2018/3/25
@@ -20,25 +20,25 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
  */
 public final class RoughRecorder extends Recorder {
 
-    private final AtomicIntegerArray timingArr;
+    private final MyAtomicIntArray timingArr;
 
     private final AtomicInteger diffCount;
 
     public RoughRecorder(int methodTag, int mostTimeThreshold) {
         super(methodTag);
-        this.timingArr = new AtomicIntegerArray(mostTimeThreshold + 2);
+        this.timingArr = new MyAtomicIntArray(mostTimeThreshold + 2);
         this.diffCount = new AtomicInteger(0);
     }
 
     @Override
-    public void recordTime(long startNanoTime, long endNanoTime) {
+    public void recordTime(final long startNanoTime, final long endNanoTime) {
         if (startNanoTime > endNanoTime) {
             return;
         }
 
         int oldValue;
-        int elapsedTime = (int) ((endNanoTime - startNanoTime) / 1000000);
-        AtomicIntegerArray timingArr = this.timingArr;
+        final int elapsedTime = (int) ((endNanoTime - startNanoTime) / 1000000);
+        final MyAtomicIntArray timingArr = this.timingArr;
         if (elapsedTime < timingArr.length() - 1) {
             oldValue = timingArr.getAndIncrement(elapsedTime);
         } else {
@@ -51,11 +51,11 @@ public final class RoughRecorder extends Recorder {
     }
 
     @Override
-    public long fillSortedRecords(IntBuf intBuf) {
+    public long fillSortedRecords(final IntBuf intBuf) {
         long totalCount = 0L;
-        AtomicIntegerArray timingArr = this.timingArr;
+        final MyAtomicIntArray timingArr = this.timingArr;
         for (int i = 0; i < timingArr.length(); ++i) {
-            int count = timingArr.get(i);
+            final int count = timingArr.get(i);
             if (count > 0) {
                 intBuf.write(i, count);
                 totalCount += count;
@@ -75,11 +75,7 @@ public final class RoughRecorder extends Recorder {
             return;
         }
 
-        AtomicIntegerArray timingArr = this.timingArr;
-        for (int i = 0; i < timingArr.length(); ++i) {
-            timingArr.set(i, 0);
-        }
-
+        timingArr.reset();
         diffCount.set(0);
     }
 

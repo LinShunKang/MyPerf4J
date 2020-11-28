@@ -62,9 +62,13 @@
     <build>
         <plugins>
             <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.1.0</version>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
+                <version>3.8.1</version>
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
@@ -75,49 +79,35 @@
                     </compilerArguments>
                 </configuration>
             </plugin>
-            <!--<plugin>-->
-            <!--<groupId>org.apache.maven.plugins</groupId>-->
-            <!--<artifactId>maven-resources-plugin</artifactId>-->
-            <!--<version>2.5</version>-->
-            <!--<executions>-->
-            <!--<execution>-->
-            <!--<id>copy-resources</id>-->
-            <!--<phase>validate</phase>-->
-            <!--<goals>-->
-            <!--<goal>copy-resources</goal>-->
-            <!--</goals>-->
-            <!--<configuration>-->
-            <!--<outputDirectory>${project.build.directory}/classes/</outputDirectory>-->
-            <!--<resources>-->
-            <!--<resource>-->
-            <!--<directory>src/main/java</directory>-->
-            <!--<filtering>true</filtering>-->
-            <!--<includes>-->
-            <!--<include>**/*.*</include>-->
-            <!--</includes>-->
-            <!--<excludes>-->
-            <!--<exclude>.svn</exclude>-->
-            <!--</excludes>-->
-            <!--</resource>-->
-            <!--</resources>-->
-            <!--</configuration>-->
-            <!--</execution>-->
-            <!--</executions>-->
-            <!--</plugin>-->
-            <!--<plugin>-->
-            <!--<groupId>org.apache.maven.plugins</groupId>-->
-            <!--<artifactId>maven-jar-plugin</artifactId>-->
-            <!--<version>2.3</version>-->
-            <!--<executions>-->
-            <!--<execution>-->
-            <!--<id>jar</id>-->
-            <!--<phase>package</phase>-->
-            <!--<goals>-->
-            <!--<goal>jar</goal>-->
-            <!--</goals>-->
-            <!--</execution>-->
-            <!--</executions>-->
-            <!--</plugin>-->
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-resources-plugin</artifactId>-->
+<!--                <version>3.1.0</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>copy-resources</id>-->
+<!--                        <phase>validate</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>copy-resources</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <outputDirectory>${project.build.directory}/classes/</outputDirectory>-->
+<!--                            <resources>-->
+<!--                                <resource>-->
+<!--                                    <directory>src/main/java</directory>-->
+<!--                                    <filtering>true</filtering>-->
+<!--                                    <includes>-->
+<!--                                        <include>**/*.*</include>-->
+<!--                                    </includes>-->
+<!--                                    <excludes>-->
+<!--                                        <exclude>.svn</exclude>-->
+<!--                                    </excludes>-->
+<!--                                </resource>-->
+<!--                            </resources>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.eluder.coveralls</groupId>
                 <artifactId>coveralls-maven-plugin</artifactId>
