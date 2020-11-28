@@ -7,6 +7,8 @@ public final class ProfilingConfig {
 
     private static BasicConfig BASIC_CONFIG;
 
+    private static HttpServerConfig HTTP_SERVER_CONFIG;
+
     private static MetricsConfig METRICS_CONFIG;
 
     private static FilterConfig FILTER_CONFIG;
@@ -25,6 +27,14 @@ public final class ProfilingConfig {
 
     public static void basicConfig(BasicConfig basicConfig) {
         BASIC_CONFIG = basicConfig;
+    }
+
+    public static HttpServerConfig httpServerConfig() {
+        return HTTP_SERVER_CONFIG;
+    }
+
+    public static void httpServerConfig(HttpServerConfig httpServerConfig) {
+        HTTP_SERVER_CONFIG = httpServerConfig;
     }
 
     public static InfluxDbConfig influxDBConfig() {

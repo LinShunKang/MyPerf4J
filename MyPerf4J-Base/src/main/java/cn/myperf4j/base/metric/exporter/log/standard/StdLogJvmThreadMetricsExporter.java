@@ -9,6 +9,7 @@ import cn.myperf4j.base.util.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Created by LinShunkang on 2018/8/25
@@ -17,7 +18,7 @@ public class StdLogJvmThreadMetricsExporter extends AbstractLogJvmThreadMetricsE
 
     private static final JvmThreadMetricsFormatter METRICS_FORMATTER = new StdJvmThreadMetricsFormatter();
 
-    private final ConcurrentHashMap<Long, List<JvmThreadMetrics>> metricsMap = new ConcurrentHashMap<>(8);
+    private final ConcurrentMap<Long, List<JvmThreadMetrics>> metricsMap = new ConcurrentHashMap<>(8);
 
     @Override
     public void beforeProcess(long processId, long startMillis, long stopMillis) {

@@ -15,6 +15,15 @@ public final class HttpResponse {
 
     private final byte[] body;
 
+    private String bodyString;
+
+    public HttpResponse(HttpRespStatus status, HttpHeaders headers, String bodyString) {
+        this.status = status;
+        this.headers = headers;
+        this.body = bodyString.getBytes(UTF_8);
+        this.bodyString = bodyString;
+    }
+
     public HttpResponse(HttpRespStatus status, HttpHeaders headers, byte[] body) {
         this.status = status;
         this.headers = headers;
@@ -34,7 +43,10 @@ public final class HttpResponse {
     }
 
     public String getBodyString() {
-        return new String(body, 0, body.length, UTF_8);
+        if (bodyString == null) {
+            bodyString = new String(body, 0, body.length, UTF_8);
+        }
+        return bodyString;
     }
 
     @Override

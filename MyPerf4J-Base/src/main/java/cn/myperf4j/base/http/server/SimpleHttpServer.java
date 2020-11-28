@@ -2,12 +2,11 @@ package cn.myperf4j.base.http.server;
 
 import cn.myperf4j.base.http.HttpMethod;
 import cn.myperf4j.base.http.HttpRequest;
-import cn.myperf4j.base.http.HttpRequest.Builder;
 import cn.myperf4j.base.http.HttpResponse;
+import cn.myperf4j.base.util.ExecutorManager;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.util.StrUtils;
 import com.sun.net.httpserver.Headers;
-import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -19,13 +18,19 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor.DiscardPolicy;
 
 import static cn.myperf4j.base.http.HttpMethod.UNKNOWN;
 import static cn.myperf4j.base.http.HttpRespStatus.METHOD_NOT_ALLOWED;
 import static cn.myperf4j.base.util.InputStreamUtils.toBytes;
+import static cn.myperf4j.base.util.ThreadUtils.newThreadFactory;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.concurrent.TimeUnit.MINUTES;
 
 /**
  * Created by LinShunkang on 2020/07/11
@@ -36,13 +41,26 @@ public class SimpleHttpServer {
 
     private final HttpServer server;
 
-    public SimpleHttpServer(int port, Dispatcher dispatcher) {
+    public SimpleHttpServer(Builder builder) {
         try {
-            this.server = HttpServer.create(new InetSocketAddress(port), 0);
-            this.server.createContext("/", new DispatchHandler(dispatcher));
+            this.server = HttpServer.create(new InetSocketAddress(builder.port), 0);
+            this.server.createContext("/", new DispatchHandler(builder.dispatcher));
+            this.server.setExecutor(generateExecutor(builder));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private Executor generateExecutor(Builder builder) {
+        final ThreadPoolExecutor executor = new ThreadPoolExecutor(builder.minWorkers,
+                builder.maxWorkers,
+                1,
+                MINUTES,
+                new ArrayBlockingQueue<Runnable>(builder.acceptCnt),
+                newThreadFactory("MyPerf4J-HttpServer-"),
+                new DiscardPolicy());
+        ExecutorManager.addExecutorService(executor);
+        return executor;
     }
 
     public void startAsync() {
@@ -112,7 +130,8 @@ public class SimpleHttpServer {
 
         private HttpRequest parseHttpRequest(HttpExchange exchange, HttpMethod httpMethod) throws IOException {
             final URI uri = exchange.getRequestURI();
-            final Builder reqBuilder = new Builder()
+            final HttpRequest.Builder reqBuilder = new HttpRequest.Builder()
+                    .path(uri.getPath())
                     .url(buildUrl(exchange))
                     .headers(exchange.getRequestHeaders())
                     .params(parseParams(uri.getRawQuery()))
@@ -140,6 +159,60 @@ public class SimpleHttpServer {
                 return Collections.emptyMap();
             }
             return new QueryStringDecoder(rawQuery, UTF_8, false).parameters();
+        }
+    }
+
+    public static class Builder {
+
+        private static final int DEFAULT_MIN_WORKERS = 1;
+
+        private static final int DEFAULT_MAX_WORKERS = 2;
+
+        private static final int DEFAULT_ACCEPT_CNT = 1024;
+
+        private int port;
+
+        private int minWorkers;
+
+        private int maxWorkers;
+
+        private int acceptCnt;
+
+        private Dispatcher dispatcher;
+
+        public Builder() {
+            this.minWorkers = DEFAULT_MIN_WORKERS;
+            this.maxWorkers = DEFAULT_MAX_WORKERS;
+            this.acceptCnt = DEFAULT_ACCEPT_CNT;
+        }
+
+        public Builder port(int port) {
+            this.port = port;
+            return this;
+        }
+
+        public Builder minWorkers(int minWorkers) {
+            this.minWorkers = minWorkers;
+            return this;
+        }
+
+        public Builder maxWorkers(int maxWorkers) {
+            this.maxWorkers = maxWorkers;
+            return this;
+        }
+
+        public Builder acceptCnt(int acceptCnt) {
+            this.acceptCnt = acceptCnt;
+            return this;
+        }
+
+        public Builder dispatcher(Dispatcher dispatcher) {
+            this.dispatcher = dispatcher;
+            return this;
+        }
+
+        public SimpleHttpServer build() {
+            return new SimpleHttpServer(this);
         }
     }
 }

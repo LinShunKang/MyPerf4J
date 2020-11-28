@@ -12,6 +12,7 @@ import cn.myperf4j.base.util.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Created by LinShunkang on 2020/05/17
@@ -24,7 +25,7 @@ public class InfluxHttpMethodMetricsExporter implements MethodMetricsExporter {
 
     private static final InfluxDbClient CLIENT = InfluxDbClientFactory.getClient();
 
-    private final ConcurrentHashMap<Long, List<MethodMetrics>> metricsMap = new ConcurrentHashMap<>(8);
+    private final ConcurrentMap<Long, List<MethodMetrics>> metricsMap = new ConcurrentHashMap<>(8);
 
     @Override
     public void beforeProcess(long processId, long startMillis, long stopMillis) {
@@ -45,9 +46,9 @@ public class InfluxHttpMethodMetricsExporter implements MethodMetricsExporter {
     @Override
     public void afterProcess(long processId, long startMillis, long stopMillis) {
         List<MethodMetrics> metricsList = metricsMap.remove(processId);
-        if (ListUtils.isEmpty(metricsList)) {
+        if (metricsList == null) {
             Logger.warn("InfluxHttpMethodMetricsExporter.afterProcess(" + processId + ", " + startMillis + ", "
-                    + stopMillis + "): metricsList is empty!!!");
+                    + stopMillis + "): metricsList is null!!!");
             return;
         }
 

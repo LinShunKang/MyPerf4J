@@ -27,7 +27,7 @@ public final class ASMBootstrap extends AbstractBootstrap {
     public AbstractRecorderMaintainer doInitRecorderMaintainer() {
         RecorderConfig recorderConf = ProfilingConfig.recorderConfig();
         ASMRecorderMaintainer maintainer = ASMRecorderMaintainer.getInstance();
-        if (maintainer.initial(processor, recorderConf.accurateMode(), recorderConf.backupCount())) {
+        if (maintainer.initial(methodMetricsExporter, recorderConf.accurateMode(), recorderConf.backupCount())) {
             return maintainer;
         }
         return null;
