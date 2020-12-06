@@ -56,6 +56,7 @@ import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getGcMetri
 import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getMemoryMetricsExporter;
 import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getMethodMetricsExporter;
 import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getThreadMetricsExporter;
+import static cn.myperf4j.base.util.NetUtils.isPortAvailable;
 import static cn.myperf4j.base.util.StrUtils.splitAsList;
 import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
 
@@ -430,7 +431,7 @@ public abstract class AbstractBootstrap {
         try {
             final HttpServerConfig config = ProfilingConfig.httpServerConfig();
             final SimpleHttpServer server = new SimpleHttpServer.Builder()
-                    .port(config.getPort())
+                    .port(choseHttpServerPort(config))
                     .minWorkers(config.getMinWorkers())
                     .maxWorkers(config.getMaxWorkers())
                     .acceptCnt(config.getAcceptCount())
@@ -442,6 +443,22 @@ public abstract class AbstractBootstrap {
             Logger.error("AbstractBootstrap.initHttpServer()", e);
         }
         return false;
+    }
+
+    private int choseHttpServerPort(final HttpServerConfig config) {
+        final int preferencePort = config.getPreferencePort();
+        if (isPortAvailable(preferencePort)) {
+            Logger.info("Use " + preferencePort + " as HttpServer port.");
+            return preferencePort;
+        }
+
+        for (int port = config.getMinPort(); port < config.getMaxPort(); port++) {
+            if (isPortAvailable(port)) {
+                Logger.info("Use " + port + " as HttpServer port.");
+                return port;
+            }
+        }
+        throw new IllegalStateException("Has no available port for HttpServer!");
     }
 
     private Dispatcher getHttpServerDispatch() {

@@ -69,7 +69,9 @@ public class ProfilingTransformer implements ClassFileTransformer {
         String loaderName = getClassLoaderName(classLoader);
         return loaderName.equals("org.apache.catalina.loader.WebappClassLoader")
                 || loaderName.equals("org.apache.catalina.loader.ParallelWebappClassLoader")
-                || loaderName.equals("org.springframework.boot.loader.LaunchedURLClassLoader");
+                || loaderName.equals("org.springframework.boot.loader.LaunchedURLClassLoader")
+                || loaderName.startsWith("org.apache.flink.runtime.execution.librarycache.FlinkUserCodeClassLoaders")
+                ;
     }
 
     private String getClassLoaderName(ClassLoader classLoader) {

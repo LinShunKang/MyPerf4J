@@ -1,19 +1,28 @@
 package cn.myperf4j.base.config;
 
 import cn.myperf4j.base.util.Logger;
+import cn.myperf4j.base.util.StrUtils;
+
+import java.util.List;
 
 import static cn.myperf4j.base.config.MyProperties.getInt;
+import static cn.myperf4j.base.config.MyProperties.getStr;
 import static cn.myperf4j.base.constant.PropertyKeys.HttpServer.ACCEPT_COUNT;
 import static cn.myperf4j.base.constant.PropertyKeys.HttpServer.MAX_WORKERS;
 import static cn.myperf4j.base.constant.PropertyKeys.HttpServer.MIN_WORKERS;
 import static cn.myperf4j.base.constant.PropertyKeys.HttpServer.PORT;
+import static cn.myperf4j.base.util.NumUtils.parseInt;
 
 /**
  * Created by LinShunkang on 2020/09/13
  */
 public class HttpServerConfig {
 
-    private int port;
+    private int preferencePort;
+
+    private int minPort;
+
+    private int maxPort;
 
     private int minWorkers;
 
@@ -21,12 +30,28 @@ public class HttpServerConfig {
 
     private int acceptCount;
 
-    public int getPort() {
-        return port;
+    public int getPreferencePort() {
+        return preferencePort;
     }
 
-    public void setPort(int port) {
-        this.port = port;
+    public void setPreferencePort(int preferencePort) {
+        this.preferencePort = preferencePort;
+    }
+
+    public int getMinPort() {
+        return minPort;
+    }
+
+    public void setMinPort(int minPort) {
+        this.minPort = minPort;
+    }
+
+    public int getMaxPort() {
+        return maxPort;
+    }
+
+    public void setMaxPort(int maxPort) {
+        this.maxPort = maxPort;
     }
 
     public int getMinWorkers() {
@@ -56,7 +81,9 @@ public class HttpServerConfig {
     @Override
     public String toString() {
         return "HttpServerConfig{" +
-                "port=" + port +
+                "preferencePort=" + preferencePort +
+                ", minPort=" + minPort +
+                ", maxPort=" + maxPort +
                 ", minWorkers=" + minWorkers +
                 ", maxWorkers=" + maxWorkers +
                 ", acceptCount=" + acceptCount +
@@ -64,17 +91,31 @@ public class HttpServerConfig {
     }
 
     public static HttpServerConfig loadHttpServerConfig() {
-        Integer port = getInt(PORT);
-        if (port == null) {
-            port = 2048;
-            Logger.info(PORT.key() + " is not configured, so use '2048' as default.");
+        String portStr = getStr(PORT);
+        if (portStr == null) {
+            portStr = "2048,2000,2040";
+            Logger.info(PORT.key() + " is not configured, so use '" + portStr + "' as default.");
         }
 
-        HttpServerConfig config = new HttpServerConfig();
-        config.setPort(port);
+        final HttpServerConfig config = new HttpServerConfig();
+        completePorts(config, portStr);
         config.setMinWorkers(getInt(MIN_WORKERS, 1));
         config.setMaxWorkers(getInt(MAX_WORKERS, 2));
         config.setAcceptCount(getInt(ACCEPT_COUNT, 1024));
         return config;
+    }
+
+    private static void completePorts(final HttpServerConfig config, final String portStr) {
+        final List<String> ports = StrUtils.splitAsList(portStr, ',');
+        if (ports.size() != 3) {
+            config.setPreferencePort(parseInt(ports.get(0), 2048));
+            config.setMinPort(2000);
+            config.setMaxPort(2040);
+            return;
+        }
+
+        config.setPreferencePort(parseInt(ports.get(0), 2048));
+        config.setMinPort(parseInt(ports.get(1), 2000));
+        config.setMaxPort(parseInt(ports.get(1), 2040));
     }
 }
