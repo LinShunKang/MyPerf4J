@@ -116,6 +116,6 @@ public class HttpServerConfig {
 
         config.setPreferencePort(parseInt(ports.get(0), 2048));
         config.setMinPort(parseInt(ports.get(1), 2000));
-        config.setMaxPort(parseInt(ports.get(1), 2040));
+        config.setMaxPort(parseInt(ports.get(2), 2040));
     }
 }
