@@ -65,6 +65,7 @@ public final class InfluxDbClient {
                 .connectTimeout(builder.connectTimeout)
                 .readTimeout(builder.readTimeout)
                 .build();
+        this.createDatabase();
     }
 
     private String buildAuthorization(Builder builder) {

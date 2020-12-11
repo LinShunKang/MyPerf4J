@@ -14,7 +14,7 @@ public class InfluxDbClientTest {
             .port(8086)
             .connectTimeout(100)
             .readTimeout(1000)
-            .database("test_db")
+            .database("test_db_0")
             .username("admin")
             .password("admin123")
             .build();
