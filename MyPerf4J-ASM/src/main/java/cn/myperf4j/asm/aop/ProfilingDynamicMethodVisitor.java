@@ -18,7 +18,7 @@ public class ProfilingDynamicMethodVisitor extends AdviceAdapter {
                                          String name,
                                          String desc,
                                          MethodVisitor mv) {
-        super(ASM5, mv, access, name, desc);
+        super(ASM8, mv, access, name, desc);
     }
 
     @Override
