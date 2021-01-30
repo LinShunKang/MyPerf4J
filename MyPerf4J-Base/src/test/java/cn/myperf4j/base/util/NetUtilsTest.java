@@ -1,5 +1,6 @@
 package cn.myperf4j.base.util;
 
+import cn.myperf4j.base.util.net.NetUtils;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.Assert;
 import org.junit.Test;

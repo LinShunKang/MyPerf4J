@@ -4,7 +4,7 @@ import cn.myperf4j.asm.ASMBootstrap;
 import cn.myperf4j.asm.aop.ProfilingTransformer;
 import cn.myperf4j.base.constant.PropertyKeys;
 import cn.myperf4j.base.constant.PropertyValues.Metrics;
-import cn.myperf4j.base.util.ThreadUtils;
+import cn.myperf4j.base.util.concurrent.ThreadUtils;
 import cn.myperf4j.base.file.AutoRollingFileWriter;
 import cn.myperf4j.base.file.MinutelyRollingFileWriter;
 import org.junit.Test;

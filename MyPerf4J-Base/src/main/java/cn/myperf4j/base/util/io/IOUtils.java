@@ -1,4 +1,6 @@
-package cn.myperf4j.base.util;
+package cn.myperf4j.base.util.io;
+
+import cn.myperf4j.base.util.Logger;
 
 import java.io.Closeable;
 import java.io.IOException;

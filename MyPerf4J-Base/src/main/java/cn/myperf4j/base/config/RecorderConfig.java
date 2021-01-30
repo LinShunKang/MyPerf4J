@@ -1,7 +1,7 @@
 package cn.myperf4j.base.config;
 
 import cn.myperf4j.base.constant.PropertyValues;
-import cn.myperf4j.base.util.MapUtils;
+import cn.myperf4j.base.util.collections.MapUtils;
 
 import java.util.Map;
 

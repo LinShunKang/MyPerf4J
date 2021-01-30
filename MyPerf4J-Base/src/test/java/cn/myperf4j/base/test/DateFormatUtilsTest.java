@@ -1,6 +1,6 @@
 package cn.myperf4j.base.test;
 
-import cn.myperf4j.base.util.DateFormatUtils;
+import cn.myperf4j.base.util.text.DateFormatUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -18,5 +18,4 @@ public class DateFormatUtilsTest {
         long mills = System.currentTimeMillis();
         Assert.assertEquals(DateFormatUtils.format(mills), format.format(new Date(mills)));
     }
-
 }

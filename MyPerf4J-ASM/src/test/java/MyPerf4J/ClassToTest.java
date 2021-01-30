@@ -1,6 +1,6 @@
 package MyPerf4J;
 
-import cn.myperf4j.base.util.ThreadUtils;
+import cn.myperf4j.base.util.concurrent.ThreadUtils;
 
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;

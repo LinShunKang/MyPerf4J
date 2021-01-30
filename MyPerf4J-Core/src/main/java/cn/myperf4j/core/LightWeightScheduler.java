@@ -1,9 +1,9 @@
 package cn.myperf4j.core;
 
 import cn.myperf4j.base.constant.PropertyValues.Metrics;
-import cn.myperf4j.base.util.ExecutorManager;
+import cn.myperf4j.base.util.concurrent.ExecutorManager;
 import cn.myperf4j.base.util.Logger;
-import cn.myperf4j.base.util.ThreadUtils;
+import cn.myperf4j.base.util.concurrent.ThreadUtils;
 import cn.myperf4j.base.Scheduler;
 
 import java.util.Collections;

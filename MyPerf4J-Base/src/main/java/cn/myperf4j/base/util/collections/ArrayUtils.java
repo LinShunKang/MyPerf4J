@@ -1,4 +1,4 @@
-package cn.myperf4j.base.util;
+package cn.myperf4j.base.util.collections;
 
 /**
  * Created by LinShunkang on 2020/05/16

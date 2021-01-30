@@ -2,8 +2,8 @@ package cn.myperf4j.base.metric.formatter.standard;
 
 import cn.myperf4j.base.metric.MethodMetrics;
 import cn.myperf4j.base.metric.formatter.MethodMetricsFormatter;
-import cn.myperf4j.base.util.DateFormatUtils;
-import cn.myperf4j.base.util.NumFormatUtils;
+import cn.myperf4j.base.util.text.DateFormatUtils;
+import cn.myperf4j.base.util.text.NumFormatUtils;
 
 import java.util.Collections;
 import java.util.Comparator;

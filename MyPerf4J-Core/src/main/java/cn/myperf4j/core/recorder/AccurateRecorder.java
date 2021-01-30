@@ -1,8 +1,8 @@
 package cn.myperf4j.core.recorder;
 
 import cn.myperf4j.base.buffer.IntBuf;
-import cn.myperf4j.base.util.MapUtils;
-import cn.myperf4j.base.util.MyAtomicIntArray;
+import cn.myperf4j.base.util.collections.MapUtils;
+import cn.myperf4j.base.util.concurrent.MyAtomicIntArray;
 
 import java.util.Arrays;
 import java.util.Iterator;

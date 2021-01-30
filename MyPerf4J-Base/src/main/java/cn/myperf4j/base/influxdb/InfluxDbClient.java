@@ -6,7 +6,7 @@ import cn.myperf4j.base.http.HttpRespStatus;
 import cn.myperf4j.base.http.HttpResponse;
 import cn.myperf4j.base.util.Base64;
 import cn.myperf4j.base.util.Base64.Encoder;
-import cn.myperf4j.base.util.ExecutorManager;
+import cn.myperf4j.base.util.concurrent.ExecutorManager;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.util.StrUtils;
 
@@ -16,7 +16,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import static cn.myperf4j.base.http.HttpStatusClass.INFORMATIONAL;
 import static cn.myperf4j.base.http.HttpStatusClass.SUCCESS;
-import static cn.myperf4j.base.util.ThreadUtils.newThreadFactory;
+import static cn.myperf4j.base.util.concurrent.ThreadUtils.newThreadFactory;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.concurrent.TimeUnit.MINUTES;
 

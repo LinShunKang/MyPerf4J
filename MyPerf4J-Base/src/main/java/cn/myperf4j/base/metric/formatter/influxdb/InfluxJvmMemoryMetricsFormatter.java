@@ -6,9 +6,9 @@ import cn.myperf4j.base.metric.formatter.JvmMemoryMetricsFormatter;
 
 import java.util.List;
 
-import static cn.myperf4j.base.util.IpUtils.getLocalhostName;
+import static cn.myperf4j.base.util.net.IpUtils.getLocalhostName;
 import static cn.myperf4j.base.util.LineProtocolUtils.processTagOrField;
-import static cn.myperf4j.base.util.NumFormatUtils.doubleFormat;
+import static cn.myperf4j.base.util.text.NumFormatUtils.doubleFormat;
 
 /**
  * Created by LinShunkang on 2020/5/17

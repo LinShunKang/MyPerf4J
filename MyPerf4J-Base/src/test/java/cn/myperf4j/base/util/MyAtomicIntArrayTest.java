@@ -1,5 +1,6 @@
 package cn.myperf4j.base.util;
 
+import cn.myperf4j.base.util.concurrent.MyAtomicIntArray;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

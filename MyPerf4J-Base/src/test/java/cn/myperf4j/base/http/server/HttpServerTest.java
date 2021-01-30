@@ -1,6 +1,6 @@
 package cn.myperf4j.base.http.server;
 
-import cn.myperf4j.base.util.InputStreamUtils;
+import cn.myperf4j.base.util.io.InputStreamUtils;
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;

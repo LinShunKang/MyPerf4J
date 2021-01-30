@@ -1,6 +1,6 @@
 package cn.myperf4j.base.test;
 
-import cn.myperf4j.base.util.SetUtils;
+import cn.myperf4j.base.util.collections.SetUtils;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -1,4 +1,6 @@
-package cn.myperf4j.base.util;
+package cn.myperf4j.base.util.concurrent;
+
+import cn.myperf4j.base.util.Logger;
 
 import java.util.HashSet;
 import java.util.Set;

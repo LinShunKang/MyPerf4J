@@ -6,7 +6,7 @@ import cn.myperf4j.base.constant.PropertyValues;
 import cn.myperf4j.base.constant.PropertyValues.Metrics;
 import cn.myperf4j.base.file.AutoRollingFileWriter;
 import cn.myperf4j.base.file.MinutelyRollingFileWriter;
-import cn.myperf4j.base.util.IOUtils;
+import cn.myperf4j.base.util.io.IOUtils;
 import cn.myperf4j.base.util.Logger;
 import org.junit.BeforeClass;
 

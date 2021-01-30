@@ -1,4 +1,4 @@
-package cn.myperf4j.base.util;
+package cn.myperf4j.base.util.collections;
 
 import java.util.ArrayList;
 import java.util.List;

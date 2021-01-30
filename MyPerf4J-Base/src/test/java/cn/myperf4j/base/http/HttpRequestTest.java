@@ -1,6 +1,6 @@
 package cn.myperf4j.base.http;
 
-import cn.myperf4j.base.util.MapUtils;
+import cn.myperf4j.base.util.collections.MapUtils;
 import org.junit.Assert;
 import org.junit.Test;
 

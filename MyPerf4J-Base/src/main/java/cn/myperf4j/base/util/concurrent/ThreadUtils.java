@@ -1,4 +1,4 @@
-package cn.myperf4j.base.util;
+package cn.myperf4j.base.util.concurrent;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;

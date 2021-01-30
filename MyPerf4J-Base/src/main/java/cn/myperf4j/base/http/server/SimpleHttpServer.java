@@ -3,7 +3,7 @@ package cn.myperf4j.base.http.server;
 import cn.myperf4j.base.http.HttpMethod;
 import cn.myperf4j.base.http.HttpRequest;
 import cn.myperf4j.base.http.HttpResponse;
-import cn.myperf4j.base.util.ExecutorManager;
+import cn.myperf4j.base.util.concurrent.ExecutorManager;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.util.StrUtils;
 import com.sun.net.httpserver.Headers;
@@ -27,8 +27,8 @@ import java.util.concurrent.ThreadPoolExecutor.DiscardPolicy;
 
 import static cn.myperf4j.base.http.HttpMethod.UNKNOWN;
 import static cn.myperf4j.base.http.HttpRespStatus.METHOD_NOT_ALLOWED;
-import static cn.myperf4j.base.util.InputStreamUtils.toBytes;
-import static cn.myperf4j.base.util.ThreadUtils.newThreadFactory;
+import static cn.myperf4j.base.util.io.InputStreamUtils.toBytes;
+import static cn.myperf4j.base.util.concurrent.ThreadUtils.newThreadFactory;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.concurrent.TimeUnit.MINUTES;
 

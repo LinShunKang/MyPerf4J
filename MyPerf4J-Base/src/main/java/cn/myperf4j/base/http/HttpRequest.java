@@ -1,7 +1,7 @@
 package cn.myperf4j.base.http;
 
-import cn.myperf4j.base.util.ArrayUtils;
-import cn.myperf4j.base.util.MapUtils;
+import cn.myperf4j.base.util.collections.ArrayUtils;
+import cn.myperf4j.base.util.collections.MapUtils;
 import cn.myperf4j.base.util.StrUtils;
 
 import java.util.List;

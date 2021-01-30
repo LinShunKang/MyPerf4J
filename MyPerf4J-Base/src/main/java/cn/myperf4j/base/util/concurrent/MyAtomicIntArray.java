@@ -1,5 +1,6 @@
-package cn.myperf4j.base.util;
+package cn.myperf4j.base.util.concurrent;
 
+import cn.myperf4j.base.util.UnsafeUtils;
 import sun.misc.Unsafe;
 
 import java.io.Serializable;

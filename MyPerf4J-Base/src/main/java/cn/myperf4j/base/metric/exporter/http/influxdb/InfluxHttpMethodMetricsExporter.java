@@ -6,7 +6,7 @@ import cn.myperf4j.base.metric.MethodMetrics;
 import cn.myperf4j.base.metric.formatter.MethodMetricsFormatter;
 import cn.myperf4j.base.metric.formatter.influxdb.InfluxMethodMetricsFormatter;
 import cn.myperf4j.base.metric.exporter.MethodMetricsExporter;
-import cn.myperf4j.base.util.ListUtils;
+import cn.myperf4j.base.util.collections.ListUtils;
 import cn.myperf4j.base.util.Logger;
 
 import java.util.ArrayList;

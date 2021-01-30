@@ -1,4 +1,4 @@
-package cn.myperf4j.base.util;
+package cn.myperf4j.base.util.io;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

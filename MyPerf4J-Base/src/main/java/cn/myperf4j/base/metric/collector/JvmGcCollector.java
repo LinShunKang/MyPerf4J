@@ -2,7 +2,7 @@ package cn.myperf4j.base.metric.collector;
 
 import cn.myperf4j.base.metric.JvmGcMetrics;
 import cn.myperf4j.base.util.Logger;
-import cn.myperf4j.base.util.SetUtils;
+import cn.myperf4j.base.util.collections.SetUtils;
 
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;

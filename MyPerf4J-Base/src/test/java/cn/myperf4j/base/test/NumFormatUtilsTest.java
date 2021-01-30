@@ -3,8 +3,8 @@ package cn.myperf4j.base.test;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static cn.myperf4j.base.util.NumFormatUtils.doubleFormat;
-import static cn.myperf4j.base.util.NumFormatUtils.doublePercent;
+import static cn.myperf4j.base.util.text.NumFormatUtils.doubleFormat;
+import static cn.myperf4j.base.util.text.NumFormatUtils.doublePercent;
 
 /**
  * Created by LinShunkang on 2018/10/17

@@ -5,8 +5,8 @@ import cn.myperf4j.base.http.HttpMethod;
 import cn.myperf4j.base.http.HttpRequest;
 import cn.myperf4j.base.http.HttpRespStatus;
 import cn.myperf4j.base.http.HttpResponse;
-import cn.myperf4j.base.util.ArrayUtils;
-import cn.myperf4j.base.util.ListUtils;
+import cn.myperf4j.base.util.collections.ArrayUtils;
+import cn.myperf4j.base.util.collections.ListUtils;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -16,7 +16,7 @@ import java.util.List;
 
 import static cn.myperf4j.base.http.HttpMethod.POST;
 import static cn.myperf4j.base.http.HttpStatusClass.SUCCESS;
-import static cn.myperf4j.base.util.InputStreamUtils.toBytes;
+import static cn.myperf4j.base.util.io.InputStreamUtils.toBytes;
 
 /**
  * Created by LinShunkang on 2020/05/15
