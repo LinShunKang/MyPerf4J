@@ -31,6 +31,7 @@ public final class ExecutorManager {
                 executorService.awaitTermination(timeout, unit);
             } catch (InterruptedException e) {
                 Logger.error("ExecutorManager.stopAll()", e);
+                Thread.currentThread().interrupt();
             }
         }
     }
