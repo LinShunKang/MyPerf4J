@@ -139,6 +139,6 @@ public final class MyAtomicIntArray implements Serializable {
 
     public void reset() {
         final int[] array = this.array;
-        unsafe.setMemory(array, byteOffset(0), array.length * scale, (byte) 0);
+        unsafe.setMemory(array, byteOffset(0), (long) array.length * scale, ((byte) (0)));
     }
 }
