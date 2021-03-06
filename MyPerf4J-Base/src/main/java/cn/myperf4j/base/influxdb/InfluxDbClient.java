@@ -133,7 +133,9 @@ public final class InfluxDbClient {
                     Logger.warn("ReqTask.run(): respStatus=" + status.simpleString() + ", reqBody=" + content);
                 }
             } catch (IOException e) {
-                Logger.error("ReqTask.run(): ", e);
+                Logger.warn("ReqTask.run() catch IOException: " + e.getMessage());
+            } catch (Throwable t) {
+                Logger.error("ReqTask.run() catch Exception!", t);
             }
         }
     }
