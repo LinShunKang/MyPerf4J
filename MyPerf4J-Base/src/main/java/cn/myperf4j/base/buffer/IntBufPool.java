@@ -4,24 +4,25 @@ import cn.myperf4j.base.util.Logger;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedTransferQueue;
-import java.util.concurrent.TimeUnit;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 /**
  * Created by LinShunkang on 2019/06/13
  */
 public final class IntBufPool {
 
-    private static final int ONE_K = 1024;
+    private static final int FOUR_K = 4 * 1024;
     private static final int TEN_K = 10 * 1024;
     private static final int ONE_HUNDRED_K = 100 * 1024;
     private static final int MAX_CAPACITY = ONE_HUNDRED_K;
 
-    private static final int ONE_K_COUNT = 10;
+    private static final int FOUR_K_COUNT = 10;
     private static final int TEN_K_COUNT = 2;
     private static final int ONE_HUNDRED_K_COUNT = 1;
 
-    //用于存放int[1024]，理论上可以容纳512个不同的响应时间
-    private final BlockingQueue<IntBuf> oneKQueue = new LinkedTransferQueue<>();
+    //用于存放int[4*1024]，理论上可以容纳2048个不同的响应时间
+    private final BlockingQueue<IntBuf> fourKQueue = new LinkedTransferQueue<>();
 
     //用于存放int[10 * 1024]，理论上可以容纳5120个不同的响应时间
     private final BlockingQueue<IntBuf> tenKQueue = new LinkedTransferQueue<>();
@@ -38,7 +39,7 @@ public final class IntBufPool {
     }
 
     private IntBufPool() {
-        initBufQueue(oneKQueue, ONE_K, ONE_K_COUNT);
+        initBufQueue(fourKQueue, FOUR_K, FOUR_K_COUNT);
         initBufQueue(tenKQueue, TEN_K, TEN_K_COUNT);
         initBufQueue(oneHundredKQueue, ONE_HUNDRED_K, ONE_HUNDRED_K_COUNT);
     }
@@ -55,12 +56,12 @@ public final class IntBufPool {
         }
 
         try {
-            if (capacity <= ONE_K) {
-                return oneKQueue.poll(1, TimeUnit.MILLISECONDS);
+            if (capacity <= FOUR_K) {
+                return fourKQueue.poll(1, MILLISECONDS);
             } else if (capacity <= TEN_K) {
-                return tenKQueue.poll(1, TimeUnit.MILLISECONDS);
+                return tenKQueue.poll(1, MILLISECONDS);
             } else {
-                return oneHundredKQueue.poll(1, TimeUnit.MILLISECONDS);
+                return oneHundredKQueue.poll(1, MILLISECONDS);
             }
         } catch (Exception e) {
             Logger.error("IntBufPool.acquire(" + capacity + ")", e);
@@ -75,8 +76,8 @@ public final class IntBufPool {
 
         buf.reset();
         try {
-            if (buf.capacity() == ONE_K) {
-                oneKQueue.put(buf);
+            if (buf.capacity() == FOUR_K) {
+                fourKQueue.put(buf);
             } else if (buf.capacity() == TEN_K) {
                 tenKQueue.put(buf);
             } else if (buf.capacity() == ONE_HUNDRED_K) {

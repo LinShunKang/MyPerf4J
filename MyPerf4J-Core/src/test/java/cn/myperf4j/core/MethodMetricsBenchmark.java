@@ -8,6 +8,8 @@ import cn.myperf4j.core.recorder.RoughRecorder;
 
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
+import static cn.myperf4j.core.MethodMetricsCalculator.calMetrics;
+
 /**
  * Created by LinShunkang on 2019/06/22
  */
@@ -38,9 +40,8 @@ public final class MethodMetricsBenchmark {
         long tmp = 0L;
         start = System.nanoTime();
         for (int i = 0; i < 1000000; ++i) {
-            MethodMetrics methodMetrics = MethodMetricsCalculator.calPerfStats(recorder, methodTag,
-                    recorders.getStartTime(), recorders.getStopTime());
-            tmp += methodMetrics.getRPS();
+            MethodMetrics metrics = calMetrics(recorder, methodTag, recorders.getStartTime(), recorders.getStopTime());
+            tmp += metrics.getRPS();
         }
         System.out.println("tmp=" + tmp + ", totalCost=" + (System.nanoTime() - start) / 1000_000 + "ms");
     }

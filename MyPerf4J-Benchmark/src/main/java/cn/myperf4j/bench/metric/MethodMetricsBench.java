@@ -71,7 +71,7 @@ public class MethodMetricsBench {
 
     @Benchmark
     public MethodMetrics roughRecorder() {
-        return MethodMetricsCalculator.calPerfStats(roughRecorder,
+        return MethodMetricsCalculator.calMetrics(roughRecorder,
                 roughMethodTag,
                 recorders.getStartTime(),
                 recorders.getStopTime());
@@ -79,7 +79,7 @@ public class MethodMetricsBench {
 
     @Benchmark
     public MethodMetrics accurateRecorder() {
-        return MethodMetricsCalculator.calPerfStats(accurateRecorder,
+        return MethodMetricsCalculator.calMetrics(accurateRecorder,
                 accurateMethodTag,
                 recorders.getStartTime(),
                 recorders.getStopTime());
