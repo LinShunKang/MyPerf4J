@@ -15,6 +15,14 @@ public interface ClassLevels {
 
     String LISTENER = "Listener";
 
+    String FILTER = "Filter";
+
+    String HANDLER = "Handler";
+
+    String PROCESSOR = "Processor";
+
+    String DISPATCHER = "Dispatcher";
+
     String API = "Api";
 
     String SERVICE = "Service";
