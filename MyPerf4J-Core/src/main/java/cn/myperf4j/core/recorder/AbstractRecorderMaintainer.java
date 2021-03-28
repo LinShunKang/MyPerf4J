@@ -3,7 +3,6 @@ package cn.myperf4j.core.recorder;
 import cn.myperf4j.base.metric.MethodMetrics;
 import cn.myperf4j.base.MethodTag;
 import cn.myperf4j.base.config.ProfilingParams;
-import cn.myperf4j.base.constant.PropertyValues;
 import cn.myperf4j.base.metric.exporter.MethodMetricsExporter;
 import cn.myperf4j.base.util.concurrent.ExecutorManager;
 import cn.myperf4j.base.util.Logger;
@@ -20,9 +19,12 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 
 import static cn.myperf4j.base.constant.PropertyKeys.Metrics.TIME_SLICE_METHOD;
 import static cn.myperf4j.base.constant.PropertyKeys.Recorder.BACKUP_COUNT;
+import static cn.myperf4j.base.constant.PropertyValues.Recorder.MAX_BACKUP_RECORDERS_COUNT;
+import static cn.myperf4j.base.constant.PropertyValues.Recorder.MIN_BACKUP_RECORDERS_COUNT;
 import static cn.myperf4j.base.util.concurrent.ThreadUtils.newThreadFactory;
 import static cn.myperf4j.core.MethodMetricsCalculator.calMetrics;
 import static cn.myperf4j.core.MethodMetricsHistogram.recordNoneMetrics;
+import static cn.myperf4j.core.MethodTagMaintainer.MAX_NUM;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 /**
@@ -63,10 +65,10 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
     }
 
     private int getFitBakRecordersCnt(int backupRecordersCount) {
-        if (backupRecordersCount < PropertyValues.Recorder.MIN_BACKUP_RECORDERS_COUNT) {
-            return PropertyValues.Recorder.MIN_BACKUP_RECORDERS_COUNT;
-        } else if (backupRecordersCount > PropertyValues.Recorder.MAX_BACKUP_RECORDERS_COUNT) {
-            return PropertyValues.Recorder.MAX_BACKUP_RECORDERS_COUNT;
+        if (backupRecordersCount < MIN_BACKUP_RECORDERS_COUNT) {
+            return MIN_BACKUP_RECORDERS_COUNT;
+        } else if (backupRecordersCount > MAX_BACKUP_RECORDERS_COUNT) {
+            return MAX_BACKUP_RECORDERS_COUNT;
         }
         return backupRecordersCount;
     }
@@ -74,8 +76,7 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
     private boolean initRecorders(int backupRecordersCount) {
         recordersList = new ArrayList<>(backupRecordersCount + 1);
         for (int i = 0; i < backupRecordersCount + 1; ++i) {
-            Recorders recorders = new Recorders(new AtomicReferenceArray<Recorder>(MethodTagMaintainer.MAX_NUM));
-            recordersList.add(recorders);
+            recordersList.add(new Recorders(new AtomicReferenceArray<Recorder>(MAX_NUM)));
         }
 
         curRecorders = recordersList.get(curIndex);
@@ -194,7 +195,7 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
             final long epochEndMillis = lastRecorders.getStopTime();
             try {
                 metricsExporter.beforeProcess(epochStartMillis, epochStartMillis, epochEndMillis);
-                int actualSize = methodTagMaintainer.getMethodTagCount();
+                final int actualSize = methodTagMaintainer.getMethodTagCount();
                 for (int i = 0; i < actualSize; ++i) {
                     if (lastRecorders.isWriting()) {
                         Logger.warn("ExportMetricsTask.run() the lastRecorders is writing! " +
@@ -211,7 +212,7 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
                     }
 
                     final MethodTag methodTag = methodTagMaintainer.getMethodTag(recorder.getMethodTagId());
-                    MethodMetrics metrics = calMetrics(recorder, methodTag, epochStartMillis, epochEndMillis);
+                    final MethodMetrics metrics = calMetrics(recorder, methodTag, epochStartMillis, epochEndMillis);
                     MethodMetricsHistogram.recordMetrics(metrics);
                     metricsExporter.process(metrics, epochStartMillis, epochStartMillis, epochEndMillis);
                 }
