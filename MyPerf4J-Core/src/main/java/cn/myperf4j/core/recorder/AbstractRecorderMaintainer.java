@@ -36,8 +36,6 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
 
     protected List<Recorders> recordersList;
 
-    private final MethodTagMaintainer methodTagMaintainer = MethodTagMaintainer.getInstance();
-
     private int curIndex;
 
     private volatile Recorders curRecorders;
@@ -121,60 +119,22 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
                 return;
             }
 
-            final Recorders lastRecorders = curRecorders;
-            lastRecorders.setStartTime(lastTimeSliceStartTime);
-            lastRecorders.setStopTime(lastTimeSliceStartTime + millTimeSlice);
-            curRecorders = nextRecorders(lastTimeSliceStartTime, millTimeSlice);
-            lastRecorders.setWriting(false);
-
-            tryDiscardDelayTask();
-            backgroundExecutor.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    if (lastRecorders.isWriting()) {
-                        Logger.warn("RecorderMaintainer.backgroundExecutor the lastRecorders is writing! " +
-                                "Please increase `" + TIME_SLICE_METHOD + "` or `" + BACKUP_COUNT + "`!P1");
-                        return;
-                    }
-
-                    final long start = System.currentTimeMillis();
-                    final long epochStartMillis = lastRecorders.getStartTime();
-                    final long epochEndMillis = lastRecorders.getStopTime();
-                    try {
-                        methodMetricsExporter.beforeProcess(epochStartMillis, epochStartMillis, epochEndMillis);
-                        int actualSize = methodTagMaintainer.getMethodTagCount();
-                        for (int i = 0; i < actualSize; ++i) {
-                            if (lastRecorders.isWriting()) {
-                                Logger.warn("RecorderMaintainer.backgroundExecutor the lastRecorders is writing! " +
-                                        "Please increase `" + TIME_SLICE_METHOD + "` or `" + BACKUP_COUNT + "`!P2");
-                                break;
-                            }
-
-                            final Recorder recorder = lastRecorders.getRecorder(i);
-                            if (recorder == null) {
-                                continue;
-                            } else if (!recorder.hasRecord()) {
-                                recordNoneMetrics(recorder.getMethodTagId());
-                                continue;
-                            }
-
-                            final MethodTag methodTag = methodTagMaintainer.getMethodTag(recorder.getMethodTagId());
-                            MethodMetrics metrics = calMetrics(recorder, methodTag, epochStartMillis, epochEndMillis);
-                            MethodMetricsHistogram.recordMetrics(metrics);
-                            methodMetricsExporter.process(metrics, epochStartMillis, epochStartMillis, epochEndMillis);
-                        }
-                    } catch (Throwable e) {
-                        Logger.error("RecorderMaintainer.backgroundExecutor error", e);
-                    } finally {
-                        methodMetricsExporter.afterProcess(epochStartMillis, epochStartMillis, epochEndMillis);
-                        final long cost = System.currentTimeMillis() - start;
-                        Logger.debug("RecorderMaintainer.backgroundProcessor finished!!! cost: " + cost + "ms");
-                    }
-                }
-            }, 10, MILLISECONDS);
+            final Recorders lastRecorders = turnAroundRecorders(lastTimeSliceStartTime, millTimeSlice);
+            backgroundExecutor.schedule(new ExportMetricsTask(methodMetricsExporter, lastRecorders), 10, MILLISECONDS);
         } catch (Exception e) {
             Logger.error("RecorderMaintainer.run(long, long) error", e);
+        } finally {
+            tryDiscardDelayTask();
         }
+    }
+
+    private Recorders turnAroundRecorders(long lastTimeSliceStartTime, long millTimeSlice) {
+        final Recorders lastRecorders = this.curRecorders;
+        lastRecorders.setStartTime(lastTimeSliceStartTime);
+        lastRecorders.setStopTime(lastTimeSliceStartTime + millTimeSlice);
+        lastRecorders.setWriting(false);
+        this.curRecorders = nextRecorders(lastTimeSliceStartTime, millTimeSlice);
+        return lastRecorders;
     }
 
     private Recorders nextRecorders(long lastTimeSliceStartTime, long millTimeSlice) {
@@ -205,5 +165,63 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
     @Override
     public String name() {
         return "RecorderMaintainer";
+    }
+
+    private static final class ExportMetricsTask implements Runnable {
+
+        private final MethodTagMaintainer methodTagMaintainer;
+
+        private final MethodMetricsExporter metricsExporter;
+
+        private final Recorders lastRecorders;
+
+        private ExportMetricsTask(MethodMetricsExporter metricsExporter, Recorders lastRecorders) {
+            this.methodTagMaintainer = MethodTagMaintainer.getInstance();
+            this.metricsExporter = metricsExporter;
+            this.lastRecorders = lastRecorders;
+        }
+
+        @Override
+        public void run() {
+            if (lastRecorders.isWriting()) {
+                Logger.warn("ExportMetricsTask.run() the lastRecorders is writing! " +
+                        "Please increase `" + TIME_SLICE_METHOD + "` or `" + BACKUP_COUNT + "`!P1");
+                return;
+            }
+
+            final long start = System.currentTimeMillis();
+            final long epochStartMillis = lastRecorders.getStartTime();
+            final long epochEndMillis = lastRecorders.getStopTime();
+            try {
+                metricsExporter.beforeProcess(epochStartMillis, epochStartMillis, epochEndMillis);
+                int actualSize = methodTagMaintainer.getMethodTagCount();
+                for (int i = 0; i < actualSize; ++i) {
+                    if (lastRecorders.isWriting()) {
+                        Logger.warn("ExportMetricsTask.run() the lastRecorders is writing! " +
+                                "Please increase `" + TIME_SLICE_METHOD + "` or `" + BACKUP_COUNT + "`!P2");
+                        break;
+                    }
+
+                    final Recorder recorder = lastRecorders.getRecorder(i);
+                    if (recorder == null) {
+                        continue;
+                    } else if (!recorder.hasRecord()) {
+                        recordNoneMetrics(recorder.getMethodTagId());
+                        continue;
+                    }
+
+                    final MethodTag methodTag = methodTagMaintainer.getMethodTag(recorder.getMethodTagId());
+                    MethodMetrics metrics = calMetrics(recorder, methodTag, epochStartMillis, epochEndMillis);
+                    MethodMetricsHistogram.recordMetrics(metrics);
+                    metricsExporter.process(metrics, epochStartMillis, epochStartMillis, epochEndMillis);
+                }
+            } catch (Throwable e) {
+                Logger.error("ExportMetricsTask.run() error", e);
+            } finally {
+                metricsExporter.afterProcess(epochStartMillis, epochStartMillis, epochEndMillis);
+                final long cost = System.currentTimeMillis() - start;
+                Logger.debug("ExportMetricsTask.run() finished!!! cost: " + cost + "ms");
+            }
+        }
     }
 }
