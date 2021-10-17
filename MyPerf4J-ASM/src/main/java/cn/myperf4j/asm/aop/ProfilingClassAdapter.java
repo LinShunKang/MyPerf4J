@@ -35,7 +35,7 @@ public class ProfilingClassAdapter extends ClassVisitor {
     private final List<String> fieldNameList = new ArrayList<>();
 
     public ProfilingClassAdapter(final ClassVisitor cv, String innerClassName) {
-        super(ASM8, cv);
+        super(ASM9, cv);
         this.innerClassName = innerClassName;
         this.fullClassName = innerClassName.replace('/', '.');
         this.simpleClassName = TypeDescUtils.getSimpleClassName(innerClassName);

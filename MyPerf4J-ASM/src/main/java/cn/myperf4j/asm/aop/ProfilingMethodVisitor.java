@@ -43,7 +43,7 @@ public class ProfilingMethodVisitor extends AdviceAdapter {
                                   String simpleClassName,
                                   String classLevel,
                                   String humanMethodDesc) {
-        super(ASM8, mv, access, name, desc);
+        super(ASM9, mv, access, name, desc);
         this.methodName = name;
         this.methodTagId = methodTagMaintainer.addMethodTag(
                 getMethodTag(fullClassName, simpleClassName, classLevel, name, humanMethodDesc));
