@@ -4,6 +4,8 @@ import cn.myperf4j.base.util.Logger;
 
 import java.util.Properties;
 
+import static cn.myperf4j.base.util.StrUtils.trimToEmpty;
+
 /**
  * Created by LinShunkang on 2018/4/9
  */
@@ -25,17 +27,21 @@ public final class MyProperties {
     }
 
     public static String getStr(ConfigKey confKey) {
-        String str = getStr(confKey.key());
+        final String str = getStr0(confKey.key());
         if (str != null) {
-            return str;
+            return trimToEmpty(str);
         }
-        return getStr(confKey.legacyKey());
+        return trimToEmpty(getStr0(confKey.legacyKey()));
     }
 
     public static String getStr(String key) {
+        return trimToEmpty(getStr0(key));
+    }
+
+    private static String getStr0(String key) {
         checkState();
 
-        String value = System.getProperty(key);
+        final String value = System.getProperty(key);
         if (value != null) {
             return value;
         }
@@ -56,29 +62,23 @@ public final class MyProperties {
     }
 
     public static String getStr(ConfigKey confKey, String defaultValue) {
-        checkState();
-
-        String result = getStr(confKey);
+        final String result = getStr0(confKey.key());
         if (result != null) {
-            return result;
+            return trimToEmpty(result);
         }
         return defaultValue;
     }
 
     public static String getStr(String key, String defaultValue) {
-        checkState();
-
-        String result = getStr(key);
+        final String result = getStr0(key);
         if (result != null) {
-            return result;
+            return trimToEmpty(result);
         }
         return defaultValue;
     }
 
     public static int getInt(ConfigKey confKey, int defaultValue) {
-        checkState();
-
-        Integer result = getInt(confKey.key());
+        final Integer result = getInt(confKey.key());
         if (result != null) {
             return result;
         }
@@ -86,9 +86,7 @@ public final class MyProperties {
     }
 
     public static Integer getInt(ConfigKey confKey) {
-        checkState();
-
-        Integer result = getInt(confKey.key());
+        final Integer result = getInt(confKey.key());
         if (result != null) {
             return result;
         }
@@ -96,9 +94,7 @@ public final class MyProperties {
     }
 
     public static Integer getInt(String key) {
-        checkState();
-
-        String result = getStr(key);
+        final String result = getStr0(key);
         if (result == null) {
             return null;
         }
@@ -112,9 +108,7 @@ public final class MyProperties {
     }
 
     public static int getInt(String key, int defaultValue) {
-        checkState();
-
-        String result = getStr(key);
+        final String result = getStr0(key);
         if (result == null) {
             return defaultValue;
         }
@@ -128,9 +122,7 @@ public final class MyProperties {
     }
 
     public static long getLong(ConfigKey confKey, long defaultValue) {
-        checkState();
-
-        Long l = getLong(confKey.key());
+        final Long l = getLong(confKey.key());
         if (l != null) {
             return l;
         }
@@ -138,9 +130,7 @@ public final class MyProperties {
     }
 
     public static Long getLong(String key) {
-        checkState();
-
-        String result = getStr(key);
+        final String result = getStr0(key);
         if (result == null) {
             return null;
         }
@@ -154,9 +144,7 @@ public final class MyProperties {
     }
 
     public static long getLong(String key, long defaultValue) {
-        checkState();
-
-        String result = getStr(key);
+        final String result = getStr0(key);
         if (result == null) {
             return defaultValue;
         }
@@ -170,9 +158,7 @@ public final class MyProperties {
     }
 
     public static long getLong(String key, long defaultValue, long minValue) {
-        checkState();
-
-        long result = getLong(key, defaultValue);
+        final long result = getLong(key, defaultValue);
         if (result <= minValue) {
             return minValue;
         }
@@ -180,18 +166,14 @@ public final class MyProperties {
     }
 
     public static boolean isSame(String key, String expectValue) {
-        checkState();
-
         if (expectValue == null) {
             throw new IllegalArgumentException("isSame(" + key + ", null): expectValue must not null!!!");
         }
-        return expectValue.equals(getStr(key));
+        return expectValue.equals(getStr0(key));
     }
 
     public static boolean getBoolean(ConfigKey confKey, boolean defaultValue) {
-        checkState();
-
-        Boolean result = getBoolean(confKey.key());
+        final Boolean result = getBoolean(confKey.key());
         if (result != null) {
             return result;
         }
@@ -199,9 +181,7 @@ public final class MyProperties {
     }
 
     public static Boolean getBoolean(String key) {
-        checkState();
-
-        String result = getStr(key);
+        final String result = getStr0(key);
         if (result != null) {
             return result.equalsIgnoreCase("true");
         }
@@ -209,9 +189,7 @@ public final class MyProperties {
     }
 
     public static boolean getBoolean(String key, boolean defaultValue) {
-        checkState();
-
-        String result = getStr(key);
+        final String result = getStr0(key);
         if (result != null) {
             return result.equalsIgnoreCase("true");
         }
