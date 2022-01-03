@@ -12,6 +12,7 @@ import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.PASSWORD;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.PORT;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.READ_TIMEOUT;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.USERNAME;
+import static cn.myperf4j.base.util.StrUtils.trimToEmpty;
 
 /**
  * Created by LinShunkang on 2020/05/24
@@ -102,7 +103,7 @@ public class InfluxDbConfig {
     }
 
     public static InfluxDbConfig loadInfluxDbConfig() {
-        String host = getStr(HOST);
+        String host = trimToEmpty(getStr(HOST));
         if (StrUtils.isBlank(host)) {
             host = "127.0.0.1";
             Logger.info(HOST.key() + " is not configured, so use '127.0.0.1' as default host.");
@@ -114,12 +115,12 @@ public class InfluxDbConfig {
             Logger.info(PORT.key() + " is not configured, so use '8086' as default port.");
         }
 
-        InfluxDbConfig config = new InfluxDbConfig();
+        final InfluxDbConfig config = new InfluxDbConfig();
         config.host(host);
         config.port(port);
-        config.database(getStr(DATABASE));
-        config.username(getStr(USERNAME));
-        config.password(getStr(PASSWORD));
+        config.database(trimToEmpty(getStr(DATABASE)));
+        config.username(trimToEmpty(getStr(USERNAME)));
+        config.password(trimToEmpty(getStr(PASSWORD)));
         config.connectTimeout(getInt(CONN_TIMEOUT, 3000));
         config.readTimeout(getInt(READ_TIMEOUT, 5000));
         return config;

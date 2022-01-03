@@ -79,6 +79,10 @@ public final class StrUtils {
         return isNotEmpty(str) && str.charAt(str.length() - 1) == ch;
     }
 
+    public static String trimToEmpty(String str) {
+        return isEmpty(str) ? "" : str.trim();
+    }
+
     public static List<String> splitAsList(final String str, final char separatorChar) {
         if (str == null || str.isEmpty()) {
             return Collections.emptyList();
