@@ -19,12 +19,10 @@ public final class JvmCompilationCollector {
     }
 
     public static JvmCompilationMetrics collectCompilationMetrics() {
-        CompilationMXBean mxBean = COMPILATION_MX_BEAN;
+        final CompilationMXBean mxBean = COMPILATION_MX_BEAN;
         if (mxBean != null && mxBean.isCompilationTimeMonitoringSupported()) {
-            long totalTime = mxBean.getTotalCompilationTime();
-            long timeInterval = totalTime - lastTime;
-            lastTime = totalTime;
-            return new JvmCompilationMetrics(timeInterval, totalTime);
+            final long totalTime = mxBean.getTotalCompilationTime();
+            return new JvmCompilationMetrics(totalTime - lastTime, lastTime = totalTime);
         }
         return new JvmCompilationMetrics(0L, 0L);
     }

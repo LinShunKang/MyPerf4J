@@ -51,14 +51,14 @@ public final class JvmMemoryCollector {
             }
         }
 
-        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
-        MemoryUsage nonHeapMem = memoryMXBean.getNonHeapMemoryUsage();
-        long nonHeapUsed = nonHeapMem.getUsed() >> 10;
-        long nonHeapMax = nonHeapMem.getMax() >> 10;
+        final MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+        final MemoryUsage nonHeapMem = memoryMXBean.getNonHeapMemoryUsage();
+        final long nonHeapUsed = nonHeapMem.getUsed() >> 10;
+        final long nonHeapMax = nonHeapMem.getMax() >> 10;
 
-        MemoryUsage heapMem = memoryMXBean.getHeapMemoryUsage();
-        long heapUsed = heapMem.getUsed() >> 10;
-        long heapMax = heapMem.getMax() >> 10;
+        final MemoryUsage heapMem = memoryMXBean.getHeapMemoryUsage();
+        final long heapUsed = heapMem.getUsed() >> 10;
+        final long heapMax = heapMem.getMax() >> 10;
 
         return new JvmMemoryMetrics(
                 heapUsed, heapMax,

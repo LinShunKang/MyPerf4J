@@ -17,7 +17,7 @@ public final class JvmClassCollector {
     }
 
     public static JvmClassMetrics collectClassMetrics() {
-        ClassLoadingMXBean mxBean = CLASS_LOADING_MX_BEAN;
+        final ClassLoadingMXBean mxBean = CLASS_LOADING_MX_BEAN;
         return new JvmClassMetrics(mxBean.getTotalLoadedClassCount(),
                 mxBean.getLoadedClassCount(),
                 mxBean.getUnloadedClassCount());

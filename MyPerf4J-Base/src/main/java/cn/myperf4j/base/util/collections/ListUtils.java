@@ -29,11 +29,9 @@ public final class ListUtils {
             return new ArrayList<>(0);
         }
 
-        List<List<T>> result = new ArrayList<>(list.size() / size + 1);
-        for (int fromIndex = 0; fromIndex < list.size(); ) {
-            List<T> subList = getSubList(list, fromIndex, size);
-            result.add(subList);
-            fromIndex += size;
+        final List<List<T>> result = new ArrayList<>(list.size() / size + 1);
+        for (int fromIndex = 0; fromIndex < list.size(); fromIndex += size) {
+            result.add(getSubList(list, fromIndex, size));
         }
         return result;
     }
@@ -43,7 +41,7 @@ public final class ListUtils {
             throw new IllegalArgumentException(limit + " <= 0");
         }
 
-        int toIndex = Math.min(list.size(), fromIndex + limit);
+        final int toIndex = Math.min(list.size(), fromIndex + limit);
         return list.subList(fromIndex, toIndex);
     }
 }

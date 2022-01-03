@@ -31,7 +31,7 @@ public class InfluxHttpJvmMemoryMetricsExporter implements JvmMemoryMetricsExpor
 
     @Override
     public void process(JvmMemoryMetrics metrics, long processId, long startMillis, long stopMillis) {
-        List<JvmMemoryMetrics> metricsList = metricsMap.get(processId);
+        final List<JvmMemoryMetrics> metricsList = metricsMap.get(processId);
         if (metricsList != null) {
             metricsList.add(metrics);
         } else {
@@ -42,7 +42,7 @@ public class InfluxHttpJvmMemoryMetricsExporter implements JvmMemoryMetricsExpor
 
     @Override
     public void afterProcess(long processId, long startMillis, long stopMillis) {
-        List<JvmMemoryMetrics> metricsList = metricsMap.remove(processId);
+        final List<JvmMemoryMetrics> metricsList = metricsMap.remove(processId);
         if (metricsList != null) {
             CLIENT.writeMetricsAsync(METRICS_FORMATTER.format(metricsList, startMillis, stopMillis));
         } else {

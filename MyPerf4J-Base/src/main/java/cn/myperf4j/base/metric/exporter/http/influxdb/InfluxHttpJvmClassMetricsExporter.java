@@ -31,7 +31,7 @@ public class InfluxHttpJvmClassMetricsExporter implements JvmClassMetricsExporte
 
     @Override
     public void process(JvmClassMetrics metrics, long processId, long startMillis, long stopMillis) {
-        List<JvmClassMetrics> metricsList = metricsMap.get(processId);
+        final List<JvmClassMetrics> metricsList = metricsMap.get(processId);
         if (metricsList != null) {
             metricsList.add(metrics);
         } else {
@@ -42,7 +42,7 @@ public class InfluxHttpJvmClassMetricsExporter implements JvmClassMetricsExporte
 
     @Override
     public void afterProcess(long processId, long startMillis, long stopMillis) {
-        List<JvmClassMetrics> metricsList = metricsMap.remove(processId);
+        final List<JvmClassMetrics> metricsList = metricsMap.remove(processId);
         if (metricsList != null) {
             CLIENT.writeMetricsAsync(METRICS_FORMATTER.format(metricsList, startMillis, stopMillis));
         } else {

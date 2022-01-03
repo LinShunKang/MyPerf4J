@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class InfluxHttpMethodMetricsExporter implements MethodMetricsExporter {
 
-    private static final int BATCH_SIZE = 64;
+    private static final int BATCH_SIZE = 256;
 
     private static final MethodMetricsFormatter METRICS_FORMATTER = new InfluxMethodMetricsFormatter();
 
@@ -34,7 +34,7 @@ public class InfluxHttpMethodMetricsExporter implements MethodMetricsExporter {
 
     @Override
     public void process(MethodMetrics metrics, long processId, long startMillis, long stopMillis) {
-        List<MethodMetrics> metricsList = metricsMap.get(processId);
+        final List<MethodMetrics> metricsList = metricsMap.get(processId);
         if (metricsList != null) {
             metricsList.add(metrics);
         } else {
@@ -45,7 +45,7 @@ public class InfluxHttpMethodMetricsExporter implements MethodMetricsExporter {
 
     @Override
     public void afterProcess(long processId, long startMillis, long stopMillis) {
-        List<MethodMetrics> metricsList = metricsMap.remove(processId);
+        final List<MethodMetrics> metricsList = metricsMap.remove(processId);
         if (metricsList == null) {
             Logger.warn("InfluxHttpMethodMetricsExporter.afterProcess(" + processId + ", " + startMillis + ", "
                     + stopMillis + "): metricsList is null!!!");
@@ -55,7 +55,7 @@ public class InfluxHttpMethodMetricsExporter implements MethodMetricsExporter {
         if (metricsList.size() <= BATCH_SIZE) {
             CLIENT.writeMetricsAsync(METRICS_FORMATTER.format(metricsList, startMillis, stopMillis));
         } else {
-            List<List<MethodMetrics>> partition = ListUtils.partition(metricsList, BATCH_SIZE);
+            final List<List<MethodMetrics>> partition = ListUtils.partition(metricsList, BATCH_SIZE);
             for (int i = 0; i < partition.size(); i++) {
                 CLIENT.writeMetricsAsync(METRICS_FORMATTER.format(partition.get(i), startMillis, stopMillis));
             }

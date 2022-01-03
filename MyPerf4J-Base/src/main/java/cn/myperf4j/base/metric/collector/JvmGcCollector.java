@@ -16,6 +16,7 @@ import java.util.Set;
  * -XX:+UseParNewGC -XX:+UseConcMarkSweepGC
  * -XX:+UseSerialGC
  * -XX:+UseG1GC
+ * -XX:+UseZGC
  */
 public final class JvmGcCollector {
 
@@ -31,7 +32,7 @@ public final class JvmGcCollector {
             "ConcurrentMarkSweep",
             "G1 Old Generation");
 
-    private static final Set<String> Z_GC_SET = SetUtils.of("ZGC");
+    private static final Set<String> Z_GC_SET = SetUtils.of("ZGC", "ZGC Cycles", "ZGC Pauses");
 
     private static volatile long lastYoungGcTime;
 
@@ -57,10 +58,10 @@ public final class JvmGcCollector {
         long zGcCount = 0L;
         long zGcTime = 0L;
 
-        List<GarbageCollectorMXBean> gcMXBeanList = ManagementFactory.getGarbageCollectorMXBeans();
-        for (int i = 0; i < gcMXBeanList.size(); i++) {
-            GarbageCollectorMXBean gcMxBean = gcMXBeanList.get(i);
-            String gcName = gcMxBean.getName();
+        final List<GarbageCollectorMXBean> gcMXBeanList = ManagementFactory.getGarbageCollectorMXBeans();
+        for (int i = 0, size = gcMXBeanList.size(); i < size; i++) {
+            final GarbageCollectorMXBean gcMxBean = gcMXBeanList.get(i);
+            final String gcName = gcMxBean.getName();
             if (YOUNG_GC_SET.contains(gcName)) {
                 youngGcTime += gcMxBean.getCollectionTime();
                 youngGcCount += gcMxBean.getCollectionCount();
@@ -75,7 +76,7 @@ public final class JvmGcCollector {
             }
         }
 
-        JvmGcMetrics jvmGcMetrics = new JvmGcMetrics(
+        final JvmGcMetrics jvmGcMetrics = new JvmGcMetrics(
                 youngGcCount - lastYoungGcCount,
                 youngGcTime - lastYoungGcTime,
                 oldGcCount - lastOldGcCount,
@@ -90,5 +91,9 @@ public final class JvmGcCollector {
         lastZGcCount = zGcCount;
         lastZGcTime = zGcTime;
         return jvmGcMetrics;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(collectGcMetrics());
     }
 }

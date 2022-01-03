@@ -2,6 +2,7 @@ package cn.myperf4j.base.metric.collector;
 
 import cn.myperf4j.base.metric.JvmThreadMetrics;
 
+import java.lang.Thread.State;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
@@ -31,15 +32,15 @@ public final class JvmThreadCollector {
         int waiting = 0;
         int timedWaiting = 0;
         int terminated = 0;
-        ThreadMXBean mxBean = THREAD_MX_BEAN;
-        ThreadInfo[] threadInfoArr = mxBean.getThreadInfo(mxBean.getAllThreadIds(), 0);
+        final ThreadMXBean mxBean = THREAD_MX_BEAN;
+        final ThreadInfo[] threadInfoArr = mxBean.getThreadInfo(mxBean.getAllThreadIds(), 0);
         for (int i = 0; i < threadInfoArr.length; ++i) {
-            ThreadInfo threadInfo = threadInfoArr[i];
+            final ThreadInfo threadInfo = threadInfoArr[i];
             if (threadInfo == null) {
                 continue;
             }
 
-            Thread.State state = threadInfo.getThreadState();
+            final State state = threadInfo.getThreadState();
             if (state == NEW) {
                 news++;
             } else if (state == RUNNABLE) {
