@@ -1,7 +1,6 @@
 package cn.myperf4j.base.config;
 
 import cn.myperf4j.base.util.Logger;
-import cn.myperf4j.base.util.StrUtils;
 
 import static cn.myperf4j.base.config.MyProperties.getInt;
 import static cn.myperf4j.base.config.MyProperties.getStr;
@@ -12,6 +11,7 @@ import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.PASSWORD;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.PORT;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.READ_TIMEOUT;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.USERNAME;
+import static cn.myperf4j.base.util.StrUtils.isBlank;
 
 /**
  * Created by LinShunkang on 2020/05/24
@@ -103,7 +103,7 @@ public class InfluxDbConfig {
 
     public static InfluxDbConfig loadInfluxDbConfig() {
         String host = getStr(HOST);
-        if (StrUtils.isBlank(host)) {
+        if (isBlank(host)) {
             host = "127.0.0.1";
             Logger.info(HOST.key() + " is not configured, so use '127.0.0.1' as default host.");
         }

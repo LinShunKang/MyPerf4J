@@ -12,6 +12,7 @@ import static cn.myperf4j.base.constant.PropertyKeys.HttpServer.MAX_WORKERS;
 import static cn.myperf4j.base.constant.PropertyKeys.HttpServer.MIN_WORKERS;
 import static cn.myperf4j.base.constant.PropertyKeys.HttpServer.PORT;
 import static cn.myperf4j.base.util.NumUtils.parseInt;
+import static cn.myperf4j.base.util.StrUtils.isBlank;
 
 /**
  * Created by LinShunkang on 2020/09/13
@@ -92,7 +93,7 @@ public class HttpServerConfig {
 
     public static HttpServerConfig loadHttpServerConfig() {
         String portStr = getStr(PORT);
-        if (portStr == null) {
+        if (isBlank(portStr)) {
             portStr = "2048,2000,2040";
             Logger.info(PORT.key() + " is not configured, so use '" + portStr + "' as default.");
         }
