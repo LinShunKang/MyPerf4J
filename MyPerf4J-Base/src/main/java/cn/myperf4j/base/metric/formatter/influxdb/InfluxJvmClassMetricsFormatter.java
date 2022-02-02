@@ -14,22 +14,13 @@ import static cn.myperf4j.base.util.LineProtocolUtils.processTagOrField;
  */
 public final class InfluxJvmClassMetricsFormatter implements JvmClassMetricsFormatter {
 
-    private static final ThreadLocal<StringBuilder> SB_TL = new ThreadLocal<StringBuilder>() {
-        @Override
-        protected StringBuilder initialValue() {
-            return new StringBuilder(128);
-        }
-    };
-
     @Override
     public String format(List<JvmClassMetrics> metricsList, long startMillis, long stopMillis) {
-        StringBuilder sb = SB_TL.get();
+        final StringBuilder sb = SB_TL.get();
         try {
-            long startNanos = startMillis * 1000 * 1000L;
+            final long startNanos = startMillis * 1000 * 1000L;
             for (int i = 0; i < metricsList.size(); ++i) {
-                JvmClassMetrics metrics = metricsList.get(i);
-                appendLineProtocol(metrics, startNanos, sb);
-                sb.append('\n');
+                appendLineProtocol(metricsList.get(i), startNanos, sb);
             }
             return sb.substring(0, sb.length() - 1);
         } finally {
@@ -44,6 +35,6 @@ public final class InfluxJvmClassMetricsFormatter implements JvmClassMetricsForm
                 .append(" Total=").append(metrics.getTotal()).append('i')
                 .append(",Loaded=").append(metrics.getLoaded()).append('i')
                 .append(",Unloaded=").append(metrics.getUnloaded()).append('i')
-                .append(' ').append(startNanos);
+                .append(' ').append(startNanos).append('\n');
     }
 }

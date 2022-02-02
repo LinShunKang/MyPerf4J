@@ -14,13 +14,6 @@ import static cn.myperf4j.base.util.LineProtocolUtils.processTagOrField;
  */
 public class InfluxJvmBufferPoolMetricsFormatter implements JvmBufferPoolMetricsFormatter {
 
-    private static final ThreadLocal<StringBuilder> SB_TL = new ThreadLocal<StringBuilder>() {
-        @Override
-        protected StringBuilder initialValue() {
-            return new StringBuilder(128);
-        }
-    };
-
     @Override
     public String format(List<JvmBufferPoolMetrics> metricsList, long startMillis, long stopMillis) {
         final StringBuilder sb = SB_TL.get();
@@ -28,7 +21,6 @@ public class InfluxJvmBufferPoolMetricsFormatter implements JvmBufferPoolMetrics
             final long startNanos = startMillis * 1000 * 1000L;
             for (int i = 0, size = metricsList.size(); i < size; ++i) {
                 appendLineProtocol(metricsList.get(i), startNanos, sb);
-                sb.append('\n');
             }
             return sb.substring(0, sb.length() - 1);
         } finally {
@@ -44,6 +36,6 @@ public class InfluxJvmBufferPoolMetricsFormatter implements JvmBufferPoolMetrics
                 .append(" Count=").append(metrics.getCount()).append('i')
                 .append(",MemoryUsed=").append(metrics.getMemoryUsed()).append('i')
                 .append(",MemoryCapacity=").append(metrics.getMemoryCapacity()).append('i')
-                .append(' ').append(startNanos);
+                .append(' ').append(startNanos).append('\n');
     }
 }

@@ -15,22 +15,13 @@ import static cn.myperf4j.base.util.text.NumFormatUtils.doubleFormat;
  */
 public class InfluxJvmGcMetricsFormatter implements JvmGcMetricsFormatter {
 
-    private static final ThreadLocal<StringBuilder> SB_TL = new ThreadLocal<StringBuilder>() {
-        @Override
-        protected StringBuilder initialValue() {
-            return new StringBuilder(128);
-        }
-    };
-
     @Override
     public String format(List<JvmGcMetrics> metricsList, long startMillis, long stopMillis) {
-        StringBuilder sb = SB_TL.get();
+        final StringBuilder sb = SB_TL.get();
         try {
-            long startNanos = startMillis * 1000 * 1000L;
+            final long startNanos = startMillis * 1000 * 1000L;
             for (int i = 0; i < metricsList.size(); ++i) {
-                JvmGcMetrics metrics = metricsList.get(i);
-                appendLineProtocol(metrics, startNanos, sb);
-                sb.append('\n');
+                appendLineProtocol(metricsList.get(i), startNanos, sb);
             }
             return sb.substring(0, sb.length() - 1);
         } finally {
@@ -50,6 +41,6 @@ public class InfluxJvmGcMetricsFormatter implements JvmGcMetricsFormatter {
                 .append(",ZGcTime=").append(metrics.getZGcTime()).append('i')
                 .append(",ZGcCount=").append(metrics.getZGcCount()).append('i')
                 .append(",AvgZGcTime=").append(doubleFormat(metrics.getAvgZGcTime()))
-                .append(' ').append(startNanos);
+                .append(' ').append(startNanos).append('\n');
     }
 }

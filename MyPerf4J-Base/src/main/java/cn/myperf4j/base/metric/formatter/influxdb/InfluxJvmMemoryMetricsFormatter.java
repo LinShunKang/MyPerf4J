@@ -15,22 +15,13 @@ import static cn.myperf4j.base.util.text.NumFormatUtils.doubleFormat;
  */
 public class InfluxJvmMemoryMetricsFormatter implements JvmMemoryMetricsFormatter {
 
-    private static final ThreadLocal<StringBuilder> SB_TL = new ThreadLocal<StringBuilder>() {
-        @Override
-        protected StringBuilder initialValue() {
-            return new StringBuilder(512);
-        }
-    };
-
     @Override
     public String format(List<JvmMemoryMetrics> metricsList, long startMillis, long stopMillis) {
-        StringBuilder sb = SB_TL.get();
+        final StringBuilder sb = SB_TL.get();
         try {
-            long startNanos = startMillis * 1000 * 1000L;
+            final long startNanos = startMillis * 1000 * 1000L;
             for (int i = 0; i < metricsList.size(); ++i) {
-                JvmMemoryMetrics metrics = metricsList.get(i);
-                appendLineProtocol(metrics, startNanos, sb);
-                sb.append('\n');
+                appendLineProtocol(metricsList.get(i), startNanos, sb);
             }
             return sb.substring(0, sb.length() - 1);
         } finally {
@@ -58,6 +49,6 @@ public class InfluxJvmMemoryMetricsFormatter implements JvmMemoryMetricsFormatte
                 .append(",EdenUsedPercent=").append(doubleFormat(metrics.getEdenUsedPercent()))
                 .append(",SurvivorUsed=").append(metrics.getSurvivorUsed()).append('i')
                 .append(",SurvivorUsedPercent=").append(metrics.getSurvivorUsedPercent())
-                .append(' ').append(startNanos);
+                .append(' ').append(startNanos).append('\n');
     }
 }

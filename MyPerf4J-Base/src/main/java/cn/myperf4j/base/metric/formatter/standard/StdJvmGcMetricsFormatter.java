@@ -13,23 +13,25 @@ import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
  */
 public class StdJvmGcMetricsFormatter implements JvmGcMetricsFormatter {
 
+    private static final String TITLE_FORMAT = "%-15s%15s%15s%15s%15s%15s%15s%15s%n";
+
+    private static final String DATA_FORMAT = "%-15s%15d%15.2f%15d%15d%15d%15d%15.2f%n";
+
     @Override
     public String format(List<JvmGcMetrics> metricsList, long startMillis, long stopMillis) {
-        String dataTitleFormat = "%-15s%15s%15s%15s%15s%15s%15s%15s%n";
-        StringBuilder sb = new StringBuilder((metricsList.size() + 2) * (9 * 3 + 64));
+        final StringBuilder sb = new StringBuilder((metricsList.size() + 2) * (9 * 3 + 64));
         sb.append("MyPerf4J JVM GC Metrics [").append(DateFormatUtils.format(startMillis)).append(", ")
                 .append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
-        sb.append(String.format(dataTitleFormat, "YoungGcCount", "YoungGcTime", "AvgYoungGcTime", "FullGcCount",
+        sb.append(String.format(TITLE_FORMAT, "YoungGcCount", "YoungGcTime", "AvgYoungGcTime", "FullGcCount",
                 "FullGcTime", "ZGcCount", "ZGcTime", "AvgZGcTime"));
         if (metricsList.isEmpty()) {
             return sb.toString();
         }
 
-        String dataFormat = "%-15s%15d%15.2f%15d%15d%15d%15d%15.2f%n";
         for (int i = 0; i < metricsList.size(); ++i) {
-            JvmGcMetrics metrics = metricsList.get(i);
+            final JvmGcMetrics metrics = metricsList.get(i);
             sb.append(
-                    String.format(dataFormat,
+                    String.format(DATA_FORMAT,
                             metrics.getYoungGcCount(),
                             metrics.getYoungGcTime(),
                             metrics.getAvgYoungGcTime(),

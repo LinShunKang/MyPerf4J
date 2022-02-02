@@ -18,11 +18,9 @@ public final class StdMethodMetricsFormatter implements MethodMetricsFormatter {
 
     @Override
     public String format(List<MethodMetrics> methodMetricsList, long startMillis, long stopMillis) {
-        int[] statisticsArr = getStatistics(methodMetricsList);
-        int maxApiLength = statisticsArr[0];
-
-        String dataTitleFormat = "%-" + maxApiLength + "s%13s%13s%13s%9s%9s%9s%9s%10s%9s%9s%9s%9s%9s%9s%9s%n";
-        StringBuilder sb = new StringBuilder((methodMetricsList.size() + 2) * (9 * 11 + 1 + maxApiLength));
+        final int maxApiLength = getMaxApiLength(methodMetricsList);
+        final String dataTitleFormat = "%-" + maxApiLength + "s%13s%13s%13s%9s%9s%9s%9s%10s%9s%9s%9s%9s%9s%9s%9s%n";
+        final StringBuilder sb = new StringBuilder((methodMetricsList.size() + 2) * (9 * 11 + 1 + maxApiLength));
         sb.append("MyPerf4J Method Metrics [").append(DateFormatUtils.format(startMillis)).append(", ")
                 .append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
         sb.append(String.format(dataTitleFormat, "Method[" + methodMetricsList.size() + "]", "Type", "Level",
@@ -33,9 +31,9 @@ public final class StdMethodMetricsFormatter implements MethodMetricsFormatter {
         }
         sortByTotalTime(methodMetricsList);
 
-        String dataFormat = "%-" + maxApiLength + "s%13s%13s%13s%9d%9.2f%9d%9d%9.2f%10d%9d%9d%9d%9d%9d%9d%n";
+        final String dataFormat = "%-" + maxApiLength + "s%13s%13s%13s%9d%9.2f%9d%9d%9.2f%10d%9d%9d%9d%9d%9d%9d%n";
         for (int i = 0; i < methodMetricsList.size(); ++i) {
-            MethodMetrics metrics = methodMetricsList.get(i);
+            final MethodMetrics metrics = methodMetricsList.get(i);
             if (metrics.getTotalCount() <= 0) {
                 continue;
             }
@@ -64,18 +62,13 @@ public final class StdMethodMetricsFormatter implements MethodMetricsFormatter {
         return sb.toString();
     }
 
-    /**
-     * @return : int[0]:max(api.length)
-     */
-    private int[] getStatistics(List<MethodMetrics> methodMetricsList) {
-        int[] result = {1};
+    private int getMaxApiLength(List<MethodMetrics> methodMetricsList) {
+        int result = 1;
         for (int i = 0; i < methodMetricsList.size(); ++i) {
-            MethodMetrics stats = methodMetricsList.get(i);
-            if (stats == null || stats.getMethodTag() == null) {
-                continue;
+            final MethodMetrics stats = methodMetricsList.get(i);
+            if (stats != null && stats.getMethodTag() != null) {
+                result = Math.max(result, stats.getMethodTag().getSimpleDesc().length());
             }
-
-            result[0] = Math.max(result[0], stats.getMethodTag().getSimpleDesc().length());
         }
         return result;
     }

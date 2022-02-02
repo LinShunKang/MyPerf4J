@@ -52,7 +52,7 @@ public final class InfluxDbClient {
 
     private final String authorization;
 
-    protected final HttpClient httpClient;
+    private final HttpClient httpClient;
 
     public InfluxDbClient(Builder builder) {
         this.url = "http://" + builder.host + ":" + builder.port;
@@ -83,7 +83,7 @@ public final class InfluxDbClient {
                 .post("q=CREATE DATABASE " + database)
                 .build();
         try {
-            HttpResponse response = httpClient.execute(req);
+            final HttpResponse response = httpClient.execute(req);
             Logger.info("InfluxDbClient create database '" + database + "' response.status=" + response.getStatus());
 
             if (response.getStatus().statusClass() == SUCCESS) {
@@ -119,14 +119,14 @@ public final class InfluxDbClient {
 
         @Override
         public void run() {
-            HttpRequest req = new HttpRequest.Builder()
+            final HttpRequest req = new HttpRequest.Builder()
                     .url(writeReqUrl)
                     .header("Authorization", authorization)
                     .post(content)
                     .build();
             try {
-                HttpResponse response = httpClient.execute(req);
-                HttpRespStatus status = response.getStatus();
+                final HttpResponse response = httpClient.execute(req);
+                final HttpRespStatus status = response.getStatus();
                 if (status.statusClass() == SUCCESS && Logger.isDebugEnable()) {
                     Logger.debug("ReqTask.run(): respStatus=" + status.simpleString() + ", reqBody=" + content);
                 } else if (status.statusClass() != INFORMATIONAL && status.statusClass() != SUCCESS) {
