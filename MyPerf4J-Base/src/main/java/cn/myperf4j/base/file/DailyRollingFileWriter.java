@@ -24,7 +24,7 @@ public class DailyRollingFileWriter extends AutoRollingFileWriter {
 
     @Override
     Calendar computeEpochCal(Date now, int epochOffset) {
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         cal.setTime(now);
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);

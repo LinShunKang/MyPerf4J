@@ -31,7 +31,7 @@ public abstract class AutoRollingFileWriter {
     private volatile long nextRollingTime;
 
     public AutoRollingFileWriter(String fileName, int reserveFileCount) {
-        Date now = new Date();
+        final Date now = new Date();
 
         this.fileName = fileName;
         this.reserveFileCount = Math.max(reserveFileCount, 0);
@@ -40,13 +40,13 @@ public abstract class AutoRollingFileWriter {
         this.rollingFileName = formatDateFileName(fileName, now);
 
         try {
-            File targetFile = new File(fileName);
+            final File targetFile = new File(fileName);
             if (!targetFile.exists()) {
                 createWriter(targetFile, false);
                 return;
             }
 
-            Date lastModifiedDate = new Date(targetFile.lastModified());
+            final Date lastModifiedDate = new Date(targetFile.lastModified());
             if (isSameEpoch(now, lastModifiedDate)) {
                 createWriter(targetFile, true);
                 return;
@@ -61,9 +61,9 @@ public abstract class AutoRollingFileWriter {
 
     private void clean(Date now, int epochs) {
         for (int i = 0; i < epochs; ++i) {
-            int epochOffset = (-reserveFileCount - 1) - i;
-            Date date = computeEpochCal(now, epochOffset).getTime();
-            File file2Del = new File(formatDateFileName(fileName, date));
+            final int epochOffset = (-reserveFileCount - 1) - i;
+            final Date date = computeEpochCal(now, epochOffset).getTime();
+            final File file2Del = new File(formatDateFileName(fileName, date));
             if (file2Del.exists() && file2Del.isFile()) {
                 boolean delete = file2Del.delete();
                 Logger.info("AutoRollingFileWriter.clean(" + now + ", " + epochs + "): delete "
@@ -73,7 +73,7 @@ public abstract class AutoRollingFileWriter {
     }
 
     private long getNextRollingTime(Date now) {
-        Calendar calendar = computeEpochCal(now, 1);
+        final Calendar calendar = computeEpochCal(now, 1);
         return calendar.getTime().getTime();
     }
 
@@ -85,9 +85,9 @@ public abstract class AutoRollingFileWriter {
 
     private void createWriter(File file, boolean append) {
         try {
-            File parent = file.getParentFile();
+            final File parent = file.getParentFile();
             if (parent != null && !parent.exists()) {
-                boolean mkdirs = parent.mkdirs();
+                final boolean mkdirs = parent.mkdirs();
                 Logger.info("AutoRollingFileWriter.createWriter(" + file.getName() + ", "
                         + append + "): mkdirs=" + mkdirs);
             }
@@ -100,7 +100,7 @@ public abstract class AutoRollingFileWriter {
 
     private void rollingFile(Date now) {
         try {
-            String datedFilename = formatDateFileName(fileName, now);
+            final String datedFilename = formatDateFileName(fileName, now);
             if (rollingFileName.equals(datedFilename)) {
                 Logger.info("AutoRollingFileWriter.rollingFile(" + now + "): rollingFile=" + rollingFileName
                         + ", datedFilename=" + datedFilename + " return!!!");
@@ -109,15 +109,15 @@ public abstract class AutoRollingFileWriter {
 
             closeFile(false);
 
-            File targetFile = new File(rollingFileName);
+            final File targetFile = new File(rollingFileName);
             if (targetFile.exists()) {
                 boolean delete = targetFile.delete();
                 Logger.info("AutoRollingFileWriter.rollingFile(" + now + "): rollingFile=" + rollingFileName
                         + ", delete=" + delete);
             }
 
-            File file = new File(fileName);
-            boolean rename = file.renameTo(targetFile);
+            final File file = new File(fileName);
+            final boolean rename = file.renameTo(targetFile);
             Logger.info("AutoRollingFileWriter.rollingFile(" + now + "): rename " + fileName + " to "
                     + targetFile.getName() + " " + (rename ? "success" : "fail"));
 
@@ -135,7 +135,7 @@ public abstract class AutoRollingFileWriter {
     }
 
     private void write0(String msg) {
-        long time = System.currentTimeMillis();
+        final long time = System.currentTimeMillis();
         if (time < nextRollingTime) {
             doWrite(msg);
             return;
@@ -143,7 +143,7 @@ public abstract class AutoRollingFileWriter {
 
         synchronized (this) {
             if (time > nextRollingTime) {
-                Date now = new Date();
+                final Date now = new Date();
                 nextRollingTime = getNextRollingTime(now);
                 rollingFile(now);
             }
