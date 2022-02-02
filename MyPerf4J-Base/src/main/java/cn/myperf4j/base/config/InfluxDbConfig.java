@@ -7,10 +7,12 @@ import static cn.myperf4j.base.config.MyProperties.getStr;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.CONN_TIMEOUT;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.DATABASE;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.HOST;
+import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.ORGANIZED;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.PASSWORD;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.PORT;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.READ_TIMEOUT;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.USERNAME;
+import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.VERSION;
 import static cn.myperf4j.base.util.StrUtils.isBlank;
 
 /**
@@ -18,9 +20,13 @@ import static cn.myperf4j.base.util.StrUtils.isBlank;
  */
 public class InfluxDbConfig {
 
+    private String version;
+
     private String host;
 
     private int port;
+
+    private String organized;
 
     private String database;
 
@@ -31,6 +37,14 @@ public class InfluxDbConfig {
     private String username;
 
     private String password;
+
+    public String version() {
+        return version;
+    }
+
+    public void version(String version) {
+        this.version = version;
+    }
 
     public String host() {
         return host;
@@ -46,6 +60,14 @@ public class InfluxDbConfig {
 
     public void port(int port) {
         this.port = port;
+    }
+
+    public String organized() {
+        return organized;
+    }
+
+    public void organized(String organized) {
+        this.organized = organized;
     }
 
     public String database() {
@@ -91,8 +113,9 @@ public class InfluxDbConfig {
     @Override
     public String toString() {
         return "InfluxDbConfig{" +
-                "ip='" + host + '\'' +
+                "host='" + host + '\'' +
                 ", port=" + port +
+                ", organized='" + organized + '\'' +
                 ", database='" + database + '\'' +
                 ", connectTimeout=" + connectTimeout +
                 ", readTimeout=" + readTimeout +
@@ -102,6 +125,12 @@ public class InfluxDbConfig {
     }
 
     public static InfluxDbConfig loadInfluxDbConfig() {
+        String version = getStr(VERSION);
+        if (isBlank(version)) {
+            version = "1.x";
+            Logger.info(VERSION.key() + " is not configured, so use '1.x' as default version.");
+        }
+
         String host = getStr(HOST);
         if (isBlank(host)) {
             host = "127.0.0.1";
@@ -115,8 +144,10 @@ public class InfluxDbConfig {
         }
 
         final InfluxDbConfig config = new InfluxDbConfig();
+        config.version(version);
         config.host(host);
         config.port(port);
+        config.organized(getStr(ORGANIZED));
         config.database(getStr(DATABASE));
         config.username(getStr(USERNAME));
         config.password(getStr(PASSWORD));

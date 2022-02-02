@@ -64,9 +64,13 @@ public interface PropertyKeys {
 
     interface InfluxDB {
 
+        ConfigKey VERSION = ConfigKey.of("influxdb.version", "influxdb.version");
+
         ConfigKey HOST = ConfigKey.of("influxdb.host", "influxdb.host");
 
         ConfigKey PORT = ConfigKey.of("influxdb.port", "influxdb.port");
+
+        ConfigKey ORGANIZED = ConfigKey.of("influxdb.organized", "influxdb.organized");
 
         ConfigKey DATABASE = ConfigKey.of("influxdb.database", "influxdb.database");
 
