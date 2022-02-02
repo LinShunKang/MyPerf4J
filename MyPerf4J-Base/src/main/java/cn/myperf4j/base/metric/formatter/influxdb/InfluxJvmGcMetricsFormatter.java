@@ -41,6 +41,12 @@ public class InfluxJvmGcMetricsFormatter implements JvmGcMetricsFormatter {
                 .append(",ZGcTime=").append(metrics.getZGcTime()).append('i')
                 .append(",ZGcCount=").append(metrics.getZGcCount()).append('i')
                 .append(",AvgZGcTime=").append(doubleFormat(metrics.getAvgZGcTime()))
+                .append(",ZGcCyclesTime=").append(metrics.getZGcCyclesTime()).append('i')
+                .append(",ZGcCyclesCount=").append(metrics.getZGcCyclesCount()).append('i')
+                .append(",AvgZGcCyclesTime=").append(doubleFormat(metrics.getAvgZGcCyclesTime()))
+                .append(",ZGcPausesTime=").append(metrics.getZGcPausesTime()).append('i')
+                .append(",ZGcPausesCount=").append(metrics.getZGcPausesCount()).append('i')
+                .append(",AvgZGcPausesTime=").append(doubleFormat(metrics.getAvgZGcPausesTime()))
                 .append(' ').append(startNanos).append('\n');
     }
 }

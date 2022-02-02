@@ -32,8 +32,6 @@ public final class JvmGcCollector {
             "ConcurrentMarkSweep",
             "G1 Old Generation");
 
-    private static final Set<String> Z_GC_SET = SetUtils.of("ZGC", "ZGC Cycles", "ZGC Pauses");
-
     private static volatile long lastYoungGcTime;
 
     private static volatile long lastYoungGcCount;
@@ -46,6 +44,14 @@ public final class JvmGcCollector {
 
     private static volatile long lastZGcCount;
 
+    private static volatile long lastZGcCyclesTime;
+
+    private static volatile long lastZGcCyclesCount;
+
+    private static volatile long lastZGcPausesTime;
+
+    private static volatile long lastZGcPausesCount;
+
     private JvmGcCollector() {
         //empty
     }
@@ -57,6 +63,10 @@ public final class JvmGcCollector {
         long oldGcTime = 0L;
         long zGcCount = 0L;
         long zGcTime = 0L;
+        long zGcCyclesCount = 0L;
+        long zGcCyclesTime = 0L;
+        long zGcPausesCount = 0L;
+        long zGcPausesTime = 0L;
 
         final List<GarbageCollectorMXBean> gcMXBeanList = ManagementFactory.getGarbageCollectorMXBeans();
         for (int i = 0, size = gcMXBeanList.size(); i < size; i++) {
@@ -68,9 +78,15 @@ public final class JvmGcCollector {
             } else if (OLD_GC_SET.contains(gcName)) {
                 oldGcTime += gcMxBean.getCollectionTime();
                 oldGcCount += gcMxBean.getCollectionCount();
-            } else if (Z_GC_SET.contains(gcName)) {
+            } else if ("ZGC".equals(gcName)) {
                 zGcTime += gcMxBean.getCollectionTime();
                 zGcCount += gcMxBean.getCollectionCount();
+            } else if ("ZGC Cycles".equals(gcName)) {
+                zGcCyclesTime += gcMxBean.getCollectionTime();
+                zGcCyclesCount += gcMxBean.getCollectionCount();
+            } else if ("ZGC Pauses".equals(gcName)) {
+                zGcPausesTime += gcMxBean.getCollectionTime();
+                zGcPausesCount += gcMxBean.getCollectionCount();
             } else {
                 Logger.warn("Unknown GC: " + gcName);
             }
@@ -82,7 +98,11 @@ public final class JvmGcCollector {
                 oldGcCount - lastOldGcCount,
                 oldGcTime - lastOldGcTime,
                 zGcCount - lastZGcCount,
-                zGcTime - lastZGcTime);
+                zGcTime - lastZGcTime,
+                zGcCyclesCount - lastZGcCyclesCount,
+                zGcCyclesTime - lastZGcCyclesTime,
+                zGcPausesCount - lastZGcPausesCount,
+                zGcPausesTime - lastZGcPausesTime);
 
         lastYoungGcCount = youngGcCount;
         lastYoungGcTime = youngGcTime;
@@ -90,10 +110,10 @@ public final class JvmGcCollector {
         lastOldGcTime = oldGcTime;
         lastZGcCount = zGcCount;
         lastZGcTime = zGcTime;
+        lastZGcCyclesCount = zGcCyclesCount;
+        lastZGcCyclesTime = zGcCyclesTime;
+        lastZGcPausesCount = zGcPausesCount;
+        lastZGcPausesTime = zGcPausesTime;
         return jvmGcMetrics;
-    }
-
-    public static void main(String[] args) {
-        System.out.println(collectGcMetrics());
     }
 }
