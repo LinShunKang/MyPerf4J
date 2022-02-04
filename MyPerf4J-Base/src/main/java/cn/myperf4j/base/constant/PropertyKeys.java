@@ -70,7 +70,7 @@ public interface PropertyKeys {
 
         ConfigKey PORT = ConfigKey.of("influxdb.port", "influxdb.port");
 
-        ConfigKey ORGANIZED = ConfigKey.of("influxdb.organized", "influxdb.organized");
+        ConfigKey ORG_NAME = ConfigKey.of("influxdb.orgName", "influxdb.orgName");
 
         ConfigKey DATABASE = ConfigKey.of("influxdb.database", "influxdb.database");
 

@@ -48,8 +48,6 @@ public final class InfluxDbV2Client implements InfluxDbClient {
 
     private final String writeReqUrl;
 
-    private final String database;
-
     private final String username;
 
     private final String password;
@@ -63,7 +61,6 @@ public final class InfluxDbV2Client implements InfluxDbClient {
     public InfluxDbV2Client(Builder builder) {
         this.url = "http://" + builder.host + ":" + builder.port;
         this.writeReqUrl = buildWriteReqUrl(builder);
-        this.database = builder.database;
         this.username = builder.username;
         this.password = builder.password;
         this.authorization = buildAuthorization(builder);
@@ -73,12 +70,11 @@ public final class InfluxDbV2Client implements InfluxDbClient {
                 .build();
         this.cookie = "";
 
-        this.tryLogin();
-        this.createDatabase();
+        this.trySignIn();
     }
 
     private String buildWriteReqUrl(Builder builder) {
-        return url + "/api/v2/write?org=" + builder.organized + "&bucket=" + builder.database + "&precision=ns";
+        return url + "/api/v2/write?org=" + builder.orgName + "&bucket=" + builder.database + "&precision=ns";
     }
 
     private String buildAuthorization(Builder builder) {
@@ -89,7 +85,7 @@ public final class InfluxDbV2Client implements InfluxDbClient {
         return "";
     }
 
-    private boolean tryLogin() {
+    private boolean trySignIn() {
         if (StrUtils.isNotBlank(this.cookie)) {
             return true;
         }
@@ -108,32 +104,42 @@ public final class InfluxDbV2Client implements InfluxDbClient {
                 return true;
             }
         } catch (IOException e) {
-            Logger.error("InfluxDbV2Client.tryLogin(): e=" + e.getMessage(), e);
+            Logger.error("InfluxDbV2Client.trySignIn(): e=" + e.getMessage(), e);
         }
         return false;
     }
 
     @Override
-    public boolean createDatabase() {
-        if (!tryLogin()) {
-            Logger.warn("try login fails, so do not continue create database!");
+    public boolean writeMetricsSync(String content) {
+        if (!trySignIn()) {
+            Logger.warn("try login fails, so do not continue write content!");
             return false;
         }
 
         final HttpRequest req = new HttpRequest.Builder()
-                .url(url + "/query")
+                .url(writeReqUrl)
                 .header("Cookie", cookie)
-                .post("q=CREATE DATABASE " + database)
+                .post(content)
                 .build();
         try {
             final HttpResponse response = httpClient.execute(req);
-            Logger.info("InfluxDbV2Client create database '" + database + "' response.status=" + response.getStatus());
-
-            if (response.getStatus().statusClass() == SUCCESS) {
+            final HttpRespStatus status = response.getStatus();
+            if (status.statusClass() == SUCCESS) {
+                if (Logger.isDebugEnable()) {
+                    Logger.debug("InfluxDbV2Client.writeMetricsSync(): respStatus=" + status.simpleString()
+                            + ", reqBody=" + content);
+                }
                 return true;
             }
+
+            if (status.statusClass() != INFORMATIONAL && status.statusClass() != SUCCESS) {
+                Logger.warn("InfluxDbV2Client.writeMetricsSync(): respStatus=" + status.simpleString()
+                        + ", reqBody=" + content);
+            }
         } catch (IOException e) {
-            Logger.error("InfluxDbV2Client.createDatabase(): e=" + e.getMessage(), e);
+            Logger.warn("InfluxDbV2Client.writeMetricsSync() catch IOException: " + e.getMessage());
+        } catch (Throwable t) {
+            Logger.error("InfluxDbV2Client.writeMetricsSync() catch Exception!", t);
         }
         return false;
     }
@@ -145,7 +151,12 @@ public final class InfluxDbV2Client implements InfluxDbClient {
         }
 
         try {
-            ASYNC_EXECUTOR.execute(new ReqTask(content));
+            ASYNC_EXECUTOR.execute(new Runnable() {
+                @Override
+                public void run() {
+                    writeMetricsSync(content);
+                }
+            });
             return true;
         } catch (Throwable t) {
             Logger.error("InfluxDbV2Client.writeMetricsAsync(): t=" + t.getMessage(), t);
@@ -153,40 +164,29 @@ public final class InfluxDbV2Client implements InfluxDbClient {
         return false;
     }
 
-    private class ReqTask implements Runnable {
+    @Override
+    public boolean close() {
+        return trySignOut();
+    }
 
-        private final String content;
+    private boolean trySignOut() {
+        final HttpRequest req = new HttpRequest.Builder()
+                .url(url + API_SIGN_OUT)
+                .header("Cookie", this.cookie)
+                .post(" ")
+                .build();
+        try {
+            final HttpResponse response = httpClient.execute(req);
+            Logger.info("InfluxDbV2Client sign out response.status=" + response.getStatus());
 
-        ReqTask(String content) {
-            this.content = content;
-        }
-
-        @Override
-        public void run() {
-            if (!tryLogin()) {
-                Logger.warn("try login fails, so do not continue write content!");
-                return;
+            if (response.getStatus().statusClass() == SUCCESS) {
+                this.cookie = "";
+                return true;
             }
-
-            final HttpRequest req = new HttpRequest.Builder()
-                    .url(writeReqUrl)
-                    .header("Cookie", cookie)
-                    .post(content)
-                    .build();
-            try {
-                final HttpResponse response = httpClient.execute(req);
-                final HttpRespStatus status = response.getStatus();
-                if (status.statusClass() == SUCCESS && Logger.isDebugEnable()) {
-                    Logger.debug("ReqTask.run(): respStatus=" + status.simpleString() + ", reqBody=" + content);
-                } else if (status.statusClass() != INFORMATIONAL && status.statusClass() != SUCCESS) {
-                    Logger.warn("ReqTask.run(): respStatus=" + status.simpleString() + ", reqBody=" + content);
-                }
-            } catch (IOException e) {
-                Logger.warn("ReqTask.run() catch IOException: " + e.getMessage());
-            } catch (Throwable t) {
-                Logger.error("ReqTask.run() catch Exception!", t);
-            }
+        } catch (IOException e) {
+            Logger.error("InfluxDbV2Client.trySignOut(): e=" + e.getMessage(), e);
         }
+        return false;
     }
 
     public static class Builder {
@@ -199,7 +199,7 @@ public final class InfluxDbV2Client implements InfluxDbClient {
 
         private int port;
 
-        private String organized;
+        private String orgName;
 
         private String database;
 
@@ -226,12 +226,8 @@ public final class InfluxDbV2Client implements InfluxDbClient {
             return this;
         }
 
-        public String organized() {
-            return organized;
-        }
-
-        public Builder organized(String organized) {
-            this.organized = organized;
+        public Builder orgName(String organized) {
+            this.orgName = organized;
             return this;
         }
 

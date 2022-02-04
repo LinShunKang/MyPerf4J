@@ -20,12 +20,6 @@ public class InfluxDbV1ClientTest {
             .build();
 
     @Test
-    public void testBuildDatabase() {
-        boolean database = influxDbV1Client.createDatabase();
-        System.out.println(database);
-    }
-
-    @Test
     public void testWrite() throws InterruptedException {
         boolean write = influxDbV1Client.writeMetricsAsync(
                 "cpu_load_short,host=server01,region=us-west value=0.64 1434055562000000000\n" +

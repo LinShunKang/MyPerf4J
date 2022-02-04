@@ -44,8 +44,6 @@ public final class InfluxDbV1Client implements InfluxDbClient {
 
     private final String writeReqUrl;
 
-    private final String database;
-
     private final String username;
 
     private final String password;
@@ -57,7 +55,6 @@ public final class InfluxDbV1Client implements InfluxDbClient {
     public InfluxDbV1Client(Builder builder) {
         this.url = "http://" + builder.host + ":" + builder.port;
         this.writeReqUrl = url + "/write?db=" + builder.database;
-        this.database = builder.database;
         this.username = builder.username;
         this.password = builder.password;
         this.authorization = buildAuthorization(builder);
@@ -65,7 +62,6 @@ public final class InfluxDbV1Client implements InfluxDbClient {
                 .connectTimeout(builder.connectTimeout)
                 .readTimeout(builder.readTimeout)
                 .build();
-        this.createDatabase();
     }
 
     private String buildAuthorization(Builder builder) {
@@ -77,21 +73,31 @@ public final class InfluxDbV1Client implements InfluxDbClient {
     }
 
     @Override
-    public boolean createDatabase() {
+    public boolean writeMetricsSync(String content) {
         final HttpRequest req = new HttpRequest.Builder()
-                .url(url + "/query")
+                .url(writeReqUrl)
                 .header("Authorization", authorization)
-                .post("q=CREATE DATABASE " + database)
+                .post(content)
                 .build();
         try {
             final HttpResponse response = httpClient.execute(req);
-            Logger.info("InfluxDbV1Client create database '" + database + "' response.status=" + response.getStatus());
-
-            if (response.getStatus().statusClass() == SUCCESS) {
+            final HttpRespStatus status = response.getStatus();
+            if (status.statusClass() == SUCCESS) {
+                if (Logger.isDebugEnable()) {
+                    Logger.debug("InfluxDbV1Client.writeMetricsSync(): respStatus=" + status.simpleString()
+                            + ", reqBody=" + content);
+                }
                 return true;
             }
+
+            if (status.statusClass() != INFORMATIONAL && status.statusClass() != SUCCESS) {
+                Logger.warn("InfluxDbV1Client.writeMetricsSync(): respStatus=" + status.simpleString()
+                        + ", reqBody=" + content);
+            }
         } catch (IOException e) {
-            Logger.error("InfluxDbV1Client.createDatabase(): e=" + e.getMessage(), e);
+            Logger.warn("InfluxDbV1Client.writeMetricsSync() catch IOException: " + e.getMessage());
+        } catch (Throwable t) {
+            Logger.error("InfluxDbV1Client.writeMetricsSync() catch Exception!", t);
         }
         return false;
     }
@@ -103,7 +109,12 @@ public final class InfluxDbV1Client implements InfluxDbClient {
         }
 
         try {
-            ASYNC_EXECUTOR.execute(new ReqTask(content));
+            ASYNC_EXECUTOR.execute(new Runnable() {
+                @Override
+                public void run() {
+                    writeMetricsSync(content);
+                }
+            });
             return true;
         } catch (Throwable t) {
             Logger.error("InfluxDbV1Client.writeMetricsAsync(): t=" + t.getMessage(), t);
@@ -111,35 +122,9 @@ public final class InfluxDbV1Client implements InfluxDbClient {
         return false;
     }
 
-    private class ReqTask implements Runnable {
-
-        private final String content;
-
-        ReqTask(String content) {
-            this.content = content;
-        }
-
-        @Override
-        public void run() {
-            final HttpRequest req = new HttpRequest.Builder()
-                    .url(writeReqUrl)
-                    .header("Authorization", authorization)
-                    .post(content)
-                    .build();
-            try {
-                final HttpResponse response = httpClient.execute(req);
-                final HttpRespStatus status = response.getStatus();
-                if (status.statusClass() == SUCCESS && Logger.isDebugEnable()) {
-                    Logger.debug("ReqTask.run(): respStatus=" + status.simpleString() + ", reqBody=" + content);
-                } else if (status.statusClass() != INFORMATIONAL && status.statusClass() != SUCCESS) {
-                    Logger.warn("ReqTask.run(): respStatus=" + status.simpleString() + ", reqBody=" + content);
-                }
-            } catch (IOException e) {
-                Logger.warn("ReqTask.run() catch IOException: " + e.getMessage());
-            } catch (Throwable t) {
-                Logger.error("ReqTask.run() catch Exception!", t);
-            }
-        }
+    @Override
+    public boolean close() {
+        return true; //do nothing.
     }
 
     public static class Builder {

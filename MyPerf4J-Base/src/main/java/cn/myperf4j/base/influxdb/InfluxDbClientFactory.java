@@ -23,7 +23,7 @@ public final class InfluxDbClientFactory {
     private static final InfluxDbV2Client V2_CLIENT = new InfluxDbV2Client.Builder()
             .host(CONFIG.host())
             .port(CONFIG.port())
-            .organized(CONFIG.organized())
+            .orgName(CONFIG.orgName())
             .database(CONFIG.database())
             .username(CONFIG.username())
             .password(CONFIG.password())

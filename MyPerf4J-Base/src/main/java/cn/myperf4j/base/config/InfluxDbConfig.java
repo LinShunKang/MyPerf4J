@@ -7,7 +7,7 @@ import static cn.myperf4j.base.config.MyProperties.getStr;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.CONN_TIMEOUT;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.DATABASE;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.HOST;
-import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.ORGANIZED;
+import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.ORG_NAME;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.PASSWORD;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.PORT;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.READ_TIMEOUT;
@@ -26,7 +26,7 @@ public class InfluxDbConfig {
 
     private int port;
 
-    private String organized;
+    private String orgName;
 
     private String database;
 
@@ -62,12 +62,12 @@ public class InfluxDbConfig {
         this.port = port;
     }
 
-    public String organized() {
-        return organized;
+    public String orgName() {
+        return orgName;
     }
 
-    public void organized(String organized) {
-        this.organized = organized;
+    public void orgName(String ortName) {
+        this.orgName = ortName;
     }
 
     public String database() {
@@ -113,9 +113,10 @@ public class InfluxDbConfig {
     @Override
     public String toString() {
         return "InfluxDbConfig{" +
-                "host='" + host + '\'' +
+                "version='" + version + '\'' +
+                ", host='" + host + '\'' +
                 ", port=" + port +
-                ", organized='" + organized + '\'' +
+                ", orgName='" + orgName + '\'' +
                 ", database='" + database + '\'' +
                 ", connectTimeout=" + connectTimeout +
                 ", readTimeout=" + readTimeout +
@@ -147,7 +148,7 @@ public class InfluxDbConfig {
         config.version(version);
         config.host(host);
         config.port(port);
-        config.organized(getStr(ORGANIZED));
+        config.orgName(getStr(ORG_NAME));
         config.database(getStr(DATABASE));
         config.username(getStr(USERNAME));
         config.password(getStr(PASSWORD));
