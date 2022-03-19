@@ -8,7 +8,7 @@ import java.io.Serializable;
 /**
  * Created by LinShunkang on 2020/11/24
  */
-public final class MyAtomicIntArray implements Serializable {
+public final class AtomicIntArray implements Serializable {
 
     private static final long serialVersionUID = 4512166855752664301L;
 
@@ -41,7 +41,7 @@ public final class MyAtomicIntArray implements Serializable {
      *
      * @param length the length of the array
      */
-    public MyAtomicIntArray(int length) {
+    public AtomicIntArray(int length) {
         array = new int[length];
     }
 

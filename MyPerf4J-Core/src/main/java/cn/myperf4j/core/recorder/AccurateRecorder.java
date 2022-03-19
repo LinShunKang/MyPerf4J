@@ -2,7 +2,7 @@ package cn.myperf4j.core.recorder;
 
 import cn.myperf4j.base.buffer.IntBuf;
 import cn.myperf4j.base.util.collections.MapUtils;
-import cn.myperf4j.base.util.concurrent.MyAtomicIntArray;
+import cn.myperf4j.base.util.concurrent.AtomicIntArray;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public final class AccurateRecorder extends Recorder {
 
-    private final MyAtomicIntArray timingArr;
+    private final AtomicIntArray timingArr;
 
     private final ConcurrentHashMap<Integer, AtomicInteger> timingMap;
 
@@ -30,7 +30,7 @@ public final class AccurateRecorder extends Recorder {
 
     private AccurateRecorder(int methodTagId, int mostTimeThreshold, int outThresholdCount) {
         super(methodTagId);
-        this.timingArr = new MyAtomicIntArray(mostTimeThreshold + 1);
+        this.timingArr = new AtomicIntArray(mostTimeThreshold + 1);
         this.timingMap = new ConcurrentHashMap<>(MapUtils.getFitCapacity(outThresholdCount));
         this.diffCount = new AtomicInteger(0);
     }
@@ -67,7 +67,7 @@ public final class AccurateRecorder extends Recorder {
     @Override
     public long fillSortedRecords(IntBuf intBuf) {
         long totalCount = 0L;
-        final MyAtomicIntArray timingArr = this.timingArr;
+        final AtomicIntArray timingArr = this.timingArr;
         for (int i = 0; i < timingArr.length(); ++i) {
             final int count = timingArr.get(i);
             if (count > 0) {

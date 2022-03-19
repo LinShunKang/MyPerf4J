@@ -1,6 +1,6 @@
 package cn.myperf4j.bench;
 
-import cn.myperf4j.base.util.concurrent.MyAtomicIntArray;
+import cn.myperf4j.base.util.concurrent.AtomicIntArray;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Mode;
@@ -26,12 +26,12 @@ public class AtomicIntArrayBench {
 
     private AtomicIntegerArray jdkArray;
 
-    private MyAtomicIntArray myArray;
+    private AtomicIntArray myArray;
 
     @Setup
     public void setup() {
         jdkArray = new AtomicIntegerArray(1024);
-        myArray = new MyAtomicIntArray(1024);
+        myArray = new AtomicIntArray(1024);
     }
 
     @Benchmark
@@ -55,7 +55,7 @@ public class AtomicIntArrayBench {
 
     @Benchmark
     public int myArrayResetBench() {
-        final MyAtomicIntArray myArray = this.myArray;
+        final AtomicIntArray myArray = this.myArray;
         myArray.reset();
         return myArray.length();
     }
