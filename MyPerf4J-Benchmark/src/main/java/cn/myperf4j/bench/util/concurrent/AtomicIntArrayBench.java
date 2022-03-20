@@ -1,4 +1,4 @@
-package cn.myperf4j.bench;
+package cn.myperf4j.bench.util.concurrent;
 
 import cn.myperf4j.base.util.concurrent.AtomicIntArray;
 import org.openjdk.jmh.annotations.Benchmark;

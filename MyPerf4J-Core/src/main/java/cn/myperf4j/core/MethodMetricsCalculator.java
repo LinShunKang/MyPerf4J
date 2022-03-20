@@ -28,9 +28,9 @@ public final class MethodMetricsCalculator {
     public static MethodMetrics calMetrics(Recorder recorder, MethodTag methodTag, long startTime, long stopTime) {
         IntBuf intBuf = null;
         try {
-            int diffCount = recorder.getDiffCount();
+            final int diffCount = recorder.getDiffCount();
             intBuf = intBufPool.acquire(diffCount << 1);
-            long totalCount = recorder.fillSortedRecords(intBuf);
+            final long totalCount = recorder.fillSortedRecords(intBuf);
             return calMetrics(recorder, methodTag, startTime, stopTime, intBuf, totalCount, diffCount);
         } catch (Exception e) {
             Logger.error("MethodMetricsCalculator.calMetrics(" + recorder + ", " + methodTag + ", "
@@ -64,8 +64,8 @@ public final class MethodMetricsCalculator {
         double sigma = 0.0D; //∑
         long totalTime = 0L;
         for (int i = 0, writerIdx = sortedRecords.writerIndex(); i < writerIdx; ) {
-            int timeCost = sortedRecords._getInt(i++);
-            int count = sortedRecords._getInt(i++);
+            final int timeCost = sortedRecords._getInt(i++);
+            final int count = sortedRecords._getInt(i++);
 
             totalTime += (long) timeCost * count;
             countMile += count;

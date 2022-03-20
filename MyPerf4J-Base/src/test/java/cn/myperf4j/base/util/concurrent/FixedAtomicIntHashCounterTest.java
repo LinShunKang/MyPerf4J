@@ -27,6 +27,10 @@ public class FixedAtomicIntHashCounterTest {
         Assert.assertEquals(1, intCounter.get(1));
         Assert.assertEquals(3, intCounter.addAndGet(1, 2));
         Assert.assertEquals(3, intCounter.get(1));
+        Assert.assertEquals(3, intCounter.getAndIncrement(1));
+        Assert.assertEquals(4, intCounter.get(1));
+        Assert.assertEquals(4, intCounter.getAndAdd(1, 2));
+        Assert.assertEquals(6, intCounter.get(1));
 
         Assert.assertEquals(1, intCounter.size());
         intCounter.reset();
@@ -42,7 +46,7 @@ public class FixedAtomicIntHashCounterTest {
         Assert.assertEquals(8, intMap.size());
 
         for (int i = 8; i < 1024; i++) {
-            Assert.assertEquals(-1, intMap.incrementAndGet(i));
+            Assert.assertEquals(0, intMap.incrementAndGet(i));
         }
         Assert.assertEquals(8, intMap.size());
     }

@@ -1,5 +1,6 @@
 package cn.myperf4j.base.util.concurrent;
 
+import cn.myperf4j.base.buffer.IntBuf;
 import cn.myperf4j.base.util.UnsafeUtils;
 import sun.misc.Unsafe;
 
@@ -120,19 +121,19 @@ public final class FixedAtomicIntHashCounter implements AtomicIntHashCounter, Se
     }
 
     @Override
-    public int incrementAndGet(final int key) {
-        return addAndGet(key, 1);
+    public int getAndIncrement(int key) {
+        return getAndAdd(key, 1);
     }
 
     @Override
-    public int addAndGet(final int key, final int delta) {
+    public int getAndAdd(int key, int delta) {
         if (delta == 0) {
             return get(key);
         }
-        return addAndGet0(this.array, key, delta);
+        return getAndAdd0(this.array, key, delta);
     }
 
-    private int addAndGet0(final int[] array, final int key, final int delta) {
+    private int getAndAdd0(final int[] array, final int key, final int delta) {
         final int mask = array.length - 1;
         final int startIdx = hashIdx(key, mask);
         int idx = startIdx;
@@ -143,17 +144,17 @@ public final class FixedAtomicIntHashCounter implements AtomicIntHashCounter, Se
             if ((kv = getLongRaw(array, kOffset)) == 0L) { //try set
                 if (unsafe.compareAndSwapLong(array, kOffset, 0L, getKvLong(key, delta))) {
                     SIZE_UPDATER.incrementAndGet(this);
-                    return delta;
+                    return 0;
                 } else if ((int) (kv = getLongRaw(array, kOffset)) == key) {
                     if (tryAddLong(array, kOffset, key, delta)) {
-                        return getValue(kv) + delta;
+                        return getValue(kv);
                     } else {
                         throw new IllegalStateException("this should not have happened1!");
                     }
                 }
             } else if (getKey(kv) == key) { //increase
                 if (tryAddLong(array, kOffset, key, delta)) {
-                    return getValue(kv) + delta;
+                    return getValue(kv);
                 } else {
                     throw new IllegalStateException("this should not have happened2!");
                 }
@@ -170,7 +171,7 @@ public final class FixedAtomicIntHashCounter implements AtomicIntHashCounter, Se
         while (true) {
             final long current = getLongRaw(array, byteOffset);
             final int value = getValue(current);
-            if (key != getKey(current) || value == 0) {
+            if (key != getKey(current)/* || value <= 0*/) {
                 return false;
             }
 
@@ -179,6 +180,16 @@ public final class FixedAtomicIntHashCounter implements AtomicIntHashCounter, Se
                 return true;
             }
         }
+    }
+
+    @Override
+    public int incrementAndGet(final int key) {
+        return getAndAdd(key, 1) + 1;
+    }
+
+    @Override
+    public int addAndGet(final int key, final int delta) {
+        return getAndAdd(key, delta) + delta;
     }
 
     @Override
@@ -191,6 +202,38 @@ public final class FixedAtomicIntHashCounter implements AtomicIntHashCounter, Se
         final int[] array = this.array;
         unsafe.setMemory(array, byteOffset(0, array.length - 1), (long) array.length * scale, (byte) 0);
         this.size = 0;
+    }
+
+    @Override
+    public long fillSortedKvs(IntBuf intBuf) {
+        long totalCount = 0L;
+        final int offset = intBuf.writerIndex();
+        final int[] array = this.array;
+        for (int k = 0, len = array.length; k < len; k += 2) {
+            final long kvLong = getLongRaw(array, byteOffset(k, len - 1));
+            final int key = getKey(kvLong);
+            final int value = getValue(kvLong);
+            if (value > 0) {
+                intBuf.write(key);
+                totalCount += value;
+            }
+        }
+
+        if (offset == intBuf.writerIndex()) {
+            return 0;
+        }
+
+        final int writerIndex = intBuf.writerIndex();
+        Arrays.sort(intBuf._buf(), offset, writerIndex);
+
+        for (int i = writerIndex - 1; i >= offset; --i) {
+            final int key = intBuf.getInt(i);
+            final int keyIdx = (i << 1) - offset; //2 * (i - offset) + offset
+            intBuf.setInt(keyIdx, key);
+            intBuf.setInt(keyIdx + 1, get(key));
+        }
+        intBuf.writerIndex((writerIndex << 1) - offset); //writerIndex + (writerIndex - offset)
+        return totalCount;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package cn.myperf4j.base.util.concurrent;
 
+import cn.myperf4j.base.buffer.IntBuf;
 import cn.myperf4j.base.util.UnsafeUtils;
 import sun.misc.Unsafe;
 
@@ -96,17 +97,7 @@ public final class AtomicIntArray implements Serializable {
      * @return the previous value
      */
     public int getAndAdd(int i, int delta) {
-        final long offset = checkedByteOffset(i);
-        while (true) {
-            int current = getRaw(offset);
-            if (compareAndSetRaw(offset, current, current + delta)) {
-                return current;
-            }
-        }
-    }
-
-    private boolean compareAndSetRaw(long offset, int expect, int update) {
-        return unsafe.compareAndSwapInt(array, offset, expect, update);
+        return unsafe.getAndAddInt(array, checkedByteOffset(i), delta);
     }
 
     /**
@@ -127,18 +118,23 @@ public final class AtomicIntArray implements Serializable {
      * @return the updated value
      */
     public int addAndGet(int i, int delta) {
-        final long offset = checkedByteOffset(i);
-        while (true) {
-            int current = getRaw(offset);
-            int next = current + delta;
-            if (compareAndSetRaw(offset, current, next)) {
-                return next;
-            }
-        }
+        return getAndAdd(i, delta) + delta;
     }
 
     public void reset() {
         final int[] array = this.array;
         unsafe.setMemory(array, byteOffset(0), (long) array.length * scale, (byte) 0);
+    }
+
+    public long fillSortedKvs(IntBuf intBuf) {
+        long totalCount = 0L;
+        for (int i = 0, len = array.length; i < len; ++i) {
+            final int count = get(i);
+            if (count > 0) {
+                intBuf.write(i, count);
+                totalCount += count;
+            }
+        }
+        return totalCount;
     }
 }

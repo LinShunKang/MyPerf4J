@@ -26,20 +26,20 @@ public class MethodMetricsTest {
 
     @Before
     public void init() {
-        MethodTag methodTag = MethodTag.getGeneralInstance("", "Test", "Api", "m1", "");
-        int methodTagId = methodTagMaintainer.addMethodTag(methodTag);
+        final MethodTag methodTag = MethodTag.getGeneralInstance("", "Test", "Api", "m1", "");
+        final int methodTagId = methodTagMaintainer.addMethodTag(methodTag);
         recorder = AccurateRecorder.getInstance(methodTagId, 1000, 50);
     }
 
     @Test
     public void testUniformDistribution() {
-        Recorder recorder = AccurateRecorder.getInstance(1, 1024, 512);
-        long start = System.nanoTime();
+        final Recorder recorder = AccurateRecorder.getInstance(1, 128, 512);
+        final long start = System.nanoTime();
         for (long i = 1; i <= 10000; ++i) {
             recorder.recordTime(start, start + i * 1000 * 1000);
         }
 
-        long startMillis = System.currentTimeMillis();
+        final long startMillis = System.currentTimeMillis();
         MethodTag methodTag = methodTagMaintainer.getMethodTag(recorder.getMethodTagId());
         MethodMetrics methodMetrics = calMetrics(recorder, methodTag, startMillis, startMillis + 1000);
         System.out.println(methodMetrics);
@@ -60,8 +60,8 @@ public class MethodMetricsTest {
     public void testExtremelyUnevenDistribution() {
         recordRecords(recorder, 1L, 10000);
 
-        long startMillis = System.currentTimeMillis();
-        MethodTag methodTag = methodTagMaintainer.getMethodTag(recorder.getMethodTagId());
+        final long startMillis = System.currentTimeMillis();
+        final MethodTag methodTag = methodTagMaintainer.getMethodTag(recorder.getMethodTagId());
         MethodMetrics methodMetrics = calMetrics(recorder, methodTag, startMillis, startMillis + 1000);
         System.out.println(methodMetrics);
 
@@ -78,7 +78,7 @@ public class MethodMetricsTest {
     }
 
     private void recordRecords(Recorder recorder, long elapsedMills, int times) {
-        long start = System.nanoTime();
+        final long start = System.nanoTime();
         for (long i = 0; i < times; ++i) {
             recorder.recordTime(start, start + elapsedMills * 1000 * 1000L);
         }
@@ -93,9 +93,9 @@ public class MethodMetricsTest {
         recordRecords(recorder, 5L, 300);
         recordRecords(recorder, 6L, 200);
 
-        long startMillis = System.currentTimeMillis();
-        MethodTag methodTag = methodTagMaintainer.getMethodTag(recorder.getMethodTagId());
-        MethodMetrics methodMetrics = calMetrics(recorder, methodTag, startMillis, startMillis + 1000);
+        final long startMillis = System.currentTimeMillis();
+        final MethodTag methodTag = methodTagMaintainer.getMethodTag(recorder.getMethodTagId());
+        final MethodMetrics methodMetrics = calMetrics(recorder, methodTag, startMillis, startMillis + 1000);
         System.out.println(methodMetrics);
 
         Assert.assertEquals(methodMetrics.getMinTime(), 1);
@@ -119,9 +119,9 @@ public class MethodMetricsTest {
         recordRecords(recorder, 5L, 9);
         recordRecords(recorder, 6L, 1);
 
-        long startMillis = System.currentTimeMillis();
-        MethodTag methodTag = methodTagMaintainer.getMethodTag(recorder.getMethodTagId());
-        MethodMetrics methodMetrics = calMetrics(recorder, methodTag, startMillis, startMillis + 1000);
+        final long startMillis = System.currentTimeMillis();
+        final MethodTag methodTag = methodTagMaintainer.getMethodTag(recorder.getMethodTagId());
+        final MethodMetrics methodMetrics = calMetrics(recorder, methodTag, startMillis, startMillis + 1000);
         System.out.println(methodMetrics);
 
         Assert.assertEquals(methodMetrics.getMinTime(), 1);
