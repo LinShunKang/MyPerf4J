@@ -97,7 +97,17 @@ public final class AtomicIntArray implements Serializable {
      * @return the previous value
      */
     public int getAndAdd(int i, int delta) {
-        return unsafe.getAndAddInt(array, checkedByteOffset(i), delta);
+        final long offset = checkedByteOffset(i);
+        while (true) {
+            final int current = getRaw(offset);
+            if (compareAndSetRaw(offset, current, current + delta)) {
+                return current;
+            }
+        }
+    }
+
+    private boolean compareAndSetRaw(long offset, int expect, int update) {
+        return unsafe.compareAndSwapInt(array, offset, expect, update);
     }
 
     /**
@@ -118,7 +128,14 @@ public final class AtomicIntArray implements Serializable {
      * @return the updated value
      */
     public int addAndGet(int i, int delta) {
-        return getAndAdd(i, delta) + delta;
+        final long offset = checkedByteOffset(i);
+        while (true) {
+            final int current = getRaw(offset);
+            final int next = current + delta;
+            if (compareAndSetRaw(offset, current, next)) {
+                return next;
+            }
+        }
     }
 
     public void reset() {

@@ -46,7 +46,8 @@ public class FixedAtomicIntHashCounterTest {
         Assert.assertEquals(8, intMap.size());
 
         for (int i = 8; i < 1024; i++) {
-            Assert.assertEquals(0, intMap.incrementAndGet(i));
+            final int res = intMap.incrementAndGet(i);
+            Assert.assertTrue(res == 0 || res  == -1);
         }
         Assert.assertEquals(8, intMap.size());
     }
@@ -171,7 +172,7 @@ public class FixedAtomicIntHashCounterTest {
     public void testMultiThread() throws InterruptedException, BrokenBarrierException {
         final int threadCnt = Runtime.getRuntime().availableProcessors();
         final ExecutorService executor = Executors.newFixedThreadPool(threadCnt);
-        for (int i = 0; i < 128; i++) {
+        for (int i = 0; i < 256; i++) {
             Logger.info("--------------------- Round " + i + " start ---------------------");
             testMultiThread0(executor, threadCnt);
             Logger.info("--------------------- Round " + i + " stop ---------------------\n");
@@ -248,5 +249,21 @@ public class FixedAtomicIntHashCounterTest {
         if (oldCounter != null) {
             oldCounter.addAndGet(delta);
         }
+    }
+
+    @Test
+    public void testActualLoadFactor() {
+        final int capacity = 1024, testTimes = 1024;
+        final FixedAtomicIntHashCounter intCounter = new FixedAtomicIntHashCounter(capacity);
+        final ThreadLocalRandom random = ThreadLocalRandom.current();
+        for (int i = 0; i < testTimes * 2; i++) {
+            final int value = intCounter.getAndAdd(random.nextInt(testTimes * 10), 1);
+            if (value < 0) {
+                final float loadFactor = ((float) intCounter.size()) / capacity;
+                System.out.println("capacity=" + testTimes + ", i=" + i + ", loadFactor=" + loadFactor);
+                break;
+            }
+        }
+        System.out.println(intCounter);
     }
 }

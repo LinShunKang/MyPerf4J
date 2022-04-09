@@ -30,6 +30,8 @@ public final class FixedAtomicIntHashCounter implements AtomicIntHashCounter, Se
 
     private static final int MAX_CAPACITY = MAX_VALUE >> 1;
 
+    private static final int MAX_TRY_TIMES = 8;
+
     private static final AtomicIntegerFieldUpdater<FixedAtomicIntHashCounter> SIZE_UPDATER;
 
     static {
@@ -69,8 +71,8 @@ public final class FixedAtomicIntHashCounter implements AtomicIntHashCounter, Se
         return ((key & mask) << 1) & mask;
     }
 
-    private static int probeNext(int idx, int mask) {
-        return (idx + 2) & mask;
+    private static int probeNext(int idx, int mask, int tryTimes) {
+        return (idx + (2 << tryTimes)) & mask;
     }
 
     private static long getLongRaw(int[] array, long offset) {
@@ -106,7 +108,7 @@ public final class FixedAtomicIntHashCounter implements AtomicIntHashCounter, Se
         int idx = startIdx;
 
         long kv, kOffset;
-        while (true) {
+        for (int i = 0; i < MAX_TRY_TIMES; i++) {
             kOffset = byteOffset(idx, mask);
             if ((kv = getLongRaw(array, kOffset)) == 0L) {
                 return 0;
@@ -114,10 +116,11 @@ public final class FixedAtomicIntHashCounter implements AtomicIntHashCounter, Se
                 return getValue(kv);
             }
 
-            if ((idx = probeNext(idx, mask)) == startIdx) {
+            if ((idx = probeNext(idx, mask, i)) == startIdx) {
                 return 0;
             }
         }
+        return 0;
     }
 
     @Override
@@ -139,7 +142,7 @@ public final class FixedAtomicIntHashCounter implements AtomicIntHashCounter, Se
         int idx = startIdx;
 
         long kv, kOffset;
-        while (true) {
+        for (int i = 0; i < MAX_TRY_TIMES; i++) {
             kOffset = byteOffset(idx, mask);
             if ((kv = getLongRaw(array, kOffset)) == 0L) { //try set
                 if (unsafe.compareAndSwapLong(array, kOffset, 0L, getKvLong(key, delta))) {
@@ -160,11 +163,12 @@ public final class FixedAtomicIntHashCounter implements AtomicIntHashCounter, Se
                 }
             }
 
-            if ((idx = probeNext(idx, mask)) == startIdx) {
+            if ((idx = probeNext(idx, mask, i)) == startIdx) {
                 //no more space
                 return -1;
             }
         }
+        return -2;
     }
 
     private boolean tryAddLong(final int[] array, final long byteOffset, final int key, final int delta) {
@@ -239,8 +243,8 @@ public final class FixedAtomicIntHashCounter implements AtomicIntHashCounter, Se
     @Override
     public String toString() {
         return "FixedAtomicIntCounter{" +
-                "array=" + Arrays.toString(array) +
-                ", size=" + size +
+                "size=" + size +
+                ", array=" + Arrays.toString(array) +
                 '}';
     }
 }
