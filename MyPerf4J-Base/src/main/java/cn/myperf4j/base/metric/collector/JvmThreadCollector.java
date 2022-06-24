@@ -1,11 +1,14 @@
 package cn.myperf4j.base.metric.collector;
 
 import cn.myperf4j.base.metric.JvmThreadMetrics;
+import cn.myperf4j.base.util.Logger;
+import cn.myperf4j.base.util.concurrent.ThreadUtils;
 
 import java.lang.Thread.State;
 import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import static java.lang.Thread.State.BLOCKED;
 import static java.lang.Thread.State.NEW;
@@ -21,6 +24,21 @@ public final class JvmThreadCollector {
 
     private static final ThreadMXBean THREAD_MX_BEAN = ManagementFactory.getThreadMXBean();
 
+    private static final Method getThreadMethod = reflectGetThreadsMethod();
+
+    private static final ThreadGroup systemThreadGroup = ThreadUtils.getSystemThreadGroup();
+
+    private static Method reflectGetThreadsMethod() {
+        try {
+            final Method method = Thread.class.getDeclaredMethod("getThreads");
+            method.setAccessible(true);
+            return method;
+        } catch (NoSuchMethodException e) {
+            Logger.warn("JvmThreadCollector.reflectGetThreadsMethod(): reflect getThreads Method failure!");
+            return null;
+        }
+    }
+
     private JvmThreadCollector() {
         //empty
     }
@@ -32,15 +50,14 @@ public final class JvmThreadCollector {
         int waiting = 0;
         int timedWaiting = 0;
         int terminated = 0;
-        final ThreadMXBean mxBean = THREAD_MX_BEAN;
-        final ThreadInfo[] threadInfoArr = mxBean.getThreadInfo(mxBean.getAllThreadIds(), 0);
-        for (int i = 0; i < threadInfoArr.length; ++i) {
-            final ThreadInfo threadInfo = threadInfoArr[i];
-            if (threadInfo == null) {
+        final Thread[] threads = getThreads();
+        for (int i = 0, len = threads.length; i < len; ++i) {
+            final Thread thread = threads[i];
+            if (thread == null) {
                 continue;
             }
 
-            final State state = threadInfo.getThreadState();
+            final State state = thread.getState();
             if (state == NEW) {
                 news++;
             } else if (state == RUNNABLE) {
@@ -56,6 +73,7 @@ public final class JvmThreadCollector {
             }
         }
 
+        final ThreadMXBean mxBean = THREAD_MX_BEAN;
         return new JvmThreadMetrics(
                 mxBean.getTotalStartedThreadCount(),
                 mxBean.getThreadCount(),
@@ -67,5 +85,16 @@ public final class JvmThreadCollector {
                 waiting,
                 timedWaiting,
                 terminated);
+    }
+
+    private static Thread[] getThreads() {
+        if (getThreadMethod != null) {
+            try {
+                return (Thread[]) getThreadMethod.invoke(Thread.class);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                //ignore
+            }
+        }
+        return ThreadUtils.findThreads(systemThreadGroup, true);
     }
 }

@@ -31,4 +31,27 @@ public final class ThreadUtils {
             //empty
         }
     }
+
+    public static ThreadGroup getSystemThreadGroup() {
+        ThreadGroup threadGroup = Thread.currentThread().getThreadGroup();
+        while (threadGroup.getParent() != null) {
+            threadGroup = threadGroup.getParent();
+        }
+        return threadGroup;
+    }
+
+    public static Thread[] findThreads(final ThreadGroup group, final boolean recurse) {
+        if (group == null) {
+            throw new IllegalArgumentException("The group must not be null");
+        }
+
+        int count = group.activeCount();
+        Thread[] threads;
+        do {
+            threads = new Thread[count + (count / 2) + 1]; //slightly grow the array size
+            count = group.enumerate(threads, recurse);
+            //return value of enumerate() must be strictly less than the array size according to javadoc
+        } while (count >= threads.length);
+        return threads;
+    }
 }
