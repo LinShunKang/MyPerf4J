@@ -13,11 +13,6 @@ import static java.util.concurrent.atomic.AtomicIntegerFieldUpdater.newUpdater;
 
 /**
  * Created by LinShunkang on 2022/03/19
- * <p>
- * 个人能力有限，至今还未写出可动态扩容的实现，故先实现一个不可扩容的版本，就当做是抛砖引玉，欢迎各位提交 PR！
- * <p>
- * Personal ability is limited, so far no implementation that can be dynamically expanded has been written, so to
- * implement a non-expandable version first, it will be regarded as an introduction, and you are welcome to submit PR!
  */
 public final class FixedAtomicIntHashCounter implements AtomicIntHashCounter, Serializable {
 

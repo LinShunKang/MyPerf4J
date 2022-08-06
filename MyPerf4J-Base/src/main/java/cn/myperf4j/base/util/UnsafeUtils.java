@@ -46,6 +46,38 @@ public final class UnsafeUtils {
         return UNSAFE;
     }
 
+    public static long fieldOffset(Class<?> clz, String fieldName) throws RuntimeException {
+        try {
+            return UNSAFE.objectFieldOffset(clz.getDeclaredField(fieldName));
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static int getAndAddInt(Object obj, long offset, int delta) {
+        int oldVal;
+        do {
+            oldVal = UNSAFE.getIntVolatile(obj, offset);
+        } while (!UNSAFE.compareAndSwapInt(obj, offset, oldVal, oldVal + delta));
+        return oldVal;
+    }
+
+    public static int getAndSetInt(Object obj, long offset, int newVal) {
+        int oldVal;
+        do {
+            oldVal = UNSAFE.getIntVolatile(obj, offset);
+        } while (!UNSAFE.compareAndSwapInt(obj, offset, oldVal, newVal));
+        return oldVal;
+    }
+
+    public static Object getAndSetObject(Object obj, long offset, Object newVal) {
+        Object oldVal;
+        do {
+            oldVal = UNSAFE.getObjectVolatile(obj, offset);
+        } while (!UNSAFE.compareAndSwapObject(obj, offset, oldVal, newVal));
+        return oldVal;
+    }
+
     private UnsafeUtils() {
         //empty
     }
