@@ -3,10 +3,13 @@ package cn.myperf4j.bench.util.concurrent;
 import cn.myperf4j.base.util.concurrent.AtomicIntArray;
 import cn.myperf4j.base.util.concurrent.AtomicIntHashCounter;
 import cn.myperf4j.base.util.concurrent.FixedAtomicIntHashCounter;
+import cn.myperf4j.base.util.concurrent.ScalableAtomicIntHashCounter;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
@@ -17,6 +20,7 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -25,37 +29,59 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @BenchmarkMode({Mode.Throughput})
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
-@State(Scope.Thread)
+@State(Scope.Benchmark)
 public class AtomicIntHashCounterBench {
 
-    private AtomicIntHashCounter intHashCounter;
+    private AtomicIntHashCounter fixedIntHashCounter;
+
+    private AtomicIntHashCounter scalableIntHashCounter;
 
     private AtomicIntArray intArray;
 
-    private ConcurrentMap<Integer, AtomicInteger> integerMap;
+    private ConcurrentMap<Integer, AtomicInteger> jdkIntegerMap;
 
-    private final int[] keys = {0, 8, 16, 24, 32, 40, 48, 56};
+    @Param(value = {"1048576"})
+    private int mapSize;
 
-    @Setup
+    @Setup(Level.Iteration)
     public void setup() {
-        intHashCounter = new FixedAtomicIntHashCounter(128);
-        intArray = new AtomicIntArray(128);
-        integerMap = new ConcurrentHashMap<>(128);
+        fixedIntHashCounter = new FixedAtomicIntHashCounter(mapSize << 1);
+        scalableIntHashCounter = new ScalableAtomicIntHashCounter(128);
+        intArray = new AtomicIntArray(mapSize + 1);
+        jdkIntegerMap = new ConcurrentHashMap<>(128);
+
+        final ThreadLocalRandom random = ThreadLocalRandom.current();
+        for (int i = 1; i < mapSize; i++) {
+            final int key = random.nextInt(0, mapSize);
+            fixedIntHashCounter.incrementAndGet(key);
+            scalableIntHashCounter.incrementAndGet(key);
+            intArray.incrementAndGet(key);
+            increase(jdkIntegerMap, key);
+        }
     }
 
     @Benchmark
-    public int intHashCounter() {
-        return intHashCounter.incrementAndGet(64);
+    public int fixedIntHashCounter(ThreadState state) {
+        return fixedIntHashCounter.incrementAndGet(randomKey(state));
     }
 
-//    @Benchmark
-    public int intArray() {
-        return intArray.incrementAndGet(64);
+    private int randomKey(ThreadState state) {
+        return state.next() & (mapSize - 1);
     }
 
     @Benchmark
-    public int integerMap() {
-        return increase(integerMap, 64);
+    public int scalableIntHashCounter(ThreadState state) {
+        return scalableIntHashCounter.incrementAndGet(randomKey(state));
+    }
+
+    @Benchmark
+    public int intArray(ThreadState state) {
+        return intArray.incrementAndGet(randomKey(state));
+    }
+
+    @Benchmark
+    public int jdkIntegerMap(ThreadState state) {
+        return increase(jdkIntegerMap, randomKey(state));
     }
 
     private int increase(ConcurrentMap<Integer, AtomicInteger> integerHashMap, int k) {
@@ -75,11 +101,21 @@ public class AtomicIntHashCounterBench {
         // 使用一个单独进程执行测试，执行3遍warmup，然后执行5遍测试
         final Options opt = new OptionsBuilder()
                 .include(AtomicIntHashCounterBench.class.getSimpleName())
-                .forks(2)
-                .threads(Runtime.getRuntime().availableProcessors() / 2 + 1)
-                .warmupIterations(3)
+                .forks(1)
+                .threads(1)
+                .warmupIterations(1)
                 .measurementIterations(5)
                 .build();
         new Runner(opt).run();
+    }
+
+    @State(Scope.Thread)
+    public static class ThreadState {
+
+        private final SimpleRandom random = new SimpleRandom();
+
+        int next() {
+            return random.next();
+        }
     }
 }

@@ -14,6 +14,7 @@ import static java.util.concurrent.atomic.AtomicIntegerFieldUpdater.newUpdater;
 /**
  * Created by LinShunkang on 2022/03/19
  */
+@Deprecated
 public final class FixedAtomicIntHashCounter implements AtomicIntHashCounter, Serializable {
 
     private static final long serialVersionUID = 6187812026945356420L;
