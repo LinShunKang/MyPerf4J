@@ -144,7 +144,7 @@ public class ScalableAtomicIntHashCounterTest {
     @Test
     public void testSingleThreadV2() {
         final AtomicIntHashCounter intMap = new ScalableAtomicIntHashCounter(16);
-        for (int i = 1; i < 10240; i++) {
+        for (int i = 1; i < 1024; i++) {
             intMap.incrementAndGet(i);
         }
         System.out.println(intMap);
@@ -152,7 +152,7 @@ public class ScalableAtomicIntHashCounterTest {
 
     @Test
     public void testMultiThread4HighRace() throws InterruptedException, BrokenBarrierException {
-        final int threadCnt = Runtime.getRuntime().availableProcessors();
+        final int threadCnt = Runtime.getRuntime().availableProcessors() - 2;
         final ExecutorService executor = Executors.newFixedThreadPool(threadCnt);
         int failureTimes = 0;
 //        final int testTimes = 1024 * 1024;
@@ -174,7 +174,7 @@ public class ScalableAtomicIntHashCounterTest {
 
     @Test
     public void testMultiThread4LowRace() throws InterruptedException, BrokenBarrierException {
-        final int threadCnt = Runtime.getRuntime().availableProcessors();
+        final int threadCnt = Runtime.getRuntime().availableProcessors() - 2;
         final ExecutorService executor = Executors.newFixedThreadPool(threadCnt);
         int failureTimes = 0;
 //        final int testTimes = 1024 * 1024;

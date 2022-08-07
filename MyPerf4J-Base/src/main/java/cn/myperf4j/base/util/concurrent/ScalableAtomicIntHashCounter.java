@@ -5,6 +5,7 @@ import cn.myperf4j.base.util.UnsafeUtils;
 import sun.misc.Unsafe;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
@@ -17,6 +18,8 @@ import static java.util.concurrent.atomic.AtomicReferenceFieldUpdater.newUpdater
 
 /**
  * Created by LinShunkang on 2022/07/17
+ * <p>
+ * This class draws on the NonBlockingHashMapLong written by Cliff Click in the JCTools project.
  */
 public class ScalableAtomicIntHashCounter implements AtomicIntHashCounter {
 
@@ -83,8 +86,8 @@ public class ScalableAtomicIntHashCounter implements AtomicIntHashCounter {
         return log2;
     }
 
-    private boolean CAS(final long offset, final Object old, final Object nnn) {
-        return UNSAFE.compareAndSwapObject(this, offset, old, nnn);
+    private boolean CAS(final long offset, final Object oldObj, final Object newObj) {
+        return UNSAFE.compareAndSwapObject(this, offset, oldObj, newObj);
     }
 
     private void helpCopy() {
@@ -146,7 +149,7 @@ public class ScalableAtomicIntHashCounter implements AtomicIntHashCounter {
 
     @Override
     public void reset() {
-        final IHC oldIHC = ihc;
+        final IHC oldIHC = this.ihc;
         final int[] kvs = oldIHC.kvs;
         UNSAFE.setMemory(kvs, byteOffset(0), ((long) kvs.length) * I_SCALE, (byte) 0);
         UnsafeUtils.getAndSetObject(this, IHC_OFFSET, new IHC(this, kvs));
@@ -155,8 +158,47 @@ public class ScalableAtomicIntHashCounter implements AtomicIntHashCounter {
 
     @Override
     public long fillSortedKvs(IntBuf intBuf) {
-        //TODO:LSK implement it!!!
-        throw new UnsupportedOperationException();
+        long totalCount = 0L;
+        final int offset = intBuf.writerIndex();
+        final IHC topIhc = finishCopy();
+        final int[] kvs = topIhc.kvs;
+        for (int k = 0, len = kvs.length; k < len; k += 2) {
+            final int key = kvs[k];
+            final int value = kvs[k + 1];
+            if (value > 0) {
+                intBuf.write(key);
+                totalCount += value;
+            }
+        }
+
+        if (offset == intBuf.writerIndex()) {
+            return 0;
+        }
+
+        final int writerIndex = intBuf.writerIndex();
+        Arrays.sort(intBuf._buf(), offset, writerIndex);
+
+        for (int i = writerIndex - 1; i >= offset; --i) {
+            final int key = intBuf.getInt(i);
+            final int keyIdx = (i << 1) - offset; //2 * (i - offset) + offset
+            intBuf.setInt(keyIdx, key);
+            intBuf.setInt(keyIdx + 1, get(key));
+        }
+        intBuf.writerIndex((writerIndex << 1) - offset); //writerIndex + (writerIndex - offset)
+        return totalCount;
+    }
+
+    private IHC finishCopy() {
+        while (true) {
+            final IHC topIhc = ihc;
+            if (topIhc.nextIhc == null) { // No table-copy-in-progress
+                return topIhc;
+            }
+
+            // Table copy in-progress - so we cannot get a clean iteration.  We
+            // must help finish the table copy before we can start iterating.
+            topIhc.helpCopy(true);
+        }
     }
 
     private static final class IHC implements Serializable {
@@ -216,6 +258,10 @@ public class ScalableAtomicIntHashCounter implements AtomicIntHashCounter {
 
         private boolean casKv(int idx, long oldKv, long newKv) {
             return UNSAFE.compareAndSwapLong(kvs, byteOffset(idx << 1), oldKv, newKv);
+        }
+
+        private boolean casValue(int idx, int oldVal, int newVal) {
+            return UNSAFE.compareAndSwapInt(kvs, byteOffset((idx << 1) + 1), oldVal, newVal);
         }
 
         private long getKv(int idx) {
@@ -295,7 +341,7 @@ public class ScalableAtomicIntHashCounter implements AtomicIntHashCounter {
                         }
 
                         // Try to increase the value with delta
-                        if (casKv(idx, kv, kv(key, v + delta))) {
+                        if (casValue(idx, v, v + delta)) {
                             return v;
                         }
 
