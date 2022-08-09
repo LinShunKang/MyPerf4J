@@ -2,7 +2,6 @@ package cn.myperf4j.bench.util.concurrent;
 
 import cn.myperf4j.base.util.concurrent.AtomicIntArray;
 import cn.myperf4j.base.util.concurrent.AtomicIntHashCounter;
-import cn.myperf4j.base.util.concurrent.FixedAtomicIntHashCounter;
 import cn.myperf4j.base.util.concurrent.ScalableAtomicIntHashCounter;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -32,8 +31,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @State(Scope.Benchmark)
 public class AtomicIntHashCounterBench {
 
-    private AtomicIntHashCounter fixedIntHashCounter;
-
     private AtomicIntHashCounter scalableIntHashCounter;
 
     private AtomicIntArray intArray;
@@ -45,7 +42,6 @@ public class AtomicIntHashCounterBench {
 
     @Setup(Level.Iteration)
     public void setup() {
-        fixedIntHashCounter = new FixedAtomicIntHashCounter(mapSize << 1);
         scalableIntHashCounter = new ScalableAtomicIntHashCounter(128);
         intArray = new AtomicIntArray(mapSize + 1);
         jdkIntegerMap = new ConcurrentHashMap<>(128);
@@ -53,16 +49,10 @@ public class AtomicIntHashCounterBench {
         final ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 1; i < mapSize; i++) {
             final int key = random.nextInt(0, mapSize);
-            fixedIntHashCounter.incrementAndGet(key);
             scalableIntHashCounter.incrementAndGet(key);
             intArray.incrementAndGet(key);
             increase(jdkIntegerMap, key);
         }
-    }
-
-    @Benchmark
-    public int fixedIntHashCounter(ThreadState state) {
-        return fixedIntHashCounter.incrementAndGet(randomKey(state));
     }
 
     private int randomKey(ThreadState state) {

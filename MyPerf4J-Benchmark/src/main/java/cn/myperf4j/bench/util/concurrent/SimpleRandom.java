@@ -19,8 +19,6 @@ public final class SimpleRandom {
     }
 
     public int next() {
-        final long nextSeed = (seed * multiplier + addend) & mask;
-        seed = nextSeed;
-        return ((int) (nextSeed >>> 17)) & 0x7FFFFFFF;
+        return (int) ((seed = (seed * multiplier + addend) & mask) >>> 17) & 0x7FFFFFFF;
     }
 }

@@ -268,6 +268,10 @@ public class ScalableAtomicIntHashCounter implements AtomicIntHashCounter {
             return UNSAFE.getLongVolatile(kvs, byteOffset(idx << 1));
         }
 
+        private int getValue(int idx) {
+            return UNSAFE.getIntVolatile(kvs, byteOffset((idx << 1) + 1));
+        }
+
         private int get(final int key) {
             final int len = len(this.kvs);
             final int lenMask = len - 1;
@@ -345,9 +349,8 @@ public class ScalableAtomicIntHashCounter implements AtomicIntHashCounter {
                             return v;
                         }
 
-                        // CAS failed!
-                        kv = getKv(idx); // CAS failed, get updated value
-                        v = value(kv);
+                        // CAS failed, get updated value
+                        v = getValue(idx);
                     }
                 }
 
