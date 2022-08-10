@@ -233,11 +233,17 @@ public class ScalableAtomicIntHashCounter implements AtomicIntHashCounter {
 
         private final int[] kvs;
 
+        private final int len;
+
+        private final int reProbeLimit;
+
         IHC(ScalableAtomicIntHashCounter saihc, AtomicInteger size, int logSize) {
             this.saihc = saihc;
             this.size = size;
             this.slots = new AtomicInteger(0);
             this.kvs = new int[(1 << logSize) << 1];
+            this.len = len(this.kvs);
+            this.reProbeLimit = reProbeLimit(this.len);
         }
 
         // Just use this constructor for reset.
@@ -246,6 +252,8 @@ public class ScalableAtomicIntHashCounter implements AtomicIntHashCounter {
             this.size = new AtomicInteger(0);
             this.slots = new AtomicInteger(0);
             this.kvs = kvs;
+            this.len = len(this.kvs);
+            this.reProbeLimit = reProbeLimit(this.len);
         }
 
         public int size() {
@@ -273,7 +281,6 @@ public class ScalableAtomicIntHashCounter implements AtomicIntHashCounter {
         }
 
         private int get(final int key) {
-            final int len = len(this.kvs);
             final int lenMask = len - 1;
             int idx = key & lenMask; // First key hash
 
@@ -293,7 +300,7 @@ public class ScalableAtomicIntHashCounter implements AtomicIntHashCounter {
                     return copySlotAndCheck(idx, false).get(key); // Retry in the new table
                 }
 
-                if (++reProbeTimes >= reProbeLimit(len)) {
+                if (++reProbeTimes >= reProbeLimit) {
                     return nextIhc == null // Table copy in progress?
                             ? 0               // Nope!  A clear miss
                             : copySlotAndCheck(idx, false).get(key); // Retry in the new table
@@ -305,7 +312,6 @@ public class ScalableAtomicIntHashCounter implements AtomicIntHashCounter {
 
         private int addDelta(final int key, final int delta, final boolean fromTableCopy) {
             assert key > 0 && delta > 0;
-            final int len = len(kvs);
             final int lenMask = len - 1;
             int idx = key & lenMask; // First key hash
 
@@ -354,7 +360,7 @@ public class ScalableAtomicIntHashCounter implements AtomicIntHashCounter {
                     }
                 }
 
-                if (++reProbeTimes >= reProbeLimit(len)) {
+                if (++reProbeTimes >= reProbeLimit) {
                     final IHC newIhc = resize();
                     if (!fromTableCopy) {
                         saihc.helpCopy(); // help along an existing copy
@@ -407,16 +413,16 @@ public class ScalableAtomicIntHashCounter implements AtomicIntHashCounter {
                     // Do the cheap check first: we allow some number of re-probes always
                     reProbeCnt >= RE_PROBE_LIMIT &&
                             // More expensive check: see if the table is > 1/2 full.
-                            (reProbeCnt >= reProbeLimit(len) || slots.get() >= (len >> 1));
+                            (reProbeCnt >= reProbeLimit || slots.get() >= (len >> 1));
         }
 
         private IHC resize() {
-            IHC newIhc = nextIhc;
+            IHC newIhc = this.nextIhc;
             if (newIhc != null) {
                 return newIhc;
             }
 
-            final int oldLen = len(kvs);
+            final int oldLen = this.len;
             final int size = size();
             int newSize = oldLen << 1;
 
@@ -508,9 +514,9 @@ public class ScalableAtomicIntHashCounter implements AtomicIntHashCounter {
         }
 
         private void helpCopy(final boolean copyAll) {
-            final IHC newIhc = nextIhc;
+            final IHC newIhc = this.nextIhc;
             assert newIhc != null;    // Already checked by caller
-            final int oldLen = len(kvs); // Total amount to copy
+            final int oldLen = this.len; // Total amount to copy
             final int MIN_COPY_WORK = Math.min(oldLen, 1024); // Limit per-thread work
             int panicStart = -1, copyIdx = -9999;
             while (copyDone < oldLen) { // Still needing to copy?
@@ -561,7 +567,7 @@ public class ScalableAtomicIntHashCounter implements AtomicIntHashCounter {
         }
 
         private void copyCheckAndPromote(int workDone) {
-            final int oldLen = len(kvs);
+            final int oldLen = this.len;
             // We made a slot unusable and so did some needed copy work
             long copyDone = this.copyDone;
             assert (copyDone + workDone) <= oldLen;
