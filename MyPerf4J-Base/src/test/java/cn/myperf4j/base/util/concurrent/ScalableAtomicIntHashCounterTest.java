@@ -56,7 +56,7 @@ public class ScalableAtomicIntHashCounterTest {
 
     @Test
     public void testSize() {
-        final AtomicIntHashCounter intCounter = new ScalableAtomicIntHashCounter(1);
+        final AtomicIntHashCounter intCounter = new ScalableAtomicIntHashCounter();
         Assert.assertEquals(intCounter.size(), 0);
 
         intCounter.addAndGet(1, 2);
@@ -73,20 +73,30 @@ public class ScalableAtomicIntHashCounterTest {
 
     @Test
     public void testReset() {
-        final AtomicIntHashCounter intCounter = new ScalableAtomicIntHashCounter(10240);
+        final AtomicIntHashCounter intCounter = new ScalableAtomicIntHashCounter();
         Assert.assertEquals(intCounter.size(), 0);
 
-        for (int i = 1; i < 10240; i++) {
-            Assert.assertEquals(i, intCounter.addAndGet(i, i));
+        final int testTimes = 10240;
+        for (int i = 0; i < testTimes; i++) {
+            Assert.assertEquals(1, intCounter.addAndGet(i, 1));
         }
-        Assert.assertEquals(10239, intCounter.size());
+        Assert.assertEquals(testTimes, intCounter.size());
 
         intCounter.reset();
-        Assert.assertEquals(intCounter.size(), 0);
-
-        for (int i = 1; i < 10240; i++) {
+        for (int i = 1; i < testTimes; i++) {
             Assert.assertEquals(0, intCounter.get(i));
         }
+        Assert.assertEquals(intCounter.size(), 0);
+
+        for (int i = 0; i < testTimes; i++) {
+            Assert.assertEquals(i + 10, intCounter.addAndGet(i, i + 10));
+        }
+        Assert.assertEquals(testTimes, intCounter.size());
+
+        for (int i = 0; i < testTimes; i++) {
+            Assert.assertEquals(i + 10, intCounter.get(i));
+        }
+        Assert.assertEquals(testTimes, intCounter.size());
     }
 
     @Test
