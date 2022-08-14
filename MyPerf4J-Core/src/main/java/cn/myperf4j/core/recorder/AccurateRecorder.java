@@ -1,6 +1,6 @@
 package cn.myperf4j.core.recorder;
 
-import cn.myperf4j.base.buffer.IntBuf;
+import cn.myperf4j.base.buffer.LongBuf;
 import cn.myperf4j.base.util.concurrent.AtomicIntArray;
 import cn.myperf4j.base.util.concurrent.AtomicIntHashCounter;
 import cn.myperf4j.base.util.concurrent.ScalableAtomicIntHashCounter;
@@ -53,8 +53,8 @@ public final class AccurateRecorder extends Recorder {
     }
 
     @Override
-    public long fillSortedRecords(IntBuf intBuf) {
-        return timingArr.fillSortedKvs(intBuf) + timingHashCounter.fillSortedKvs(intBuf);
+    public long fillSortedRecords(LongBuf longBuf) {
+        return timingArr.fillSortedKvs(longBuf) + timingHashCounter.fillSortedKvs(longBuf);
     }
 
     @Override

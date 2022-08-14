@@ -1,6 +1,6 @@
 package cn.myperf4j.base.util.concurrent;
 
-import cn.myperf4j.base.buffer.IntBuf;
+import cn.myperf4j.base.buffer.LongBuf;
 import cn.myperf4j.base.util.UnsafeUtils;
 import sun.misc.Unsafe;
 
@@ -157,34 +157,30 @@ public class ScalableAtomicIntHashCounter implements AtomicIntHashCounter {
     }
 
     @Override
-    public long fillSortedKvs(IntBuf intBuf) {
+    public long fillSortedKvs(LongBuf longBuf) {
         long totalCount = 0L;
-        final int offset = intBuf.writerIndex();
+        final int offset = longBuf.writerIndex();
+        if (val0 > 0) {
+            longBuf.write(0, val0);
+            totalCount += val0;
+        }
+
         final IHC topIhc = finishCopy();
         final int[] kvs = topIhc.kvs;
         for (int k = 0, len = kvs.length; k < len; k += 2) {
-            final int key = kvs[k];
             final int value = kvs[k + 1];
             if (value > 0) {
-                intBuf.write(key);
+                longBuf.write(kvs[k], value);
                 totalCount += value;
             }
         }
 
-        if (offset == intBuf.writerIndex()) {
+        if (offset == longBuf.writerIndex()) {
             return 0;
         }
 
-        final int writerIndex = intBuf.writerIndex();
-        Arrays.sort(intBuf._buf(), offset, writerIndex);
-
-        for (int i = writerIndex - 1; i >= offset; --i) {
-            final int key = intBuf.getInt(i);
-            final int keyIdx = (i << 1) - offset; //2 * (i - offset) + offset
-            intBuf.setInt(keyIdx, key);
-            intBuf.setInt(keyIdx + 1, get(key));
-        }
-        intBuf.writerIndex((writerIndex << 1) - offset); //writerIndex + (writerIndex - offset)
+        final int writerIndex = longBuf.writerIndex();
+        Arrays.sort(longBuf._buf(), offset, writerIndex);
         return totalCount;
     }
 

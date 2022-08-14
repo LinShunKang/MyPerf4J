@@ -1,6 +1,6 @@
 package cn.myperf4j.core.recorder;
 
-import cn.myperf4j.base.buffer.IntBuf;
+import cn.myperf4j.base.buffer.LongBuf;
 import cn.myperf4j.base.util.concurrent.AtomicIntArray;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -51,17 +51,8 @@ public final class RoughRecorder extends Recorder {
     }
 
     @Override
-    public long fillSortedRecords(final IntBuf intBuf) {
-        long totalCount = 0L;
-        final AtomicIntArray timingArr = this.timingArr;
-        for (int i = 0; i < timingArr.length(); ++i) {
-            final int count = timingArr.get(i);
-            if (count > 0) {
-                intBuf.write(i, count);
-                totalCount += count;
-            }
-        }
-        return totalCount;
+    public long fillSortedRecords(LongBuf longBuf) {
+        return timingArr.fillSortedKvs(longBuf);
     }
 
     @Override

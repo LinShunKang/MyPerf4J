@@ -1,6 +1,6 @@
 package cn.myperf4j.base.util.concurrent;
 
-import cn.myperf4j.base.buffer.IntBuf;
+import cn.myperf4j.base.buffer.LongBuf;
 import cn.myperf4j.base.util.UnsafeUtils;
 import sun.misc.Unsafe;
 
@@ -143,12 +143,12 @@ public final class AtomicIntArray implements Serializable {
         unsafe.setMemory(array, byteOffset(0), (long) array.length * scale, (byte) 0);
     }
 
-    public long fillSortedKvs(IntBuf intBuf) {
+    public long fillSortedKvs(LongBuf longBuf) {
         long totalCount = 0L;
         for (int i = 0, len = array.length; i < len; ++i) {
             final int count = get(i);
             if (count > 0) {
-                intBuf.write(i, count);
+                longBuf.write(i, count);
                 totalCount += count;
             }
         }

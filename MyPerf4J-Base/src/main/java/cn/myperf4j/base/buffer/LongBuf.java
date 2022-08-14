@@ -3,54 +3,48 @@ package cn.myperf4j.base.buffer;
 import java.util.Arrays;
 
 /**
- * Created by LinShunkang on 2019/06/12
+ * Created by LinShunkang on 2022/08/14
  */
-public class IntBuf {
+public class LongBuf {
 
-    private final int[] buf;
+    private final long[] buf;
 
     private int writerIndex;
 
-    private final IntBufPool pool;
+    private final LongBufPool pool;
 
-    public IntBuf(int capacity, IntBufPool pool) {
-        this.buf = new int[capacity];
+    public LongBuf(int capacity, LongBufPool pool) {
+        this.buf = new long[capacity];
         this.writerIndex = 0;
         this.pool = pool;
     }
 
-    public IntBuf(int capacity) {
-        this.buf = new int[capacity];
+    public LongBuf(int capacity) {
+        this.buf = new long[capacity];
         this.writerIndex = 0;
         this.pool = null;
     }
 
-    public void write(int value) {
+    public void write(long value) {
         ensureWritable(1);
         this.buf[writerIndex++] = value;
     }
 
-    public void write(int v1, int v2) {
-        ensureWritable(2);
-        this.buf[writerIndex++] = v1;
-        this.buf[writerIndex++] = v2;
+    public void write(int key, int value) {
+        ensureWritable(1);
+        this.buf[writerIndex++] = kv(key, value);
     }
 
     private void ensureWritable(int minWritableSize) {
         if (minWritableSize > buf.length - writerIndex) {
-            throw new IndexOutOfBoundsException("IntBuf minWritableSize(" + minWritableSize +
+            throw new IndexOutOfBoundsException("LongBuf minWritableSize(" + minWritableSize +
                     ") + writerIndex(" + writerIndex + ") exceed buf.length(" + buf.length + ")");
         }
     }
 
-    public void setInt(int index, int value) {
-        checkBounds(index);
-        this.buf[index] = value;
-    }
-
     private void checkBounds(int index) {
         if (index >= buf.length) {
-            throw new IndexOutOfBoundsException("IntBuf index(" + index + ") exceed buf.length(" + buf.length + ")");
+            throw new IndexOutOfBoundsException("LongBuf index(" + index + ") exceed buf.length(" + buf.length + ")");
         }
     }
 
@@ -62,20 +56,12 @@ public class IntBuf {
         return writerIndex;
     }
 
-    public void writerIndex(int writerIndex) {
-        this.writerIndex = writerIndex;
-    }
-
-    public int getInt(int index) {
+    public long getLong(int index) {
         checkBounds(index);
         return buf[index];
     }
 
-    public int _getInt(int index) {
-        return buf[index];
-    }
-
-    public int[] _buf() {
+    public long[] _buf() {
         return buf;
     }
 
@@ -83,16 +69,28 @@ public class IntBuf {
         this.writerIndex = 0;
     }
 
-    public IntBufPool intBufPool() {
+    public LongBufPool pool() {
         return pool;
     }
 
     @Override
     public String toString() {
-        return "IntBuf{" +
+        return "LongBuf{" +
                 "buf=" + Arrays.toString(buf) +
                 ", writerIndex=" + writerIndex +
                 ", pool=" + pool +
                 '}';
+    }
+
+    public static long kv(int key, int value) {
+        return ((long) key) << 32 | value;
+    }
+
+    public static int key(long kvLong) {
+        return (int) (kvLong >> 32);
+    }
+
+    public static int value(long kvLong) {
+        return (int) kvLong;
     }
 }

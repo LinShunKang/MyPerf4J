@@ -1,11 +1,14 @@
 package cn.myperf4j.core;
 
-import cn.myperf4j.base.buffer.IntBuf;
-import cn.myperf4j.base.buffer.IntBufPool;
-import cn.myperf4j.base.metric.MethodMetrics;
 import cn.myperf4j.base.MethodTag;
+import cn.myperf4j.base.buffer.LongBuf;
+import cn.myperf4j.base.buffer.LongBufPool;
+import cn.myperf4j.base.metric.MethodMetrics;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.core.recorder.Recorder;
+
+import static cn.myperf4j.base.buffer.LongBuf.key;
+import static cn.myperf4j.base.buffer.LongBuf.value;
 
 /**
  * Created by LinShunkang on 2018/3/11
@@ -19,58 +22,60 @@ public final class MethodMetricsCalculator {
         }
     };
 
-    private static final IntBufPool intBufPool = IntBufPool.getInstance();
+    private static final LongBufPool longBufPool = LongBufPool.getInstance();
 
     private MethodMetricsCalculator() {
         //empty
     }
 
     public static MethodMetrics calMetrics(Recorder recorder, MethodTag methodTag, long startTime, long stopTime) {
-        IntBuf intBuf = null;
+        LongBuf longBuf = null;
         try {
             final int diffCount = recorder.getDiffCount();
-            intBuf = intBufPool.acquire(diffCount << 1);
-            final long totalCount = recorder.fillSortedRecords(intBuf);
-            return calMetrics(recorder, methodTag, startTime, stopTime, intBuf, totalCount, diffCount);
+            longBuf = longBufPool.acquire(diffCount);
+            final long totalCount = recorder.fillSortedRecords(longBuf);
+            return calMetrics(recorder, methodTag, startTime, stopTime, longBuf, totalCount, diffCount);
         } catch (Exception e) {
             Logger.error("MethodMetricsCalculator.calMetrics(" + recorder + ", " + methodTag + ", "
-                    + startTime + ", " + stopTime + "): infBuf=" + intBuf, e);
+                    + startTime + ", " + stopTime + "): infBuf=" + longBuf, e);
         } finally {
-            intBufPool.release(intBuf);
+            longBufPool.release(longBuf);
         }
         return MethodMetrics.getInstance(methodTag, recorder.getMethodTagId(), startTime, stopTime);
     }
 
-    private static MethodMetrics calMetrics(Recorder recorder,
+    private static MethodMetrics calMetrics(Recorder rec,
                                             MethodTag methodTag,
                                             long startTime,
                                             long stopTime,
-                                            IntBuf sortedRecords,
+                                            LongBuf sortedRecords,
                                             long totalCount,
                                             int diffCount) {
-        MethodMetrics result = MethodMetrics.getInstance(methodTag, recorder.getMethodTagId(), startTime, stopTime);
+        final MethodMetrics result = MethodMetrics.getInstance(methodTag, rec.getMethodTagId(), startTime, stopTime);
+        result.setTotalCount(totalCount);
         if (diffCount <= 0) {
             return result;
         }
 
-        result.setTotalCount(totalCount);
-        result.setMinTime(sortedRecords._getInt(0));
-        result.setMaxTime(sortedRecords._getInt(sortedRecords.writerIndex() - 2));
+        final long[] buf = sortedRecords._buf();
+        result.setMinTime(key(buf[0]));
+        result.setMaxTime(key(buf[sortedRecords.writerIndex() - 1]));
 
         final long[] tpIndexArr = getTpIndexArr(totalCount);
+        final int tpIndexArrLen = tpIndexArr.length;
         final int[] tpArr = result.getTpArr();
-        int tpIndex = 0;
-        long countMile = 0L;
+        int tpIndex = 0, timeCost, count;
         double sigma = 0.0D; //∑
-        long totalTime = 0L;
-        for (int i = 0, writerIdx = sortedRecords.writerIndex(); i < writerIdx; ) {
-            final int timeCost = sortedRecords._getInt(i++);
-            final int count = sortedRecords._getInt(i++);
+        long countMile = 0L, totalTime = 0L, kvLong;
+        for (int i = 0, writerIdx = sortedRecords.writerIndex(); i < writerIdx;) {
+            kvLong = buf[i++];
+            timeCost = key(kvLong);
+            count = value(kvLong);
 
             totalTime += (long) timeCost * count;
             countMile += count;
 
-            while (tpIndex < tpIndexArr.length && countMile >= tpIndexArr[tpIndex]) {
+            while (tpIndex < tpIndexArrLen && countMile >= tpIndexArr[tpIndex]) {
                 tpArr[tpIndex++] = timeCost;
             }
 

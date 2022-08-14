@@ -1,6 +1,6 @@
 package cn.myperf4j.base.util.concurrent;
 
-import cn.myperf4j.base.buffer.IntBuf;
+import cn.myperf4j.base.buffer.LongBuf;
 
 /**
  * Created by LinShunkang on 2022/03/19
@@ -60,10 +60,10 @@ public interface AtomicIntHashCounter {
     void reset();
 
     /**
-     * Write sorted key-value into intBuf, order by key.
+     * Write sorted key-value into longBuf, order by key.
      *
-     * @param intBuf the IntBuf
-     * @return the total values writes into intBuf
+     * @param longBuf the LongBuf
+     * @return the total values write into longBuf
      */
-    long fillSortedKvs(IntBuf intBuf);
+    long fillSortedKvs(LongBuf longBuf);
 }
