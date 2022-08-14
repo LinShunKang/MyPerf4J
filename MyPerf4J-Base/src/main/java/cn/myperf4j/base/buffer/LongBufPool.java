@@ -2,10 +2,8 @@ package cn.myperf4j.base.buffer;
 
 import cn.myperf4j.base.util.Logger;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedTransferQueue;
-
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import java.util.ArrayDeque;
+import java.util.Queue;
 
 /**
  * Created by LinShunkang on 2022/08/14
@@ -22,13 +20,13 @@ public final class LongBufPool {
     private static final int ONE_HUNDRED_K_COUNT = 1;
 
     //用于存放int[4 * 1024]，理论上可以容纳 4096 个不同的响应时间
-    private final BlockingQueue<LongBuf> fourKQueue = new LinkedTransferQueue<>();
+    private final Queue<LongBuf> fourKQueue = new ArrayDeque<>();
 
     //用于存放int[10 * 1024]，理论上可以容纳 10240 个不同的响应时间
-    private final BlockingQueue<LongBuf> tenKQueue = new LinkedTransferQueue<>();
+    private final Queue<LongBuf> tenKQueue = new ArrayDeque<>();
 
     //用于存放int[100 * 1024]，理论上可以容纳 102400 个不同的响应时间
-    private final BlockingQueue<LongBuf> oneHundredKQueue = new LinkedTransferQueue<>();
+    private final Queue<LongBuf> oneHundredKQueue = new ArrayDeque<>();
 
     private static class LongBufPoolHolder {
         private static final LongBufPool instance = new LongBufPool();
@@ -44,49 +42,42 @@ public final class LongBufPool {
         initBufQueue(oneHundredKQueue, ONE_HUNDRED_K, ONE_HUNDRED_K_COUNT);
     }
 
-    private void initBufQueue(BlockingQueue<LongBuf> queue, int capacity, int num) {
+    private void initBufQueue(Queue<LongBuf> queue, int capacity, int num) {
         for (int i = 0; i < num; ++i) {
             queue.add(new LongBuf(capacity, this));
         }
     }
 
-    public LongBuf acquire(int capacity) {
+    public synchronized LongBuf acquire(int capacity) {
         if (capacity > MAX_CAPACITY) {
             return new LongBuf(capacity);
         }
 
-        try {
-            if (capacity <= FOUR_K) {
-                return fourKQueue.poll(1, MILLISECONDS);
-            } else if (capacity <= TEN_K) {
-                return tenKQueue.poll(1, MILLISECONDS);
-            } else {
-                return oneHundredKQueue.poll(1, MILLISECONDS);
-            }
-        } catch (Exception e) {
-            Logger.error("LongBufPool.acquire(" + capacity + ")", e);
+        LongBuf buf;
+        if (capacity <= FOUR_K) {
+            buf = fourKQueue.poll();
+        } else if (capacity <= TEN_K) {
+            buf = tenKQueue.poll();
+        } else {
+            buf = oneHundredKQueue.poll();
         }
-        return new LongBuf(capacity);
+        return buf != null ? buf : new LongBuf(capacity);
     }
 
-    public void release(LongBuf buf) {
-        if (buf == null || buf.capacity() > MAX_CAPACITY || buf.pool() != this) {
+    public synchronized void release(LongBuf buf) {
+        final int capacity = buf.capacity();
+        if (capacity > MAX_CAPACITY || buf.pool() != this) {
             return;
         }
 
-        buf.reset();
-        try {
-            if (buf.capacity() == FOUR_K) {
-                fourKQueue.put(buf);
-            } else if (buf.capacity() == TEN_K) {
-                tenKQueue.put(buf);
-            } else if (buf.capacity() == ONE_HUNDRED_K) {
-                oneHundredKQueue.put(buf);
-            } else {
-                Logger.warn("LongBufPool.release(" + buf.capacity() + ") buf.capacity() is invalid!!!");
-            }
-        } catch (Exception e) {
-            Logger.error("LongBufPool.release(" + buf.capacity() + ")", e);
+        if (capacity == FOUR_K) {
+            fourKQueue.offer(buf);
+        } else if (capacity == TEN_K) {
+            tenKQueue.offer(buf);
+        } else if (capacity == ONE_HUNDRED_K) {
+            oneHundredKQueue.offer(buf);
+        } else {
+            Logger.warn("LongBufPool.release(" + capacity + ") buf.capacity() is invalid!!!");
         }
     }
 }

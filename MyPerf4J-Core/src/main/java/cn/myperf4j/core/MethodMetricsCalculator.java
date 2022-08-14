@@ -29,17 +29,13 @@ public final class MethodMetricsCalculator {
     }
 
     public static MethodMetrics calMetrics(Recorder recorder, MethodTag methodTag, long startTime, long stopTime) {
-        LongBuf longBuf = null;
-        try {
-            final int diffCount = recorder.getDiffCount();
-            longBuf = longBufPool.acquire(diffCount);
+        final int diffCount = recorder.getDiffCount();
+        try (LongBuf longBuf = longBufPool.acquire(diffCount)) {
             final long totalCount = recorder.fillSortedRecords(longBuf);
             return calMetrics(recorder, methodTag, startTime, stopTime, longBuf, totalCount, diffCount);
         } catch (Exception e) {
             Logger.error("MethodMetricsCalculator.calMetrics(" + recorder + ", " + methodTag + ", "
-                    + startTime + ", " + stopTime + "): infBuf=" + longBuf, e);
-        } finally {
-            longBufPool.release(longBuf);
+                    + startTime + ", " + stopTime + ")", e);
         }
         return MethodMetrics.getInstance(methodTag, recorder.getMethodTagId(), startTime, stopTime);
     }
@@ -67,7 +63,7 @@ public final class MethodMetricsCalculator {
         int tpIndex = 0, timeCost, count;
         double sigma = 0.0D; //∑
         long countMile = 0L, totalTime = 0L, kvLong;
-        for (int i = 0, writerIdx = sortedRecords.writerIndex(); i < writerIdx;) {
+        for (int i = 0, writerIdx = sortedRecords.writerIndex(); i < writerIdx; ) {
             kvLong = buf[i++];
             timeCost = key(kvLong);
             count = value(kvLong);

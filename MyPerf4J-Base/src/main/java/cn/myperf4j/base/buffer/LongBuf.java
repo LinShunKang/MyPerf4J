@@ -5,7 +5,7 @@ import java.util.Arrays;
 /**
  * Created by LinShunkang on 2022/08/14
  */
-public class LongBuf {
+public class LongBuf implements AutoCloseable {
 
     private final long[] buf;
 
@@ -65,12 +65,20 @@ public class LongBuf {
         return buf;
     }
 
-    public void reset() {
+    public LongBuf reset() {
         this.writerIndex = 0;
+        return this;
     }
 
     public LongBufPool pool() {
         return pool;
+    }
+
+    @Override
+    public void close() {
+        if (pool != null) {
+            pool.release(reset());
+        }
     }
 
     @Override
