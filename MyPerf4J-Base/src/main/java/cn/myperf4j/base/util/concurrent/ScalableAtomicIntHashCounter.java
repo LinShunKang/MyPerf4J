@@ -37,9 +37,11 @@ public class ScalableAtomicIntHashCounter implements AtomicIntHashCounter {
 
     private static final int MAX_CAPACITY = MAX_VALUE >> 1;
 
-    private static final int MIN_SIZE_LOG = 4;
+    private static final int MIN_LOG_SIZE = 4;
 
-    private static final int MIN_SIZE = 1 << MIN_SIZE_LOG; // Must be power of 2
+    private static final int MAX_LOG_SIZE = 29;
+
+    private static final int MIN_SIZE = 1 << MIN_LOG_SIZE; // Must be power of 2
 
     private static final int RE_PROBE_LIMIT = 10;
 
@@ -59,8 +61,6 @@ public class ScalableAtomicIntHashCounter implements AtomicIntHashCounter {
 
     private int val0; // Value for Key: NO_KEY
 
-    private long lastResizeMillis;
-
     public ScalableAtomicIntHashCounter() {
         this(MIN_SIZE);
     }
@@ -74,13 +74,12 @@ public class ScalableAtomicIntHashCounter implements AtomicIntHashCounter {
 
         this.ihc = new IHC(this, new AtomicInteger(), log2Size(initialCapacity));
         this.val0 = 0;
-        this.lastResizeMillis = System.currentTimeMillis();
     }
 
     // Convert to next largest power-of-2
     private static int log2Size(int minSize) {
         int log2;
-        for (log2 = MIN_SIZE_LOG; (1 << log2) < minSize; log2++) {
+        for (log2 = MIN_LOG_SIZE; (1L << log2) < minSize; log2++) {
             //empty
         }
         return log2;
@@ -418,43 +417,13 @@ public class ScalableAtomicIntHashCounter implements AtomicIntHashCounter {
                 return newIhc;
             }
 
-            final int oldLen = this.len;
-            final int size = size();
-            int newSize = oldLen << 1;
+            final int newSize = this.len << 1;
+            final int log2 = log2Size(newSize); // Convert to power-of-2
 
-            // This heuristic leads to a much denser table with a higher re-probe rate
-            if (size >= (oldLen >> 1)) { // If we are >50% full of keys then...
-                newSize = oldLen << 1; // Double size
-            }
-
-            // Last (re)size operation was very recent?  Then double again
-            // despite having few live keys; slows down resize operations
-            // for tables subject to a high key churn rate - but do not
-            // forever grow the table.  If there is a high key churn rate
-            // the table needs a steady state of rare same-size resize
-            // operations to clean out the dead keys.
-            final long tm = System.currentTimeMillis();
-            if (newSize <= oldLen && // New table would shrink or hold steady?
-                    tm <= saihc.lastResizeMillis + 10_000) { // Recent resize (less than 10 sec ago)
-                newSize = oldLen << 1; // Double the existing size
-            }
-
-            // Do not shrink, ever. If we hit this size once, assume we will again.
-            if (newSize < oldLen) {
-                newSize = oldLen;
-            }
-
-            int log2 = log2Size(newSize); // Convert to power-of-2
-            long len = ((1L << log2) << 1) + 2;
-
-            // prevent integer overflow - limit of 2^31 elements in a Java array
-            // so here, 2^30 + 2 is the largest number of elements in the hash table
-            if ((int) len != len) {
-                log2 = 30;
-                len = (1L << log2) + 2;
-                if (size > ((len >> 2) + (len >> 1))) {
-                    throw new RuntimeException("Table is full.");
-                }
+            // Prevent integer overflow - limit of 2^31 elements in a Java array.
+            // So here, 2^30 is the largest number of elements in the hash table
+            if (log2 > MAX_LOG_SIZE) {
+                throw new RuntimeException("Table is full, size=" + size + ", newSize=" + newSize + ", log2=" + log2);
             }
 
             // Now limit the number of threads actually allocating memory to a
@@ -578,10 +547,8 @@ public class ScalableAtomicIntHashCounter implements AtomicIntHashCounter {
             // nested in-progress copies and manage to finish a nested copy before
             // finishing the top-level copy.  We only promote top-level copies.
             if (copyDone + workDone == oldLen && // Ready to promote this table?
-                    saihc.ihc == this &&         // Looking at the top-level table?
-                    // Attempt to promote
-                    saihc.CAS(IHC_OFFSET, this, nextIhc)) {
-                saihc.lastResizeMillis = System.currentTimeMillis();  // Record resize time for next check
+                    saihc.ihc == this) {        // Looking at the top-level table?
+                saihc.CAS(IHC_OFFSET, this, nextIhc);
             }
         }
     }

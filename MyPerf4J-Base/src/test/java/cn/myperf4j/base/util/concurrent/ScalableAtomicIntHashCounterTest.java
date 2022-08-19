@@ -256,14 +256,9 @@ public class ScalableAtomicIntHashCounterTest {
             Assert.assertEquals(expectedVal, intMap.get(key));
         }
 
-        try {
-            Assert.assertEquals(integerMap.size(), intMap.size());
-            System.out.println("Congratulations!");
-            return true;
-        } catch (Throwable t) {
-            t.printStackTrace();
-            return false;
-        }
+        Assert.assertEquals(integerMap.size(), intMap.size());
+        System.out.println("Congratulations!");
+        return true;
     }
 
     private static void increase(ConcurrentMap<Integer, AtomicInteger> integerHashMap, int k, int delta) {
