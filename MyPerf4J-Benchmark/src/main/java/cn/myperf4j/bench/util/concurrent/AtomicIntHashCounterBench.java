@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * # JMH version: 1.34
  * # VM version: JDK 17.0.4, Java HotSpot(TM) 64-Bit Server VM, 17.0.4+11-LTS-179
  * # VM invoker: /Library/Java/JavaVirtualMachines/jdk-17.0.4.jdk/Contents/Home/bin/java
- * # VM options: -ea -Xmx8G -Xms8G -Xmn4G -javaagent:/Applications/IntelliJ IDEA.app/Contents/lib/idea_rt.jar=52807:/Applications/IntelliJ IDEA.app/Contents/bin -Dfile.encoding=UTF-8
+ * # VM options: -ea -Xmx8G -Xms8G -Xmn4G
  * # Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
  * # Warmup: 1 iterations, 10 s each
  * # Measurement: 5 iterations, 10 s each

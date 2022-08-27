@@ -165,8 +165,8 @@ public class AtomicIntHashCounterTest {
         final int threadCnt = Runtime.getRuntime().availableProcessors() - 2;
         final ExecutorService executor = Executors.newFixedThreadPool(threadCnt);
         int failureTimes = 0;
-        final int testTimes = 1024 * 1024;
-//        final int testTimes = 16 * 1024;
+//        final int testTimes = 1024 * 1024;
+        final int testTimes = 16 * 1024;
         final ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 0; i < testTimes; i++) {
             System.out.printf("--------------------- Round %d start ---------------------\n", i);
@@ -187,8 +187,8 @@ public class AtomicIntHashCounterTest {
         final int threadCnt = Runtime.getRuntime().availableProcessors() - 2;
         final ExecutorService executor = Executors.newFixedThreadPool(threadCnt);
         int failureTimes = 0;
-        final int testTimes = 1024 * 1024;
-//        final int testTimes = 16 * 1024;
+//        final int testTimes = 1024 * 1024;
+        final int testTimes = 16 * 1024;
         final ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 0; i < testTimes; i++) {
             System.out.printf("--------------------- Round %d start ---------------------\n", i);
