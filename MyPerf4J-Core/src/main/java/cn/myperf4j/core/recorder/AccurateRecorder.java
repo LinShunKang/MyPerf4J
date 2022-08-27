@@ -2,8 +2,8 @@ package cn.myperf4j.core.recorder;
 
 import cn.myperf4j.base.buffer.LongBuf;
 import cn.myperf4j.base.util.concurrent.AtomicIntArray;
+import cn.myperf4j.base.util.concurrent.IntHashCounter;
 import cn.myperf4j.base.util.concurrent.AtomicIntHashCounter;
-import cn.myperf4j.base.util.concurrent.ScalableAtomicIntHashCounter;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -18,16 +18,19 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public final class AccurateRecorder extends Recorder {
 
+    private final int mostTimeThreshold;
+
     private final AtomicIntArray timingArr;
 
-    private final AtomicIntHashCounter timingHashCounter;
+    private final IntHashCounter timingHashCounter;
 
     private final AtomicInteger diffCount;
 
     private AccurateRecorder(int methodTagId, int mostTimeThreshold, int outThresholdCount) {
         super(methodTagId);
-        this.timingArr = new AtomicIntArray(mostTimeThreshold + 1);
-        this.timingHashCounter = new ScalableAtomicIntHashCounter(outThresholdCount);
+        this.mostTimeThreshold = mostTimeThreshold;
+        this.timingArr = new AtomicIntArray(mostTimeThreshold);
+        this.timingHashCounter = new AtomicIntHashCounter(outThresholdCount);
         this.diffCount = new AtomicInteger(0);
     }
 
@@ -38,16 +41,11 @@ public final class AccurateRecorder extends Recorder {
         }
 
         final int elapsedTime = (int) ((endNanoTime - startNanoTime) / 1_000_000);
-        if (elapsedTime < timingArr.length()) {
-            final int oldValue = timingArr.getAndIncrement(elapsedTime);
-            if (oldValue == 0) {
+        if (elapsedTime < mostTimeThreshold) {
+            if (timingArr.getAndIncrement(elapsedTime) <= 0) {
                 diffCount.incrementAndGet();
             }
-            return;
-        }
-
-        final int oldValue = timingHashCounter.getAndIncrement(elapsedTime);
-        if (oldValue == 0) {
+        } else if (timingHashCounter.getAndIncrement(elapsedTime) <= 0) {
             diffCount.incrementAndGet();
         }
     }

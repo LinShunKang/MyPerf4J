@@ -19,11 +19,11 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
 /**
  * Created by LinShunkang on 2021/03/19
  */
-public class ScalableAtomicIntHashCounterTest {
+public class AtomicIntHashCounterTest {
 
     @Test
     public void testSimpleIncrease() {
-        final AtomicIntHashCounter intCounter = new ScalableAtomicIntHashCounter(1);
+        final IntHashCounter intCounter = new AtomicIntHashCounter(1);
         Assert.assertEquals(1, intCounter.incrementAndGet(1));
         Assert.assertEquals(1, intCounter.get(1));
         Assert.assertEquals(3, intCounter.addAndGet(1, 2));
@@ -41,7 +41,7 @@ public class ScalableAtomicIntHashCounterTest {
     @Test
     public void testIncrease() {
         final int testTimes = 10240;
-        final AtomicIntHashCounter intCounter = new ScalableAtomicIntHashCounter(testTimes);
+        final IntHashCounter intCounter = new AtomicIntHashCounter(testTimes);
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < testTimes; j++) {
                 intCounter.addAndGet(j + 1, j + 2);
@@ -56,7 +56,7 @@ public class ScalableAtomicIntHashCounterTest {
 
     @Test
     public void testSize() {
-        final AtomicIntHashCounter intCounter = new ScalableAtomicIntHashCounter();
+        final IntHashCounter intCounter = new AtomicIntHashCounter();
         Assert.assertEquals(intCounter.size(), 0);
 
         intCounter.addAndGet(1, 2);
@@ -73,7 +73,7 @@ public class ScalableAtomicIntHashCounterTest {
 
     @Test
     public void testReset() {
-        final AtomicIntHashCounter intCounter = new ScalableAtomicIntHashCounter();
+        final IntHashCounter intCounter = new AtomicIntHashCounter();
         Assert.assertEquals(intCounter.size(), 0);
 
         final int testTimes = 10240;
@@ -101,7 +101,7 @@ public class ScalableAtomicIntHashCounterTest {
 
     @Test
     public void testConflict() {
-        final AtomicIntHashCounter intCounter = new ScalableAtomicIntHashCounter(8);
+        final IntHashCounter intCounter = new AtomicIntHashCounter(8);
         for (int i = 0; i < 2; i++) {
             intCounter.incrementAndGet(0);
             intCounter.incrementAndGet(8);
@@ -117,7 +117,7 @@ public class ScalableAtomicIntHashCounterTest {
 
     @Test
     public void testSingleThread() {
-        final AtomicIntHashCounter intMap = new ScalableAtomicIntHashCounter(128 * 1024);
+        final IntHashCounter intMap = new AtomicIntHashCounter(128 * 1024);
         final AtomicIntegerArray intArray = new AtomicIntegerArray(128 * 1024);
         final ConcurrentMap<Integer, AtomicInteger> integerMap = new ConcurrentHashMap<>(128 * 1024);
         mode1(intMap, intArray, integerMap, 1024, 64);
@@ -135,7 +135,7 @@ public class ScalableAtomicIntHashCounterTest {
         }
     }
 
-    private void mode1(AtomicIntHashCounter intMap,
+    private void mode1(IntHashCounter intMap,
                        AtomicIntegerArray intArray,
                        ConcurrentMap<Integer, AtomicInteger> integerMap,
                        int x,
@@ -153,7 +153,7 @@ public class ScalableAtomicIntHashCounterTest {
 
     @Test
     public void testSingleThreadV2() {
-        final AtomicIntHashCounter intMap = new ScalableAtomicIntHashCounter(16);
+        final IntHashCounter intMap = new AtomicIntHashCounter(16);
         for (int i = 1; i < 1024; i++) {
             intMap.incrementAndGet(i);
         }
@@ -165,8 +165,8 @@ public class ScalableAtomicIntHashCounterTest {
         final int threadCnt = Runtime.getRuntime().availableProcessors() - 2;
         final ExecutorService executor = Executors.newFixedThreadPool(threadCnt);
         int failureTimes = 0;
-//        final int testTimes = 1024 * 1024;
-        final int testTimes = 16 * 1024;
+        final int testTimes = 1024 * 1024;
+//        final int testTimes = 16 * 1024;
         final ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 0; i < testTimes; i++) {
             System.out.printf("--------------------- Round %d start ---------------------\n", i);
@@ -187,8 +187,8 @@ public class ScalableAtomicIntHashCounterTest {
         final int threadCnt = Runtime.getRuntime().availableProcessors() - 2;
         final ExecutorService executor = Executors.newFixedThreadPool(threadCnt);
         int failureTimes = 0;
-//        final int testTimes = 1024 * 1024;
-        final int testTimes = 16 * 1024;
+        final int testTimes = 1024 * 1024;
+//        final int testTimes = 16 * 1024;
         final ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 0; i < testTimes; i++) {
             System.out.printf("--------------------- Round %d start ---------------------\n", i);
@@ -210,7 +210,7 @@ public class ScalableAtomicIntHashCounterTest {
                                             final int randomDeltaBound)
             throws InterruptedException, BrokenBarrierException {
         final int testTimes = ThreadLocalRandom.current().nextInt(0, 8 * 1024);
-        final AtomicIntHashCounter intMap = new ScalableAtomicIntHashCounter();
+        final IntHashCounter intMap = new AtomicIntHashCounter();
         final ConcurrentMap<Integer, AtomicInteger> integerMap = new ConcurrentHashMap<>(testTimes);
         final CyclicBarrier barrier = new CyclicBarrier(threadCnt + 1);
         for (int i = 0; i < threadCnt; i++) {
