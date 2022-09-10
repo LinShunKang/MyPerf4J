@@ -78,6 +78,14 @@ public final class UnsafeUtils {
         return oldVal;
     }
 
+    public static long getAndAddLong(Object obj, long offset, long delta) {
+        long oldVal;
+        do {
+            oldVal = UNSAFE.getLongVolatile(obj, offset);
+        } while (!UNSAFE.compareAndSwapLong(obj, offset, oldVal, oldVal + delta));
+        return oldVal;
+    }
+
     private UnsafeUtils() {
         //empty
     }
