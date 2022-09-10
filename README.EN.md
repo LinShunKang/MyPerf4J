@@ -92,6 +92,12 @@ Welcome to register the company name in this issue: [https://github.com/LinShunK
 <img src="https://github.com/LinShunKang/Objects/blob/master/logos/dianzhang_303x303.jpeg?raw=true" width="80" height="80"/>
 </div>
 
+## Thanks
+Thanks JetBrains support provided by [OpenSourceSupport](https://www.jetbrains.com/community/opensource/#support) : )
+<div align="center">
+<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg" width="200" height="200"/>
+</div>
+
 ## Inspired by
 * [Perf4J](https://github.com/perf4j/perf4j)
 * [TProfiler](https://github.com/alibaba/TProfiler)
