@@ -10,40 +10,39 @@ public final class InfluxDbClientFactory {
 
     private static final InfluxDbConfig CONFIG = ProfilingConfig.influxDBConfig();
 
-    private static final InfluxDbV1Client V1_CLIENT = new InfluxDbV1Client.Builder()
-            .host(CONFIG.host())
-            .port(CONFIG.port())
-            .database(CONFIG.database())
-            .username(CONFIG.username())
-            .password(CONFIG.password())
-            .connectTimeout(CONFIG.connectTimeout())
-            .readTimeout(CONFIG.readTimeout())
-            .build();
+    private static final InfluxDbClient CLIENT = generateClient();
 
-    private static final InfluxDbV2Client V2_CLIENT = new InfluxDbV2Client.Builder()
-            .host(CONFIG.host())
-            .port(CONFIG.port())
-            .orgName(CONFIG.orgName())
-            .database(CONFIG.database())
-            .username(CONFIG.username())
-            .password(CONFIG.password())
-            .connectTimeout(CONFIG.connectTimeout())
-            .readTimeout(CONFIG.readTimeout())
-            .build();
-
-    private InfluxDbClientFactory() {
-        //empty
+    private static InfluxDbClient generateClient() {
+        final String version = CONFIG.version();
+        if (version.startsWith("2.")) {
+            return new InfluxDbV2Client.Builder()
+                    .host(CONFIG.host())
+                    .port(CONFIG.port())
+                    .orgName(CONFIG.orgName())
+                    .database(CONFIG.database())
+                    .username(CONFIG.username())
+                    .password(CONFIG.password())
+                    .connectTimeout(CONFIG.connectTimeout())
+                    .readTimeout(CONFIG.readTimeout())
+                    .build();
+        } else {
+            return new InfluxDbV1Client.Builder()
+                    .host(CONFIG.host())
+                    .port(CONFIG.port())
+                    .database(CONFIG.database())
+                    .username(CONFIG.username())
+                    .password(CONFIG.password())
+                    .connectTimeout(CONFIG.connectTimeout())
+                    .readTimeout(CONFIG.readTimeout())
+                    .build();
+        }
     }
 
     public static InfluxDbClient getClient() {
-        return CONFIG.version().startsWith("2.") ? getV2Client() : getV1Client();
+        return CLIENT;
     }
 
-    public static InfluxDbV1Client getV1Client() {
-        return V1_CLIENT;
-    }
-
-    public static InfluxDbV2Client getV2Client() {
-        return V2_CLIENT;
+    private InfluxDbClientFactory() {
+        //empty
     }
 }
