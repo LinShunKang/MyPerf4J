@@ -181,12 +181,7 @@ public abstract class AbstractBootstrap {
     }
 
     private String getConfigFileDir(String configFilePath) {
-        if (System.getProperty("os.name").startsWith("windows")) {
-            final int idx = configFilePath.lastIndexOf('\\');
-            return configFilePath.substring(0, idx + 1);
-        }
-
-        final int idx = configFilePath.lastIndexOf('/');
+        final int idx = configFilePath.lastIndexOf(File.separatorChar);
         return configFilePath.substring(0, idx + 1);
     }
 
