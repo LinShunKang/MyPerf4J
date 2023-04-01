@@ -12,10 +12,20 @@ public class SystemPropertiesTest {
 
     @Test
     public void test() {
+        System.out.println(System.getProperty("os.name"));
+        System.out.println(System.getProperty("file.separator"));
+        System.out.println(System.getProperty("path.separator"));
+        System.out.println(System.getProperty("line.separator"));
+    }
+
+    @Test
+    public void testParseConfigFileDir() {
         // windows下os.name的返回值是以 Windows 开头的
-        Assert.assertFalse(System.getProperty("os.name").startsWith("windows"));
+        final String osName = System.getProperty("os.name");
+        Assert.assertFalse(osName.startsWith("windows"));
+
         String configFilePath;
-        final boolean windows = System.getProperty("os.name").toLowerCase().startsWith("windows");
+        final boolean windows = osName.toLowerCase().startsWith("windows");
         if (windows) {
             configFilePath = "C:\\path\\to\\MyPerf4J.properties";
         } else {
@@ -28,11 +38,6 @@ public class SystemPropertiesTest {
         } else {
             Assert.assertEquals(configFilePath, "/path/to/");
         }
-
-        System.out.println(System.getProperty("os.name"));
-        System.out.println(System.getProperty("file.separator"));
-        System.out.println(System.getProperty("path.separator"));
-        System.out.println(System.getProperty("line.separator"));
     }
 
 }
