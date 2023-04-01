@@ -172,7 +172,7 @@ public abstract class AbstractBootstrap {
             Properties properties = new Properties();
             properties.load(in);
 
-            properties.put(PROPERTIES_FILE_DIR.key(), getConfigFileDir(configFilePath));
+            properties.put(PROPERTIES_FILE_DIR.key(), parseConfigFileDir(configFilePath));
             return MyProperties.initial(properties);
         } catch (IOException e) {
             Logger.error("AbstractBootstrap.initProperties()", e);
@@ -180,13 +180,8 @@ public abstract class AbstractBootstrap {
         return false;
     }
 
-    private String getConfigFileDir(String configFilePath) {
-        if (System.getProperty("os.name").startsWith("windows")) {
-            final int idx = configFilePath.lastIndexOf('\\');
-            return configFilePath.substring(0, idx + 1);
-        }
-
-        final int idx = configFilePath.lastIndexOf('/');
+    private String parseConfigFileDir(String configFilePath) {
+        final int idx = configFilePath.lastIndexOf(File.separatorChar);
         return configFilePath.substring(0, idx + 1);
     }
 
