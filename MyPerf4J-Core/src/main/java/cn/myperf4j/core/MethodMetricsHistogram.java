@@ -66,7 +66,7 @@ public final class MethodMetricsHistogram {
             Logger.debug("MethodMetricsHistogram.buildSysGenProfilingFile(): rename " + tempFile.getName()
                     + " to " + destFile.getName() + " " + (rename ? "success" : "fail"));
         } catch (Exception e) {
-            Logger.error("MethodMetricsHistogram.buildSysGenProfilingFile() rename error", e);
+            Logger.error("MethodMetricsHistogram.buildSysGenProfilingFile() error", e);
         } finally {
             Logger.debug("MethodMetricsHistogram.buildSysGenProfilingFile() finished, cost="
                     + (System.currentTimeMillis() - startMills) + "ms");
