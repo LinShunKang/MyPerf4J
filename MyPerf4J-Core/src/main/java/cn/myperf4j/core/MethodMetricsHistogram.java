@@ -9,6 +9,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -73,23 +77,29 @@ public final class MethodMetricsHistogram {
 
             if (!neverInvokedMethods.isEmpty()) {
                 fileWriter.write("#The following methods have never been invoked!\n");
-                for (int i = 0; i < neverInvokedMethods.size(); i++) {
-                    final Integer methodId = neverInvokedMethods.get(i);
+                for (final Integer methodId : neverInvokedMethods) {
                     writeProfilingInfo(tagMaintainer, fileWriter, methodId, 128);
                 }
                 fileWriter.flush();
             }
+        } catch (Exception e) {
+            Logger.error("MethodMetricssHistogram.buildSysGenProfilingFile() error", e);
+        }
 
-            final File destFile = new File(filePath);
-            final boolean rename = tempFile.renameTo(destFile) && destFile.setReadOnly();
+        try {
+            final Path tempPath = tempFile.toPath();
+            final Path moved = Files.move(tempPath, Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+            final File destFile = moved.toFile();
+            // 此处不能设置只读，否则在windows环境下次move的时候会报错 AccessDeniedException
+            final boolean rename = destFile.exists()/*  && destFile.setReadOnly() */;
             Logger.debug("MethodMetricsHistogram.buildSysGenProfilingFile(): rename " + tempFile.getName()
                     + " to " + destFile.getName() + " " + (rename ? "success" : "fail"));
         } catch (Exception e) {
-            Logger.error("MethodMetricsHistogram.buildSysGenProfilingFile()", e);
-        } finally {
-            Logger.debug("MethodMetricsHistogram.buildSysGenProfilingFile() finished, cost="
-                    + (System.currentTimeMillis() - startMills) + "ms");
+            Logger.error("MethodMetricsHistogram.buildSysGenProfilingFile() rename error", e);
         }
+
+        Logger.debug("MethodMetricsHistogram.buildSysGenProfilingFile() finished, cost="
+                + (System.currentTimeMillis() - startMills) + "ms");
     }
 
     private static void writeProfilingInfo(MethodTagMaintainer tagMaintainer,
