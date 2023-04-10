@@ -12,12 +12,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 /**
  * Created by LinShunkang on 2019/07/23
@@ -58,8 +59,7 @@ public final class MethodMetricsHistogram {
 
         try {
             final File tempFile = buildTmpProfilingFile(filePath);
-            final Path tempPath = tempFile.toPath();
-            final Path destPath = Files.move(tempPath, Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+            final Path destPath = Files.move(tempFile.toPath(), Paths.get(filePath), REPLACE_EXISTING);
             final File destFile = destPath.toFile();
             // 此处不能设置只读，否则在windows环境下次move的时候会报错 AccessDeniedException
             final boolean rename = destFile.exists()/*  && destFile.setReadOnly() */;

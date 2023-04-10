@@ -37,7 +37,7 @@ public class FileTest {
 
     @Test
     public void testFileRename() {
-        String testFile = getDir().getPath() + "/testFileRename";
+        String testFile = getTestDir().getPath() + "/testFileRename";
         final Path testFilePath1 = Paths.get(testFile + 1);
         final Path testFilePath2 = Paths.get(testFile + 2);
         final Path tmpFilePath = Paths.get(testFile + "_tmp");
@@ -73,7 +73,7 @@ public class FileTest {
 
     @Test
     public void testFilesMove() throws IOException {
-        String testFile = getDir().getPath() + "/testFilesMove";
+        String testFile = getTestDir().getPath() + "/testFilesMove";
         final Path testFilePath = Paths.get(testFile);
         final Path tmpFilePath = Paths.get(testFile + "_tmp");
         if (!tmpFilePath.toFile().exists()) {
@@ -90,12 +90,8 @@ public class FileTest {
         Assert.assertFalse(tmpFilePath.toFile().canWrite());
     }
 
-    private File getDir() {
-        return getDir(getName());
-    }
-
-    private String getName() {
-        return getClass().getSimpleName();
+    private File getTestDir() {
+        return getDir(FileTest.class.getSimpleName());
     }
 
     private static File getDir(String dir) {
@@ -120,6 +116,7 @@ public class FileTest {
                     deleteDir(dirFile, f.getName());
                     continue;
                 }
+
                 if (f.isFile()) {
                     if (!f.delete()) {
                         throw new IllegalStateException("Can't delete file: " + f);
@@ -127,11 +124,13 @@ public class FileTest {
                     Logger.info("Delete file: " + f);
                 }
             }
+
             if (!dirFile.delete()) {
                 throw new IllegalStateException("Can't delete directory: " + dirFile);
             }
             Logger.info("Delete directory: " + dirFile);
         }
+
         testDir.deleteOnExit();
         Logger.info("Delete testDir: " + testDir);
     }
