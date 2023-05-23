@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+        "-//Puppy Crawl//DTD Suppressions 1.1//EN"
+        "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
+
+<suppressions>
+    <!-- Suppress JavadocPackage in the test packages -->
+    <suppress checks="JavadocPackage" files="[\\/]test[\\/]" />
+    <suppress checks=".*" files="MyPerf4J.bytecode.ForCompareDump"/>
+</suppressions>

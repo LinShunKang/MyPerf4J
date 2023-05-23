@@ -2,6 +2,8 @@ package cn.myperf4j.base.config;
 
 import cn.myperf4j.base.util.StrUtils;
 
+import java.io.File;
+
 import static cn.myperf4j.base.config.MyProperties.getBoolean;
 import static cn.myperf4j.base.config.MyProperties.getStr;
 import static cn.myperf4j.base.constant.PropertyKeys.Basic.APP_NAME;
@@ -18,6 +20,8 @@ public class BasicConfig {
     private String configFileDir;
 
     private boolean debug;
+
+    private String debugClassDir;
 
     public String appName() {
         return appName;
@@ -46,6 +50,14 @@ public class BasicConfig {
         this.debug = debug;
     }
 
+    public String debugClassDir() {
+        return debugClassDir;
+    }
+
+    public void debugClassDir(String debugClassDir) {
+        this.debugClassDir = debugClassDir;
+    }
+
     public String sysProfilingParamsFile() {
         return configFileDir + "." + appName + "_SysGenProfilingFile";
     }
@@ -60,15 +72,16 @@ public class BasicConfig {
     }
 
     public static BasicConfig loadBasicConfig() {
-        String appName = getStr(APP_NAME);
+        final String appName = getStr(APP_NAME);
         if (StrUtils.isBlank(appName)) {
             throw new IllegalArgumentException(APP_NAME.key() + "|" + APP_NAME.legacyKey() + " is required!!!");
         }
 
-        BasicConfig config = new BasicConfig();
+        final BasicConfig config = new BasicConfig();
         config.appName(appName);
         config.debug(getBoolean(DEBUG, false));
         config.configFileDir(getStr(PROPERTIES_FILE_DIR));
+        config.debugClassDir(getStr(PROPERTIES_FILE_DIR) + File.separatorChar + "debugClasses");
         return config;
     }
 }

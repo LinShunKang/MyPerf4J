@@ -86,7 +86,7 @@ public final class ProfilingFilter {
      */
     public static boolean isNotNeedInject(String innerClassName) {
         if (innerClassName == null) {
-            return false;
+            return true;
         }
 
         if (innerClassName.indexOf('$') >= 0) {

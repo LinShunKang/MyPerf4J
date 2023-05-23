@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -168,7 +170,7 @@ public abstract class AbstractBootstrap {
 
     private boolean initProperties() {
         final String configFilePath = System.getProperty(PRO_FILE_NAME, DEFAULT_PRO_FILE);
-        try (InputStream in = new FileInputStream(configFilePath)) {
+        try (InputStream in = Files.newInputStream(Paths.get(configFilePath))) {
             Properties properties = new Properties();
             properties.load(in);
 
