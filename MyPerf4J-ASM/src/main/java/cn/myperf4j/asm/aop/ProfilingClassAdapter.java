@@ -104,7 +104,7 @@ public class ProfilingClassAdapter extends ClassVisitor {
                 + signature + ", " + Arrays.toString(exceptions) + "), innerClassName=" + innerClassName);
 
         if (isInvocationHandler && isInvokeMethod(name, desc)) {
-            return new ProfilingDynamicMethodVisitor(access, name, desc, mv);
+            return new ProfilingDynamicMethodVisitor(access, name, desc, mv, innerClassName);
         } else {
             return new ProfilingMethodVisitor(access, name, desc, mv, innerClassName, fullClassName, simpleClassName,
                     classLevel, desc4Human);

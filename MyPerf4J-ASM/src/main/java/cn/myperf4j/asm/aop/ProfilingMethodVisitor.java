@@ -70,7 +70,7 @@ public class ProfilingMethodVisitor extends AdviceAdapter {
                                    String classLevel,
                                    String methodName,
                                    String humanMethodDesc) {
-        String methodParamDesc = metricsConf.showMethodParams() ? humanMethodDesc : "";
+        final String methodParamDesc = metricsConf.showMethodParams() ? humanMethodDesc : "";
         return MethodTag.getGeneralInstance(fullClassName, simpleClassName, classLevel, methodName, methodParamDesc);
     }
 
