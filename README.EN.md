@@ -52,6 +52,8 @@ Add the following two parameters to the JVM startup parameters
 * -DMyPerf4JPropFile=/path/to/MyPerf4J.properties
 
 > Like: java -javaagent:/path/to/MyPerf4J-ASM.jar -DMyPerf4JPropFile=/path/to/MyPerf4J.properties `-jar yourApp.jar`
+>
+> Note: If you are using JDK 9 and above, please add `--add-opens java.base/java.lang=ALL-UNNAMED` as an additional flag.
 
 ### Run
 Start your application, the output is to /path/to/log/method_metrics.log:

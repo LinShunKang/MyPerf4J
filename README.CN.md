@@ -54,6 +54,8 @@ MyPerf4J 采用 JavaAgent 配置方式，**透明化**接入应用，对应用�
 * -DMyPerf4JPropFile=/path/to/MyPerf4J.properties
 
 > 形如：java -javaagent:/path/to/MyPerf4J-ASM.jar -DMyPerf4JPropFile=/path/to/MyPerf4J.properties `-jar yourApp.jar`
+>
+> 注意：如果您使用 JDK9 及其之上的版本，请额外添加 `--add-opens java.base/java.lang=ALL-UNNAMED`
 
 ### 运行
 启动应用，监控日志输出到 /path/to/log/method_metrics.log:
