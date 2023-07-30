@@ -57,17 +57,11 @@ public final class JvmGcCollector {
     }
 
     public static JvmGcMetrics collectGcMetrics() {
-        long youngGcCount = 0L;
-        long youngGcTime = 0L;
-        long oldGcCount = 0L;
-        long oldGcTime = 0L;
-        long zGcCount = 0L;
-        long zGcTime = 0L;
-        long zGcCyclesCount = 0L;
-        long zGcCyclesTime = 0L;
-        long zGcPausesCount = 0L;
-        long zGcPausesTime = 0L;
-
+        long youngGcCount = 0L, youngGcTime = 0L;
+        long oldGcCount = 0L, oldGcTime = 0L;
+        long zGcCount = 0L, zGcTime = 0L;
+        long zGcCyclesCount = 0L, zGcCyclesTime = 0L;
+        long zGcPausesCount = 0L, zGcPausesTime = 0L;
         final List<GarbageCollectorMXBean> gcMXBeanList = ManagementFactory.getGarbageCollectorMXBeans();
         for (int i = 0, size = gcMXBeanList.size(); i < size; i++) {
             final GarbageCollectorMXBean gcMxBean = gcMXBeanList.get(i);

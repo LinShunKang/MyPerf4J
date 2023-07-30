@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public final class MethodMetricsHistogram {
 
-    private static final ConcurrentMap<Integer, MethodMetricsInfo> METHOD_MAP = new ConcurrentHashMap<>(1024 * 8);
+    private static final ConcurrentMap<Integer, MethodMetricsInfo> METHOD_MAP = new ConcurrentHashMap<>(8 * 1024);
 
     private MethodMetricsHistogram() {
         //empty
@@ -73,8 +73,7 @@ public final class MethodMetricsHistogram {
 
             if (!neverInvokedMethods.isEmpty()) {
                 fileWriter.write("#The following methods have never been invoked!\n");
-                for (int i = 0; i < neverInvokedMethods.size(); i++) {
-                    final Integer methodId = neverInvokedMethods.get(i);
+                for (final Integer methodId : neverInvokedMethods) {
                     writeProfilingInfo(tagMaintainer, fileWriter, methodId, 128);
                 }
                 fileWriter.flush();

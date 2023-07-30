@@ -14,7 +14,7 @@
     <name>MyPerf4J</name>
 
     <properties>
-        <asm-version>9.2</asm-version>
+        <asm-version>9.5</asm-version>
         <jmh-version>1.34</jmh-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.7</maven.compiler.source>

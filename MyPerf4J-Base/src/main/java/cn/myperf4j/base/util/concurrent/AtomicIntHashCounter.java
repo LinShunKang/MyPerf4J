@@ -282,9 +282,9 @@ public class AtomicIntHashCounter implements IntHashCounter {
                     return 0; // A clear miss
                 }
 
-                if ((k = key(kv)) == key) { // Key hit!
+                if ((k = parseKey(kv)) == key) { // Key hit!
                     // Check for no table-copy-in-progress
-                    final int v = value(kv);
+                    final int v = parseValue(kv);
                     if (!isPrime(v)) { //No copy?
                         return v;
                     }
@@ -314,11 +314,11 @@ public class AtomicIntHashCounter implements IntHashCounter {
             int k, v, reProbeTimes = 0;
             while (true) {
                 kv = getKv(idx);
-                k = key(kv);
-                v = value(kv);
+                k = parseKey(kv);
+                v = parseValue(kv);
                 if (k == NO_KEY) { //No key!
                     assert v == 0;
-                    if (casKv(idx, kv, kv(key, delta))) {
+                    if (casKv(idx, kv, composeKv(key, delta))) {
                         if (!fromTableCopy) {
                             aihc.incrementSize();
                         }
@@ -336,8 +336,8 @@ public class AtomicIntHashCounter implements IntHashCounter {
                     }
 
                     kv = getKv(idx); // CAS failed, get updated value
-                    k = key(kv);
-                    v = value(kv);
+                    k = parseKey(kv);
+                    v = parseValue(kv);
                     assert k != NO_KEY;  // If keys[idx] is NO_KEY, CAS should work
                 }
 
@@ -487,11 +487,11 @@ public class AtomicIntHashCounter implements IntHashCounter {
             // Prevent new values from appearing in the old table.
             // Slap a TOMB_PRIME down in the old table, to prevent further updates.
             long kv = getKv(idx);
-            int oldKey = key(kv);
-            int oldVal = value(kv);
+            int oldKey = parseKey(kv);
+            int oldVal = parseValue(kv);
             while (!isPrime(oldVal)) {
                 final int box = oldVal == 0 ? TOMB_PRIME : boxPrime(oldVal);
-                if (casKv(idx, kv, kv(oldKey == 0 ? TOMB_PRIME : oldKey, box))) {
+                if (casKv(idx, kv, composeKv(oldKey == 0 ? TOMB_PRIME : oldKey, box))) {
                     if (oldVal != 0) {
                         // We need to copy oldVal to the new table.
                         nextIhc.addDelta(oldKey, oldVal, true);
@@ -500,8 +500,8 @@ public class AtomicIntHashCounter implements IntHashCounter {
                 }
 
                 kv = getKv(idx); // Read OLD table
-                oldKey = key(kv);
-                oldVal = value(kv);
+                oldKey = parseKey(kv);
+                oldVal = parseValue(kv);
             }
             return false;
         }
@@ -530,16 +530,16 @@ public class AtomicIntHashCounter implements IntHashCounter {
         return ((long) idx << I_SHIFT) + I_BASE;
     }
 
-    private static long kv(int key, int value) {
+    private static long composeKv(int key, int value) {
         return ((long) value) << 32 | key;
     }
 
-    private static int key(long kvLong) {
-        return (int) kvLong;
+    private static int parseKey(long kv) {
+        return (int) kv;
     }
 
-    private static int value(long kvLong) {
-        return (int) (kvLong >> 32);
+    private static int parseValue(long kv) {
+        return (int) (kv >> 32);
     }
 
     private static boolean isPrime(int v) {

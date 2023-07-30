@@ -2,6 +2,8 @@ package cn.myperf4j.base.buffer;
 
 import java.util.Arrays;
 
+import static cn.myperf4j.base.util.NumUtils.composeKv;
+
 /**
  * Created by LinShunkang on 2022/08/14
  */
@@ -25,14 +27,14 @@ public class LongBuf implements AutoCloseable {
         this.pool = null;
     }
 
-    public void write(long value) {
+    public void write(long kv) {
         ensureWritable(1);
-        this.buf[writerIndex++] = value;
+        this.buf[writerIndex++] = kv;
     }
 
     public void write(int key, int value) {
         ensureWritable(1);
-        this.buf[writerIndex++] = kv(key, value);
+        this.buf[writerIndex++] = composeKv(key, value);
     }
 
     private void ensureWritable(int minWritableSize) {
@@ -88,17 +90,5 @@ public class LongBuf implements AutoCloseable {
                 ", writerIndex=" + writerIndex +
                 ", pool=" + pool +
                 '}';
-    }
-
-    public static long kv(int key, int value) {
-        return ((long) key) << 32 | value;
-    }
-
-    public static int key(long kvLong) {
-        return (int) (kvLong >> 32);
-    }
-
-    public static int value(long kvLong) {
-        return (int) kvLong;
     }
 }

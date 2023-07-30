@@ -7,8 +7,8 @@ import cn.myperf4j.base.metric.MethodMetrics;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.core.recorder.Recorder;
 
-import static cn.myperf4j.base.buffer.LongBuf.key;
-import static cn.myperf4j.base.buffer.LongBuf.value;
+import static cn.myperf4j.base.util.NumUtils.parseKey;
+import static cn.myperf4j.base.util.NumUtils.parseValue;
 
 /**
  * Created by LinShunkang on 2018/3/11
@@ -48,14 +48,14 @@ public final class MethodMetricsCalculator {
                                             long totalCount,
                                             int diffCount) {
         final MethodMetrics result = MethodMetrics.getInstance(methodTag, rec.getMethodTagId(), startTime, stopTime);
-        result.setTotalCount(totalCount);
         if (diffCount <= 0) {
             return result;
         }
 
         final long[] buf = sortedRecords._buf();
-        result.setMinTime(key(buf[0]));
-        result.setMaxTime(key(buf[sortedRecords.writerIndex() - 1]));
+        result.setTotalCount(totalCount);
+        result.setMinTime(parseKey(buf[0]));
+        result.setMaxTime(parseKey(buf[sortedRecords.writerIndex() - 1]));
 
         final long[] tpIndexArr = getTpIndexArr(totalCount);
         final int tpIndexArrLen = tpIndexArr.length;
@@ -65,8 +65,8 @@ public final class MethodMetricsCalculator {
         long countMile = 0L, totalTime = 0L, kvLong;
         for (int i = 0, writerIdx = sortedRecords.writerIndex(); i < writerIdx; ) {
             kvLong = buf[i++];
-            timeCost = key(kvLong);
-            count = value(kvLong);
+            timeCost = parseKey(kvLong);
+            count = parseValue(kvLong);
 
             totalTime += (long) timeCost * count;
             countMile += count;

@@ -24,20 +24,15 @@ public class SystemPropertiesTest {
         final String osName = System.getProperty("os.name");
         Assert.assertFalse(osName.startsWith("windows"));
 
-        String configFilePath;
-        final boolean windows = osName.toLowerCase().startsWith("windows");
-        if (windows) {
-            configFilePath = "C:\\path\\to\\MyPerf4J.properties";
+        final boolean isWindowsOS = osName.toLowerCase().startsWith("windows");
+        if (isWindowsOS) {
+            final String configFilePath = "C:\\path\\to\\MyPerf4J.properties";
+            final int idx = configFilePath.lastIndexOf(File.separatorChar);
+            Assert.assertEquals(configFilePath.substring(0, idx + 1), "C:\\path\\to\\");
         } else {
-            configFilePath = "/path/to/MyPerf4J.properties";
-        }
-        final int idx = configFilePath.lastIndexOf(File.separatorChar);
-        configFilePath = configFilePath.substring(0, idx + 1);
-        if (windows) {
-            Assert.assertEquals(configFilePath, "C:\\path\\to\\");
-        } else {
-            Assert.assertEquals(configFilePath, "/path/to/");
+            final String configFilePath = "/path/to/MyPerf4J.properties";
+            final int idx = configFilePath.lastIndexOf(File.separatorChar);
+            Assert.assertEquals(configFilePath.substring(0, idx + 1), "/path/to/");
         }
     }
-
 }

@@ -24,7 +24,6 @@ public final class JvmMemoryCollector {
         long survivorUsed = 0L, survivorMax = 0L;
         long metaspaceUsed = 0L, metaSpaceMax = 0L;
         long codeCacheUsed = 0L, codeCacheMax = 0L;
-
         final List<MemoryPoolMXBean> mxBeanList = ManagementFactory.getMemoryPoolMXBeans();
         for (int i = 0, size = mxBeanList.size(); i < size; i++) {
             final MemoryPoolMXBean memoryPool = mxBeanList.get(i);

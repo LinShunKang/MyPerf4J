@@ -44,12 +44,7 @@ public final class JvmThreadCollector {
     }
 
     public static JvmThreadMetrics collectThreadMetrics() {
-        int news = 0;
-        int runnable = 0;
-        int blocked = 0;
-        int waiting = 0;
-        int timedWaiting = 0;
-        int terminated = 0;
+        int news = 0, runnable = 0, blocked = 0, waiting = 0, timedWaiting = 0, terminated = 0;
         final Thread[] threads = getThreads();
         for (int i = 0, len = threads.length; i < len; ++i) {
             final Thread thread = threads[i];
