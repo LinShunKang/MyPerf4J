@@ -42,7 +42,7 @@ This is a list of what it currently monitors:
 MyPerf4J adopts JavaAgent configuration mode, **transparent** access application, and the application code is completely **no-intrusive**.
 
 ### Download
-* Download and unzip [MyPerf4J-ASM.zip](https://github.com/LinShunKang/Objects/blob/master/zips/EN/MyPerf4J-ASM-3.2.0.zip?raw=true)
+* Download and unzip [MyPerf4J-ASM.zip](https://github.com/LinShunKang/Objects/blob/master/zips/EN/MyPerf4J-ASM-3.3.0-SNAPSHOT.zip?raw=true)
 * Read the `README` file
 * Modify `app_name`, `metrics.log.xxx` and `filter.packages.include` in `MyPerf4J.properties` 
 
@@ -52,6 +52,8 @@ Add the following two parameters to the JVM startup parameters
 * -DMyPerf4JPropFile=/path/to/MyPerf4J.properties
 
 > Like: java -javaagent:/path/to/MyPerf4J-ASM.jar -DMyPerf4JPropFile=/path/to/MyPerf4J.properties `-jar yourApp.jar`
+>
+> Note: If you are using JDK 9 and above, please add `--add-opens java.base/java.lang=ALL-UNNAMED` as an additional flag.
 
 ### Run
 Start your application, the output is to /path/to/log/method_metrics.log:
@@ -90,6 +92,12 @@ Welcome to register the company name in this issue: [https://github.com/LinShunK
 <img src="https://github.com/LinShunKang/Objects/blob/master/logos/Lever.jpeg?raw=true" width="240" height="80"/>
 &nbsp;&nbsp;&nbsp;
 <img src="https://github.com/LinShunKang/Objects/blob/master/logos/dianzhang_303x303.jpeg?raw=true" width="80" height="80"/>
+</div>
+
+## Thanks
+Thanks JetBrains support provided by [OpenSourceSupport](https://www.jetbrains.com/community/opensource/#support) : )
+<div align="center">
+<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg" width="200" height="200"/>
 </div>
 
 ## Inspired by

@@ -26,8 +26,8 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 /**
  * Created by LinShunkang on 2019/08/31
  */
-@BenchmarkMode({Mode.AverageTime, Mode.SampleTime})
-@OutputTimeUnit(TimeUnit.MICROSECONDS)
+@BenchmarkMode({Mode.Throughput})
+@OutputTimeUnit(TimeUnit.SECONDS)
 @State(Scope.Thread)
 public class MethodMetricsBench {
 
@@ -53,7 +53,7 @@ public class MethodMetricsBench {
 
         accurateMethodTag = MethodTag.getGeneralInstance("", "Test", "Api", "accurate", "");
         int accurateMethodId = methodTagMaintainer.addMethodTag(accurateMethodTag);
-        accurateRecorder = AccurateRecorder.getInstance(1, 1024, 64);
+        accurateRecorder = AccurateRecorder.getInstance(1, 256, 64);
         recorders.setRecorder(accurateMethodId, accurateRecorder);
 
         long startTime = System.currentTimeMillis();
@@ -86,10 +86,9 @@ public class MethodMetricsBench {
     }
 
     public static void main(String[] args) throws RunnerException {
-        // 使用一个单独进程执行测试，执行5遍warmup，然后执行5遍测试
-        Options opt = new OptionsBuilder()
+        final Options opt = new OptionsBuilder()
                 .include(MethodMetricsBench.class.getSimpleName())
-                .forks(1)
+                .forks(2)
                 .warmupIterations(3)
                 .measurementIterations(5)
                 .build();

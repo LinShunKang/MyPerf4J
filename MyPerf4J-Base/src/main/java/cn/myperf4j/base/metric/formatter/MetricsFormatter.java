@@ -9,6 +9,13 @@ import java.util.List;
  */
 public interface MetricsFormatter<T extends Metrics> {
 
+    ThreadLocal<StringBuilder> SB_TL = new ThreadLocal<StringBuilder>() {
+        @Override
+        protected StringBuilder initialValue() {
+            return new StringBuilder(32 * 1024);
+        }
+    };
+
     String format(List<T> metricsList, long startMillis, long stopMillis);
 
 }

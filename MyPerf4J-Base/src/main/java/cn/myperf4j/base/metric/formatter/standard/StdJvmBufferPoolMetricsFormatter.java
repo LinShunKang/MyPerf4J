@@ -13,22 +13,24 @@ import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
  */
 public class StdJvmBufferPoolMetricsFormatter implements JvmBufferPoolMetricsFormatter {
 
+    private static final String TITLE_FORMAT = "%-19s%19s%19s%19s%n";
+
+    private static final String DATA_FORMAT = "%-19s%19d%19d%19d%n";
+
     @Override
     public String format(List<JvmBufferPoolMetrics> metricsList, long startMillis, long stopMillis) {
-        String dataTitleFormat = "%-19s%19s%19s%19s%n";
-        StringBuilder sb = new StringBuilder((metricsList.size() + 2) * (3 * 19 + 64));
+        final StringBuilder sb = new StringBuilder((metricsList.size() + 2) * (3 * 19 + 64));
         sb.append("MyPerf4J JVM BufferPool Metrics [").append(DateFormatUtils.format(startMillis)).append(", ")
                 .append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
-        sb.append(String.format(dataTitleFormat, "Name", "Count", "MemoryUsed", "MemoryCapacity"));
+        sb.append(String.format(TITLE_FORMAT, "Name", "Count", "MemoryUsed", "MemoryCapacity"));
         if (metricsList.isEmpty()) {
             return sb.toString();
         }
 
-        String dataFormat = "%-19s%19d%19d%19d%n";
         for (int i = 0; i < metricsList.size(); ++i) {
-            JvmBufferPoolMetrics metrics = metricsList.get(i);
+            final JvmBufferPoolMetrics metrics = metricsList.get(i);
             sb.append(
-                    String.format(dataFormat,
+                    String.format(DATA_FORMAT,
                             metrics.getName(),
                             metrics.getCount(),
                             metrics.getMemoryUsed(),

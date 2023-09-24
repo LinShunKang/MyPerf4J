@@ -24,12 +24,11 @@ public final class JvmMemoryCollector {
         long survivorUsed = 0L, survivorMax = 0L;
         long metaspaceUsed = 0L, metaSpaceMax = 0L;
         long codeCacheUsed = 0L, codeCacheMax = 0L;
-
-        List<MemoryPoolMXBean> mxBeanList = ManagementFactory.getMemoryPoolMXBeans();
-        for (int i = 0; i < mxBeanList.size(); i++) {
-            MemoryPoolMXBean memoryPool = mxBeanList.get(i);
-            MemoryUsage usage = memoryPool.getUsage();
-            String poolName = memoryPool.getName();
+        final List<MemoryPoolMXBean> mxBeanList = ManagementFactory.getMemoryPoolMXBeans();
+        for (int i = 0, size = mxBeanList.size(); i < size; i++) {
+            final MemoryPoolMXBean memoryPool = mxBeanList.get(i);
+            final MemoryUsage usage = memoryPool.getUsage();
+            final String poolName = memoryPool.getName();
             if (poolName.endsWith("Perm Gen")) {
                 permGenUsed = usage.getUsed() >> 10;
                 permGenMax = usage.getMax() >> 10;
@@ -51,15 +50,13 @@ public final class JvmMemoryCollector {
             }
         }
 
-        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
-        MemoryUsage nonHeapMem = memoryMXBean.getNonHeapMemoryUsage();
-        long nonHeapUsed = nonHeapMem.getUsed() >> 10;
-        long nonHeapMax = nonHeapMem.getMax() >> 10;
-
-        MemoryUsage heapMem = memoryMXBean.getHeapMemoryUsage();
-        long heapUsed = heapMem.getUsed() >> 10;
-        long heapMax = heapMem.getMax() >> 10;
-
+        final MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+        final MemoryUsage nonHeapMem = memoryMXBean.getNonHeapMemoryUsage();
+        final long nonHeapUsed = nonHeapMem.getUsed() >> 10;
+        final long nonHeapMax = nonHeapMem.getMax() >> 10;
+        final MemoryUsage heapMem = memoryMXBean.getHeapMemoryUsage();
+        final long heapUsed = heapMem.getUsed() >> 10;
+        final long heapMax = heapMem.getMax() >> 10;
         return new JvmMemoryMetrics(
                 heapUsed, heapMax,
                 nonHeapUsed, nonHeapMax,

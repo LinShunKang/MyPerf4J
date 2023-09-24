@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Collections.singletonList;
+
 /**
  * Created by LinShunkang on 2020/05/24
  */
@@ -18,11 +20,11 @@ public class ListUtilsTest {
         List<Integer> list = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
         List<List<Integer>> partition = ListUtils.partition(list, 2);
         Assert.assertEquals(5, partition.size());
-        Assert.assertEquals(2, partition.get(0).size());
-        Assert.assertEquals(2, partition.get(1).size());
-        Assert.assertEquals(2, partition.get(2).size());
-        Assert.assertEquals(2, partition.get(3).size());
-        Assert.assertEquals(1, partition.get(4).size());
+        Assert.assertEquals(Arrays.asList(1, 2), partition.get(0));
+        Assert.assertEquals(Arrays.asList(3, 4), partition.get(1));
+        Assert.assertEquals(Arrays.asList(5, 6), partition.get(2));
+        Assert.assertEquals(Arrays.asList(7, 8), partition.get(3));
+        Assert.assertEquals(singletonList(9), partition.get(4));
 
         List<Integer> list2 = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);
         List<List<Integer>> partition2 = ListUtils.partition(list2, 2);
@@ -52,5 +54,4 @@ public class ListUtilsTest {
         Assert.assertFalse(ListUtils.isNotEmpty(new ArrayList<>(1)));
         Assert.assertTrue(ListUtils.isNotEmpty(Arrays.asList(1, 2, 3)));
     }
-
 }

@@ -77,13 +77,13 @@ public class FilterConfig {
     }
 
     public static FilterConfig loadFilterConfig() {
-        String includePackages = getStr(PACKAGES_INCLUDE);
+        final String includePackages = getStr(PACKAGES_INCLUDE);
         if (StrUtils.isBlank(includePackages)) {
             throw new IllegalArgumentException(PACKAGES_INCLUDE.key() + " or " + PACKAGES_INCLUDE.legacyKey() +
                     " is required!!!");
         }
 
-        FilterConfig config = new FilterConfig();
+        final FilterConfig config = new FilterConfig();
         config.includePackages(includePackages);
         config.excludeClassLoaders(getStr(CLASS_LOADERS_EXCLUDE));
         config.excludePackages(getStr(PACKAGES_EXCLUDE));

@@ -1,7 +1,7 @@
 package cn.myperf4j.core.recorder;
 
-import cn.myperf4j.base.buffer.IntBuf;
-import cn.myperf4j.base.util.concurrent.MyAtomicIntArray;
+import cn.myperf4j.base.buffer.LongBuf;
+import cn.myperf4j.base.util.concurrent.AtomicIntArray;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -20,13 +20,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public final class RoughRecorder extends Recorder {
 
-    private final MyAtomicIntArray timingArr;
+    private final AtomicIntArray timingArr;
 
     private final AtomicInteger diffCount;
 
     public RoughRecorder(int methodTag, int mostTimeThreshold) {
         super(methodTag);
-        this.timingArr = new MyAtomicIntArray(mostTimeThreshold + 2);
+        this.timingArr = new AtomicIntArray(mostTimeThreshold + 2);
         this.diffCount = new AtomicInteger(0);
     }
 
@@ -38,7 +38,7 @@ public final class RoughRecorder extends Recorder {
 
         int oldValue;
         final int elapsedTime = (int) ((endNanoTime - startNanoTime) / 1000000);
-        final MyAtomicIntArray timingArr = this.timingArr;
+        final AtomicIntArray timingArr = this.timingArr;
         if (elapsedTime < timingArr.length() - 1) {
             oldValue = timingArr.getAndIncrement(elapsedTime);
         } else {
@@ -51,17 +51,8 @@ public final class RoughRecorder extends Recorder {
     }
 
     @Override
-    public long fillSortedRecords(final IntBuf intBuf) {
-        long totalCount = 0L;
-        final MyAtomicIntArray timingArr = this.timingArr;
-        for (int i = 0; i < timingArr.length(); ++i) {
-            final int count = timingArr.get(i);
-            if (count > 0) {
-                intBuf.write(i, count);
-                totalCount += count;
-            }
-        }
-        return totalCount;
+    public long fillSortedRecords(LongBuf longBuf) {
+        return timingArr.fillSortedKvs(longBuf);
     }
 
     @Override

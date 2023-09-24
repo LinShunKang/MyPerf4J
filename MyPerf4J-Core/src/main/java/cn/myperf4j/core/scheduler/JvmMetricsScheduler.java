@@ -9,6 +9,7 @@ import cn.myperf4j.base.metric.JvmFileDescriptorMetrics;
 import cn.myperf4j.base.metric.JvmGcMetrics;
 import cn.myperf4j.base.metric.JvmMemoryMetrics;
 import cn.myperf4j.base.metric.JvmThreadMetrics;
+import cn.myperf4j.base.metric.collector.JvmBufferPoolCollector;
 import cn.myperf4j.base.metric.collector.JvmClassCollector;
 import cn.myperf4j.base.metric.collector.JvmCompilationCollector;
 import cn.myperf4j.base.metric.collector.JvmFileDescCollector;
@@ -24,8 +25,6 @@ import cn.myperf4j.base.metric.exporter.JvmMemoryMetricsExporter;
 import cn.myperf4j.base.metric.exporter.JvmThreadMetricsExporter;
 import cn.myperf4j.base.util.Logger;
 
-import java.lang.management.BufferPoolMXBean;
-import java.lang.management.ManagementFactory;
 import java.util.List;
 
 /**
@@ -65,8 +64,7 @@ public class JvmMetricsScheduler implements Scheduler {
 
     @Override
     public void run(long lastTimeSliceStartTime, long millTimeSlice) {
-        long stopMillis = lastTimeSliceStartTime + millTimeSlice;
-
+        final long stopMillis = lastTimeSliceStartTime + millTimeSlice;
         processClassMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
         processGCMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
         processMemoryMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
@@ -84,7 +82,7 @@ public class JvmMetricsScheduler implements Scheduler {
     private void processClassMetrics(long processId, long startMillis, long stopMillis) {
         classMetricsProcessor.beforeProcess(processId, startMillis, stopMillis);
         try {
-            JvmClassMetrics metrics = JvmClassCollector.collectClassMetrics();
+            final JvmClassMetrics metrics = JvmClassCollector.collectClassMetrics();
             classMetricsProcessor.process(metrics, processId, startMillis, stopMillis);
         } catch (Throwable t) {
             Logger.error("JvmMetricsScheduler.processClassMetrics(" + processId + ", " + startMillis + ", "
@@ -97,7 +95,7 @@ public class JvmMetricsScheduler implements Scheduler {
     private void processGCMetrics(long processId, long startMillis, long stopMillis) {
         gcMetricsProcessor.beforeProcess(processId, startMillis, stopMillis);
         try {
-            JvmGcMetrics metrics = JvmGcCollector.collectGcMetrics();
+            final JvmGcMetrics metrics = JvmGcCollector.collectGcMetrics();
             gcMetricsProcessor.process(metrics, processId, startMillis, stopMillis);
         } catch (Throwable t) {
             Logger.error("JvmMetricsScheduler.processGCMetrics(" + processId + ", " + startMillis + ", "
@@ -110,7 +108,7 @@ public class JvmMetricsScheduler implements Scheduler {
     private void processMemoryMetrics(long processId, long startMillis, long stopMillis) {
         memoryMetricsProcessor.beforeProcess(processId, startMillis, stopMillis);
         try {
-            JvmMemoryMetrics metrics = JvmMemoryCollector.collectMemoryMetrics();
+            final JvmMemoryMetrics metrics = JvmMemoryCollector.collectMemoryMetrics();
             memoryMetricsProcessor.process(metrics, processId, startMillis, stopMillis);
         } catch (Throwable t) {
             Logger.error("JvmMetricsScheduler.processMemoryMetrics(" + processId + ", " + startMillis + ", "
@@ -123,10 +121,9 @@ public class JvmMetricsScheduler implements Scheduler {
     private void processBufferPoolMetrics(long processId, long startMillis, long stopMillis) {
         bufferPoolMetricsProcessor.beforeProcess(processId, startMillis, stopMillis);
         try {
-            List<BufferPoolMXBean> pools = ManagementFactory.getPlatformMXBeans(BufferPoolMXBean.class);
-            for (int i = 0; i < pools.size(); i++) {
-                JvmBufferPoolMetrics metrics = new JvmBufferPoolMetrics(pools.get(i));
-                bufferPoolMetricsProcessor.process(metrics, processId, startMillis, stopMillis);
+            final List<JvmBufferPoolMetrics> metricsList = JvmBufferPoolCollector.collectBufferPoolMetrics();
+            for (int i = 0, size = metricsList.size(); i < size; i++) {
+                bufferPoolMetricsProcessor.process(metricsList.get(i), processId, startMillis, stopMillis);
             }
         } catch (Throwable t) {
             Logger.error("JvmMetricsScheduler.processBufferPoolMetrics(" + processId + ", " + startMillis + ", "
@@ -139,7 +136,7 @@ public class JvmMetricsScheduler implements Scheduler {
     private void processThreadMetrics(long processId, long startMillis, long stopMillis) {
         threadMetricsProcessor.beforeProcess(processId, startMillis, stopMillis);
         try {
-            JvmThreadMetrics metrics = JvmThreadCollector.collectThreadMetrics();
+            final JvmThreadMetrics metrics = JvmThreadCollector.collectThreadMetrics();
             threadMetricsProcessor.process(metrics, processId, startMillis, stopMillis);
         } catch (Throwable t) {
             Logger.error("JvmMetricsScheduler.processThreadMetrics(" + processId + ", " + startMillis + ", "
@@ -152,7 +149,7 @@ public class JvmMetricsScheduler implements Scheduler {
     private void processCompilationMetrics(long processId, long startMillis, long stopMillis) {
         compilationProcessor.beforeProcess(processId, startMillis, stopMillis);
         try {
-            JvmCompilationMetrics metrics = JvmCompilationCollector.collectCompilationMetrics();
+            final JvmCompilationMetrics metrics = JvmCompilationCollector.collectCompilationMetrics();
             compilationProcessor.process(metrics, processId, startMillis, stopMillis);
         } catch (Throwable t) {
             Logger.error("JvmMetricsScheduler.processCompilationMetrics(" + processId + ", " + startMillis + ", "
@@ -165,7 +162,7 @@ public class JvmMetricsScheduler implements Scheduler {
     private void processFileDescMetrics(long processId, long startMillis, long stopMillis) {
         fileDescProcessor.beforeProcess(processId, startMillis, stopMillis);
         try {
-            JvmFileDescriptorMetrics metrics = JvmFileDescCollector.collectFileDescMetrics();
+            final JvmFileDescriptorMetrics metrics = JvmFileDescCollector.collectFileDescMetrics();
             fileDescProcessor.process(metrics, processId, startMillis, stopMillis);
         } catch (Throwable t) {
             Logger.error("JvmMetricsScheduler.processFileDescMetrics(" + processId + ", " + startMillis + ", "

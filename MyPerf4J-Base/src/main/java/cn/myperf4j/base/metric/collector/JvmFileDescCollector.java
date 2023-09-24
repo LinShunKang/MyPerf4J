@@ -19,9 +19,8 @@ public final class JvmFileDescCollector {
 
     public static JvmFileDescriptorMetrics collectFileDescMetrics() {
         if (SYSTEM_MX_BEAN instanceof UnixOperatingSystemMXBean) {
-            UnixOperatingSystemMXBean unixMXBean = (UnixOperatingSystemMXBean) SYSTEM_MX_BEAN;
-            return new JvmFileDescriptorMetrics(unixMXBean.
-                    getOpenFileDescriptorCount(),
+            final UnixOperatingSystemMXBean unixMXBean = (UnixOperatingSystemMXBean) SYSTEM_MX_BEAN;
+            return new JvmFileDescriptorMetrics(unixMXBean.getOpenFileDescriptorCount(),
                     unixMXBean.getMaxFileDescriptorCount());
         }
         return new JvmFileDescriptorMetrics(0L, 0L);

@@ -1,5 +1,6 @@
 package cn.myperf4j.base.util.concurrent;
 
+import cn.myperf4j.base.buffer.LongBuf;
 import cn.myperf4j.base.util.UnsafeUtils;
 import sun.misc.Unsafe;
 
@@ -8,7 +9,7 @@ import java.io.Serializable;
 /**
  * Created by LinShunkang on 2020/11/24
  */
-public final class MyAtomicIntArray implements Serializable {
+public final class AtomicIntArray implements Serializable {
 
     private static final long serialVersionUID = 4512166855752664301L;
 
@@ -41,7 +42,7 @@ public final class MyAtomicIntArray implements Serializable {
      *
      * @param length the length of the array
      */
-    public MyAtomicIntArray(int length) {
+    public AtomicIntArray(int length) {
         array = new int[length];
     }
 
@@ -98,7 +99,7 @@ public final class MyAtomicIntArray implements Serializable {
     public int getAndAdd(int i, int delta) {
         final long offset = checkedByteOffset(i);
         while (true) {
-            int current = getRaw(offset);
+            final int current = getRaw(offset);
             if (compareAndSetRaw(offset, current, current + delta)) {
                 return current;
             }
@@ -129,8 +130,8 @@ public final class MyAtomicIntArray implements Serializable {
     public int addAndGet(int i, int delta) {
         final long offset = checkedByteOffset(i);
         while (true) {
-            int current = getRaw(offset);
-            int next = current + delta;
+            final int current = getRaw(offset);
+            final int next = current + delta;
             if (compareAndSetRaw(offset, current, next)) {
                 return next;
             }
@@ -140,5 +141,17 @@ public final class MyAtomicIntArray implements Serializable {
     public void reset() {
         final int[] array = this.array;
         unsafe.setMemory(array, byteOffset(0), (long) array.length * scale, (byte) 0);
+    }
+
+    public long fillSortedKvs(LongBuf longBuf) {
+        long totalCount = 0L;
+        for (int i = 0, len = array.length; i < len; ++i) {
+            final int count = get(i);
+            if (count > 0) {
+                longBuf.write(i, count);
+                totalCount += count;
+            }
+        }
+        return totalCount;
     }
 }

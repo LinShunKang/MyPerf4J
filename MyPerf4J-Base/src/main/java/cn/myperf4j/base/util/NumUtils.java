@@ -24,4 +24,16 @@ public final class NumUtils {
         }
         return defaultValue;
     }
+
+    public static long composeKv(int key, int value) {
+        return ((long) value) << 32 | key;
+    }
+
+    public static int parseKey(long kv) {
+        return (int) kv;
+    }
+
+    public static int parseValue(long kv) {
+        return (int) (kv >> 32);
+    }
 }

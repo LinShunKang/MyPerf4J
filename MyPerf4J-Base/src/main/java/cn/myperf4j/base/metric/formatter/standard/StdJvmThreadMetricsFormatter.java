@@ -13,23 +13,25 @@ import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
  */
 public class StdJvmThreadMetricsFormatter implements JvmThreadMetricsFormatter {
 
+    private static final String TITLE_FORMAT = "%-14s%14s%14s%14s%14s%14s%14s%14s%14s%14s%n";
+
+    private static final String DATA_FORMAT = "%-14s%14d%14d%14d%14d%14d%14d%14d%14d%14d%n";
+
     @Override
     public String format(List<JvmThreadMetrics> metricsList, long startMillis, long stopMillis) {
-        String dataTitleFormat = "%-14s%14s%14s%14s%14s%14s%14s%14s%14s%14s%n";
-        StringBuilder sb = new StringBuilder((metricsList.size() + 2) * (14 * 10 + 64));
+        final StringBuilder sb = new StringBuilder((metricsList.size() + 2) * (14 * 10 + 64));
         sb.append("MyPerf4J JVM Thread Metrics [").append(DateFormatUtils.format(startMillis)).append(", ")
                 .append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
-        sb.append(String.format(dataTitleFormat, "TotalStarted", "Active", "Peak", "Daemon", "New", "Runnable",
+        sb.append(String.format(TITLE_FORMAT, "TotalStarted", "Active", "Peak", "Daemon", "New", "Runnable",
                 "Blocked", "Waiting", "TimedWaiting", "Terminated"));
         if (metricsList.isEmpty()) {
             return sb.toString();
         }
 
-        String dataFormat = "%-14s%14d%14d%14d%14d%14d%14d%14d%14d%14d%n";
         for (int i = 0; i < metricsList.size(); ++i) {
-            JvmThreadMetrics metrics = metricsList.get(i);
+            final JvmThreadMetrics metrics = metricsList.get(i);
             sb.append(
-                    String.format(dataFormat,
+                    String.format(DATA_FORMAT,
                             metrics.getTotalStarted(),
                             metrics.getActive(),
                             metrics.getPeak(),

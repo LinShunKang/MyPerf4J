@@ -31,7 +31,7 @@ public class InfluxHttpJvmBufferPoolMetricsExporter implements JvmBufferPoolMetr
 
     @Override
     public void process(JvmBufferPoolMetrics metrics, long processId, long startMillis, long stopMillis) {
-        List<JvmBufferPoolMetrics> metricsList = metricsMap.get(processId);
+        final List<JvmBufferPoolMetrics> metricsList = metricsMap.get(processId);
         if (metricsList != null) {
             metricsList.add(metrics);
         } else {
@@ -42,7 +42,7 @@ public class InfluxHttpJvmBufferPoolMetricsExporter implements JvmBufferPoolMetr
 
     @Override
     public void afterProcess(long processId, long startMillis, long stopMillis) {
-        List<JvmBufferPoolMetrics> metricsList = metricsMap.remove(processId);
+        final List<JvmBufferPoolMetrics> metricsList = metricsMap.remove(processId);
         if (metricsList != null) {
             CLIENT.writeMetricsAsync(METRICS_FORMATTER.format(metricsList, startMillis, stopMillis));
         } else {

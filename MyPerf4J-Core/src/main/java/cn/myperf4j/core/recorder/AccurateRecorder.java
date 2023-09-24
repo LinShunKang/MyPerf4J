@@ -1,14 +1,10 @@
 package cn.myperf4j.core.recorder;
 
-import cn.myperf4j.base.buffer.IntBuf;
-import cn.myperf4j.base.util.collections.MapUtils;
-import cn.myperf4j.base.util.concurrent.MyAtomicIntArray;
+import cn.myperf4j.base.buffer.LongBuf;
+import cn.myperf4j.base.util.concurrent.AtomicIntArray;
+import cn.myperf4j.base.util.concurrent.IntHashCounter;
+import cn.myperf4j.base.util.concurrent.AtomicIntHashCounter;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -16,22 +12,25 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <p>
  * 默认使用该类作为 MyPerf4J 的 Recorder
  * 该类用于精确存储某一个方法在指定时间片内的响应时间
- * 为了减小内存占用，利用 数组+Map 的方式:
- * 1、将小于等于 mostTimeThreshold 的响应时间记录在数组中；
- * 2、将大于 mostTimeThreshold 的响应时间记录到 Map 中。
+ * 为了减小内存占用，利用 数组 + Map 的方式:
+ * 1、将小于等于 mostTimeThreshold 的响应时间记录在 AtomicIntArray 中；
+ * 2、将大于 mostTimeThreshold 的响应时间记录到 AtomicIntHashCounter 中。
  */
 public final class AccurateRecorder extends Recorder {
 
-    private final MyAtomicIntArray timingArr;
+    private final int mostTimeThreshold;
 
-    private final ConcurrentHashMap<Integer, AtomicInteger> timingMap;
+    private final AtomicIntArray timingArr;
+
+    private final IntHashCounter timingHashCounter;
 
     private final AtomicInteger diffCount;
 
     private AccurateRecorder(int methodTagId, int mostTimeThreshold, int outThresholdCount) {
         super(methodTagId);
-        this.timingArr = new MyAtomicIntArray(mostTimeThreshold + 1);
-        this.timingMap = new ConcurrentHashMap<>(MapUtils.getFitCapacity(outThresholdCount));
+        this.mostTimeThreshold = mostTimeThreshold;
+        this.timingArr = new AtomicIntArray(mostTimeThreshold);
+        this.timingHashCounter = new AtomicIntHashCounter(outThresholdCount);
         this.diffCount = new AtomicInteger(0);
     }
 
@@ -42,69 +41,18 @@ public final class AccurateRecorder extends Recorder {
         }
 
         final int elapsedTime = (int) ((endNanoTime - startNanoTime) / 1_000_000);
-        if (elapsedTime < timingArr.length()) {
-            final int oldValue = timingArr.getAndIncrement(elapsedTime);
-            if (oldValue <= 0) {
+        if (elapsedTime < mostTimeThreshold) {
+            if (timingArr.getAndIncrement(elapsedTime) <= 0) {
                 diffCount.incrementAndGet();
             }
-            return;
-        }
-
-        final AtomicInteger count = timingMap.get(elapsedTime);
-        if (count != null) {
-            count.incrementAndGet();
-            return;
-        }
-
-        final AtomicInteger oldCounter = timingMap.putIfAbsent(elapsedTime, new AtomicInteger(1));
-        if (oldCounter != null) {
-            oldCounter.incrementAndGet();
-        } else {
+        } else if (timingHashCounter.getAndIncrement(elapsedTime) <= 0) {
             diffCount.incrementAndGet();
         }
     }
 
     @Override
-    public long fillSortedRecords(IntBuf intBuf) {
-        long totalCount = 0L;
-        final MyAtomicIntArray timingArr = this.timingArr;
-        for (int i = 0; i < timingArr.length(); ++i) {
-            final int count = timingArr.get(i);
-            if (count > 0) {
-                intBuf.write(i, count);
-                totalCount += count;
-            }
-        }
-        return totalCount + fillMapRecord(intBuf);
-    }
-
-    private int fillMapRecord(IntBuf intBuf) {
-        int totalCount = 0;
-        final int offset = intBuf.writerIndex();
-        final ConcurrentHashMap<Integer, AtomicInteger> timingMap = this.timingMap;
-        for (Map.Entry<Integer, AtomicInteger> entry : timingMap.entrySet()) {
-            final int count = entry.getValue().get();
-            if (count > 0) {
-                intBuf.write(entry.getKey());
-                totalCount += count;
-            }
-        }
-
-        if (offset == intBuf.writerIndex()) {
-            return 0;
-        }
-
-        final int writerIndex = intBuf.writerIndex();
-        Arrays.sort(intBuf._buf(), offset, writerIndex);
-
-        for (int i = writerIndex - 1; i >= offset; --i) {
-            final int count = intBuf.getInt(i);
-            final int keyIdx = (i << 1) - offset; //2 * (i - offset) + offset
-            intBuf.setInt(keyIdx, count);
-            intBuf.setInt(keyIdx + 1, timingMap.get(count).get());
-        }
-        intBuf.writerIndex((writerIndex << 1) - offset); //writerIndex + (writerIndex - offset)
-        return totalCount;
+    public long fillSortedRecords(LongBuf longBuf) {
+        return timingArr.fillSortedKvs(longBuf) + timingHashCounter.fillSortedKvs(longBuf);
     }
 
     @Override
@@ -114,23 +62,11 @@ public final class AccurateRecorder extends Recorder {
 
     @Override
     public void resetRecord() {
-        if (!hasRecord()) {
-            return;
+        if (hasRecord()) {
+            timingArr.reset();
+            timingHashCounter.reset();
+            diffCount.set(0);
         }
-
-        timingArr.reset();
-        final int eliminateThreshold = 3 * timingArr.length() / 2;
-        final Iterator<Entry<Integer, AtomicInteger>> iterator = timingMap.entrySet().iterator();
-        while (iterator.hasNext()) {
-            final Map.Entry<Integer, AtomicInteger> entry = iterator.next();
-            if (entry.getKey() > eliminateThreshold || entry.getValue().get() <= 0) {
-                iterator.remove();
-            } else {
-                entry.getValue().set(0);
-            }
-        }
-
-        diffCount.set(0);
     }
 
     @Override

@@ -17,26 +17,17 @@ import static cn.myperf4j.base.util.text.NumFormatUtils.doubleFormat;
  */
 public final class InfluxMethodMetricsFormatter implements MethodMetricsFormatter {
 
-    private static final ThreadLocal<StringBuilder> SB_TL = new ThreadLocal<StringBuilder>() {
-        @Override
-        protected StringBuilder initialValue() {
-            return new StringBuilder(32 * 1024);
-        }
-    };
-
     @Override
     public String format(List<MethodMetrics> metricsList, long startMillis, long stopMillis) {
         if (ListUtils.isEmpty(metricsList)) {
             return "";
         }
 
-        StringBuilder sb = SB_TL.get();
+        final StringBuilder sb = SB_TL.get();
         try {
-            long startNanos = startMillis * 1000 * 1000L;
+            final long startNanos = startMillis * 1000 * 1000L;
             for (int i = 0; i < metricsList.size(); ++i) {
-                MethodMetrics metrics = metricsList.get(i);
-                appendLineProtocol(metrics, startNanos, sb);
-                sb.append('\n');
+                appendLineProtocol(metricsList.get(i), startNanos, sb);
             }
             return sb.substring(0, sb.length() - 1);
         } finally {
@@ -45,8 +36,8 @@ public final class InfluxMethodMetricsFormatter implements MethodMetricsFormatte
     }
 
     private void appendLineProtocol(MethodMetrics metrics, long startNanos, StringBuilder sb) {
-        MethodTag methodTag = metrics.getMethodTag();
-        String methodDesc = processTagOrField(methodTag.getSimpleDesc());
+        final MethodTag methodTag = metrics.getMethodTag();
+        final String methodDesc = processTagOrField(methodTag.getSimpleDesc());
         sb.append("method_metrics")
                 .append(",AppName=").append(ProfilingConfig.basicConfig().appName())
                 .append(",ClassName=").append(methodTag.getSimpleClassName())
@@ -67,6 +58,6 @@ public final class InfluxMethodMetricsFormatter implements MethodMetricsFormatte
                 .append(",TP99=").append(metrics.getTP99()).append('i')
                 .append(",TP999=").append(metrics.getTP999()).append('i')
                 .append(",TP9999=").append(metrics.getTP9999()).append('i')
-                .append(' ').append(startNanos);
+                .append(' ').append(startNanos).append('\n');
     }
 }

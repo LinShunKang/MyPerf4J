@@ -29,7 +29,7 @@ public class MinutelyRollingFileWriter extends AutoRollingFileWriter {
 
     @Override
     Calendar computeEpochCal(Date now, int epochOffset) {
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         cal.setTime(now);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);

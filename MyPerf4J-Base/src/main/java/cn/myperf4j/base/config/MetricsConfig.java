@@ -28,6 +28,7 @@ import static cn.myperf4j.base.constant.PropertyValues.Metrics.EXPORTER_LOG_STAN
 import static cn.myperf4j.base.constant.PropertyValues.Metrics.EXPORTER_LOG_STDOUT;
 import static cn.myperf4j.base.constant.PropertyValues.Metrics.LOG_ROLLING_DAILY;
 import static cn.myperf4j.base.constant.PropertyValues.Metrics.STDOUT_METRICS_FILE;
+import static cn.myperf4j.base.util.StrUtils.isNotBlank;
 
 /**
  * Created by LinShunkang on 2020/05/24
@@ -232,12 +233,12 @@ public class MetricsConfig {
     }
 
     private static String getExporter() {
-        String exporter = getStr(EXPORTER.key());
-        if (exporter != null) {
+        final String exporter = getStr(EXPORTER.key());
+        if (isNotBlank(exporter)) {
             return exporter;
         }
 
-        Integer processorType = getInt(EXPORTER.legacyKey());
+        final Integer processorType = getInt(EXPORTER.legacyKey());
         if (processorType == null) {
             return EXPORTER_LOG_STDOUT;
         }

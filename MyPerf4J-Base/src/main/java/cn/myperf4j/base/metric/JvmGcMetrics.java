@@ -17,18 +17,34 @@ public class JvmGcMetrics extends Metrics {
 
     private final long fullGcTime;
 
-    private final long zGcTime;
-
     private final long zGcCount;
 
+    private final long zGcTime;
+
     private final double avgZGcTime;
+
+    private final long zGcCyclesCount;
+
+    private final long zGcCyclesTime;
+
+    private final double avgZGcCyclesTime;
+
+    private final long zGcPausesCount;
+
+    private final long zGcPausesTime;
+
+    private final double avgZGcPausesTime;
 
     public JvmGcMetrics(long youngGcCount,
                         long youngGcTime,
                         long fullGcCount,
                         long fullGcTime,
                         long zGcCount,
-                        long zGcTime) {
+                        long zGcTime,
+                        long zGcCyclesCount,
+                        long zGcCyclesTime,
+                        long zGcPausesCount,
+                        long zGcPausesTime) {
         this.youngGcCount = youngGcCount;
         this.youngGcTime = youngGcTime;
         this.avgYoungGcTime = getAvgTime(youngGcCount, youngGcTime);
@@ -37,6 +53,12 @@ public class JvmGcMetrics extends Metrics {
         this.zGcCount = zGcCount;
         this.zGcTime = zGcTime;
         this.avgZGcTime = getAvgTime(zGcCount, zGcTime);
+        this.zGcCyclesCount = zGcCyclesCount;
+        this.zGcCyclesTime = zGcCyclesTime;
+        this.avgZGcCyclesTime = getAvgTime(zGcCyclesCount, zGcCyclesTime);
+        this.zGcPausesCount = zGcPausesCount;
+        this.zGcPausesTime = zGcPausesTime;
+        this.avgZGcPausesTime = getAvgTime(zGcPausesCount, zGcPausesTime);
     }
 
     private double getAvgTime(long count, long time) {
@@ -75,6 +97,30 @@ public class JvmGcMetrics extends Metrics {
         return avgZGcTime;
     }
 
+    public long getZGcCyclesCount() {
+        return zGcCyclesCount;
+    }
+
+    public long getZGcCyclesTime() {
+        return zGcCyclesTime;
+    }
+
+    public double getAvgZGcCyclesTime() {
+        return avgZGcCyclesTime;
+    }
+
+    public long getZGcPausesCount() {
+        return zGcPausesCount;
+    }
+
+    public long getZGcPausesTime() {
+        return zGcPausesTime;
+    }
+
+    public double getAvgZGcPausesTime() {
+        return avgZGcPausesTime;
+    }
+
     @Override
     public String toString() {
         return "JvmGcMetrics{" +
@@ -83,9 +129,15 @@ public class JvmGcMetrics extends Metrics {
                 ", avgYoungGcTime=" + avgYoungGcTime +
                 ", fullGcCount=" + fullGcCount +
                 ", fullGcTime=" + fullGcTime +
-                ", zGcTime=" + zGcTime +
                 ", zGcCount=" + zGcCount +
+                ", zGcTime=" + zGcTime +
                 ", avgZGcTime=" + avgZGcTime +
+                ", zGcCyclesCount=" + zGcCyclesCount +
+                ", zGcCyclesTime=" + zGcCyclesTime +
+                ", avgZGcCyclesTime=" + avgZGcCyclesTime +
+                ", zGcPausesCount=" + zGcPausesCount +
+                ", zGcPausesTime=" + zGcPausesTime +
+                ", avgZGcPausesTime=" + avgZGcPausesTime +
                 '}';
     }
 }

@@ -1,6 +1,5 @@
 package cn.myperf4j.base.config;
 
-import cn.myperf4j.base.constant.PropertyValues;
 import cn.myperf4j.base.util.collections.MapUtils;
 
 import java.util.Map;
@@ -11,6 +10,7 @@ import static cn.myperf4j.base.constant.PropertyKeys.Recorder.BACKUP_COUNT;
 import static cn.myperf4j.base.constant.PropertyKeys.Recorder.MODE;
 import static cn.myperf4j.base.constant.PropertyKeys.Recorder.SIZE_TIMING_ARR;
 import static cn.myperf4j.base.constant.PropertyKeys.Recorder.SIZE_TIMING_MAP;
+import static cn.myperf4j.base.constant.PropertyValues.Recorder.MODE_ACCURATE;
 
 /**
  * Created by LinShunkang on 2020/05/24
@@ -38,7 +38,7 @@ public class RecorderConfig {
     }
 
     public boolean accurateMode() {
-        return PropertyValues.Recorder.MODE_ACCURATE.equalsIgnoreCase(mode);
+        return MODE_ACCURATE.equalsIgnoreCase(mode);
     }
 
     public int backupCount() {
@@ -93,8 +93,8 @@ public class RecorderConfig {
     }
 
     public static RecorderConfig loadRecorderConfig() {
-        RecorderConfig config = new RecorderConfig();
-        config.mode(getStr(MODE, PropertyValues.Recorder.MODE_ACCURATE));
+        final RecorderConfig config = new RecorderConfig();
+        config.mode(getStr(MODE, MODE_ACCURATE));
         config.backupCount(getInt(BACKUP_COUNT, 1));
         config.timingArrSize(getInt(SIZE_TIMING_ARR, 1024));
         config.timingMapSize(getInt(SIZE_TIMING_MAP, 32));

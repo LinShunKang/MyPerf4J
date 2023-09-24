@@ -1,6 +1,6 @@
 package cn.myperf4j.core.recorder;
 
-import cn.myperf4j.base.buffer.IntBuf;
+import cn.myperf4j.base.buffer.LongBuf;
 
 /**
  * Created by LinShunkang on 2018/3/13
@@ -22,16 +22,16 @@ public abstract class Recorder {
     public abstract void recordTime(long startNanoTime, long endNanoTime);
 
     /**
-     * 为了节省内存的使用，利用 IntBuf 作为返回结果
+     * 为了节省内存的使用，利用 LongBuf 承载返回结果
      *
-     * @param intBuf : intBuf.capacity 为 effectiveRecordCount 的两倍!!!
-     *               其中：
-     *               第 0 位存 timeCost，第 1 位存 count，
-     *               第 2 位存 timeCost，第 3 位存 count，
-     *               以此类推
+     * @param longBuf : intBuf#capacity 至少为 diffCount!
+     *                其中：
+     *                第 0 位存 ((long)timeCost << 32) | count，
+     *                第 1 位存 ((long)timeCost << 32) | count，
+     *                以此类推
      * @return 总请求数
      */
-    public abstract long fillSortedRecords(IntBuf intBuf);
+    public abstract long fillSortedRecords(LongBuf longBuf);
 
     /**
      * 获取有效的记录的个数
@@ -39,5 +39,4 @@ public abstract class Recorder {
     public abstract int getDiffCount();
 
     public abstract void resetRecord();
-
 }

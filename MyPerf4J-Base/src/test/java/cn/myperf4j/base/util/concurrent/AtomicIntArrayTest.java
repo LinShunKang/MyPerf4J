@@ -1,6 +1,5 @@
-package cn.myperf4j.base.util;
+package cn.myperf4j.base.util.concurrent;
 
-import cn.myperf4j.base.util.concurrent.MyAtomicIntArray;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,9 +7,9 @@ import org.junit.Test;
 /**
  * Created by LinShunkang on 2020/11/24
  */
-public class MyAtomicIntArrayTest {
+public class AtomicIntArrayTest {
 
-    private final MyAtomicIntArray atomicIntArray = new MyAtomicIntArray(1024);
+    private final AtomicIntArray atomicIntArray = new AtomicIntArray(1024);
 
     @Before
     public void clear() {

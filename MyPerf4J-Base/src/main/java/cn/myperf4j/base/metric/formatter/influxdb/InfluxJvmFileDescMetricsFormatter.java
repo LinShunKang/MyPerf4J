@@ -14,22 +14,13 @@ import static cn.myperf4j.base.util.LineProtocolUtils.processTagOrField;
  */
 public final class InfluxJvmFileDescMetricsFormatter implements JvmFileDescMetricsFormatter {
 
-    private static final ThreadLocal<StringBuilder> SB_TL = new ThreadLocal<StringBuilder>() {
-        @Override
-        protected StringBuilder initialValue() {
-            return new StringBuilder(128);
-        }
-    };
-
     @Override
     public String format(List<JvmFileDescriptorMetrics> metricsList, long startMillis, long stopMillis) {
-        StringBuilder sb = SB_TL.get();
+        final StringBuilder sb = SB_TL.get();
         try {
-            long startNanos = startMillis * 1000 * 1000L;
+            final long startNanos = startMillis * 1000 * 1000L;
             for (int i = 0; i < metricsList.size(); ++i) {
-                JvmFileDescriptorMetrics metrics = metricsList.get(i);
-                appendLineProtocol(metrics, startNanos, sb);
-                sb.append('\n');
+                appendLineProtocol(metricsList.get(i), startNanos, sb);
             }
             return sb.substring(0, sb.length() - 1);
         } finally {
@@ -43,6 +34,6 @@ public final class InfluxJvmFileDescMetricsFormatter implements JvmFileDescMetri
                 .append(",host=").append(processTagOrField(getLocalhostName()))
                 .append(" OpenCount=").append(metrics.getOpenCount()).append('i')
                 .append(",OpenPercent=").append(metrics.getOpenPercent())
-                .append(' ').append(startNanos);
+                .append(' ').append(startNanos).append('\n');
     }
 }
