@@ -1,12 +1,12 @@
 package cn.myperf4j.core.recorder;
 
-import cn.myperf4j.base.metric.MethodMetrics;
 import cn.myperf4j.base.MethodTag;
-import cn.myperf4j.base.config.ProfilingParams;
-import cn.myperf4j.base.metric.exporter.MethodMetricsExporter;
-import cn.myperf4j.base.util.concurrent.ExecutorManager;
-import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.Scheduler;
+import cn.myperf4j.base.config.ProfilingParams;
+import cn.myperf4j.base.metric.MethodMetrics;
+import cn.myperf4j.base.metric.exporter.MethodMetricsExporter;
+import cn.myperf4j.base.util.Logger;
+import cn.myperf4j.base.util.concurrent.ExecutorManager;
 import cn.myperf4j.core.MethodMetricsHistogram;
 import cn.myperf4j.core.MethodTagMaintainer;
 
@@ -99,11 +99,11 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
 
     public abstract boolean initOther();
 
-    protected Recorder createRecorder(int methodTagId, int mostTimeThreshold, int outThresholdCount) {
+    protected Recorder createRecorder(int methodTagId, ProfilingParams params) {
         if (accurateMode) {
-            return AccurateRecorder.getInstance(methodTagId, mostTimeThreshold, outThresholdCount);
+            return AccurateRecorder.getInstance(methodTagId, params.mostTimeThreshold(), params.outThresholdCount());
         }
-        return RoughRecorder.getInstance(methodTagId, mostTimeThreshold);
+        return RoughRecorder.getInstance(methodTagId, params.mostTimeThreshold());
     }
 
     public abstract void addRecorder(int methodTagId, ProfilingParams params);

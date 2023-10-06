@@ -5,29 +5,21 @@ package cn.myperf4j.base.config;
  */
 public final class ProfilingParams {
 
-    private int mostTimeThreshold; //UNIT: ms
+    private final int mostTimeThreshold; //UNIT: ms
 
-    private int outThresholdCount;
+    private final int outThresholdCount;
 
     private ProfilingParams(int mostTimeThreshold, int outThresholdCount) {
         this.mostTimeThreshold = mostTimeThreshold;
         this.outThresholdCount = outThresholdCount;
     }
 
-    public int getMostTimeThreshold() {
+    public int mostTimeThreshold() {
         return mostTimeThreshold;
     }
 
-    public void setMostTimeThreshold(int mostTimeThreshold) {
-        this.mostTimeThreshold = mostTimeThreshold;
-    }
-
-    public int getOutThresholdCount() {
+    public int outThresholdCount() {
         return outThresholdCount;
-    }
-
-    public void setOutThresholdCount(int outThresholdCount) {
-        this.outThresholdCount = outThresholdCount;
     }
 
     public static ProfilingParams of(int mostTimeThreshold, int outThresholdCount) {
