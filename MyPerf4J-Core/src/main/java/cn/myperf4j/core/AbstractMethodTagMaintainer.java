@@ -16,5 +16,4 @@ public abstract class AbstractMethodTagMaintainer {
     public abstract MethodTag getMethodTag(int methodId);
 
     public abstract int getMethodTagCount();
-
 }
