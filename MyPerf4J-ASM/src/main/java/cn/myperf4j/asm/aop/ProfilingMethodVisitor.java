@@ -72,7 +72,7 @@ public class ProfilingMethodVisitor extends AdviceAdapter {
 
     @Override
     protected void onMethodExit(int opcode) {
-        if (profiling() && ((IRETURN <= opcode && opcode <= RETURN) || opcode == ATHROW)) {
+        if (profiling() && (IRETURN <= opcode && opcode <= RETURN || opcode == ATHROW)) {
             mv.visitVarInsn(LLOAD, startTimeIdentifier);
             mv.visitLdcInsn(methodTagId);
             mv.visitMethodInsn(INVOKESTATIC, PROFILING_ASPECT_INNER_NAME, "profiling", "(JI)V", false);

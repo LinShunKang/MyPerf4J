@@ -37,7 +37,7 @@ public class HttpServerTest {
         server.stop(1);
     }
 
-    private static class StartHandler implements HttpHandler {
+    private static final class StartHandler implements HttpHandler {
 
         @Override
         public void handle(HttpExchange exchange) throws IOException {

@@ -115,7 +115,7 @@ public final class StrUtils {
             i++;
         }
 
-        if (match || (preserveAllTokens && lastMatch)) {
+        if (match || preserveAllTokens && lastMatch) {
             list.add(str.substring(start, i));
         }
     }
