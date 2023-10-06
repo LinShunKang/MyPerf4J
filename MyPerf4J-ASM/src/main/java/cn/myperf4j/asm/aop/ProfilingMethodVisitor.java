@@ -3,13 +3,15 @@ package cn.myperf4j.asm.aop;
 import cn.myperf4j.asm.ASMRecorderMaintainer;
 import cn.myperf4j.base.MethodTag;
 import cn.myperf4j.base.config.MetricsConfig;
-import cn.myperf4j.base.config.RecorderConfig;
-import cn.myperf4j.core.recorder.AbstractRecorderMaintainer;
-import cn.myperf4j.core.MethodTagMaintainer;
 import cn.myperf4j.base.config.ProfilingConfig;
+import cn.myperf4j.base.config.RecorderConfig;
+import cn.myperf4j.core.MethodTagMaintainer;
+import cn.myperf4j.core.recorder.AbstractRecorderMaintainer;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.AdviceAdapter;
+
+import static org.objectweb.asm.Type.LONG_TYPE;
 
 /**
  * Created by LinShunkang on 2018/4/15
@@ -55,7 +57,7 @@ public class ProfilingMethodVisitor extends AdviceAdapter {
                                    String classLevel,
                                    String methodName,
                                    String humanMethodDesc) {
-        String methodParamDesc = metricsConf.showMethodParams() ? humanMethodDesc : "";
+        final String methodParamDesc = metricsConf.showMethodParams() ? humanMethodDesc : "";
         return MethodTag.getGeneralInstance(fullClassName, simpleClassName, classLevel, methodName, methodParamDesc);
     }
 
@@ -65,7 +67,7 @@ public class ProfilingMethodVisitor extends AdviceAdapter {
             maintainer.addRecorder(methodTagId, recorderConf.getProfilingParam(innerClassName + "/" + methodName));
 
             mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "nanoTime", "()J", false);
-            startTimeIdentifier = newLocal(Type.LONG_TYPE);
+            startTimeIdentifier = newLocal(LONG_TYPE);
             mv.visitVarInsn(LSTORE, startTimeIdentifier);
         }
     }

@@ -2,9 +2,9 @@ package cn.myperf4j.asm.aop;
 
 import cn.myperf4j.asm.ASMRecorderMaintainer;
 import cn.myperf4j.base.config.ProfilingParams;
+import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.core.MethodTagMaintainer;
 import cn.myperf4j.core.recorder.Recorder;
-import cn.myperf4j.base.util.Logger;
 
 import java.lang.reflect.Method;
 
@@ -32,7 +32,7 @@ public final class ProfilingAspect {
                 return;
             }
 
-            Recorder recorder = recorderMaintainer.getRecorder(methodTagId);
+            final Recorder recorder = recorderMaintainer.getRecorder(methodTagId);
             if (recorder == null) {
                 Logger.warn("ProfilingAspect.profiling(): methodTagId=" + methodTagId
                         + ", methodTag=" + MethodTagMaintainer.getInstance().getMethodTag(methodTagId)
@@ -56,7 +56,7 @@ public final class ProfilingAspect {
                 return;
             }
 
-            int methodTagId = methodTagMaintainer.addMethodTag(method);
+            final int methodTagId = methodTagMaintainer.addMethodTag(method);
             if (methodTagId < 0) {
                 Logger.warn("ProfilingAspect.profiling(): method=" + method + ", startNanos: " + startNanos
                         + ", methodTagId < 0!!!");

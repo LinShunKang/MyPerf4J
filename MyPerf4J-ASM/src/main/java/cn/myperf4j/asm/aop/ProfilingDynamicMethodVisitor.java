@@ -1,9 +1,10 @@
 package cn.myperf4j.asm.aop;
 
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.AdviceAdapter;
+
+import static org.objectweb.asm.Type.LONG_TYPE;
 
 /**
  * Created by LinShunkang on 2018/4/15
@@ -24,7 +25,7 @@ public class ProfilingDynamicMethodVisitor extends AdviceAdapter {
     @Override
     protected void onMethodEnter() {
         mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "nanoTime", "()J", false);
-        startTimeIdentifier = newLocal(Type.LONG_TYPE);
+        startTimeIdentifier = newLocal(LONG_TYPE);
         mv.visitVarInsn(LSTORE, startTimeIdentifier);
     }
 
@@ -32,7 +33,7 @@ public class ProfilingDynamicMethodVisitor extends AdviceAdapter {
     protected void onMethodExit(int opcode) {
         if (IRETURN <= opcode && opcode <= RETURN || opcode == ATHROW) {
             mv.visitVarInsn(LLOAD, startTimeIdentifier);
-            mv.visitVarInsn(Opcodes.ALOAD, 2);
+            mv.visitVarInsn(ALOAD, 2);
             mv.visitMethodInsn(INVOKESTATIC, PROFILING_ASPECT_INNER_NAME, "profiling",
                     "(JLjava/lang/reflect/Method;)V", false);
         }
