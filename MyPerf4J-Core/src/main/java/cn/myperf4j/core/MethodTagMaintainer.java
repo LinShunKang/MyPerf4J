@@ -4,12 +4,13 @@ import cn.myperf4j.base.MethodTag;
 import cn.myperf4j.base.config.MetricsConfig;
 import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.util.Logger;
-import cn.myperf4j.base.util.TypeDescUtils;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReferenceArray;
+
+import static cn.myperf4j.base.util.TypeDescUtils.getMethodParamsDesc;
 
 /**
  * Created by LinShunkang on 2018/5/20
@@ -28,17 +29,17 @@ public final class MethodTagMaintainer extends AbstractMethodTagMaintainer {
 
     private final ConcurrentHashMap<Method, Integer> methodMap = new ConcurrentHashMap<>(4096);
 
-    private MethodTagMaintainer() {
-        //empty
-    }
-
     public static MethodTagMaintainer getInstance() {
         return instance;
     }
 
+    private MethodTagMaintainer() {
+        //empty
+    }
+
     @Override
     public int addMethodTag(MethodTag methodTag) {
-        int methodId = index.getAndIncrement();
+        final int methodId = index.getAndIncrement();
         if (methodId > MAX_NUM) {
             Logger.warn("MethodTagMaintainer.addMethodTag(" + methodTag + "): methodId > MAX_NUM: "
                     + methodId + " > " + MAX_NUM + ", ignored!!!");
@@ -74,8 +75,8 @@ public final class MethodTagMaintainer extends AbstractMethodTagMaintainer {
     }
 
     private static MethodTag createMethodTag(Method method) {
-        String methodParamDesc = metricsConfig.showMethodParams() ? TypeDescUtils.getMethodParamsDesc(method) : "";
-        Class<?> declaringClass = method.getDeclaringClass();
+        final String methodParamDesc = metricsConfig.showMethodParams() ? getMethodParamsDesc(method) : "";
+        final Class<?> declaringClass = method.getDeclaringClass();
         return MethodTag.getDynamicProxyInstance(declaringClass.getName(),
                 declaringClass.getSimpleName(),
                 method.getName(),

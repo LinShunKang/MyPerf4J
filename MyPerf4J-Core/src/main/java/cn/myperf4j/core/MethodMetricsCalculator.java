@@ -24,10 +24,6 @@ public final class MethodMetricsCalculator {
 
     private static final LongBufPool longBufPool = LongBufPool.getInstance();
 
-    private MethodMetricsCalculator() {
-        //empty
-    }
-
     public static MethodMetrics calMetrics(Recorder recorder, MethodTag methodTag, long startTime, long stopTime) {
         final int diffCount = recorder.getDiffCount();
         try (LongBuf longBuf = longBufPool.acquire(diffCount)) {
@@ -74,7 +70,6 @@ public final class MethodMetricsCalculator {
             while (tpIndex < tpIndexArrLen && countMile >= tpIndexArr[tpIndex]) {
                 tpArr[tpIndex++] = timeCost;
             }
-
             sigma += count * Math.pow(timeCost, 2.0);
         }
 
@@ -89,8 +84,8 @@ public final class MethodMetricsCalculator {
     private static MethodMetrics reviseStatistic(MethodMetrics metrics) {
         final int[] tpArr = metrics.getTpArr();
         for (int i = 1, len = tpArr.length; i < len; ++i) {
-            int last = tpArr[i - 1];
-            int cur = tpArr[i];
+            final int last = tpArr[i - 1];
+            final int cur = tpArr[i];
             if (cur <= -1) {
                 tpArr[i] = last;
             }
@@ -109,5 +104,9 @@ public final class MethodMetricsCalculator {
 
     private static long getIndex(long totalCount, double percentile) {
         return (long) Math.ceil(totalCount * percentile);
+    }
+
+    private MethodMetricsCalculator() {
+        //empty
     }
 }
