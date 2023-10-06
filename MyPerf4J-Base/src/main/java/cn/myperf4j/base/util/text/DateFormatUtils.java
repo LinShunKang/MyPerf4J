@@ -16,11 +16,11 @@ public final class DateFormatUtils {
         }
     };
 
-    private DateFormatUtils() {
-        //empty
-    }
-
     public static String format(long millis) {
         return DEFAULT_DATE_FORMAT.get().format(new Date(millis));
+    }
+
+    private DateFormatUtils() {
+        //empty
     }
 }

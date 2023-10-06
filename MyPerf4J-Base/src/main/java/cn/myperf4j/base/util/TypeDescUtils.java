@@ -51,9 +51,9 @@ public final class TypeDescUtils {
         descriptor = descriptor.trim();
 
         int roundTimes = 0;
-        StringBuilder sb = new StringBuilder("(");
+        final StringBuilder sb = new StringBuilder("(");
         for (int i = 0; i < descriptor.length() && roundTimes++ <= descriptor.length(); ) {
-            char ch = descriptor.charAt(i);
+            final char ch = descriptor.charAt(i);
             if (ch == '(') {
                 ++i;
                 continue;
@@ -91,7 +91,7 @@ public final class TypeDescUtils {
         int arrayLevel = 0;
         int roundTimes = 0;
         for (; idx < descriptor.length() && roundTimes++ <= descriptor.length(); ++idx) {
-            char ch = descriptor.charAt(idx);
+            final char ch = descriptor.charAt(idx);
             if (ch == '[') {
                 ++arrayLevel;
             } else if (ch == 'L') {
@@ -138,12 +138,12 @@ public final class TypeDescUtils {
     }
 
     public static String getMethodParamsDesc(Method method) {
-        Class<?>[] parameterTypes = method.getParameterTypes();
-        if (parameterTypes.length <= 0) {
+        final Class<?>[] parameterTypes = method.getParameterTypes();
+        if (parameterTypes.length == 0) {
             return "()";
         }
 
-        StringBuilder sb = SB_TL.get();
+        final StringBuilder sb = SB_TL.get();
         try {
             sb.append('(');
             int i = 0;
@@ -162,7 +162,7 @@ public final class TypeDescUtils {
      * @param innerClassName : 形如：java/lang/String
      */
     public static String getSimpleClassName(String innerClassName) {
-        int idx = innerClassName.lastIndexOf('/');
+        final int idx = innerClassName.lastIndexOf('/');
         return innerClassName.substring(idx + 1);
     }
 }

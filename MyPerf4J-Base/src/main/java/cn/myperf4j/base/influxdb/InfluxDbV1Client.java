@@ -16,6 +16,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import static cn.myperf4j.base.http.HttpStatusClass.INFORMATIONAL;
 import static cn.myperf4j.base.http.HttpStatusClass.SUCCESS;
+import static cn.myperf4j.base.util.StrUtils.isNotBlank;
 import static cn.myperf4j.base.util.concurrent.ThreadUtils.newThreadFactory;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.concurrent.TimeUnit.MINUTES;
@@ -40,23 +41,14 @@ public final class InfluxDbV1Client implements InfluxDbClient {
         ExecutorManager.addExecutorService(ASYNC_EXECUTOR);
     }
 
-    private final String url;
-
     private final String writeReqUrl;
-
-    private final String username;
-
-    private final String password;
 
     private final String authorization;
 
     private final HttpClient httpClient;
 
     public InfluxDbV1Client(Builder builder) {
-        this.url = "http://" + builder.host + ":" + builder.port;
-        this.writeReqUrl = url + "/write?db=" + builder.database;
-        this.username = builder.username;
-        this.password = builder.password;
+        this.writeReqUrl = "http://" + builder.host + ":" + builder.port + "/write?db=" + builder.database;
         this.authorization = buildAuthorization(builder);
         this.httpClient = new HttpClient.Builder()
                 .connectTimeout(builder.connectTimeout)
@@ -65,8 +57,8 @@ public final class InfluxDbV1Client implements InfluxDbClient {
     }
 
     private String buildAuthorization(Builder builder) {
-        if (StrUtils.isNotBlank(builder.username) && StrUtils.isNotBlank(builder.password)) {
-            String auth = username + ':' + password;
+        if (isNotBlank(builder.username) && isNotBlank(builder.password)) {
+            final String auth = builder.username + ':' + builder.password;
             return "Basic " + BASE64_ENCODER.encodeToString(auth.getBytes(UTF_8));
         }
         return "";

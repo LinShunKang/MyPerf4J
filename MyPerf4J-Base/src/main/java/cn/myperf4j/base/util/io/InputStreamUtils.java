@@ -32,8 +32,8 @@ public final class InputStreamUtils {
             return null;
         }
 
-        ByteArrayOutputStream result = OP_TL.get();
-        byte[] buffer = BYTES_TL.get();
+        final ByteArrayOutputStream result = OP_TL.get();
+        final byte[] buffer = BYTES_TL.get();
         try {
             int length;
             while ((length = inputStream.read(buffer)) != -1) {
@@ -50,8 +50,8 @@ public final class InputStreamUtils {
             return null;
         }
 
-        ByteArrayOutputStream result = OP_TL.get();
-        byte[] buffer = BYTES_TL.get();
+        final ByteArrayOutputStream result = OP_TL.get();
+        final byte[] buffer = BYTES_TL.get();
         try {
             int length;
             while ((length = inputStream.read(buffer)) != -1) {

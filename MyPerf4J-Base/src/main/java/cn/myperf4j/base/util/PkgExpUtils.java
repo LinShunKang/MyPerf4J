@@ -25,24 +25,23 @@ public final class PkgExpUtils {
     }
 
     public static Set<String> parse(String expStr) {
-        int leftIdx = expStr.indexOf('[');
+        final int leftIdx = expStr.indexOf('[');
         if (leftIdx < 0) {
             return SetUtils.of(expStr);
         }
 
-        int rightIdx = expStr.indexOf(']', leftIdx);
+        final int rightIdx = expStr.indexOf(']', leftIdx);
         if (rightIdx < 0) {
             throw new IllegalArgumentException("PkgExpUtils.parse(\"" + expStr + "\"): '[' always paired with ']'");
         }
 
-        String prefixStr = expStr.substring(0, leftIdx);
-        String suffixStr = rightIdx + 1 < expStr.length() ? expStr.substring(rightIdx + 1) : "";
-
-        String elementsStr = expStr.substring(leftIdx + 1, rightIdx);
-        List<String> elements = StrUtils.splitAsList(elementsStr, Separator.ARR_ELE);
-        Set<String> result = SetUtils.createHashSet(elements.size());
+        final String prefixStr = expStr.substring(0, leftIdx);
+        final String suffixStr = rightIdx + 1 < expStr.length() ? expStr.substring(rightIdx + 1) : "";
+        final String elementsStr = expStr.substring(leftIdx + 1, rightIdx);
+        final List<String> elements = StrUtils.splitAsList(elementsStr, Separator.ARR_ELE);
+        final Set<String> result = SetUtils.createHashSet(elements.size());
         for (int i = 0; i < elements.size(); ++i) {
-            String subExpStr = prefixStr.concat(elements.get(i)).concat(suffixStr);
+            final String subExpStr = prefixStr.concat(elements.get(i)).concat(suffixStr);
             result.addAll(parse(subExpStr));
         }
         return result;
