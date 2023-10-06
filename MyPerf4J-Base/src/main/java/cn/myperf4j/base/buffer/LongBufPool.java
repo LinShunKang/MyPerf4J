@@ -28,7 +28,7 @@ public final class LongBufPool {
     //用于存放int[100 * 1024]，理论上可以容纳 102400 个不同的响应时间
     private final Queue<LongBuf> oneHundredKQueue = new ArrayDeque<>();
 
-    private static class LongBufPoolHolder {
+    private static final class LongBufPoolHolder {
         private static final LongBufPool instance = new LongBufPool();
     }
 

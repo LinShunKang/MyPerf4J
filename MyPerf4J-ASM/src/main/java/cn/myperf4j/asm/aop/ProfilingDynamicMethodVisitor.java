@@ -30,7 +30,7 @@ public class ProfilingDynamicMethodVisitor extends AdviceAdapter {
 
     @Override
     protected void onMethodExit(int opcode) {
-        if ((IRETURN <= opcode && opcode <= RETURN) || opcode == ATHROW) {
+        if (IRETURN <= opcode && opcode <= RETURN || opcode == ATHROW) {
             mv.visitVarInsn(LLOAD, startTimeIdentifier);
             mv.visitVarInsn(Opcodes.ALOAD, 2);
             mv.visitMethodInsn(INVOKESTATIC, PROFILING_ASPECT_INNER_NAME, "profiling",
