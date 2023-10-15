@@ -162,7 +162,7 @@ public class AtomicIntHashCounterTest {
 
     @Test
     public void testMultiThread4HighRace() throws InterruptedException, BrokenBarrierException {
-        final int threadCnt = Runtime.getRuntime().availableProcessors() - 2;
+        final int threadCnt = Math.max(Runtime.getRuntime().availableProcessors() - 2, 1);
         final ExecutorService executor = Executors.newFixedThreadPool(threadCnt);
         int failureTimes = 0;
 //        final int testTimes = 1024 * 1024;
@@ -184,7 +184,7 @@ public class AtomicIntHashCounterTest {
 
     @Test
     public void testMultiThread4LowRace() throws InterruptedException, BrokenBarrierException {
-        final int threadCnt = Runtime.getRuntime().availableProcessors() - 2;
+        final int threadCnt = Math.max(Runtime.getRuntime().availableProcessors() - 2, 1);
         final ExecutorService executor = Executors.newFixedThreadPool(threadCnt);
         int failureTimes = 0;
 //        final int testTimes = 1024 * 1024;
