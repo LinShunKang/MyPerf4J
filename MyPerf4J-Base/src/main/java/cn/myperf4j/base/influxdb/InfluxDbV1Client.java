@@ -1,14 +1,14 @@
 package cn.myperf4j.base.influxdb;
 
-import cn.myperf4j.base.http.client.HttpClient;
 import cn.myperf4j.base.http.HttpRequest;
 import cn.myperf4j.base.http.HttpRespStatus;
 import cn.myperf4j.base.http.HttpResponse;
+import cn.myperf4j.base.http.client.HttpClient;
 import cn.myperf4j.base.util.Base64;
 import cn.myperf4j.base.util.Base64.Encoder;
-import cn.myperf4j.base.util.concurrent.ExecutorManager;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.util.StrUtils;
+import cn.myperf4j.base.util.concurrent.ExecutorManager;
 
 import java.io.IOException;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -87,7 +87,7 @@ public final class InfluxDbV1Client implements InfluxDbClient {
                         + ", reqBody=" + content);
             }
         } catch (IOException e) {
-            Logger.warn("InfluxDbV1Client.writeMetricsSync() catch IOException: " + e.getMessage());
+            Logger.warn("InfluxDbV1Client.writeMetricsSync() catch IOException!", e);
         } catch (Throwable t) {
             Logger.error("InfluxDbV1Client.writeMetricsSync() catch Exception!", t);
         }
