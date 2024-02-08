@@ -20,10 +20,10 @@ public class InfluxJvmGcMetricsFormatter implements JvmGcMetricsFormatter {
         final StringBuilder sb = SB_TL.get();
         try {
             final long startNanos = startMillis * 1000 * 1000L;
-            for (int i = 0; i < metricsList.size(); ++i) {
+            for (int i = 0, size = metricsList.size(); i < size; ++i) {
                 appendLineProtocol(metricsList.get(i), startNanos, sb);
             }
-            return sb.substring(0, sb.length() - 1);
+            return sb.substring(0, Math.max(0, sb.length() - 1));
         } finally {
             sb.setLength(0);
         }

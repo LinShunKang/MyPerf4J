@@ -9,6 +9,7 @@ import java.util.Set;
  */
 public final class SetUtils {
 
+    @SafeVarargs
     public static <T> Set<T> of(T... t) {
         return new HashSet<>(Arrays.asList(t));
     }

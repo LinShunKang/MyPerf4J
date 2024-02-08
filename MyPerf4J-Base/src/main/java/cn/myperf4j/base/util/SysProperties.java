@@ -5,6 +5,5 @@ package cn.myperf4j.base.util;
  */
 public interface SysProperties {
 
-    String LINE_SEPARATOR = System.getProperty("line.separator");
-
+    String LINE_SEPARATOR = System.lineSeparator();
 }
