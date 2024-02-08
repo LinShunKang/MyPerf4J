@@ -53,6 +53,7 @@ import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getClassMe
 import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getCompilationExporter;
 import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getFileDescExporter;
 import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getGcMetricsExporter;
+import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getGcMetricsV3Exporter;
 import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getMemoryMetricsExporter;
 import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getMethodMetricsExporter;
 import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getThreadMetricsExporter;
@@ -397,6 +398,7 @@ public abstract class AbstractBootstrap {
         return new JvmMetricsScheduler(
                 getClassMetricsExporter(exporter),
                 getGcMetricsExporter(exporter),
+                getGcMetricsV3Exporter(exporter),
                 getMemoryMetricsExporter(exporter),
                 getBufferPoolMetricsExporter(exporter),
                 getThreadMetricsExporter(exporter),

@@ -82,7 +82,7 @@ public final class JvmGcCollector {
                 zGcPausesTime += gcMxBean.getCollectionTime();
                 zGcPausesCount += gcMxBean.getCollectionCount();
             } else {
-                Logger.warn("Unknown GC: " + gcName);
+                Logger.debug("Unknown GC: " + gcName);
             }
         }
 
