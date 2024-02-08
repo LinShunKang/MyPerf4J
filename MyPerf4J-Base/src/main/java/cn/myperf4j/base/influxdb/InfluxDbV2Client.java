@@ -132,7 +132,7 @@ public final class InfluxDbV2Client implements InfluxDbClient {
                         + ", reqBody=" + content);
             }
         } catch (IOException e) {
-            Logger.warn("InfluxDbV2Client.writeMetricsSync() catch IOException: " + e.getMessage());
+            Logger.warn("InfluxDbV2Client.writeMetricsSync() catch IOException!", e);
         } catch (Throwable t) {
             Logger.error("InfluxDbV2Client.writeMetricsSync() catch Exception!", t);
         }

@@ -62,6 +62,13 @@ public final class Logger {
         System.out.println(getPrefix(WARN_LEVEL) + msg);
     }
 
+    public static void warn(String msg, Throwable throwable) {
+        synchronized (System.out) {
+            System.out.println(getPrefix(WARN_LEVEL) + msg + " " + throwable.getMessage());
+            throwable.printStackTrace(System.out);
+        }
+    }
+
     public static void error(String msg) {
         System.err.println(getPrefix(ERROR_LEVEL) + msg);
     }
@@ -69,7 +76,7 @@ public final class Logger {
     public static void error(String msg, Throwable throwable) {
         synchronized (System.err) {
             System.err.println(getPrefix(ERROR_LEVEL) + msg + " " + throwable.getMessage());
-            throwable.printStackTrace();
+            throwable.printStackTrace(System.err);
         }
     }
 }
