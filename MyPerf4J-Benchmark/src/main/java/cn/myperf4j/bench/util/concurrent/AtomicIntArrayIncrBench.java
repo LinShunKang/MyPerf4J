@@ -17,87 +17,87 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
  * <p>
  * 1 Thread
  * Benchmark                                        (arrayLength)   Mode  Cnt    Score     Error   Units
- * AtomicIntArrayIncrBench.atomicIntArrayBench                128  thrpt    3  190.437 ± 132.065  ops/us
- * AtomicIntArrayIncrBench.atomicIntArrayBench                256  thrpt    3  191.245 ± 111.900  ops/us
- * AtomicIntArrayIncrBench.atomicIntArrayBench                512  thrpt    3  191.221 ± 114.326  ops/us
- * AtomicIntArrayIncrBench.atomicIntArrayBench               1024  thrpt    3  191.431 ± 111.622  ops/us
- * AtomicIntArrayIncrBench.atomicIntArrayBench               2048  thrpt    3  191.471 ± 110.544  ops/us
- * AtomicIntArrayIncrBench.atomicIntArrayBench               4096  thrpt    3  192.009 ± 100.033  ops/us
- * AtomicIntArrayIncrBench.fastAtomicIntArrayBench            128  thrpt    3  186.986 ± 111.040  ops/us
- * AtomicIntArrayIncrBench.fastAtomicIntArrayBench            256  thrpt    3  188.462 ± 111.896  ops/us
- * AtomicIntArrayIncrBench.fastAtomicIntArrayBench            512  thrpt    3  183.502 ± 105.141  ops/us
- * AtomicIntArrayIncrBench.fastAtomicIntArrayBench           1024  thrpt    3  186.667 ± 105.049  ops/us
- * AtomicIntArrayIncrBench.fastAtomicIntArrayBench           2048  thrpt    3  186.346 ± 108.030  ops/us
- * AtomicIntArrayIncrBench.fastAtomicIntArrayBench           4096  thrpt    3  170.527 ±  84.522  ops/us
- * AtomicIntArrayIncrBench.jdkIntArrayBench                   128  thrpt    3  193.011 ± 329.966  ops/us
- * AtomicIntArrayIncrBench.jdkIntArrayBench                   256  thrpt    3  220.014 ±  94.773  ops/us
- * AtomicIntArrayIncrBench.jdkIntArrayBench                   512  thrpt    3  220.194 ±  90.262  ops/us
- * AtomicIntArrayIncrBench.jdkIntArrayBench                  1024  thrpt    3  215.342 ± 126.146  ops/us
- * AtomicIntArrayIncrBench.jdkIntArrayBench                  2048  thrpt    3  220.227 ±  97.075  ops/us
- * AtomicIntArrayIncrBench.jdkIntArrayBench                  4096  thrpt    3  220.276 ±  95.353  ops/us
+ * AtomicIntArrayIncrBench.atomicIntArrayBench                128  thrpt    3  187.695 ± 206.204  ops/us
+ * AtomicIntArrayIncrBench.atomicIntArrayBench                256  thrpt    3  190.066 ±  95.425  ops/us
+ * AtomicIntArrayIncrBench.atomicIntArrayBench                512  thrpt    3  190.068 ±  93.475  ops/us
+ * AtomicIntArrayIncrBench.atomicIntArrayBench               1024  thrpt    3  187.959 ± 200.285  ops/us
+ * AtomicIntArrayIncrBench.atomicIntArrayBench               2048  thrpt    3  191.378 ± 111.212  ops/us
+ * AtomicIntArrayIncrBench.atomicIntArrayBench               4096  thrpt    3  190.573 ±  97.597  ops/us
+ * AtomicIntArrayIncrBench.fastAtomicIntArrayBench            128  thrpt    3  169.209 ±  60.033  ops/us
+ * AtomicIntArrayIncrBench.fastAtomicIntArrayBench            256  thrpt    3  169.203 ±  57.655  ops/us
+ * AtomicIntArrayIncrBench.fastAtomicIntArrayBench            512  thrpt    3  166.773 ±  65.460  ops/us
+ * AtomicIntArrayIncrBench.fastAtomicIntArrayBench           1024  thrpt    3  164.579 ± 217.782  ops/us
+ * AtomicIntArrayIncrBench.fastAtomicIntArrayBench           2048  thrpt    3  157.130 ± 115.277  ops/us
+ * AtomicIntArrayIncrBench.fastAtomicIntArrayBench           4096  thrpt    3  154.180 ±  43.882  ops/us
+ * AtomicIntArrayIncrBench.jdkIntArrayBench                   128  thrpt    3  216.603 ± 296.491  ops/us
+ * AtomicIntArrayIncrBench.jdkIntArrayBench                   256  thrpt    3  201.221 ± 203.104  ops/us
+ * AtomicIntArrayIncrBench.jdkIntArrayBench                   512  thrpt    3  219.170 ±  80.523  ops/us
+ * AtomicIntArrayIncrBench.jdkIntArrayBench                  1024  thrpt    3  192.776 ± 335.080  ops/us
+ * AtomicIntArrayIncrBench.jdkIntArrayBench                  2048  thrpt    3  199.834 ± 223.958  ops/us
+ * AtomicIntArrayIncrBench.jdkIntArrayBench                  4096  thrpt    3  219.634 ±  86.488  ops/us
  * <p>
  * 2 Threads
- * Benchmark                                        (arrayLength)   Mode  Cnt    Score    Error   Units
- * AtomicIntArrayIncrBench.atomicIntArrayBench                128  thrpt    3   76.549 ± 34.650  ops/us
- * AtomicIntArrayIncrBench.atomicIntArrayBench                256  thrpt    3   93.923 ± 31.487  ops/us
- * AtomicIntArrayIncrBench.atomicIntArrayBench                512  thrpt    3  105.202 ± 30.493  ops/us
- * AtomicIntArrayIncrBench.atomicIntArrayBench               1024  thrpt    3  113.662 ± 53.577  ops/us
- * AtomicIntArrayIncrBench.atomicIntArrayBench               2048  thrpt    3  120.145 ± 37.483  ops/us
- * AtomicIntArrayIncrBench.atomicIntArrayBench               4096  thrpt    3  123.516 ± 52.225  ops/us
- * AtomicIntArrayIncrBench.fastAtomicIntArrayBench            128  thrpt    3  119.167 ± 37.159  ops/us
- * AtomicIntArrayIncrBench.fastAtomicIntArrayBench            256  thrpt    3  124.286 ± 62.733  ops/us
- * AtomicIntArrayIncrBench.fastAtomicIntArrayBench            512  thrpt    3  124.415 ± 56.582  ops/us
- * AtomicIntArrayIncrBench.fastAtomicIntArrayBench           1024  thrpt    3  125.994 ± 72.339  ops/us
- * AtomicIntArrayIncrBench.fastAtomicIntArrayBench           2048  thrpt    3  131.197 ± 64.282  ops/us
- * AtomicIntArrayIncrBench.fastAtomicIntArrayBench           4096  thrpt    3  147.811 ± 90.207  ops/us
- * AtomicIntArrayIncrBench.jdkIntArrayBench                   128  thrpt    3   75.596 ± 18.272  ops/us
- * AtomicIntArrayIncrBench.jdkIntArrayBench                   256  thrpt    3   92.353 ± 22.518  ops/us
- * AtomicIntArrayIncrBench.jdkIntArrayBench                   512  thrpt    3  106.393 ± 31.484  ops/us
- * AtomicIntArrayIncrBench.jdkIntArrayBench                  1024  thrpt    3  114.595 ± 38.787  ops/us
- * AtomicIntArrayIncrBench.jdkIntArrayBench                  2048  thrpt    3  123.433 ± 31.139  ops/us
- * AtomicIntArrayIncrBench.jdkIntArrayBench                  4096  thrpt    3  125.878 ± 67.423  ops/us
+ * Benchmark                                        (arrayLength)   Mode  Cnt    Score     Error   Units
+ * AtomicIntArrayIncrBench.atomicIntArrayBench                128  thrpt    3   76.431 ±  29.993  ops/us
+ * AtomicIntArrayIncrBench.atomicIntArrayBench                256  thrpt    3   92.370 ±  48.204  ops/us
+ * AtomicIntArrayIncrBench.atomicIntArrayBench                512  thrpt    3  101.579 ±  49.549  ops/us
+ * AtomicIntArrayIncrBench.atomicIntArrayBench               1024  thrpt    3  112.608 ±  74.858  ops/us
+ * AtomicIntArrayIncrBench.atomicIntArrayBench               2048  thrpt    3  119.524 ±  69.509  ops/us
+ * AtomicIntArrayIncrBench.atomicIntArrayBench               4096  thrpt    3  124.977 ±  47.791  ops/us
+ * AtomicIntArrayIncrBench.fastAtomicIntArrayBench            128  thrpt    3  327.004 ±  90.724  ops/us
+ * AtomicIntArrayIncrBench.fastAtomicIntArrayBench            256  thrpt    3  323.593 ± 105.444  ops/us
+ * AtomicIntArrayIncrBench.fastAtomicIntArrayBench            512  thrpt    3  327.442 ± 119.052  ops/us
+ * AtomicIntArrayIncrBench.fastAtomicIntArrayBench           1024  thrpt    3  328.704 ± 116.771  ops/us
+ * AtomicIntArrayIncrBench.fastAtomicIntArrayBench           2048  thrpt    3  324.819 ±  98.129  ops/us
+ * AtomicIntArrayIncrBench.fastAtomicIntArrayBench           4096  thrpt    3  290.689 ± 394.473  ops/us
+ * AtomicIntArrayIncrBench.jdkIntArrayBench                   128  thrpt    3   78.342 ±  26.449  ops/us
+ * AtomicIntArrayIncrBench.jdkIntArrayBench                   256  thrpt    3   93.028 ±  30.171  ops/us
+ * AtomicIntArrayIncrBench.jdkIntArrayBench                   512  thrpt    3  104.552 ±  11.239  ops/us
+ * AtomicIntArrayIncrBench.jdkIntArrayBench                  1024  thrpt    3  116.050 ±  40.671  ops/us
+ * AtomicIntArrayIncrBench.jdkIntArrayBench                  2048  thrpt    3  121.776 ±  47.691  ops/us
+ * AtomicIntArrayIncrBench.jdkIntArrayBench                  4096  thrpt    3  125.901 ±  64.371  ops/us
  * <p>
  * 4 Threads
  * Benchmark                                        (arrayLength)   Mode  Cnt    Score     Error   Units
- * AtomicIntArrayIncrBench.atomicIntArrayBench                128  thrpt    3   78.390 ±   9.304  ops/us
- * AtomicIntArrayIncrBench.atomicIntArrayBench                256  thrpt    3  101.101 ±  44.572  ops/us
- * AtomicIntArrayIncrBench.atomicIntArrayBench                512  thrpt    3  124.250 ±  35.649  ops/us
- * AtomicIntArrayIncrBench.atomicIntArrayBench               1024  thrpt    3  142.097 ±  47.808  ops/us
- * AtomicIntArrayIncrBench.atomicIntArrayBench               2048  thrpt    3  160.689 ±  51.602  ops/us
- * AtomicIntArrayIncrBench.atomicIntArrayBench               4096  thrpt    3  168.207 ±  58.159  ops/us
- * AtomicIntArrayIncrBench.fastAtomicIntArrayBench            128  thrpt    3  158.331 ±  56.688  ops/us
- * AtomicIntArrayIncrBench.fastAtomicIntArrayBench            256  thrpt    3  168.003 ±  46.156  ops/us
- * AtomicIntArrayIncrBench.fastAtomicIntArrayBench            512  thrpt    3  168.367 ±  59.330  ops/us
- * AtomicIntArrayIncrBench.fastAtomicIntArrayBench           1024  thrpt    3  171.716 ±  58.443  ops/us
- * AtomicIntArrayIncrBench.fastAtomicIntArrayBench           2048  thrpt    3  177.694 ±  83.164  ops/us
- * AtomicIntArrayIncrBench.fastAtomicIntArrayBench           4096  thrpt    3  186.247 ± 100.620  ops/us
- * AtomicIntArrayIncrBench.jdkIntArrayBench                   128  thrpt    3   81.241 ±   1.350  ops/us
- * AtomicIntArrayIncrBench.jdkIntArrayBench                   256  thrpt    3  104.759 ±  26.261  ops/us
- * AtomicIntArrayIncrBench.jdkIntArrayBench                   512  thrpt    3  128.202 ±  23.951  ops/us
- * AtomicIntArrayIncrBench.jdkIntArrayBench                  1024  thrpt    3  148.082 ±  31.806  ops/us
- * AtomicIntArrayIncrBench.jdkIntArrayBench                  2048  thrpt    3  162.809 ±  46.514  ops/us
- * AtomicIntArrayIncrBench.jdkIntArrayBench                  4096  thrpt    3  168.649 ±  38.378  ops/us
+ * AtomicIntArrayIncrBench.atomicIntArrayBench                128  thrpt    3   78.325 ±  15.654  ops/us
+ * AtomicIntArrayIncrBench.atomicIntArrayBench                256  thrpt    3  106.452 ±   7.067  ops/us
+ * AtomicIntArrayIncrBench.atomicIntArrayBench                512  thrpt    3  129.881 ±  15.240  ops/us
+ * AtomicIntArrayIncrBench.atomicIntArrayBench               1024  thrpt    3  143.532 ±  42.835  ops/us
+ * AtomicIntArrayIncrBench.atomicIntArrayBench               2048  thrpt    3  163.093 ±  48.837  ops/us
+ * AtomicIntArrayIncrBench.atomicIntArrayBench               4096  thrpt    3  170.398 ±  61.696  ops/us
+ * AtomicIntArrayIncrBench.fastAtomicIntArrayBench            128  thrpt    3  629.628 ± 200.550  ops/us
+ * AtomicIntArrayIncrBench.fastAtomicIntArrayBench            256  thrpt    3  642.708 ± 234.968  ops/us
+ * AtomicIntArrayIncrBench.fastAtomicIntArrayBench            512  thrpt    3  556.982 ± 106.658  ops/us
+ * AtomicIntArrayIncrBench.fastAtomicIntArrayBench           1024  thrpt    3  631.829 ± 245.471  ops/us
+ * AtomicIntArrayIncrBench.fastAtomicIntArrayBench           2048  thrpt    3  628.525 ± 228.230  ops/us
+ * AtomicIntArrayIncrBench.fastAtomicIntArrayBench           4096  thrpt    3  588.105 ± 200.849  ops/us
+ * AtomicIntArrayIncrBench.jdkIntArrayBench                   128  thrpt    3   79.450 ±  10.203  ops/us
+ * AtomicIntArrayIncrBench.jdkIntArrayBench                   256  thrpt    3  105.685 ±  27.657  ops/us
+ * AtomicIntArrayIncrBench.jdkIntArrayBench                   512  thrpt    3  126.899 ±  25.018  ops/us
+ * AtomicIntArrayIncrBench.jdkIntArrayBench                  1024  thrpt    3  151.160 ±  59.103  ops/us
+ * AtomicIntArrayIncrBench.jdkIntArrayBench                  2048  thrpt    3  163.772 ±  44.476  ops/us
+ * AtomicIntArrayIncrBench.jdkIntArrayBench                  4096  thrpt    3  168.028 ±  42.372  ops/us
  * <p>
  * 8 Threads
- * Benchmark                                        (arrayLength)   Mode  Cnt    Score     Error   Units
- * AtomicIntArrayIncrBench.atomicIntArrayBench                128  thrpt    3   37.642 ±   2.936  ops/us
- * AtomicIntArrayIncrBench.atomicIntArrayBench                256  thrpt    3   53.077 ±   3.436  ops/us
- * AtomicIntArrayIncrBench.atomicIntArrayBench                512  thrpt    3   65.975 ±   5.751  ops/us
- * AtomicIntArrayIncrBench.atomicIntArrayBench               1024  thrpt    3   70.065 ±  20.141  ops/us
- * AtomicIntArrayIncrBench.atomicIntArrayBench               2048  thrpt    3   93.715 ±   7.701  ops/us
- * AtomicIntArrayIncrBench.atomicIntArrayBench               4096  thrpt    3  102.116 ±   5.721  ops/us
- * AtomicIntArrayIncrBench.fastAtomicIntArrayBench            128  thrpt    3   91.885 ±   8.714  ops/us
- * AtomicIntArrayIncrBench.fastAtomicIntArrayBench            256  thrpt    3   98.997 ±   7.615  ops/us
- * AtomicIntArrayIncrBench.fastAtomicIntArrayBench            512  thrpt    3  112.083 ±   4.265  ops/us
- * AtomicIntArrayIncrBench.fastAtomicIntArrayBench           1024  thrpt    3   87.896 ± 213.932  ops/us
- * AtomicIntArrayIncrBench.fastAtomicIntArrayBench           2048  thrpt    3   78.286 ±   1.545  ops/us
- * AtomicIntArrayIncrBench.fastAtomicIntArrayBench           4096  thrpt    3   76.200 ±  46.791  ops/us
- * AtomicIntArrayIncrBench.jdkIntArrayBench                   128  thrpt    3   42.561 ±   3.610  ops/us
- * AtomicIntArrayIncrBench.jdkIntArrayBench                   256  thrpt    3   53.397 ±   0.504  ops/us
- * AtomicIntArrayIncrBench.jdkIntArrayBench                   512  thrpt    3   68.594 ±   0.251  ops/us
- * AtomicIntArrayIncrBench.jdkIntArrayBench                  1024  thrpt    3   88.966 ±   8.321  ops/us
- * AtomicIntArrayIncrBench.jdkIntArrayBench                  2048  thrpt    3  102.150 ±   9.087  ops/us
- * AtomicIntArrayIncrBench.jdkIntArrayBench                  4096  thrpt    3  109.655 ±   6.429  ops/us
+ * Benchmark                                        (arrayLength)   Mode  Cnt     Score      Error   Units
+ * AtomicIntArrayIncrBench.atomicIntArrayBench                128  thrpt    3    42.412 ±    3.462  ops/us
+ * AtomicIntArrayIncrBench.atomicIntArrayBench                256  thrpt    3    50.267 ±    3.508  ops/us
+ * AtomicIntArrayIncrBench.atomicIntArrayBench                512  thrpt    3    64.850 ±    4.982  ops/us
+ * AtomicIntArrayIncrBench.atomicIntArrayBench               1024  thrpt    3    81.494 ±    8.277  ops/us
+ * AtomicIntArrayIncrBench.atomicIntArrayBench               2048  thrpt    3    93.750 ±    9.145  ops/us
+ * AtomicIntArrayIncrBench.atomicIntArrayBench               4096  thrpt    3   109.582 ±   14.970  ops/us
+ * AtomicIntArrayIncrBench.fastAtomicIntArrayBench            128  thrpt    3  1148.289 ±  319.312  ops/us
+ * AtomicIntArrayIncrBench.fastAtomicIntArrayBench            256  thrpt    3  1172.098 ±  831.775  ops/us
+ * AtomicIntArrayIncrBench.fastAtomicIntArrayBench            512  thrpt    3  1090.070 ±  214.388  ops/us
+ * AtomicIntArrayIncrBench.fastAtomicIntArrayBench           1024  thrpt    3  1169.325 ±  802.631  ops/us
+ * AtomicIntArrayIncrBench.fastAtomicIntArrayBench           2048  thrpt    3  1189.624 ± 1606.922  ops/us
+ * AtomicIntArrayIncrBench.fastAtomicIntArrayBench           4096  thrpt    3  1163.776 ±  306.020  ops/us
+ * AtomicIntArrayIncrBench.jdkIntArrayBench                   128  thrpt    3    43.310 ±    3.064  ops/us
+ * AtomicIntArrayIncrBench.jdkIntArrayBench                   256  thrpt    3    53.476 ±    3.942  ops/us
+ * AtomicIntArrayIncrBench.jdkIntArrayBench                   512  thrpt    3    72.339 ±   11.886  ops/us
+ * AtomicIntArrayIncrBench.jdkIntArrayBench                  1024  thrpt    3    86.566 ±    6.782  ops/us
+ * AtomicIntArrayIncrBench.jdkIntArrayBench                  2048  thrpt    3    97.097 ±    8.456  ops/us
+ * AtomicIntArrayIncrBench.jdkIntArrayBench                  4096  thrpt    3   106.443 ±    2.279  ops/us
  */
 @State(Scope.Benchmark)
 public class AtomicIntArrayIncrBench extends AbstractAtomicIntArrayBench {
@@ -125,8 +125,8 @@ public class AtomicIntArrayIncrBench extends AbstractAtomicIntArrayBench {
     }
 
     @Benchmark
-    public int fastAtomicIntArrayBench(ThreadState state) {
-        return fastAtomicIntArray.incrementAndGet(randomKey(state));
+    public boolean fastAtomicIntArrayBench(ThreadState state) {
+        return fastAtomicIntArray.increment(randomKey(state));
     }
 
     public static void main(String[] args) throws RunnerException {
@@ -135,7 +135,7 @@ public class AtomicIntArrayIncrBench extends AbstractAtomicIntArrayBench {
                 .include(AtomicIntArrayIncrBench.class.getSimpleName())
                 .jvmArgs("-Xmx8G")
                 .forks(1)
-                .threads(8)
+                .threads(1)
                 .warmupIterations(1)
                 .measurementIterations(3)
                 .build();
