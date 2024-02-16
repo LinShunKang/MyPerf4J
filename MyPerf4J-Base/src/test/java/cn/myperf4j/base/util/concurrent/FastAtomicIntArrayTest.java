@@ -20,11 +20,11 @@ public class FastAtomicIntArrayTest {
     public void testReset() {
         final int length = atomicIntArray.length();
         for (int i = 0; i < length; i++) {
-            atomicIntArray.set(i, i);
+            atomicIntArray.increment(i);
         }
 
         for (int i = 0; i < length; i++) {
-            Assert.assertEquals(i, atomicIntArray.get(i));
+            Assert.assertEquals(1, atomicIntArray.get(i));
         }
 
         atomicIntArray.reset();
@@ -35,10 +35,10 @@ public class FastAtomicIntArrayTest {
     }
 
     @Test
-    public void testIncrementAndGet() {
+    public void testIncrement() {
         final int length = atomicIntArray.length();
         for (int i = 0; i < length; i++) {
-            Assert.assertEquals(1, atomicIntArray.incrementAndGet(i));
+            atomicIntArray.increment(i);
         }
 
         for (int i = 0; i < length; i++) {
@@ -46,27 +46,7 @@ public class FastAtomicIntArrayTest {
         }
 
         for (int i = 0; i < length; i++) {
-            Assert.assertEquals(2, atomicIntArray.incrementAndGet(i));
-        }
-
-        for (int i = 0; i < length; i++) {
-            Assert.assertEquals(2, atomicIntArray.get(i));
-        }
-    }
-
-    @Test
-    public void testGetAndIncrement() {
-        final int length = atomicIntArray.length();
-        for (int i = 0; i < length; i++) {
-            Assert.assertEquals(0, atomicIntArray.getAndIncrement(i));
-        }
-
-        for (int i = 0; i < length; i++) {
-            Assert.assertEquals(1, atomicIntArray.get(i));
-        }
-
-        for (int i = 0; i < length; i++) {
-            Assert.assertEquals(1, atomicIntArray.getAndIncrement(i));
+            atomicIntArray.increment(i);
         }
 
         for (int i = 0; i < length; i++) {

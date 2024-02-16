@@ -17,7 +17,6 @@ public final class FastAtomicIntArray implements Serializable {
     private static final int base = Unsafe.ARRAY_INT_BASE_OFFSET;
     private static final int scale = Unsafe.ARRAY_INT_INDEX_SCALE;
     private static final int shift = 31 - Integer.numberOfLeadingZeros(scale);
-    private final int[] array;
 
     static {
         if ((scale & (scale - 1)) != 0) {
@@ -25,127 +24,87 @@ public final class FastAtomicIntArray implements Serializable {
         }
     }
 
+    private static long byteOffset(int i) {
+        return ((long) i << shift) + base;
+    }
+
+    private final int actualLength;
+
+    //TODO:LSK 还可以把二维数组转变为一维数组，通过下标来逻辑分割不同数组！
+    // 假设需要转换的数组为 int[n][m]，那么转换的方式有 2 种：
+    // 第一种：[A11,A12,A13,....,A1m, A21,A22,A23,....,A2m, An1,....,Anm]
+    // 第二种：[A11,A21,A31,....,An1, A12,A22,A32,....,An2, A1m,....,Anm]
+    // 理论上第二种可以更好的利用 CPU 缓存！
+    private final int[][] arrays;
+
+    public FastAtomicIntArray(int length) {
+        this.actualLength = length << 4;
+        this.arrays = generateArrays(length);
+    }
+
+    private int[][] generateArrays(int length) {
+//        final int[][] arrays = new int[Runtime.getRuntime().availableProcessors()][];
+        final int[][] arrays = new int[16][]; //TODO:LSK 先给固定值
+        for (int i = 0; i < arrays.length; i++) {
+            arrays[i] = new int[length << 4];
+        }
+        return arrays;
+    }
+
     private long checkedByteOffset(int i) {
-        if (i < 0 || i >= array.length) {
+        if (i < 0 || i >= this.actualLength) {
             throw new IndexOutOfBoundsException("index " + i);
         }
         return byteOffset(i);
     }
 
-    private static long byteOffset(int i) {
-        return ((long) i << shift) + base;
-    }
-
-    /**
-     * Creates a new AtomicIntegerArray of the given length, with all
-     * elements initially zero.
-     *
-     * @param length the length of the array
-     */
-    public FastAtomicIntArray(int length) {
-        array = new int[length << 4];
-    }
-
-    /**
-     * Returns the length of the array.
-     *
-     * @return the length of the array
-     */
     public int length() {
-        return array.length >> 4;
+        return this.actualLength >> 4;
     }
 
-    /**
-     * Gets the current value at position {@code i}.
-     *
-     * @param i the index
-     * @return the current value
-     */
     public int get(int i) {
-        return getRaw(checkedByteOffset(i << 4));
+        int result = 0;
+        final long byteOffset = checkedByteOffset(i << 4);
+        for (int[] array : arrays) {
+            result += getRaw(array, byteOffset);
+        }
+        return result;
     }
 
-    private int getRaw(long offset) {
+    private int getRaw(int[] array, long offset) {
         return unsafe.getIntVolatile(array, offset);
     }
 
-    /**
-     * Sets the element at position {@code i} to the given value.
-     *
-     * @param i        the index
-     * @param newValue the new value
-     */
-    public void set(int i, int newValue) {
-        unsafe.putIntVolatile(array, checkedByteOffset(i << 4), newValue);
-    }
-
-    /**
-     * Atomically increments by one the element at index {@code i}.
-     *
-     * @param i the index
-     * @return the previous value
-     */
-    public int getAndIncrement(int i) {
-        return getAndAdd(i, 1);
-    }
-
-    /**
-     * Atomically adds the given value to the element at index {@code i}.
-     *
-     * @param i     the index
-     * @param delta the value to add
-     * @return the previous value
-     */
-    public int getAndAdd(int i, int delta) {
-        final long offset = checkedByteOffset(i << 4);
+    public boolean increment(int i) {
+        final int[][] arrays = this.arrays;
+        final int n = arrays.length;
+        final int[] array = arrays[(n - 1) & hash(Thread.currentThread().getId())];
+        final long byteOffset = checkedByteOffset(i << 4);
         while (true) {
-            final int current = getRaw(offset);
-            if (compareAndSetRaw(offset, current, current + delta)) {
-                return current;
+            if (cas(array, byteOffset, 1)) {
+                return true;
             }
         }
     }
 
-    private boolean compareAndSetRaw(long offset, int expect, int update) {
-        return unsafe.compareAndSwapInt(array, offset, expect, update);
+    private int hash(long threadId) {
+        return (int) (threadId >>> 16 ^ threadId);
     }
 
-    /**
-     * Atomically increments by one the element at index {@code i}.
-     *
-     * @param i the index
-     * @return the updated value
-     */
-    public int incrementAndGet(int i) {
-        return addAndGet(i, 1);
-    }
-
-    /**
-     * Atomically adds the given value to the element at index {@code i}.
-     *
-     * @param i     the index
-     * @param delta the value to add
-     * @return the updated value
-     */
-    public int addAndGet(int i, int delta) {
-        final long offset = checkedByteOffset(i << 4);
-        while (true) {
-            final int current = getRaw(offset);
-            final int next = current + delta;
-            if (compareAndSetRaw(offset, current, next)) {
-                return next;
-            }
-        }
+    private boolean cas(int[] array, long byteOffset, int delta) {
+        final int current = getRaw(array, byteOffset);
+        return unsafe.compareAndSwapInt(array, byteOffset, current, current + delta);
     }
 
     public void reset() {
-        final int[] array = this.array;
-        unsafe.setMemory(array, byteOffset(0), (long) array.length * scale, (byte) 0);
+        for (int[] array : arrays) {
+            unsafe.setMemory(array, byteOffset(0), (long) array.length * scale, (byte) 0);
+        }
     }
 
     public long fillSortedKvs(LongBuf longBuf) {
         long totalCount = 0L;
-        for (int i = 0, len = array.length << 4; i < len; ++i) {
+        for (int i = 0, len = this.actualLength << 4; i < len; ++i) {
             final int count = get(i);
             if (count > 0) {
                 longBuf.write(i, count);
