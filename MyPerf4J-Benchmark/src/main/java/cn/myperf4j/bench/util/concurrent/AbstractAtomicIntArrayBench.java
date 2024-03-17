@@ -31,7 +31,7 @@ public abstract class AbstractAtomicIntArrayBench {
         final int length = arrayLength();
         jdkIntArray = new AtomicIntegerArray(length);
         atomicIntArray = new AtomicIntArray(length);
-        fastAtomicIntArray = new FastAtomicIntArray(length);
+        fastAtomicIntArray = new FastAtomicIntArray(length, 16);
     }
 
     abstract int arrayLength();

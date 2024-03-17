@@ -20,25 +20,25 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
  * # VM version: JDK 1.8.0_321, Java HotSpot(TM) 64-Bit Server VM, 25.321-b07
  * # VM options: -Xmx8G
  * <p>
- * Benchmark                                              (arrayLength)   Mode  Cnt   Score    Error   Units
- * AtomicIntArrayResetBench.atomicIntArrayResetBench                128  thrpt    3  14.670 ±  0.858  ops/us
- * AtomicIntArrayResetBench.atomicIntArrayResetBench                256  thrpt    3  10.563 ±  0.281  ops/us
- * AtomicIntArrayResetBench.atomicIntArrayResetBench                512  thrpt    3   7.066 ±  0.291  ops/us
- * AtomicIntArrayResetBench.atomicIntArrayResetBench               1024  thrpt    3   4.510 ±  0.136  ops/us
- * AtomicIntArrayResetBench.atomicIntArrayResetBench               2048  thrpt    3   2.591 ±  0.569  ops/us
- * AtomicIntArrayResetBench.atomicIntArrayResetBench               4096  thrpt    3   1.431 ±  0.014  ops/us
- * AtomicIntArrayResetBench.fastAtomicIntArrayResetBench            128  thrpt    3   2.627 ±  0.232  ops/us
- * AtomicIntArrayResetBench.fastAtomicIntArrayResetBench            256  thrpt    3   1.421 ±  0.115  ops/us
- * AtomicIntArrayResetBench.fastAtomicIntArrayResetBench            512  thrpt    3   0.744 ±  0.018  ops/us
- * AtomicIntArrayResetBench.fastAtomicIntArrayResetBench           1024  thrpt    3   0.381 ±  0.002  ops/us
- * AtomicIntArrayResetBench.fastAtomicIntArrayResetBench           2048  thrpt    3   0.192 ±  0.001  ops/us
- * AtomicIntArrayResetBench.fastAtomicIntArrayResetBench           4096  thrpt    3   0.097 ±  0.001  ops/us
- * AtomicIntArrayResetBench.jdkIntArrayResetBench                   128  thrpt    3   1.129 ±  0.065  ops/us
- * AtomicIntArrayResetBench.jdkIntArrayResetBench                   256  thrpt    3   0.566 ±  0.019  ops/us
- * AtomicIntArrayResetBench.jdkIntArrayResetBench                   512  thrpt    3   0.283 ±  0.004  ops/us
- * AtomicIntArrayResetBench.jdkIntArrayResetBench                  1024  thrpt    3   0.142 ±  0.003  ops/us
- * AtomicIntArrayResetBench.jdkIntArrayResetBench                  2048  thrpt    3   0.071 ±  0.001  ops/us
- * AtomicIntArrayResetBench.jdkIntArrayResetBench                  4096  thrpt    3   0.035 ±  0.001  ops/us
+ * Benchmark                                              (arrayLength)   Mode  Cnt  Score    Error   Units
+ * AtomicIntArrayResetBench.atomicIntArrayResetBench                128  thrpt    3  8.993 ±  1.491  ops/us
+ * AtomicIntArrayResetBench.atomicIntArrayResetBench                256  thrpt    3  7.131 ±  0.820  ops/us
+ * AtomicIntArrayResetBench.atomicIntArrayResetBench                512  thrpt    3  5.492 ±  0.520  ops/us
+ * AtomicIntArrayResetBench.atomicIntArrayResetBench               1024  thrpt    3  3.778 ±  0.332  ops/us
+ * AtomicIntArrayResetBench.atomicIntArrayResetBench               2048  thrpt    3  2.340 ±  0.152  ops/us
+ * AtomicIntArrayResetBench.atomicIntArrayResetBench               4096  thrpt    3  1.344 ±  0.023  ops/us
+ * AtomicIntArrayResetBench.fastAtomicIntArrayResetBench            128  thrpt    3  0.140 ±  0.006  ops/us
+ * AtomicIntArrayResetBench.fastAtomicIntArrayResetBench            256  thrpt    3  0.080 ±  0.002  ops/us
+ * AtomicIntArrayResetBench.fastAtomicIntArrayResetBench            512  thrpt    3  0.044 ±  0.004  ops/us
+ * AtomicIntArrayResetBench.fastAtomicIntArrayResetBench           1024  thrpt    3  0.023 ±  0.002  ops/us
+ * AtomicIntArrayResetBench.fastAtomicIntArrayResetBench           2048  thrpt    3  0.012 ±  0.001  ops/us
+ * AtomicIntArrayResetBench.fastAtomicIntArrayResetBench           4096  thrpt    3  0.006 ±  0.001  ops/us
+ * AtomicIntArrayResetBench.jdkIntArrayResetBench                   128  thrpt    3  9.977 ±  0.082  ops/us
+ * AtomicIntArrayResetBench.jdkIntArrayResetBench                   256  thrpt    3  5.255 ±  0.223  ops/us
+ * AtomicIntArrayResetBench.jdkIntArrayResetBench                   512  thrpt    3  2.691 ±  0.228  ops/us
+ * AtomicIntArrayResetBench.jdkIntArrayResetBench                  1024  thrpt    3  1.363 ±  0.152  ops/us
+ * AtomicIntArrayResetBench.jdkIntArrayResetBench                  2048  thrpt    3  0.685 ±  0.095  ops/us
+ * AtomicIntArrayResetBench.jdkIntArrayResetBench                  4096  thrpt    3  0.344 ±  0.052  ops/us
  */
 @State(Scope.Thread)
 public class AtomicIntArrayResetBench extends AbstractAtomicIntArrayBench {
