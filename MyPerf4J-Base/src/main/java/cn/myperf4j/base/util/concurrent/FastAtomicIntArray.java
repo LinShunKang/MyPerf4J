@@ -17,11 +17,16 @@ public final class FastAtomicIntArray implements Serializable {
     private static final int base = Unsafe.ARRAY_INT_BASE_OFFSET;
     private static final int scale = Unsafe.ARRAY_INT_INDEX_SCALE;
     private static final int shift = 31 - Integer.numberOfLeadingZeros(scale);
+    private static final int falseSharingShift = 31 - Integer.numberOfLeadingZeros(64 / scale);
 
     static {
-        if ((scale & (scale - 1)) != 0) {
+        if (!isPowerOfTwo(scale)) {
             throw new Error("data type scale not a power of two");
         }
+    }
+
+    private static boolean isPowerOfTwo(int i) {
+        return (i & (i - 1)) == 0;
     }
 
     private static long byteOffset(int i) {
@@ -30,23 +35,25 @@ public final class FastAtomicIntArray implements Serializable {
 
     private final int actualLength;
 
-    //TODO:LSK 还可以把二维数组转变为一维数组，通过下标来逻辑分割不同数组！
-    // 假设需要转换的数组为 int[n][m]，那么转换的方式有 2 种：
-    // 第一种：[A11,A12,A13,....,A1m, A21,A22,A23,....,A2m, An1,....,Anm]
-    // 第二种：[A11,A21,A31,....,An1, A12,A22,A32,....,An2, A1m,....,Anm]
-    // 理论上第二种可以更好的利用 CPU 缓存！
     private final int[][] arrays;
 
     public FastAtomicIntArray(int length) {
-        this.actualLength = length << 4;
-        this.arrays = generateArrays(length);
+        this(length, 4);
     }
 
-    private int[][] generateArrays(int length) {
-//        final int[][] arrays = new int[Runtime.getRuntime().availableProcessors()][];
-        final int[][] arrays = new int[16][]; //TODO:LSK 先给固定值
-        for (int i = 0; i < arrays.length; i++) {
-            arrays[i] = new int[length << 4];
+    public FastAtomicIntArray(int length, int shards) {
+        if (!isPowerOfTwo(shards)) {
+            throw new IllegalArgumentException("shards not a power of two");
+        }
+
+        this.actualLength = length << falseSharingShift;
+        this.arrays = generateArrays(this.actualLength, shards);
+    }
+
+    private int[][] generateArrays(int actualLength, int shards) {
+        final int[][] arrays = new int[shards][];
+        for (int i = 0; i < shards; i++) {
+            arrays[i] = new int[actualLength];
         }
         return arrays;
     }
@@ -59,12 +66,12 @@ public final class FastAtomicIntArray implements Serializable {
     }
 
     public int length() {
-        return this.actualLength >> 4;
+        return this.actualLength >> falseSharingShift;
     }
 
     public int get(int i) {
         int result = 0;
-        final long byteOffset = checkedByteOffset(i << 4);
+        final long byteOffset = checkedByteOffset(i << falseSharingShift);
         for (int[] array : arrays) {
             result += getRaw(array, byteOffset);
         }
@@ -75,25 +82,24 @@ public final class FastAtomicIntArray implements Serializable {
         return unsafe.getIntVolatile(array, offset);
     }
 
-    public boolean increment(int i) {
+    public int incrementAndGet(int i) {
+        return addAndGet(i, 1);
+    }
+
+    public int addAndGet(int i, int delta) {
         final int[][] arrays = this.arrays;
-        final int n = arrays.length;
-        final int[] array = arrays[(n - 1) & hash(Thread.currentThread().getId())];
-        final long byteOffset = checkedByteOffset(i << 4);
+        final int[] array = arrays[(arrays.length - 1) & hash(Thread.currentThread().getId())];
+        final long byteOffset = checkedByteOffset(i << falseSharingShift);
         while (true) {
-            if (cas(array, byteOffset, 1)) {
-                return true;
+            final int current = getRaw(array, byteOffset);
+            if (unsafe.compareAndSwapInt(array, byteOffset, current, current + delta)) {
+                return current;
             }
         }
     }
 
     private int hash(long threadId) {
         return (int) (threadId >>> 16 ^ threadId);
-    }
-
-    private boolean cas(int[] array, long byteOffset, int delta) {
-        final int current = getRaw(array, byteOffset);
-        return unsafe.compareAndSwapInt(array, byteOffset, current, current + delta);
     }
 
     public void reset() {
@@ -104,7 +110,7 @@ public final class FastAtomicIntArray implements Serializable {
 
     public long fillSortedKvs(LongBuf longBuf) {
         long totalCount = 0L;
-        for (int i = 0, len = this.actualLength << 4; i < len; ++i) {
+        for (int i = 0, len = length(); i < len; ++i) {
             final int count = get(i);
             if (count > 0) {
                 longBuf.write(i, count);
