@@ -82,11 +82,11 @@ public final class FastAtomicIntArray implements Serializable {
         return unsafe.getIntVolatile(array, offset);
     }
 
-    public int incrementAndGet(int i) {
-        return addAndGet(i, 1);
+    public int getAndIncrement(int i) {
+        return getAndAdd(i, 1);
     }
 
-    public int addAndGet(int i, int delta) {
+    public int getAndAdd(int i, int delta) {
         final int[][] arrays = this.arrays;
         final int[] array = arrays[(arrays.length - 1) & hash(Thread.currentThread().getId())];
         final long byteOffset = checkedByteOffset(i << falseSharingShift);
