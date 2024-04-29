@@ -1,7 +1,9 @@
 package cn.myperf4j.bench.util.concurrent;
 
 import cn.myperf4j.base.util.concurrent.AtomicIntArray;
-import cn.myperf4j.base.util.concurrent.FastAtomicIntArray;
+import cn.myperf4j.base.util.concurrent.FastAtomicIntArrayV1;
+import cn.myperf4j.base.util.concurrent.FastAtomicIntArrayV0;
+import cn.myperf4j.base.util.concurrent.FastAtomicIntArrayV2;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Scope;
@@ -24,14 +26,20 @@ public abstract class AbstractAtomicIntArrayBench {
 
     protected AtomicIntArray atomicIntArray;
 
-    protected FastAtomicIntArray fastAtomicIntArray;
+    protected FastAtomicIntArrayV0 fastAtomicIntArrayV0;
+
+    protected FastAtomicIntArrayV1 fastAtomicIntArrayV1;
+
+    protected FastAtomicIntArrayV2 fastAtomicIntArrayV2;
 
     @Setup
     public void setup() {
         final int length = arrayLength();
         jdkIntArray = new AtomicIntegerArray(length);
         atomicIntArray = new AtomicIntArray(length);
-        fastAtomicIntArray = new FastAtomicIntArray(length, 16);
+        fastAtomicIntArrayV0 = new FastAtomicIntArrayV0(length, 16);
+        fastAtomicIntArrayV1 = new FastAtomicIntArrayV1(length, 16);
+        fastAtomicIntArrayV2 = new FastAtomicIntArrayV2(length, 16);
     }
 
     abstract int arrayLength();

@@ -6,6 +6,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
@@ -19,13 +23,63 @@ import static cn.myperf4j.base.util.NumUtils.parseValue;
 /**
  * Created by LinShunkang on 2024/02/14
  */
-public class FastAtomicIntArrayTest {
+public class FastAtomicIntArrayV0Test {
 
-    private final FastAtomicIntArray atomicIntArray = new FastAtomicIntArray(1024);
+    private final FastAtomicIntArrayV0 atomicIntArray = new FastAtomicIntArrayV0(1024);
 
     @Before
     public void clear() {
         atomicIntArray.reset();
+    }
+
+    @Test
+    public void test() {
+        final int shards = 4;
+        final int falseSharingShift = 4;
+        final int actualShift = falseSharingShift + (31 - Integer.numberOfLeadingZeros(shards));
+        final Set<Integer> actualIdxSet = new HashSet<>();
+        for (int shardIdx = 0; shardIdx < shards; shardIdx++) {
+            System.out.printf("--------------------------- shardIdx=%d--------------------------------%n", shardIdx);
+            for (int i = 0; i < 64; i++) {
+                final int baseIdx = i << actualShift;
+                final int actualIdx = baseIdx + (shardIdx << falseSharingShift);
+                actualIdxSet.add(actualIdx);
+                System.out.printf("shardIdx=%d, i=%d: baseIdx=%d, actualIdx=%d%n", shardIdx, i, baseIdx, actualIdx);
+            }
+            System.out.printf("%n%n");
+        }
+
+        System.out.println("actualIdxSet.size=" + actualIdxSet.size());
+        System.out.println("actualIdxSet=" + actualIdxSet);
+
+        final ArrayList<Integer> actualIdxList = new ArrayList<>(actualIdxSet);
+        Collections.sort(actualIdxList);
+        System.out.println("actualIdxList=" + actualIdxList);
+    }
+
+    @Test
+    public void test1() {
+        final int shards = 4;
+        final int falseSharingShift = 4;
+        final int actualShift = falseSharingShift + (31 - Integer.numberOfLeadingZeros(shards));
+        final Set<Integer> actualIdxSet = new HashSet<>();
+        for (int i = 0; i < 64; i++) {
+            System.out.printf("--------------------------- i=%d--------------------------------%n", i);
+            for (int shardIdx = 0; shardIdx < shards; shardIdx++) {
+                final int baseIdx = i << actualShift;
+                final int actualIdx = baseIdx + (shardIdx << falseSharingShift);
+                actualIdxSet.add(actualIdx);
+                System.out.printf("shardIdx=%d, i=%d: baseIdx=%d, actualIdx=%d%n", shardIdx, i, baseIdx, actualIdx);
+            }
+            System.out.printf("%n%n");
+        }
+
+        System.out.println("actualIdxSet.size=" + actualIdxSet.size());
+        System.out.println("actualIdxSet=" + actualIdxSet);
+
+        final ArrayList<Integer> actualIdxList = new ArrayList<>(actualIdxSet);
+        Collections.sort(actualIdxList);
+        System.out.println("actualIdxList=" + actualIdxList);
     }
 
     @Test
@@ -93,7 +147,7 @@ public class FastAtomicIntArrayTest {
     @Test
     public void testSingleThread() {
         final AtomicIntegerArray intArray = new AtomicIntegerArray(128 * 1024);
-        final FastAtomicIntArray fastIntArray = new FastAtomicIntArray(128 * 1024);
+        final FastAtomicIntArrayV0 fastIntArray = new FastAtomicIntArrayV0(128 * 1024);
         mode1(intArray, fastIntArray, 1024, 64);
         mode1(intArray, fastIntArray, 256, 256);
         mode1(intArray, fastIntArray, 64, 1024);
@@ -107,7 +161,7 @@ public class FastAtomicIntArrayTest {
     }
 
     private void mode1(AtomicIntegerArray intArray,
-                       FastAtomicIntArray fastIntArray,
+                       FastAtomicIntArrayV0 fastIntArray,
                        int x,
                        int y) {
         final long start = System.nanoTime();
@@ -125,8 +179,8 @@ public class FastAtomicIntArrayTest {
         final int threadCnt = Math.max(Runtime.getRuntime().availableProcessors() - 2, 1);
         final ExecutorService executor = Executors.newFixedThreadPool(threadCnt);
         int failureTimes = 0;
-        final int testTimes = 1024 * 1024;
-//        final int testTimes = 16 * 1024;
+//        final int testTimes = 1024 * 1024;
+        final int testTimes = 16 * 1024;
         final ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 0; i < testTimes; i++) {
             System.out.printf("--------------------- Round %d start ---------------------\n", i);
@@ -147,8 +201,8 @@ public class FastAtomicIntArrayTest {
         final int threadCnt = Math.max(Runtime.getRuntime().availableProcessors() - 2, 1);
         final ExecutorService executor = Executors.newFixedThreadPool(threadCnt);
         int failureTimes = 0;
-        final int testTimes = 1024 * 1024;
-//        final int testTimes = 16 * 1024;
+//        final int testTimes = 1024 * 1024;
+        final int testTimes = 16 * 1024;
         final ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 0; i < testTimes; i++) {
             System.out.printf("--------------------- Round %d start ---------------------\n", i);
@@ -171,7 +225,7 @@ public class FastAtomicIntArrayTest {
             throws InterruptedException, BrokenBarrierException {
         final int testTimes = ThreadLocalRandom.current().nextInt(0, 8 * 1024);
         final AtomicIntegerArray intArray = new AtomicIntegerArray(randomKeyBound);
-        final FastAtomicIntArray fastIntArray = new FastAtomicIntArray(randomKeyBound);
+        final FastAtomicIntArrayV0 fastIntArray = new FastAtomicIntArrayV0(randomKeyBound);
         final CyclicBarrier barrier = new CyclicBarrier(threadCnt + 1);
         for (int i = 0; i < threadCnt; i++) {
             executor.execute(new Runnable() {

@@ -9,7 +9,7 @@ import java.io.Serializable;
 /**
  * Created by LinShunkang on 2024/02/14
  */
-public final class FastAtomicIntArray implements Serializable {
+public final class FastAtomicIntArrayV0 implements Serializable {
 
     private static final long serialVersionUID = -4361761107900070905L;
 
@@ -37,11 +37,11 @@ public final class FastAtomicIntArray implements Serializable {
 
     private final int[][] arrays;
 
-    public FastAtomicIntArray(int length) {
+    public FastAtomicIntArrayV0(int length) {
         this(length, 4);
     }
 
-    public FastAtomicIntArray(int length, int shards) {
+    public FastAtomicIntArrayV0(int length, int shards) {
         if (!isPowerOfTwo(shards)) {
             throw new IllegalArgumentException("shards not a power of two");
         }
