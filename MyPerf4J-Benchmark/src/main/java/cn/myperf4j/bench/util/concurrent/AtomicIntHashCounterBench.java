@@ -1,7 +1,6 @@
 package cn.myperf4j.bench.util.concurrent;
 
 import cn.myperf4j.base.util.concurrent.AtomicIntArray;
-import cn.myperf4j.base.util.concurrent.FastAtomicIntArray;
 import cn.myperf4j.base.util.concurrent.IntHashCounter;
 import cn.myperf4j.base.util.concurrent.AtomicIntHashCounter;
 import org.openjdk.jmh.annotations.Benchmark;
