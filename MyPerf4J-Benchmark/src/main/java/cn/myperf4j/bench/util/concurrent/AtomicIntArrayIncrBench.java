@@ -126,7 +126,7 @@ public class AtomicIntArrayIncrBench extends AbstractAtomicIntArrayBench {
 
     @Benchmark
     public int fastAtomicIntArrayBench(ThreadState state) {
-        return fastAtomicIntArray.incrementAndGet(randomKey(state));
+        return fastAtomicIntArray.getAndIncrement(randomKey(state));
     }
 
     public static void main(String[] args) throws RunnerException {
