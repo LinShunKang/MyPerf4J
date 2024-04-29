@@ -169,22 +169,22 @@ public class AtomicIntArrayIncrBench extends AbstractAtomicIntArrayBench {
 
     @Benchmark
     public int atomicIntArrayBench(ThreadState state) {
-        return atomicIntArray.incrementAndGet(randomKey(state));
+        return atomicIntArray.getAndIncrement(randomKey(state));
     }
 
     @Benchmark
     public int fastAtomicIntArrayV0Bench(ThreadState state) {
-        return fastAtomicIntArrayV0.incrementAndGet(randomKey(state));
+        return fastAtomicIntArrayV0.getAndIncrement(randomKey(state));
     }
 
     @Benchmark
     public int fastAtomicIntArrayV1Bench(ThreadState state) {
-        return fastAtomicIntArrayV1.incrementAndGet(randomKey(state));
+        return fastAtomicIntArrayV1.getAndIncrement(randomKey(state));
     }
 
     @Benchmark
     public int fastAtomicIntArrayV2Bench(ThreadState state) {
-        return fastAtomicIntArrayV2.incrementAndGet(randomKey(state));
+        return fastAtomicIntArrayV2.getAndIncrement(randomKey(state));
     }
 
     public static void main(String[] args) throws RunnerException {

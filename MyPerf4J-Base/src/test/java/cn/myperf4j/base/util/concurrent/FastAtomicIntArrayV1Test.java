@@ -86,7 +86,7 @@ public class FastAtomicIntArrayV1Test {
     public void testReset() {
         final int length = atomicIntArray.length();
         for (int i = 0; i < length; i++) {
-            atomicIntArray.incrementAndGet(i);
+            atomicIntArray.getAndIncrement(i);
         }
 
         for (int i = 0; i < length; i++) {
@@ -104,7 +104,7 @@ public class FastAtomicIntArrayV1Test {
     public void testIncrement() {
         final int length = atomicIntArray.length();
         for (int i = 0; i < length; i++) {
-            atomicIntArray.incrementAndGet(i);
+            atomicIntArray.getAndIncrement(i);
         }
 
         for (int i = 0; i < length; i++) {
@@ -112,7 +112,7 @@ public class FastAtomicIntArrayV1Test {
         }
 
         for (int i = 0; i < length; i++) {
-            atomicIntArray.incrementAndGet(i);
+            atomicIntArray.getAndIncrement(i);
         }
 
         for (int i = 0; i < length; i++) {
@@ -124,7 +124,7 @@ public class FastAtomicIntArrayV1Test {
     public void testFillSortedKvs() {
         final int length = atomicIntArray.length();
         for (int i = 1; i < length; i++) {
-            atomicIntArray.addAndGet(i, i);
+            atomicIntArray.getAndAdd(i, i);
         }
 
         for (int i = 0; i < length; i++) {
@@ -167,8 +167,8 @@ public class FastAtomicIntArrayV1Test {
         final long start = System.nanoTime();
         for (int i = 0; i < x; i++) {
             for (int j = 1; j < y; j++) {
-                intArray.incrementAndGet(j);
-                fastIntArray.incrementAndGet(j);
+                intArray.getAndIncrement(j);
+                fastIntArray.getAndIncrement(j);
             }
         }
         Logger.info("x=" + x + ", y=" + y + ", cost=" + (System.nanoTime() - start) / 1000_000 + "ms");
@@ -242,8 +242,8 @@ public class FastAtomicIntArrayV1Test {
                         for (int k = 0; k < testTimes; k++) {
                             final int randomKey = random.nextInt(0, randomKeyBound);
                             final int randomDelta = random.nextInt(1, randomDeltaBound);
-                            intArray.addAndGet(randomKey, randomDelta);
-                            fastIntArray.addAndGet(randomKey, randomDelta);
+                            intArray.getAndAdd(randomKey, randomDelta);
+                            fastIntArray.getAndAdd(randomKey, randomDelta);
                         }
                     } finally {
                         try {
