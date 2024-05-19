@@ -6,6 +6,9 @@ import sun.misc.Unsafe;
 
 import java.io.Serializable;
 
+import static cn.myperf4j.base.util.NumUtils.isPowerOfTwo;
+import static java.lang.Integer.numberOfLeadingZeros;
+
 /**
  * Created by LinShunkang on 2024/02/14
  */
@@ -16,21 +19,13 @@ public final class FastAtomicIntArrayV0 implements Serializable {
     private static final Unsafe unsafe = UnsafeUtils.getUnsafe();
     private static final int base = Unsafe.ARRAY_INT_BASE_OFFSET;
     private static final int scale = Unsafe.ARRAY_INT_INDEX_SCALE;
-    private static final int shift = 31 - Integer.numberOfLeadingZeros(scale);
-    private static final int falseSharingShift = 31 - Integer.numberOfLeadingZeros(64 / scale);
+    private static final int shift = 31 - numberOfLeadingZeros(scale);
+    private static final int falseSharingShift = 31 - numberOfLeadingZeros(64 / scale);
 
     static {
         if (!isPowerOfTwo(scale)) {
             throw new Error("data type scale not a power of two");
         }
-    }
-
-    private static boolean isPowerOfTwo(int i) {
-        return (i & (i - 1)) == 0;
-    }
-
-    private static long byteOffset(int i) {
-        return ((long) i << shift) + base;
     }
 
     private final int actualLength;
@@ -65,6 +60,10 @@ public final class FastAtomicIntArrayV0 implements Serializable {
         return byteOffset(i);
     }
 
+    private static long byteOffset(int i) {
+        return ((long) i << shift) + base;
+    }
+
     public int length() {
         return this.actualLength >> falseSharingShift;
     }
@@ -90,12 +89,7 @@ public final class FastAtomicIntArrayV0 implements Serializable {
         final int[][] arrays = this.arrays;
         final int[] array = arrays[(arrays.length - 1) & hash(Thread.currentThread().getId())];
         final long byteOffset = checkedByteOffset(i << falseSharingShift);
-        while (true) {
-            final int current = getRaw(array, byteOffset);
-            if (unsafe.compareAndSwapInt(array, byteOffset, current, current + delta)) {
-                return current;
-            }
-        }
+        return unsafe.getAndAddInt(array, byteOffset, delta);
     }
 
     private int hash(long threadId) {

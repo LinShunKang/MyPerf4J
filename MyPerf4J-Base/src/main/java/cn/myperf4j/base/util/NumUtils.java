@@ -9,6 +9,10 @@ public final class NumUtils {
         //empty
     }
 
+    public static boolean isPowerOfTwo(int i) {
+        return (i & (i - 1)) == 0;
+    }
+
     public static double getPercent(double curNum, double maxNum) {
         if (curNum > 0L && maxNum > 0L) {
             return (100D * curNum) / maxNum;
