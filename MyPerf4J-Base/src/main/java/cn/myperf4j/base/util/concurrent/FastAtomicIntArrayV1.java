@@ -6,6 +6,8 @@ import sun.misc.Unsafe;
 
 import java.io.Serializable;
 
+import static cn.myperf4j.base.util.NumUtils.isPowerOfTwo;
+import static java.lang.Integer.numberOfLeadingZeros;
 import static java.lang.Thread.currentThread;
 
 /**
@@ -18,21 +20,13 @@ public final class FastAtomicIntArrayV1 implements Serializable {
     private static final Unsafe unsafe = UnsafeUtils.getUnsafe();
     private static final int base = Unsafe.ARRAY_INT_BASE_OFFSET;
     private static final int scale = Unsafe.ARRAY_INT_INDEX_SCALE;
-    private static final int shift = 31 - Integer.numberOfLeadingZeros(scale);
-    private static final int falseSharingShift = 31 - Integer.numberOfLeadingZeros(64 / scale);
+    private static final int shift = 31 - numberOfLeadingZeros(scale);
+    private static final int falseSharingShift = 31 - numberOfLeadingZeros(64 / scale);
 
     static {
         if (!isPowerOfTwo(scale)) {
             throw new Error("data type scale not a power of two");
         }
-    }
-
-    private static boolean isPowerOfTwo(int i) {
-        return (i & (i - 1)) == 0;
-    }
-
-    private static long byteOffset(int i) {
-        return ((long) i << shift) + base;
     }
 
     private final int shards;
@@ -54,7 +48,7 @@ public final class FastAtomicIntArrayV1 implements Serializable {
         }
 
         this.shards = shards;
-        this.actualShift = falseSharingShift + (31 - Integer.numberOfLeadingZeros(shards));
+        this.actualShift = falseSharingShift + (31 - numberOfLeadingZeros(shards));
         this.actualLength = length << actualShift;
         this.array = new int[actualLength];
     }
@@ -66,6 +60,10 @@ public final class FastAtomicIntArrayV1 implements Serializable {
         return byteOffset(i);
     }
 
+    private static long byteOffset(int i) {
+        return ((long) i << shift) + base;
+    }
+
     public int length() {
         return this.actualLength >> actualShift;
     }
@@ -74,13 +72,9 @@ public final class FastAtomicIntArrayV1 implements Serializable {
         int result = 0;
         final int baseIdx = i << actualShift;
         for (int shardIdx = 0; shardIdx < shards; shardIdx++) {
-            result += getRaw(array, checkedByteOffset(baseIdx + (shardIdx << falseSharingShift)));
+            result += unsafe.getIntVolatile(array, checkedByteOffset(baseIdx + (shardIdx << falseSharingShift)));
         }
         return result;
-    }
-
-    private int getRaw(int[] array, long offset) {
-        return unsafe.getIntVolatile(array, offset);
     }
 
     public int getAndIncrement(int i) {
@@ -88,16 +82,10 @@ public final class FastAtomicIntArrayV1 implements Serializable {
     }
 
     public int getAndAdd(int i, int delta) {
-        final int[] array = this.array;
         final int baseIdx = i << actualShift;
         final int shardIdx = (shards - 1) & hash(currentThread().getId());
         final long byteOffset = checkedByteOffset(baseIdx + (shardIdx << falseSharingShift));
-        while (true) {
-            final int current = getRaw(array, byteOffset);
-            if (unsafe.compareAndSwapInt(array, byteOffset, current, current + delta)) {
-                return current;
-            }
-        }
+        return unsafe.getAndAddInt(array, byteOffset, delta);
     }
 
     private int hash(long threadId) {
