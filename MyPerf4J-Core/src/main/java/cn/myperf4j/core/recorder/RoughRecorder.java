@@ -2,6 +2,7 @@ package cn.myperf4j.core.recorder;
 
 import cn.myperf4j.base.buffer.LongBuf;
 import cn.myperf4j.base.util.concurrent.AtomicIntArray;
+import cn.myperf4j.base.util.concurrent.SimpleAtomicIntArray;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -26,7 +27,7 @@ public final class RoughRecorder extends Recorder {
 
     public RoughRecorder(int methodTag, int mostTimeThreshold) {
         super(methodTag);
-        this.timingArr = new AtomicIntArray(mostTimeThreshold + 2);
+        this.timingArr = new SimpleAtomicIntArray(mostTimeThreshold + 2);
         this.diffCount = new AtomicInteger(0);
     }
 

@@ -2,6 +2,7 @@ package cn.myperf4j.core.recorder;
 
 import cn.myperf4j.base.buffer.LongBuf;
 import cn.myperf4j.base.util.concurrent.AtomicIntArray;
+import cn.myperf4j.base.util.concurrent.SimpleAtomicIntArray;
 import cn.myperf4j.base.util.concurrent.IntHashCounter;
 import cn.myperf4j.base.util.concurrent.AtomicIntHashCounter;
 
@@ -29,7 +30,7 @@ public final class AccurateRecorder extends Recorder {
     private AccurateRecorder(int methodTagId, int mostTimeThreshold, int outThresholdCount) {
         super(methodTagId);
         this.mostTimeThreshold = mostTimeThreshold;
-        this.timingArr = new AtomicIntArray(mostTimeThreshold);
+        this.timingArr = new SimpleAtomicIntArray(mostTimeThreshold);
         this.timingHashCounter = new AtomicIntHashCounter(outThresholdCount);
         this.diffCount = new AtomicInteger(0);
     }

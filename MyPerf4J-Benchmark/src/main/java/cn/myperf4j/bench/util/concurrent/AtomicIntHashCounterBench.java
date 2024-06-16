@@ -1,6 +1,6 @@
 package cn.myperf4j.bench.util.concurrent;
 
-import cn.myperf4j.base.util.concurrent.AtomicIntArray;
+import cn.myperf4j.base.util.concurrent.SimpleAtomicIntArray;
 import cn.myperf4j.base.util.concurrent.IntHashCounter;
 import cn.myperf4j.base.util.concurrent.AtomicIntHashCounter;
 import org.openjdk.jmh.annotations.Benchmark;
@@ -68,7 +68,7 @@ public class AtomicIntHashCounterBench {
 
     private IntHashCounter intHashCounter;
 
-    private AtomicIntArray intArray;
+    private SimpleAtomicIntArray intArray;
 
     private ConcurrentMap<Integer, AtomicInteger> jdkIntegerMap;
 
@@ -78,7 +78,7 @@ public class AtomicIntHashCounterBench {
     @Setup(Level.Iteration)
     public void setup() {
         intHashCounter = new AtomicIntHashCounter(128);
-        intArray = new AtomicIntArray(mapSize + 1);
+        intArray = new SimpleAtomicIntArray(mapSize + 1);
         jdkIntegerMap = new ConcurrentHashMap<>(128);
 
         final ThreadLocalRandom random = ThreadLocalRandom.current();
