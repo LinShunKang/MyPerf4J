@@ -1,7 +1,6 @@
 package cn.myperf4j.base.util.concurrent;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -9,18 +8,13 @@ import org.junit.Test;
  */
 public class AtomicIntArrayTest {
 
-    private final AtomicIntArray atomicIntArray = new AtomicIntArray(1024);
-
-    @Before
-    public void clear() {
-        atomicIntArray.reset();
-    }
+    protected AtomicIntArray atomicIntArray;
 
     @Test
     public void testReset() {
         final int length = atomicIntArray.length();
         for (int i = 0; i < length; i++) {
-            atomicIntArray.set(i, i);
+            atomicIntArray.getAndAdd(i, i);
         }
 
         for (int i = 0; i < length; i++) {

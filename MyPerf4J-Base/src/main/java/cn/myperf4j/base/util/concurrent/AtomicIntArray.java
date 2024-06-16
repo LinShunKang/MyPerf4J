@@ -1,140 +1,25 @@
 package cn.myperf4j.base.util.concurrent;
 
 import cn.myperf4j.base.buffer.LongBuf;
-import cn.myperf4j.base.util.UnsafeUtils;
-import sun.misc.Unsafe;
-
-import java.io.Serializable;
 
 /**
- * Created by LinShunkang on 2020/11/24
+ * Created by LinShunkang on 2024/06/16
  */
-public final class AtomicIntArray implements Serializable {
+public interface AtomicIntArray {
 
-    private static final long serialVersionUID = 4512166855752664301L;
+    int length();
 
-    private static final Unsafe unsafe = UnsafeUtils.getUnsafe();
-    private static final int base = Unsafe.ARRAY_INT_BASE_OFFSET;
-    private static final int scale = Unsafe.ARRAY_INT_INDEX_SCALE;
-    private static final int shift = 31 - Integer.numberOfLeadingZeros(scale);
-    private final int[] array;
+    int get(int index);
 
-    static {
-        if ((scale & (scale - 1)) != 0) {
-            throw new Error("data type scale not a power of two");
-        }
-    }
+    int getAndIncrement(int index);
 
-    private long checkedByteOffset(int i) {
-        if (i < 0 || i >= array.length) {
-            throw new IndexOutOfBoundsException("index " + i);
-        }
-        return byteOffset(i);
-    }
+    int getAndAdd(int index, int delta);
 
-    private static long byteOffset(int i) {
-        return ((long) i << shift) + base;
-    }
+    int incrementAndGet(int index);
 
-    /**
-     * Creates a new AtomicIntegerArray of the given length, with all
-     * elements initially zero.
-     *
-     * @param length the length of the array
-     */
-    public AtomicIntArray(int length) {
-        array = new int[length];
-    }
+    int addAndGet(int index, int delta);
 
-    /**
-     * Returns the length of the array.
-     *
-     * @return the length of the array
-     */
-    public int length() {
-        return array.length;
-    }
+    long fillSortedKvs(LongBuf longBuf);
 
-    /**
-     * Gets the current value at position {@code i}.
-     *
-     * @param i the index
-     * @return the current value
-     */
-    public int get(int i) {
-        return getRaw(checkedByteOffset(i));
-    }
-
-    private int getRaw(long offset) {
-        return unsafe.getIntVolatile(array, offset);
-    }
-
-    /**
-     * Sets the element at position {@code i} to the given value.
-     *
-     * @param i        the index
-     * @param newValue the new value
-     */
-    public void set(int i, int newValue) {
-        unsafe.putIntVolatile(array, checkedByteOffset(i), newValue);
-    }
-
-    /**
-     * Atomically increments by one the element at index {@code i}.
-     *
-     * @param i the index
-     * @return the previous value
-     */
-    public int getAndIncrement(int i) {
-        return getAndAdd(i, 1);
-    }
-
-    /**
-     * Atomically adds the given value to the element at index {@code i}.
-     *
-     * @param i     the index
-     * @param delta the value to add
-     * @return the previous value
-     */
-    public int getAndAdd(int i, int delta) {
-        return unsafe.getAndAddInt(array, checkedByteOffset(i), delta);
-    }
-
-    /**
-     * Atomically increments by one the element at index {@code i}.
-     *
-     * @param i the index
-     * @return the updated value
-     */
-    public int incrementAndGet(int i) {
-        return addAndGet(i, 1);
-    }
-
-    /**
-     * Atomically adds the given value to the element at index {@code i}.
-     *
-     * @param i     the index
-     * @param delta the value to add
-     * @return the updated value
-     */
-    public int addAndGet(int i, int delta) {
-        return getAndAdd(i, delta) + delta;
-    }
-
-    public void reset() {
-        final int[] array = this.array;
-        unsafe.setMemory(array, byteOffset(0), (long) array.length * scale, (byte) 0);
-    }
-
-    public long fillSortedKvs(LongBuf longBuf) {
-        long totalCount = 0L;
-        for (int i = 0, len = array.length; i < len; ++i) {
-            final int count = get(i);
-            if (count > 0) {
-                longBuf.write(i, count);
-                totalCount += count;
-            }
-        }
-        return totalCount;
-    }
+    void reset();
 }
