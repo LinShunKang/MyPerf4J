@@ -2,8 +2,9 @@ package cn.myperf4j.base.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+
+import static java.util.Collections.emptyList;
 
 /**
  * Created by LinShunkang on 2019/05/12
@@ -85,7 +86,7 @@ public final class StrUtils {
 
     public static List<String> splitAsList(final String str, final char separatorChar) {
         if (str == null || str.isEmpty()) {
-            return Collections.emptyList();
+            return emptyList();
         }
 
         final List<String> result = new ArrayList<>();

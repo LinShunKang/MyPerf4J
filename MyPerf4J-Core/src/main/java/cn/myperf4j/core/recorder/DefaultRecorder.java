@@ -2,22 +2,16 @@ package cn.myperf4j.core.recorder;
 
 import cn.myperf4j.base.buffer.LongBuf;
 import cn.myperf4j.base.util.concurrent.AtomicIntArray;
-import cn.myperf4j.base.util.concurrent.SimpleAtomicIntArray;
-import cn.myperf4j.base.util.concurrent.IntHashCounter;
 import cn.myperf4j.base.util.concurrent.AtomicIntHashCounter;
+import cn.myperf4j.base.util.concurrent.IntHashCounter;
+import cn.myperf4j.base.util.concurrent.SimpleAtomicIntArray;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by LinShunkang on 2018/3/13
- * <p>
- * 默认使用该类作为 MyPerf4J 的 Recorder
- * 该类用于精确存储某一个方法在指定时间片内的响应时间
- * 为了减小内存占用，利用 数组 + Map 的方式:
- * 1、将小于等于 mostTimeThreshold 的响应时间记录在 AtomicIntArray 中；
- * 2、将大于 mostTimeThreshold 的响应时间记录到 AtomicIntHashCounter 中。
  */
-public final class AccurateRecorder extends Recorder {
+public final class DefaultRecorder extends Recorder {
 
     private final int mostTimeThreshold;
 
@@ -27,7 +21,7 @@ public final class AccurateRecorder extends Recorder {
 
     private final AtomicInteger diffCount;
 
-    private AccurateRecorder(int methodTagId, int mostTimeThreshold, int outThresholdCount) {
+    private DefaultRecorder(int methodTagId, int mostTimeThreshold, int outThresholdCount) {
         super(methodTagId);
         this.mostTimeThreshold = mostTimeThreshold;
         this.timingArr = new SimpleAtomicIntArray(mostTimeThreshold);
@@ -75,7 +69,7 @@ public final class AccurateRecorder extends Recorder {
         return diffCount.get() > 0;
     }
 
-    public static AccurateRecorder getInstance(int methodTagId, int mostTimeThreshold, int outThresholdCount) {
-        return new AccurateRecorder(methodTagId, mostTimeThreshold, outThresholdCount);
+    public static DefaultRecorder getInstance(int methodTagId, int mostTimeThreshold, int outThresholdCount) {
+        return new DefaultRecorder(methodTagId, mostTimeThreshold, outThresholdCount);
     }
 }

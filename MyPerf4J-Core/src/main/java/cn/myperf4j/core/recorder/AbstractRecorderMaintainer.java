@@ -46,21 +46,11 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
 
     private MethodMetricsExporter methodMetricsExporter;
 
-    private boolean accurateMode;
-
-    public boolean initial(MethodMetricsExporter processor, boolean accurateMode, int bakRecordersCnt) {
+    public boolean initial(MethodMetricsExporter processor, int bakRecordersCnt) {
         this.methodMetricsExporter = processor;
-        this.accurateMode = accurateMode;
-        bakRecordersCnt = getFitBakRecordersCnt(bakRecordersCnt);
-
-        if (!initRecorders(bakRecordersCnt)) {
+        if (!initRecorders(getFitBakRecordersCnt(bakRecordersCnt)) || !initBackgroundTask()) {
             return false;
         }
-
-        if (!initBackgroundTask()) {
-            return false;
-        }
-
         return initialState = initOther();
     }
 
@@ -100,10 +90,7 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
     public abstract boolean initOther();
 
     protected Recorder createRecorder(int methodTagId, ProfilingParams params) {
-        if (accurateMode) {
-            return AccurateRecorder.getInstance(methodTagId, params.mostTimeThreshold(), params.outThresholdCount());
-        }
-        return RoughRecorder.getInstance(methodTagId, params.mostTimeThreshold());
+        return DefaultRecorder.getInstance(methodTagId, params.mostTimeThreshold(), params.outThresholdCount());
     }
 
     public abstract void addRecorder(int methodTagId, ProfilingParams params);
@@ -216,8 +203,8 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
                     MethodMetricsHistogram.recordMetrics(metrics);
                     metricsExporter.process(metrics, epochStartMillis, epochStartMillis, epochEndMillis);
                 }
-            } catch (Throwable e) {
-                Logger.error("ExportMetricsTask.run() error", e);
+            } catch (Throwable t) {
+                Logger.error("ExportMetricsTask.run() error", t);
             } finally {
                 metricsExporter.afterProcess(epochStartMillis, epochStartMillis, epochEndMillis);
                 final long cost = System.currentTimeMillis() - start;

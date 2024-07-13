@@ -100,8 +100,6 @@ public interface PropertyKeys {
 
         ConfigKey BACKUP_COUNT = ConfigKey.of("recorders.backup_count", "BackupRecordersCount");
 
-        ConfigKey MODE = ConfigKey.of("recorder.mode", "RecorderMode");
-
         ConfigKey SIZE_TIMING_ARR = ConfigKey.of("recorder.size.timing_arr", "ProfilingTimeThreshold");
 
         ConfigKey SIZE_TIMING_MAP = ConfigKey.of("recorder.size.timing_map", "ProfilingOutThresholdCount");
