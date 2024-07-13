@@ -4,10 +4,9 @@ import cn.myperf4j.base.MethodTag;
 import cn.myperf4j.base.metric.MethodMetrics;
 import cn.myperf4j.core.MethodMetricsCalculator;
 import cn.myperf4j.core.MethodTagMaintainer;
-import cn.myperf4j.core.recorder.AccurateRecorder;
+import cn.myperf4j.core.recorder.DefaultRecorder;
 import cn.myperf4j.core.recorder.Recorder;
 import cn.myperf4j.core.recorder.Recorders;
-import cn.myperf4j.core.recorder.RoughRecorder;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Mode;
@@ -31,50 +30,30 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 @State(Scope.Thread)
 public class MethodMetricsBench {
 
+    private static final MethodTagMaintainer methodTagMaintainer = MethodTagMaintainer.getInstance();
+
     private Recorders recorders;
 
-    private Recorder roughRecorder;
-
     private Recorder accurateRecorder;
-
-    private MethodTag roughMethodTag;
 
     private MethodTag accurateMethodTag;
 
     @Setup
     public void setup() {
-        recorders = new Recorders(new AtomicReferenceArray<Recorder>(10));
-        MethodTagMaintainer methodTagMaintainer = MethodTagMaintainer.getInstance();
-
-        roughMethodTag = MethodTag.getGeneralInstance("", "Test", "Api", "rough", "");
-        int roughMethodId = methodTagMaintainer.addMethodTag(roughMethodTag);
-        roughRecorder = RoughRecorder.getInstance(0, 1024);
-        recorders.setRecorder(roughMethodId, roughRecorder);
-
+        recorders = new Recorders(new AtomicReferenceArray<>(10));
         accurateMethodTag = MethodTag.getGeneralInstance("", "Test", "Api", "accurate", "");
-        int accurateMethodId = methodTagMaintainer.addMethodTag(accurateMethodTag);
-        accurateRecorder = AccurateRecorder.getInstance(1, 256, 64);
-        recorders.setRecorder(accurateMethodId, accurateRecorder);
+        accurateRecorder = DefaultRecorder.getInstance(1, 256, 64);
+        recorders.setRecorder(methodTagMaintainer.addMethodTag(accurateMethodTag), accurateRecorder);
 
-        long startTime = System.currentTimeMillis();
+        final long startTime = System.currentTimeMillis();
+        final long startNano = System.nanoTime();
         recorders.setStartTime(startTime);
-
-        long startNano = System.nanoTime();
         for (long i = 0; i < 1024; ++i) {
             for (int k = 0; k < 10240; k++) {
-                roughRecorder.recordTime(startNano, startNano + i * 1000 * 1000);
                 accurateRecorder.recordTime(startNano, startNano + i * 1000 * 1000);
             }
         }
         recorders.setStopTime(startTime + 60 * 1000);
-    }
-
-    @Benchmark
-    public MethodMetrics roughRecorder() {
-        return MethodMetricsCalculator.calMetrics(roughRecorder,
-                roughMethodTag,
-                recorders.getStartTime(),
-                recorders.getStopTime());
     }
 
     @Benchmark

@@ -51,10 +51,6 @@ public interface PropertyValues {
 
     interface Recorder {
 
-        String MODE_ACCURATE = "ACCURATE";
-
-        String MODE_ROUGH = "ROUGH";
-
         int MIN_BACKUP_RECORDERS_COUNT = 1;
 
         int MAX_BACKUP_RECORDERS_COUNT = 8;

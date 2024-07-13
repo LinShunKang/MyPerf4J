@@ -2,7 +2,7 @@ package cn.myperf4j.core;
 
 import cn.myperf4j.base.MethodTag;
 import cn.myperf4j.base.metric.MethodMetrics;
-import cn.myperf4j.core.recorder.AccurateRecorder;
+import cn.myperf4j.core.recorder.DefaultRecorder;
 import cn.myperf4j.core.recorder.Recorder;
 import cn.myperf4j.core.recorder.Recorders;
 import org.junit.Assert;
@@ -28,12 +28,12 @@ public class MethodMetricsTest {
     public void init() {
         final MethodTag methodTag = MethodTag.getGeneralInstance("", "Test", "Api", "m1", "");
         final int methodTagId = methodTagMaintainer.addMethodTag(methodTag);
-        recorder = AccurateRecorder.getInstance(methodTagId, 1000, 50);
+        recorder = DefaultRecorder.getInstance(methodTagId, 1000, 50);
     }
 
     @Test
     public void testUniformDistribution() {
-        final Recorder recorder = AccurateRecorder.getInstance(1, 128, 512);
+        final Recorder recorder = DefaultRecorder.getInstance(1, 128, 512);
         final long start = System.nanoTime();
         for (long i = 1; i <= 10000; ++i) {
             recorder.recordTime(start, start + i * 1000 * 1000);
