@@ -92,7 +92,6 @@ public final class ProfilingFilter {
         if (innerClassName.indexOf('$') >= 0) {
             return true;
         }
-
         return isMatch(innerClassName, excludePackagePrefix, excludePackageExp);
     }
 
@@ -112,11 +111,9 @@ public final class ProfilingFilter {
     }
 
     public static void addExcludePackage(String pkg) {
-        if (StrUtils.isEmpty(pkg)) {
-            return;
+        if (StrUtils.isNotEmpty(pkg)) {
+            addPackages(pkg, excludePackagePrefix, excludePackageExp);
         }
-
-        addPackages(pkg, excludePackagePrefix, excludePackageExp);
     }
 
     private static void addPackages(String packages, Set<String> pkgPrefixSet, Set<String> pkgExpSet) {
@@ -143,28 +140,16 @@ public final class ProfilingFilter {
         if (innerClassName == null) {
             return false;
         }
-
         return isMatch(innerClassName, includePackagePrefix, includePackageExp);
     }
 
     public static void addIncludePackage(String pkg) {
-        if (StrUtils.isEmpty(pkg)) {
-            return;
+        if (StrUtils.isNotEmpty(pkg)) {
+            addPackages(pkg, includePackagePrefix, includePackageExp);
         }
-
-        addPackages(pkg, includePackagePrefix, includePackageExp);
-    }
-
-    public static Set<String> getExcludePackagePrefix() {
-        return new HashSet<>(excludePackagePrefix);
-    }
-
-    public static Set<String> getIncludePackagePrefix() {
-        return new HashSet<>(includePackagePrefix);
     }
 
     /**
-     * @param methodName
      * @return : true->需要修改字节码  false->不需要修改字节码
      */
     public static boolean isNotNeedInjectMethod(String methodName) {
@@ -175,30 +160,23 @@ public final class ProfilingFilter {
         if (isSpecialMethod(methodName)) {
             return true;
         }
-
         return excludeMethods.contains(methodName);
     }
 
     private static boolean isSpecialMethod(String methodName) {
-        int symbolIndex = methodName.indexOf('$');
+        final int symbolIndex = methodName.indexOf('$');
         if (symbolIndex < 0) {
             return false;
         }
 
-        int leftParenIndex = methodName.indexOf('(');
+        final int leftParenIndex = methodName.indexOf('(');
         return leftParenIndex < 0 || symbolIndex < leftParenIndex;
     }
 
     public static void addExcludeMethods(String method) {
-        if (method == null) {
-            return;
+        if (method != null) {
+            excludeMethods.add(method.trim());
         }
-
-        excludeMethods.add(method.trim());
-    }
-
-    public static Set<String> getExcludeMethods() {
-        return new HashSet<>(excludeMethods);
     }
 
     public static void addExcludeClassLoader(String classLoader) {
@@ -208,7 +186,7 @@ public final class ProfilingFilter {
     /**
      * 是否是不需要注入的类加载器
      *
-     * @return : true->不需要修改字节码  false->需要修改字节码
+     * @return : true->需要修改字节码  false->不需要修改字节码
      */
     public static boolean isNotNeedInjectClassLoader(String classLoader) {
         return excludeClassLoader.contains(classLoader);

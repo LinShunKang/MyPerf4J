@@ -64,7 +64,6 @@ public final class InfluxDbV2Client implements InfluxDbClient {
                 .readTimeout(builder.readTimeout)
                 .build();
         this.cookie = "";
-
         this.trySignIn();
     }
 
@@ -146,12 +145,7 @@ public final class InfluxDbV2Client implements InfluxDbClient {
         }
 
         try {
-            ASYNC_EXECUTOR.execute(new Runnable() {
-                @Override
-                public void run() {
-                    writeMetricsSync(content);
-                }
-            });
+            ASYNC_EXECUTOR.execute(() -> writeMetricsSync(content));
             return true;
         } catch (Throwable t) {
             Logger.error("InfluxDbV2Client.writeMetricsAsync(): t=" + t.getMessage(), t);

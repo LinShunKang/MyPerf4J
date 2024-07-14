@@ -1,9 +1,9 @@
 package cn.myperf4j.base.metric.exporter.log.standard;
 
 import cn.myperf4j.base.metric.MethodMetrics;
-import cn.myperf4j.base.metric.formatter.standard.StdMethodMetricsFormatter;
-import cn.myperf4j.base.metric.formatter.MethodMetricsFormatter;
 import cn.myperf4j.base.metric.exporter.log.AbstractLogMethodMetricsExporter;
+import cn.myperf4j.base.metric.formatter.MethodMetricsFormatter;
+import cn.myperf4j.base.metric.formatter.standard.StdMethodMetricsFormatter;
 import cn.myperf4j.base.util.Logger;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public class StdLogMethodMetricsExporter extends AbstractLogMethodMetricsExporte
 
     @Override
     public void beforeProcess(long processId, long startMillis, long stopMillis) {
-        metricsMap.put(processId, new ArrayList<MethodMetrics>(64));
+        metricsMap.put(processId, new ArrayList<>(64));
     }
 
     @Override

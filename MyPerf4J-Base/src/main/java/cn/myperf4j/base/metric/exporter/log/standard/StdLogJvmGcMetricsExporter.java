@@ -1,9 +1,9 @@
 package cn.myperf4j.base.metric.exporter.log.standard;
 
 import cn.myperf4j.base.metric.JvmGcMetrics;
+import cn.myperf4j.base.metric.exporter.log.AbstractLogJvmGcMetricsExporter;
 import cn.myperf4j.base.metric.formatter.JvmGcMetricsFormatter;
 import cn.myperf4j.base.metric.formatter.standard.StdJvmGcMetricsFormatter;
-import cn.myperf4j.base.metric.exporter.log.AbstractLogJvmGcMetricsExporter;
 import cn.myperf4j.base.util.Logger;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public class StdLogJvmGcMetricsExporter extends AbstractLogJvmGcMetricsExporter 
 
     @Override
     public void beforeProcess(long processId, long startMillis, long stopMillis) {
-        metricsMap.put(processId, new ArrayList<JvmGcMetrics>(1));
+        metricsMap.put(processId, new ArrayList<>(1));
     }
 
     @Override

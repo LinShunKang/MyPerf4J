@@ -25,7 +25,7 @@ public final class LineProtocolUtils {
      * 用于把tagOrField里的 ','  ' '  '=' 转义为符合LineProtocol的格式
      *
      * @param tagOrField : tag key、tag value、field key
-     * @return: 符合LineProtocol格式的文本
+     * @return 符合LineProtocol格式的文本
      */
     public static String processTagOrField(String tagOrField) {
         String lineProtocol = methodNameMap.get(tagOrField);

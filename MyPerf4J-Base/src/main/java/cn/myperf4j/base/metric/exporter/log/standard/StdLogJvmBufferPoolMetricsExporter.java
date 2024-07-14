@@ -1,9 +1,9 @@
 package cn.myperf4j.base.metric.exporter.log.standard;
 
 import cn.myperf4j.base.metric.JvmBufferPoolMetrics;
+import cn.myperf4j.base.metric.exporter.log.AbstractLogJvmBufferPoolMetricsExporter;
 import cn.myperf4j.base.metric.formatter.JvmBufferPoolMetricsFormatter;
 import cn.myperf4j.base.metric.formatter.standard.StdJvmBufferPoolMetricsFormatter;
-import cn.myperf4j.base.metric.exporter.log.AbstractLogJvmBufferPoolMetricsExporter;
 import cn.myperf4j.base.util.Logger;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public class StdLogJvmBufferPoolMetricsExporter extends AbstractLogJvmBufferPool
 
     @Override
     public void beforeProcess(long processId, long startMillis, long stopMillis) {
-        metricsMap.put(processId, new ArrayList<JvmBufferPoolMetrics>(2));
+        metricsMap.put(processId, new ArrayList<>(2));
     }
 
     @Override

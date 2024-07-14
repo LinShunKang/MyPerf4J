@@ -21,7 +21,7 @@ public final class ListUtils {
             throw new IllegalArgumentException(size + " <= 0");
         }
 
-        if (list == null || list.size() == 0) {
+        if (list == null || list.isEmpty()) {
             return new ArrayList<>(0);
         }
 

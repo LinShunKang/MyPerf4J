@@ -6,7 +6,6 @@ import cn.myperf4j.base.http.HttpRequest;
 import cn.myperf4j.base.http.HttpRespStatus;
 import cn.myperf4j.base.http.HttpResponse;
 import cn.myperf4j.base.util.collections.ArrayUtils;
-import cn.myperf4j.base.util.collections.ListUtils;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -16,6 +15,7 @@ import java.util.List;
 
 import static cn.myperf4j.base.http.HttpMethod.POST;
 import static cn.myperf4j.base.http.HttpStatusClass.SUCCESS;
+import static cn.myperf4j.base.util.collections.ListUtils.isNotEmpty;
 import static cn.myperf4j.base.util.io.InputStreamUtils.toBytes;
 
 /**
@@ -33,11 +33,11 @@ public final class HttpClient {
     }
 
     public HttpResponse execute(HttpRequest request) throws IOException {
-        HttpURLConnection urlConn = createConnection(request);
+        final HttpURLConnection urlConn = createConnection(request);
         urlConn.connect();
 
-        HttpHeaders headers = new HttpHeaders(urlConn.getHeaderFields());
-        HttpRespStatus status = HttpRespStatus.valueOf(urlConn.getResponseCode());
+        final HttpHeaders headers = new HttpHeaders(urlConn.getHeaderFields());
+        final HttpRespStatus status = HttpRespStatus.valueOf(urlConn.getResponseCode());
         if (SUCCESS.contains(status.code())) {
             return new HttpResponse(status, headers, toBytes(urlConn.getInputStream()));
         } else {
@@ -46,12 +46,12 @@ public final class HttpClient {
     }
 
     private HttpURLConnection createConnection(HttpRequest request) throws IOException {
-        URL url = new URL(request.getFullUrl());
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        final URL url = new URL(request.getFullUrl());
+        final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setConnectTimeout(connectTimeout);
         conn.setReadTimeout(readTimeout);
 
-        HttpMethod method = request.getMethod();
+        final HttpMethod method = request.getMethod();
         conn.setRequestMethod(method.getName());
         conn.setDoOutput(method == POST);
         conn.setDoInput(true);
@@ -63,24 +63,20 @@ public final class HttpClient {
     }
 
     private void configureHeaders(HttpRequest request, HttpURLConnection conn) {
-        HttpHeaders headers = request.getHeaders();
-        List<String> names = headers.names();
-        for (int i = 0; i < names.size(); i++) {
-            String name = names.get(i);
-            List<String> values = headers.getValues(name);
-            if (ListUtils.isEmpty(values)) {
-                continue;
-            }
-
-            for (int k = 0; k < values.size(); k++) {
-                conn.addRequestProperty(name, values.get(k));
+        final HttpHeaders headers = request.getHeaders();
+        final List<String> names = headers.names();
+        for (int i = 0, size = names.size(); i < size; i++) {
+            final String name = names.get(i);
+            final List<String> values = headers.getValues(name);
+            if (isNotEmpty(values)) {
+                values.forEach(value -> conn.addRequestProperty(name, value));
             }
         }
     }
 
     private void writeBody(HttpRequest request, HttpURLConnection conn) throws IOException {
-        HttpMethod method = request.getMethod();
-        byte[] body = request.getBody();
+        final HttpMethod method = request.getMethod();
+        final byte[] body = request.getBody();
         if (method.isPermitsBody() && ArrayUtils.isNotEmpty(body)) {
             try (BufferedOutputStream bufferedOs = new BufferedOutputStream(conn.getOutputStream())) {
                 bufferedOs.write(body);

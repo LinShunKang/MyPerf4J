@@ -1,9 +1,9 @@
 package cn.myperf4j.base.metric.exporter.log.standard;
 
 import cn.myperf4j.base.metric.JvmFileDescriptorMetrics;
+import cn.myperf4j.base.metric.exporter.log.AbstractLogJvmFileDescMetricsExporter;
 import cn.myperf4j.base.metric.formatter.JvmFileDescMetricsFormatter;
 import cn.myperf4j.base.metric.formatter.standard.StdJvmFileDescMetricsFormatter;
-import cn.myperf4j.base.metric.exporter.log.AbstractLogJvmFileDescMetricsExporter;
 import cn.myperf4j.base.util.Logger;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public class StdLogJvmFileDescMetricsExporter extends AbstractLogJvmFileDescMetr
 
     @Override
     public void beforeProcess(long processId, long startMillis, long stopMillis) {
-        metricsMap.put(processId, new ArrayList<JvmFileDescriptorMetrics>(1));
+        metricsMap.put(processId, new ArrayList<>(1));
     }
 
     @Override

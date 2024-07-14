@@ -24,7 +24,7 @@ public final class HttpHeaders {
     }
 
     public String get(String name) {
-        List<String> values = headers.get(name);
+        final List<String> values = headers.get(name);
         if (values == null || values.isEmpty()) {
             return null;
         }
@@ -47,12 +47,7 @@ public final class HttpHeaders {
     }
 
     public void add(String name, String value) {
-        List<String> values = headers.get(name);
-        if (values == null) {
-            values = new ArrayList<>(1);
-            headers.put(name, values);
-        }
-        values.add(value);
+        headers.computeIfAbsent(name, k -> new ArrayList<>(1)).add(value);
     }
 
     public List<String> names() {
@@ -64,7 +59,7 @@ public final class HttpHeaders {
     }
 
     public static HttpHeaders defaultHeaders() {
-        HttpHeaders headers = new HttpHeaders(6);
+        final HttpHeaders headers = new HttpHeaders(6);
         headers.set("User-Agent", "MyPerf4J");
         headers.set("Connection", "Keep-Alive");
         headers.set("Charset", UTF_8.name());
