@@ -25,59 +25,43 @@ public final class ProfilingAspect {
 
     public static void profiling(final long startNanos, final int methodTagId) {
         try {
-            if (!running) {
-                Logger.warn("ProfilingAspect.profiling(): methodTagId=" + methodTagId
-                        + ", methodTag=" + MethodTagMaintainer.getInstance().getMethodTag(methodTagId)
-                        + ", startNanos: " + startNanos + ", IGNORED!!!");
-                return;
+            final Recorder recorder;
+            if (running && (recorder = recorderMaintainer.getRecorder(methodTagId)) != null) {
+                recorder.recordTime(startNanos, System.nanoTime());
             }
-
-            final Recorder recorder = recorderMaintainer.getRecorder(methodTagId);
-            if (recorder == null) {
-                Logger.warn("ProfilingAspect.profiling(): methodTagId=" + methodTagId
-                        + ", methodTag=" + MethodTagMaintainer.getInstance().getMethodTag(methodTagId)
-                        + ", startNanos: " + startNanos + ", recorder is null IGNORED!!!");
-                return;
-            }
-
-            recorder.recordTime(startNanos, System.nanoTime());
-        } catch (Exception e) {
+        } catch (Throwable t) {
             Logger.error("ProfilingAspect.profiling(" + startNanos + ", " + methodTagId + ", "
-                    + MethodTagMaintainer.getInstance().getMethodTag(methodTagId) + ")", e);
+                    + MethodTagMaintainer.getInstance().getMethodTag(methodTagId) + ")", t);
         }
     }
 
     //InvocationHandler.invoke(Object proxy, Method method, Object[] args)
     public static void profiling(final long startNanos, final Method method) {
         try {
-            if (!running) {
-                Logger.warn("ProfilingAspect.profiling(): method=" + method + ", startNanos: " + startNanos
-                        + ", IGNORED!!!");
-                return;
+            final int methodTagId;
+            if (running && (methodTagId = methodTagMaintainer.addMethodTag(method)) >= 0) {
+                final Recorder recorder = getRecorder(methodTagId);
+                recorder.recordTime(startNanos, System.nanoTime());
+            }
+        } catch (Throwable t) {
+            Logger.error("ProfilingAspect.profiling(" + startNanos + ", " + method + ")", t);
+        }
+    }
+
+    private static Recorder getRecorder(int methodTagId) {
+        final Recorder recorder = recorderMaintainer.getRecorder(methodTagId);
+        if (recorder != null) {
+            return recorder;
+        }
+
+        synchronized (ProfilingAspect.class) {
+            final Recorder newRec = recorderMaintainer.getRecorder(methodTagId);
+            if (newRec != null) {
+                return newRec;
             }
 
-            final int methodTagId = methodTagMaintainer.addMethodTag(method);
-            if (methodTagId < 0) {
-                Logger.warn("ProfilingAspect.profiling(): method=" + method + ", startNanos: " + startNanos
-                        + ", methodTagId < 0!!!");
-                return;
-            }
-
-            ASMRecorderMaintainer recMaintainer = ProfilingAspect.recorderMaintainer;
-            Recorder recorder = recMaintainer.getRecorder(methodTagId);
-            if (recorder == null) {
-                synchronized (ProfilingAspect.class) {
-                    recorder = recMaintainer.getRecorder(methodTagId);
-                    if (recorder == null) {
-                        recMaintainer.addRecorder(methodTagId, ProfilingParams.of(3000, 10));
-                        recorder = recMaintainer.getRecorder(methodTagId);
-                    }
-                }
-            }
-
-            recorder.recordTime(startNanos, System.nanoTime());
-        } catch (Exception e) {
-            Logger.error("ProfilingAspect.profiling(" + startNanos + ", " + method + ")", e);
+            recorderMaintainer.addRecorder(methodTagId, ProfilingParams.of(3000, 10));
+            return recorderMaintainer.getRecorder(methodTagId);
         }
     }
 
