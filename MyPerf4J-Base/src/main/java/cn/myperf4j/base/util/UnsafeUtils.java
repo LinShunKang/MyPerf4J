@@ -18,24 +18,22 @@ public final class UnsafeUtils {
     }
 
     private static Unsafe generateUnsafe() {
-        sun.misc.Unsafe unsafe = null;
+        Unsafe unsafe = null;
         try {
-            unsafe = AccessController.doPrivileged(new PrivilegedExceptionAction<Unsafe>() {
-                @Override
-                public Unsafe run() throws Exception {
-                    Class<Unsafe> k = Unsafe.class;
-                    for (Field f : k.getDeclaredFields()) {
-                        f.setAccessible(true);
-                        Object x = f.get(null);
-                        if (k.isInstance(x)) {
-                            return k.cast(x);
-                        }
+            unsafe = AccessController.doPrivileged((PrivilegedExceptionAction<Unsafe>) () -> {
+                final Class<Unsafe> k = Unsafe.class;
+                for (Field f : k.getDeclaredFields()) {
+                    f.setAccessible(true);
+
+                    final Object x = f.get(null);
+                    if (k.isInstance(x)) {
+                        return k.cast(x);
                     }
-                    // The sun.misc.Unsafe field does not exist.
-                    return null;
                 }
+                // The sun.misc.Unsafe field does not exist.
+                return null;
             });
-        } catch (Throwable e) {
+        } catch (Throwable t) {
             // Catching Throwable here due to the fact that Google AppEngine raises NoClassDefFoundError
             // for Unsafe.
         }

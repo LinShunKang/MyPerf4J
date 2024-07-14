@@ -3,9 +3,9 @@ package cn.myperf4j.base.metric.exporter.http.influxdb;
 import cn.myperf4j.base.influxdb.InfluxDbClient;
 import cn.myperf4j.base.influxdb.InfluxDbClientFactory;
 import cn.myperf4j.base.metric.JvmThreadMetrics;
+import cn.myperf4j.base.metric.exporter.JvmThreadMetricsExporter;
 import cn.myperf4j.base.metric.formatter.JvmThreadMetricsFormatter;
 import cn.myperf4j.base.metric.formatter.influxdb.InfluxJvmThreadMetricsFormatter;
-import cn.myperf4j.base.metric.exporter.JvmThreadMetricsExporter;
 import cn.myperf4j.base.util.Logger;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class InfluxHttpJvmThreadMetricsExporter implements JvmThreadMetricsExpor
 
     @Override
     public void beforeProcess(long processId, long startMillis, long stopMillis) {
-        metricsMap.put(processId, new ArrayList<JvmThreadMetrics>(1));
+        metricsMap.put(processId, new ArrayList<>(1));
     }
 
     @Override

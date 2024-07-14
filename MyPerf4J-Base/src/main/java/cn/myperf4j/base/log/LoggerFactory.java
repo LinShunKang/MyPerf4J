@@ -2,10 +2,12 @@ package cn.myperf4j.base.log;
 
 import cn.myperf4j.base.config.MetricsConfig;
 import cn.myperf4j.base.config.ProfilingConfig;
-import cn.myperf4j.base.constant.PropertyValues.Metrics;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static cn.myperf4j.base.constant.PropertyValues.Metrics.NULL_FILE;
+import static cn.myperf4j.base.constant.PropertyValues.Metrics.STDOUT_FILE;
 
 public final class LoggerFactory {
 
@@ -14,16 +16,13 @@ public final class LoggerFactory {
     private static final Map<String, ILogger> LOGGER_MAP = new HashMap<>();
 
     static {
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (ILogger writer : LOGGER_MAP.values()) {
-                    writer.preCloseLog();
-                }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            for (ILogger writer : LOGGER_MAP.values()) {
+                writer.preCloseLog();
+            }
 
-                for (ILogger writer : LOGGER_MAP.values()) {
-                    writer.closeLog();
-                }
+            for (ILogger writer : LOGGER_MAP.values()) {
+                writer.closeLog();
             }
         }));
     }
@@ -34,10 +33,9 @@ public final class LoggerFactory {
 
     public static synchronized ILogger getLogger(String logFile) {
         logFile = logFile.trim();
-
-        if (logFile.equalsIgnoreCase(Metrics.NULL_FILE)) {
+        if (logFile.equalsIgnoreCase(NULL_FILE)) {
             return new NullLogger();
-        } else if (logFile.equalsIgnoreCase(Metrics.STDOUT_FILE)) {
+        } else if (logFile.equalsIgnoreCase(STDOUT_FILE)) {
             return new StdoutLogger();
         }
 

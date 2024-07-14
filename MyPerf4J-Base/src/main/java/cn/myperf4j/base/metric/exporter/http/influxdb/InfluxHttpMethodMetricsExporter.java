@@ -3,11 +3,11 @@ package cn.myperf4j.base.metric.exporter.http.influxdb;
 import cn.myperf4j.base.influxdb.InfluxDbClient;
 import cn.myperf4j.base.influxdb.InfluxDbClientFactory;
 import cn.myperf4j.base.metric.MethodMetrics;
+import cn.myperf4j.base.metric.exporter.MethodMetricsExporter;
 import cn.myperf4j.base.metric.formatter.MethodMetricsFormatter;
 import cn.myperf4j.base.metric.formatter.influxdb.InfluxMethodMetricsFormatter;
-import cn.myperf4j.base.metric.exporter.MethodMetricsExporter;
-import cn.myperf4j.base.util.collections.ListUtils;
 import cn.myperf4j.base.util.Logger;
+import cn.myperf4j.base.util.collections.ListUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ public class InfluxHttpMethodMetricsExporter implements MethodMetricsExporter {
 
     @Override
     public void beforeProcess(long processId, long startMillis, long stopMillis) {
-        metricsMap.put(processId, new ArrayList<MethodMetrics>(64));
+        metricsMap.put(processId, new ArrayList<>(64));
     }
 
     @Override

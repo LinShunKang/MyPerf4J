@@ -1,11 +1,12 @@
 package cn.myperf4j.base.http;
 
+import cn.myperf4j.base.util.StrUtils;
 import cn.myperf4j.base.util.collections.ArrayUtils;
 import cn.myperf4j.base.util.collections.MapUtils;
-import cn.myperf4j.base.util.StrUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import static cn.myperf4j.base.http.HttpMethod.GET;
 import static cn.myperf4j.base.http.HttpMethod.HEAD;
@@ -82,7 +83,7 @@ public final class HttpRequest {
     }
 
     private String createFullUrl() {
-        StringBuilder sb = SB_TL.get();
+        final StringBuilder sb = SB_TL.get();
         try {
             if (!url.startsWith("http://") && !url.startsWith("https://")) {
                 sb.append("http://");
@@ -99,11 +100,9 @@ public final class HttpRequest {
                 sb.append('&');
             }
 
-            for (Map.Entry<String, List<String>> param : params.entrySet()) {
+            for (Entry<String, List<String>> param : params.entrySet()) {
                 final List<String> values = param.getValue();
-                for (int i = 0; i < values.size(); i++) {
-                    sb.append(param.getKey()).append('=').append(values.get(i)).append('&');
-                }
+                values.forEach(v -> sb.append(param.getKey()).append('=').append(v).append('&'));
             }
             return sb.substring(0, sb.length() - 1);
         } finally {

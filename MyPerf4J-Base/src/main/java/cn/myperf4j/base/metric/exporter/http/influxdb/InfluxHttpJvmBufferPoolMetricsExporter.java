@@ -3,9 +3,9 @@ package cn.myperf4j.base.metric.exporter.http.influxdb;
 import cn.myperf4j.base.influxdb.InfluxDbClient;
 import cn.myperf4j.base.influxdb.InfluxDbClientFactory;
 import cn.myperf4j.base.metric.JvmBufferPoolMetrics;
+import cn.myperf4j.base.metric.exporter.JvmBufferPoolMetricsExporter;
 import cn.myperf4j.base.metric.formatter.JvmBufferPoolMetricsFormatter;
 import cn.myperf4j.base.metric.formatter.influxdb.InfluxJvmBufferPoolMetricsFormatter;
-import cn.myperf4j.base.metric.exporter.JvmBufferPoolMetricsExporter;
 import cn.myperf4j.base.util.Logger;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class InfluxHttpJvmBufferPoolMetricsExporter implements JvmBufferPoolMetr
 
     @Override
     public void beforeProcess(long processId, long startMillis, long stopMillis) {
-        metricsMap.put(processId, new ArrayList<JvmBufferPoolMetrics>(2));
+        metricsMap.put(processId, new ArrayList<>(2));
     }
 
     @Override

@@ -101,12 +101,7 @@ public final class InfluxDbV1Client implements InfluxDbClient {
         }
 
         try {
-            ASYNC_EXECUTOR.execute(new Runnable() {
-                @Override
-                public void run() {
-                    writeMetricsSync(content);
-                }
-            });
+            ASYNC_EXECUTOR.execute(() -> writeMetricsSync(content));
             return true;
         } catch (Throwable t) {
             Logger.error("InfluxDbV1Client.writeMetricsAsync(): t=" + t.getMessage(), t);

@@ -26,7 +26,7 @@ public class InfluxHttpJvmGcMetricsV3Exporter implements JvmGcMetricsV3Exporter 
 
     @Override
     public void beforeProcess(long processId, long startMillis, long stopMillis) {
-        metricsMap.put(processId, new ArrayList<JvmGcMetricsV3>(1));
+        metricsMap.put(processId, new ArrayList<>(1));
     }
 
     @Override
