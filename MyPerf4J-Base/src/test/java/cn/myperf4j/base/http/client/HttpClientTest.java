@@ -33,12 +33,9 @@ public class HttpClientTest {
     public static void init() {
         server = new SimpleHttpServer.Builder()
                 .port(8686)
-                .dispatcher(new Dispatcher() {
-                    @Override
-                    public HttpResponse dispatch(HttpRequest request) {
-                        System.out.println("Dispatcher.dispatch(): request.body=" + new String(request.getBody()));
-                        return new HttpResponse(OK, new HttpHeaders(0), RESPONSE_BODY.getBytes(UTF_8));
-                    }
+                .dispatcher(request -> {
+                    System.out.println("Dispatcher.dispatch(): request.body=" + new String(request.getBody()));
+                    return new HttpResponse(OK, new HttpHeaders(0), RESPONSE_BODY.getBytes(UTF_8));
                 })
                 .build();
         server.startAsync();

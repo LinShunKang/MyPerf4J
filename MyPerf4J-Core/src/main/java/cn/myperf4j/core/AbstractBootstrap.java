@@ -343,23 +343,15 @@ public abstract class AbstractBootstrap {
     public abstract AbstractRecorderMaintainer doInitRecorderMaintainer();
 
     private boolean initShutDownHook() {
-        try {
-            Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Logger.info("ENTER ShutdownHook...");
-                    try {
-                        ExecutorManager.stopAll(6, TimeUnit.SECONDS);
-                    } finally {
-                        Logger.info("EXIT ShutdownHook...");
-                    }
-                }
-            }));
-            return true;
-        } catch (Exception e) {
-            Logger.error("AbstractBootstrap.initShutDownHook()", e);
-        }
-        return false;
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            Logger.info("ENTER ShutdownHook...");
+            try {
+                ExecutorManager.stopAll(6, TimeUnit.SECONDS);
+            } finally {
+                Logger.info("EXIT ShutdownHook...");
+            }
+        }));
+        return true;
     }
 
     private boolean initScheduler() {

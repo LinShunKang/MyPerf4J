@@ -56,7 +56,7 @@ public class SimpleHttpServer {
                 builder.maxWorkers,
                 1,
                 MINUTES,
-                new ArrayBlockingQueue<Runnable>(builder.acceptCnt),
+                new ArrayBlockingQueue<>(builder.acceptCnt),
                 newThreadFactory("MyPerf4J-HttpServer-"),
                 new DiscardPolicy());
         ExecutorManager.addExecutorService(executor);
@@ -64,12 +64,7 @@ public class SimpleHttpServer {
     }
 
     public void startAsync() {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                start();
-            }
-        });
+        executor.execute(this::start);
     }
 
     /**
@@ -87,12 +82,7 @@ public class SimpleHttpServer {
 
     private static class DispatchHandler implements HttpHandler {
 
-        private static final ThreadLocal<StringBuilder> URL_SB = new ThreadLocal<StringBuilder>() {
-            @Override
-            protected StringBuilder initialValue() {
-                return new StringBuilder(128);
-            }
-        };
+        private static final ThreadLocal<StringBuilder> URL_SB = ThreadLocal.withInitial(() -> new StringBuilder(128));
 
         private final Dispatcher dispatcher;
 
