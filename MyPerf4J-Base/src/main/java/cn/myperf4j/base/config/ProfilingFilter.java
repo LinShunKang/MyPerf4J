@@ -186,7 +186,7 @@ public final class ProfilingFilter {
     /**
      * 是否是不需要注入的类加载器
      *
-     * @return : true->需要修改字节码  false->不需要修改字节码
+     * @return : true->不需要修改字节码  false->需要修改字节码
      */
     public static boolean isNotNeedInjectClassLoader(String classLoader) {
         return excludeClassLoader.contains(classLoader);

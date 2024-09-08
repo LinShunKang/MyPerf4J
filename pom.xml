@@ -4,7 +4,7 @@
     <groupId>MyPerf4J</groupId>
     <artifactId>MyPerf4J</artifactId>
     <packaging>pom</packaging>
-    <version>3.4.0-SNAPSHOT</version>
+    <version>3.4.0</version>
     <modules>
         <module>MyPerf4J-Core</module>
         <module>MyPerf4J-ASM</module>
@@ -14,7 +14,7 @@
     <name>MyPerf4J</name>
 
     <properties>
-        <asm-version>9.6</asm-version>
+        <asm-version>9.7</asm-version>
         <jmh-version>1.37</jmh-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>8</maven.compiler.source>
