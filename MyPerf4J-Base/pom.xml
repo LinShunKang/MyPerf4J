@@ -5,7 +5,7 @@
     <parent>
         <artifactId>MyPerf4J</artifactId>
         <groupId>MyPerf4J</groupId>
-        <version>3.3.0</version>
+        <version>3.4.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>MyPerf4J-Base</artifactId>
