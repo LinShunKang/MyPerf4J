@@ -40,7 +40,7 @@ public class JvmGcMetricsV3 extends Metrics {
 
     @Override
     public String toString() {
-        return "JvmGcV2Metrics{" +
+        return "JvmGcMetricsV3{" +
                 "gcName='" + gcName + '\'' +
                 ", gcCount=" + gcCount +
                 ", gcTime=" + gcTime +

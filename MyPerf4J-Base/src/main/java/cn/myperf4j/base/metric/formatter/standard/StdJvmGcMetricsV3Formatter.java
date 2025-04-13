@@ -20,7 +20,7 @@ public class StdJvmGcMetricsV3Formatter implements JvmGcMetricsV3Formatter {
     @Override
     public String format(List<JvmGcMetricsV3> metricsList, long startMillis, long stopMillis) {
         final StringBuilder sb = new StringBuilder((metricsList.size() + 2) * (9 * 3 + 64));
-        sb.append("MyPerf4J JVM GC MetricsV2 [").append(DateFormatUtils.format(startMillis)).append(", ")
+        sb.append("MyPerf4J JVM GC MetricsV3 [").append(DateFormatUtils.format(startMillis)).append(", ")
                 .append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
         sb.append(String.format(TITLE_FORMAT, "GcName", "GcCount", "GcTime", "AvgGcTime"));
         if (metricsList.isEmpty()) {

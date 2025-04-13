@@ -27,7 +27,7 @@ public class JvmMetricsSchedulerTest extends BaseTest {
         String exporter = Metrics.EXPORTER_LOG_STDOUT;
         JvmClassMetricsExporter classExporter = MetricsExporterFactory.getClassMetricsExporter(exporter);
         JvmGcMetricsExporter gcExporter = MetricsExporterFactory.getGcMetricsExporter(exporter);
-        JvmGcMetricsV3Exporter gcExporterV2 = MetricsExporterFactory.getGcMetricsV3Exporter(exporter);
+        JvmGcMetricsV3Exporter gcExporterV3 = MetricsExporterFactory.getGcMetricsV3Exporter(exporter);
         JvmMemoryMetricsExporter memoryExporter = MetricsExporterFactory.getMemoryMetricsExporter(exporter);
         JvmBufferPoolMetricsExporter bufferPoolExporter = MetricsExporterFactory.getBufferPoolMetricsExporter(exporter);
         JvmThreadMetricsExporter threadExporter = MetricsExporterFactory.getThreadMetricsExporter(exporter);
@@ -36,7 +36,7 @@ public class JvmMetricsSchedulerTest extends BaseTest {
         JvmMetricsScheduler scheduler = new JvmMetricsScheduler(
                 classExporter,
                 gcExporter,
-                gcExporterV2,
+                gcExporterV3,
                 memoryExporter,
                 bufferPoolExporter,
                 threadExporter,
