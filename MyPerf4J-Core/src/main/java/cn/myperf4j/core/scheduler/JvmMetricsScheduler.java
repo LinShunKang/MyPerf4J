@@ -39,7 +39,7 @@ public class JvmMetricsScheduler implements Scheduler {
 
     private final JvmGcMetricsExporter gcMetricsProcessor;
 
-    private final JvmGcMetricsV3Exporter gcMetricsV2Processor;
+    private final JvmGcMetricsV3Exporter gcMetricsV3Processor;
 
     private final JvmMemoryMetricsExporter memoryMetricsProcessor;
 
@@ -53,7 +53,7 @@ public class JvmMetricsScheduler implements Scheduler {
 
     public JvmMetricsScheduler(JvmClassMetricsExporter classMetricsProcessor,
                                JvmGcMetricsExporter gcMetricsProcessor,
-                               JvmGcMetricsV3Exporter gcMetricsV2Processor,
+                               JvmGcMetricsV3Exporter gcMetricsV3Processor,
                                JvmMemoryMetricsExporter memoryMetricsProcessor,
                                JvmBufferPoolMetricsExporter bufferPoolMetricsProcessor,
                                JvmThreadMetricsExporter threadMetricsProcessor,
@@ -61,7 +61,7 @@ public class JvmMetricsScheduler implements Scheduler {
                                JvmFileDescMetricsExporter fileDescProcessor) {
         this.classMetricsProcessor = classMetricsProcessor;
         this.gcMetricsProcessor = gcMetricsProcessor;
-        this.gcMetricsV2Processor = gcMetricsV2Processor;
+        this.gcMetricsV3Processor = gcMetricsV3Processor;
         this.memoryMetricsProcessor = memoryMetricsProcessor;
         this.bufferPoolMetricsProcessor = bufferPoolMetricsProcessor;
         this.threadMetricsProcessor = threadMetricsProcessor;
@@ -74,7 +74,7 @@ public class JvmMetricsScheduler implements Scheduler {
         final long stopMillis = lastTimeSliceStartTime + millTimeSlice;
         processClassMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
         processGCMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
-        processGCMetricsV2(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
+        processGCMetricsV3(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
         processMemoryMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
         processBufferPoolMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
         processThreadMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
@@ -113,18 +113,18 @@ public class JvmMetricsScheduler implements Scheduler {
         }
     }
 
-    private void processGCMetricsV2(long processId, long startMillis, long stopMillis) {
-        gcMetricsV2Processor.beforeProcess(processId, startMillis, stopMillis);
+    private void processGCMetricsV3(long processId, long startMillis, long stopMillis) {
+        gcMetricsV3Processor.beforeProcess(processId, startMillis, stopMillis);
         try {
             final List<JvmGcMetricsV3> metricsList = JvmGcV3Collector.collectGcMetrics();
             for (int i = 0, size = metricsList.size(); i < size; i++) {
-                gcMetricsV2Processor.process(metricsList.get(i), processId, startMillis, stopMillis);
+                gcMetricsV3Processor.process(metricsList.get(i), processId, startMillis, stopMillis);
             }
         } catch (Throwable t) {
-            Logger.error("JvmMetricsScheduler.processGCMetricsV2(" + processId + ", " + startMillis + ", "
+            Logger.error("JvmMetricsScheduler.processGCMetricsV3(" + processId + ", " + startMillis + ", "
                     + stopMillis + ")", t);
         } finally {
-            gcMetricsV2Processor.afterProcess(processId, startMillis, stopMillis);
+            gcMetricsV3Processor.afterProcess(processId, startMillis, stopMillis);
         }
     }
 
