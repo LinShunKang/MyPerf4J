@@ -7,6 +7,7 @@ import cn.myperf4j.base.metric.JvmClassMetrics;
 import cn.myperf4j.base.metric.JvmCompilationMetrics;
 import cn.myperf4j.base.metric.JvmFileDescriptorMetrics;
 import cn.myperf4j.base.metric.JvmGcMetrics;
+import cn.myperf4j.base.metric.JvmGcMetricsV3;
 import cn.myperf4j.base.metric.JvmMemoryMetrics;
 import cn.myperf4j.base.metric.JvmThreadMetrics;
 import cn.myperf4j.base.metric.collector.JvmBufferPoolCollector;
@@ -14,6 +15,7 @@ import cn.myperf4j.base.metric.collector.JvmClassCollector;
 import cn.myperf4j.base.metric.collector.JvmCompilationCollector;
 import cn.myperf4j.base.metric.collector.JvmFileDescCollector;
 import cn.myperf4j.base.metric.collector.JvmGcCollector;
+import cn.myperf4j.base.metric.collector.JvmGcV3Collector;
 import cn.myperf4j.base.metric.collector.JvmMemoryCollector;
 import cn.myperf4j.base.metric.collector.JvmThreadCollector;
 import cn.myperf4j.base.metric.exporter.JvmBufferPoolMetricsExporter;
@@ -21,6 +23,7 @@ import cn.myperf4j.base.metric.exporter.JvmClassMetricsExporter;
 import cn.myperf4j.base.metric.exporter.JvmCompilationMetricsExporter;
 import cn.myperf4j.base.metric.exporter.JvmFileDescMetricsExporter;
 import cn.myperf4j.base.metric.exporter.JvmGcMetricsExporter;
+import cn.myperf4j.base.metric.exporter.JvmGcMetricsV3Exporter;
 import cn.myperf4j.base.metric.exporter.JvmMemoryMetricsExporter;
 import cn.myperf4j.base.metric.exporter.JvmThreadMetricsExporter;
 import cn.myperf4j.base.util.Logger;
@@ -36,6 +39,8 @@ public class JvmMetricsScheduler implements Scheduler {
 
     private final JvmGcMetricsExporter gcMetricsProcessor;
 
+    private final JvmGcMetricsV3Exporter gcMetricsV3Processor;
+
     private final JvmMemoryMetricsExporter memoryMetricsProcessor;
 
     private final JvmBufferPoolMetricsExporter bufferPoolMetricsProcessor;
@@ -48,6 +53,7 @@ public class JvmMetricsScheduler implements Scheduler {
 
     public JvmMetricsScheduler(JvmClassMetricsExporter classMetricsProcessor,
                                JvmGcMetricsExporter gcMetricsProcessor,
+                               JvmGcMetricsV3Exporter gcMetricsV3Processor,
                                JvmMemoryMetricsExporter memoryMetricsProcessor,
                                JvmBufferPoolMetricsExporter bufferPoolMetricsProcessor,
                                JvmThreadMetricsExporter threadMetricsProcessor,
@@ -55,6 +61,7 @@ public class JvmMetricsScheduler implements Scheduler {
                                JvmFileDescMetricsExporter fileDescProcessor) {
         this.classMetricsProcessor = classMetricsProcessor;
         this.gcMetricsProcessor = gcMetricsProcessor;
+        this.gcMetricsV3Processor = gcMetricsV3Processor;
         this.memoryMetricsProcessor = memoryMetricsProcessor;
         this.bufferPoolMetricsProcessor = bufferPoolMetricsProcessor;
         this.threadMetricsProcessor = threadMetricsProcessor;
@@ -67,6 +74,7 @@ public class JvmMetricsScheduler implements Scheduler {
         final long stopMillis = lastTimeSliceStartTime + millTimeSlice;
         processClassMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
         processGCMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
+        processGCMetricsV3(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
         processMemoryMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
         processBufferPoolMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
         processThreadMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
@@ -102,6 +110,21 @@ public class JvmMetricsScheduler implements Scheduler {
                     + stopMillis + ")", t);
         } finally {
             gcMetricsProcessor.afterProcess(processId, startMillis, stopMillis);
+        }
+    }
+
+    private void processGCMetricsV3(long processId, long startMillis, long stopMillis) {
+        gcMetricsV3Processor.beforeProcess(processId, startMillis, stopMillis);
+        try {
+            final List<JvmGcMetricsV3> metricsList = JvmGcV3Collector.collectGcMetrics();
+            for (int i = 0, size = metricsList.size(); i < size; i++) {
+                gcMetricsV3Processor.process(metricsList.get(i), processId, startMillis, stopMillis);
+            }
+        } catch (Throwable t) {
+            Logger.error("JvmMetricsScheduler.processGCMetricsV3(" + processId + ", " + startMillis + ", "
+                    + stopMillis + ")", t);
+        } finally {
+            gcMetricsV3Processor.afterProcess(processId, startMillis, stopMillis);
         }
     }
 

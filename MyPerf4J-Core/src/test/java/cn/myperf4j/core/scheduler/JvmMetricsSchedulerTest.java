@@ -8,6 +8,7 @@ import cn.myperf4j.base.metric.exporter.JvmClassMetricsExporter;
 import cn.myperf4j.base.metric.exporter.JvmCompilationMetricsExporter;
 import cn.myperf4j.base.metric.exporter.JvmFileDescMetricsExporter;
 import cn.myperf4j.base.metric.exporter.JvmGcMetricsExporter;
+import cn.myperf4j.base.metric.exporter.JvmGcMetricsV3Exporter;
 import cn.myperf4j.base.metric.exporter.JvmMemoryMetricsExporter;
 import cn.myperf4j.base.metric.exporter.JvmThreadMetricsExporter;
 import cn.myperf4j.base.metric.exporter.MetricsExporterFactory;
@@ -26,6 +27,7 @@ public class JvmMetricsSchedulerTest extends BaseTest {
         String exporter = Metrics.EXPORTER_LOG_STDOUT;
         JvmClassMetricsExporter classExporter = MetricsExporterFactory.getClassMetricsExporter(exporter);
         JvmGcMetricsExporter gcExporter = MetricsExporterFactory.getGcMetricsExporter(exporter);
+        JvmGcMetricsV3Exporter gcExporterV3 = MetricsExporterFactory.getGcMetricsV3Exporter(exporter);
         JvmMemoryMetricsExporter memoryExporter = MetricsExporterFactory.getMemoryMetricsExporter(exporter);
         JvmBufferPoolMetricsExporter bufferPoolExporter = MetricsExporterFactory.getBufferPoolMetricsExporter(exporter);
         JvmThreadMetricsExporter threadExporter = MetricsExporterFactory.getThreadMetricsExporter(exporter);
@@ -34,6 +36,7 @@ public class JvmMetricsSchedulerTest extends BaseTest {
         JvmMetricsScheduler scheduler = new JvmMetricsScheduler(
                 classExporter,
                 gcExporter,
+                gcExporterV3,
                 memoryExporter,
                 bufferPoolExporter,
                 threadExporter,

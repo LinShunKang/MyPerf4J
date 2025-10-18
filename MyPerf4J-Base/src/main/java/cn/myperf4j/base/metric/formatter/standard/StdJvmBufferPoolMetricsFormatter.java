@@ -9,13 +9,13 @@ import java.util.List;
 import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
 
 /**
- * Created by LinShunkang on 1919/8/21
+ * Created by LinShunkang on 2018/8/21
  */
 public class StdJvmBufferPoolMetricsFormatter implements JvmBufferPoolMetricsFormatter {
 
-    private static final String TITLE_FORMAT = "%-19s%19s%19s%19s%n";
+    private static final String TITLE_FORMAT = "%-32s%19s%19s%19s%n";
 
-    private static final String DATA_FORMAT = "%-19s%19d%19d%19d%n";
+    private static final String DATA_FORMAT = "%-32s%19d%19d%19d%n";
 
     @Override
     public String format(List<JvmBufferPoolMetrics> metricsList, long startMillis, long stopMillis) {

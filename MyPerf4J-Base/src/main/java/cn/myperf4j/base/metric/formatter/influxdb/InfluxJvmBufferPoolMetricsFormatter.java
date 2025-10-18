@@ -22,7 +22,7 @@ public class InfluxJvmBufferPoolMetricsFormatter implements JvmBufferPoolMetrics
             for (int i = 0, size = metricsList.size(); i < size; ++i) {
                 appendLineProtocol(metricsList.get(i), startNanos, sb);
             }
-            return sb.substring(0, sb.length() - 1);
+            return sb.substring(0, Math.max(0, sb.length() - 1));
         } finally {
             sb.setLength(0);
         }
