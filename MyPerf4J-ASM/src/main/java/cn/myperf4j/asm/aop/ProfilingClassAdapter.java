@@ -26,6 +26,8 @@ import static org.objectweb.asm.Opcodes.ASM9;
  */
 public class ProfilingClassAdapter extends ClassVisitor {
 
+    private static final String JAVA_INVOCATION_HANDLER = "java/lang/reflect/InvocationHandler";
+
     private final String innerClassName;
 
     private final String fullClassName;
@@ -63,8 +65,8 @@ public class ProfilingClassAdapter extends ClassVisitor {
             return false;
         }
 
-        for (int i = 0, len = interfaces.length; i < len; ++i) {
-            if ("java/lang/reflect/InvocationHandler".equals(interfaces[i])) {
+        for (String inf : interfaces) {
+            if (JAVA_INVOCATION_HANDLER.equals(inf)) {
                 return true;
             }
         }
@@ -132,11 +134,7 @@ public class ProfilingClassAdapter extends ClassVisitor {
         if ("<init>".equals(name) || "<clinit>".equals(name)) {
             return false;
         }
-
-        if (fieldMethods.contains(name) || ProfilingFilter.isNotNeedInjectMethod(name)) {
-            return false;
-        }
-        return true;
+        return !fieldMethods.contains(name) && !ProfilingFilter.isNotNeedInjectMethod(name);
     }
 
     private boolean isInvokeMethod(String methodName, String methodDesc) {

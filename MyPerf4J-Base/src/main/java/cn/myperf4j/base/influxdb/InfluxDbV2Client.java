@@ -74,7 +74,7 @@ public final class InfluxDbV2Client implements InfluxDbClient {
 
     private String buildAuthorization(Builder builder) {
         if (isNotBlank(builder.username) && isNotBlank(builder.password)) {
-            String auth = builder.username + ':' + builder.password;
+            final String auth = builder.username + ':' + builder.password;
             return "Basic " + BASE64_ENCODER.encodeToString(auth.getBytes(UTF_8));
         }
         return "";
