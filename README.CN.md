@@ -6,7 +6,7 @@
 
 一个针对高并发、低延迟应用设计的高性能 Java 性能监控和统计工具。
 
-[![GitHub (pre-)release](https://img.shields.io/github/release/LinShunKang/MyPerf4J/all.svg)](https://github.com/LinShunKang/MyPerf4J) [![Build Status](https://travis-ci.com/LinShunKang/MyPerf4J.svg?branch=develop)](https://travis-ci.com/LinShunKang/MyPerf4J) [![Coverage Status](https://coveralls.io/repos/github/LinShunKang/MyPerf4J/badge.svg?branch=develop)](https://coveralls.io/github/LinShunKang/MyPerf4J?branch=develop) [![GitHub issues](https://img.shields.io/github/issues/LinShunKang/MyPerf4J.svg)](https://github.com/LinShunKang/MyPerf4J/issues) [![GitHub closed issues](https://img.shields.io/github/issues-closed/LinShunKang/MyPerf4J.svg)](https://github.com/LinShunKang/MyPerf4J/issues?q=is%3Aissue+is%3Aclosed) [![GitHub](https://img.shields.io/github/license/LinShunKang/MyPerf4J.svg)](./LICENSE)
+[![GitHub (pre-)release](https://img.shields.io/github/release/LinShunKang/MyPerf4J/all.svg)](https://github.com/LinShunKang/MyPerf4J) [![Build Status](https://app.travis-ci.com/LinShunKang/MyPerf4J.svg?token=ptySgyLwQwqyUv5eCp5Q&branch=develop)](https://app.travis-ci.com/LinShunKang/MyPerf4J) [![Coverage Status](https://coveralls.io/repos/github/LinShunKang/MyPerf4J/badge.svg?branch=develop)](https://coveralls.io/github/LinShunKang/MyPerf4J?branch=develop) [![GitHub issues](https://img.shields.io/github/issues/LinShunKang/MyPerf4J.svg)](https://github.com/LinShunKang/MyPerf4J/issues) [![GitHub closed issues](https://img.shields.io/github/issues-closed/LinShunKang/MyPerf4J.svg)](https://github.com/LinShunKang/MyPerf4J/issues?q=is%3Aissue+is%3Aclosed) [![GitHub](https://img.shields.io/github/license/LinShunKang/MyPerf4J.svg)](./LICENSE)
 
 </div>
 
@@ -42,7 +42,7 @@ MyPerf4J 为每个应用收集数十个监控指标，所有的监控指标都�
 MyPerf4J 采用 JavaAgent 配置方式，**透明化**接入应用，对应用代码完全**没有侵入**。
 
 ### 下载
-* 下载并解压 [MyPerf4J-ASM.zip](https://github.com/LinShunKang/Objects/blob/master/zips/CN/MyPerf4J-ASM-3.5.0.zip?raw=true)
+* 下载并解压 [MyPerf4J-ASM.zip](https://github.com/LinShunKang/Objects/blob/master/zips/CN/MyPerf4J-ASM-3.6.0-SNAPSHOT.zip?raw=true)
 * 阅读解压出的 `README` 文件
 * 修改解压出的 `MyPerf4J.properties` 配置文件中 `app_name`、`metrics.log.xxx` 和 `filter.packages.include` 的配置值
 

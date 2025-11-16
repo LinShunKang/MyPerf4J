@@ -21,10 +21,9 @@ public final class StrMatchUtils {
         int strIndex = 0;
         int expIndex = 0;
         int starIndex = -1; //记录上一个 '*' 的位置
-
         while (strIndex < str.length()) {
-            char pkgChar = str.charAt(strIndex);
-            char expChar = expIndex < exp.length() ? exp.charAt(expIndex) : '\0';
+            final char pkgChar = str.charAt(strIndex);
+            final char expChar = expIndex < exp.length() ? exp.charAt(expIndex) : '\0';
             if (pkgChar == expChar) { //字符相等
                 strIndex++;
                 expIndex++;

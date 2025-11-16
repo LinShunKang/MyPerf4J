@@ -8,10 +8,6 @@ import java.util.List;
  */
 public final class ListUtils {
 
-    private ListUtils() {
-        //empty
-    }
-
     public static <T> boolean isEmpty(List<T> list) {
         return list == null || list.isEmpty();
     }
@@ -43,5 +39,9 @@ public final class ListUtils {
 
         final int toIndex = Math.min(list.size(), fromIndex + limit);
         return list.subList(fromIndex, toIndex);
+    }
+
+    private ListUtils() {
+        //empty
     }
 }

@@ -16,6 +16,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import static cn.myperf4j.base.http.HttpStatusClass.INFORMATIONAL;
 import static cn.myperf4j.base.http.HttpStatusClass.SUCCESS;
+import static cn.myperf4j.base.util.StrUtils.isNotBlank;
 import static cn.myperf4j.base.util.concurrent.ThreadUtils.newThreadFactory;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.concurrent.TimeUnit.MINUTES;
@@ -48,10 +49,6 @@ public final class InfluxDbV2Client implements InfluxDbClient {
 
     private final String writeReqUrl;
 
-    private final String username;
-
-    private final String password;
-
     private final String authorization;
 
     private final HttpClient httpClient;
@@ -61,8 +58,6 @@ public final class InfluxDbV2Client implements InfluxDbClient {
     public InfluxDbV2Client(Builder builder) {
         this.url = "http://" + builder.host + ":" + builder.port;
         this.writeReqUrl = buildWriteReqUrl(builder);
-        this.username = builder.username;
-        this.password = builder.password;
         this.authorization = buildAuthorization(builder);
         this.httpClient = new HttpClient.Builder()
                 .connectTimeout(builder.connectTimeout)
@@ -78,15 +73,15 @@ public final class InfluxDbV2Client implements InfluxDbClient {
     }
 
     private String buildAuthorization(Builder builder) {
-        if (StrUtils.isNotBlank(builder.username) && StrUtils.isNotBlank(builder.password)) {
-            String auth = username + ':' + password;
+        if (isNotBlank(builder.username) && isNotBlank(builder.password)) {
+            final String auth = builder.username + ':' + builder.password;
             return "Basic " + BASE64_ENCODER.encodeToString(auth.getBytes(UTF_8));
         }
         return "";
     }
 
     private boolean trySignIn() {
-        if (StrUtils.isNotBlank(this.cookie)) {
+        if (isNotBlank(this.cookie)) {
             return true;
         }
 
@@ -137,7 +132,7 @@ public final class InfluxDbV2Client implements InfluxDbClient {
                         + ", reqBody=" + content);
             }
         } catch (IOException e) {
-            Logger.warn("InfluxDbV2Client.writeMetricsSync() catch IOException: " + e.getMessage());
+            Logger.warn("InfluxDbV2Client.writeMetricsSync() catch IOException!", e);
         } catch (Throwable t) {
             Logger.error("InfluxDbV2Client.writeMetricsSync() catch Exception!", t);
         }

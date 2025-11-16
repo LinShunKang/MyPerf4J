@@ -21,15 +21,15 @@ public final class NumFormatUtils {
         }
     };
 
-    private NumFormatUtils() {
-        //empty
-    }
-
     public static String doubleFormat(double num) {
         return DECIMAL_FORMAT.get().format(num);
     }
 
     public static String doublePercent(double num) {
         return PERCENT_FORMAT.get().format(num);
+    }
+
+    private NumFormatUtils() {
+        //empty
     }
 }

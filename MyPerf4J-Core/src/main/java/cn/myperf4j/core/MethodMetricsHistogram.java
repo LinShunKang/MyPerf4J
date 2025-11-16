@@ -11,7 +11,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -58,7 +58,7 @@ public final class MethodMetricsHistogram {
 
             final List<Integer> neverInvokedMethods = new ArrayList<>(128);
             final MethodTagMaintainer tagMaintainer = MethodTagMaintainer.getInstance();
-            for (Map.Entry<Integer, MethodMetricsInfo> entry : METHOD_MAP.entrySet()) {
+            for (Entry<Integer, MethodMetricsInfo> entry : METHOD_MAP.entrySet()) {
                 final Integer methodId = entry.getKey();
                 final MethodMetricsInfo info = entry.getValue();
                 if (info.getCount() <= 0) {

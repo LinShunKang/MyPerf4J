@@ -5,15 +5,15 @@ package cn.myperf4j.base.util.collections;
  */
 public final class ArrayUtils {
 
-    private ArrayUtils() {
-        //empty
-    }
-
     public static boolean isEmpty(byte[] arr) {
         return arr == null || arr.length <= 0;
     }
 
     public static boolean isNotEmpty(byte[] arr) {
         return !isEmpty(arr);
+    }
+
+    private ArrayUtils() {
+        //empty
     }
 }

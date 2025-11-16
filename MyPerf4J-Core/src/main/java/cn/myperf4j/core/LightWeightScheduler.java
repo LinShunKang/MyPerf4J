@@ -88,14 +88,14 @@ public final class LightWeightScheduler {
     }
 
     private void runAllTasks(long currentMills) {
-        long lastTimeSliceStartTime = currentMills - millTimeSlice;
+        final long lastTimeSliceStartTime = currentMills - millTimeSlice;
         for (int i = 0; i < schedulerList.size(); ++i) {
             runTask(schedulerList.get(i), lastTimeSliceStartTime);
         }
     }
 
     private void runTask(Scheduler scheduler, long lastTimeSliceStartTime) {
-        long startMills = System.currentTimeMillis();
+        final long startMills = System.currentTimeMillis();
         try {
             scheduler.run(lastTimeSliceStartTime, millTimeSlice);
         } catch (Exception e) {
@@ -105,5 +105,4 @@ public final class LightWeightScheduler {
                     + ") cost: " + (System.currentTimeMillis() - startMills) + "ms");
         }
     }
-
 }
