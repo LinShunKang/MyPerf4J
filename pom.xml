@@ -4,7 +4,7 @@
     <groupId>MyPerf4J</groupId>
     <artifactId>MyPerf4J</artifactId>
     <packaging>pom</packaging>
-    <version>3.5.0</version>
+    <version>3.6.0</version>
     <modules>
         <module>MyPerf4J-Core</module>
         <module>MyPerf4J-ASM</module>
@@ -14,7 +14,7 @@
     <name>MyPerf4J</name>
 
     <properties>
-        <asm-version>9.7</asm-version>
+        <asm-version>9.9</asm-version>
         <jmh-version>1.37</jmh-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>8</maven.compiler.source>
@@ -153,7 +153,7 @@
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>9.3</version>
+                        <version>10.12.4</version>
                     </dependency>
 
                     <dependency>

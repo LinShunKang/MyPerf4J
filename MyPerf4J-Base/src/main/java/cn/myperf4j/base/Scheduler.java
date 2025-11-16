@@ -12,5 +12,4 @@ public interface Scheduler {
     void run(long lastTimeSliceStartTime, long millTimeSlice);
 
     String name();
-
 }

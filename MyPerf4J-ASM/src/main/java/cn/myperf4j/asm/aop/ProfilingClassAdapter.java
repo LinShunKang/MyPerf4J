@@ -9,16 +9,24 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-import static org.objectweb.asm.Opcodes.*;
+import static org.objectweb.asm.Opcodes.ACC_ABSTRACT;
+import static org.objectweb.asm.Opcodes.ACC_BRIDGE;
+import static org.objectweb.asm.Opcodes.ACC_INTERFACE;
+import static org.objectweb.asm.Opcodes.ACC_NATIVE;
+import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
+import static org.objectweb.asm.Opcodes.ACC_SYNTHETIC;
+import static org.objectweb.asm.Opcodes.ASM9;
 
 /**
  * Created by LinShunkang on 2018/4/15
  */
 public class ProfilingClassAdapter extends ClassVisitor {
+
+    private static final String JAVA_INVOCATION_HANDLER = "java/lang/reflect/InvocationHandler";
 
     private final String innerClassName;
 
@@ -32,7 +40,7 @@ public class ProfilingClassAdapter extends ClassVisitor {
 
     private boolean isInvocationHandler;
 
-    private final List<String> fieldNameList = new ArrayList<>();
+    private final Set<String> fieldMethods = new HashSet<>();
 
     public ProfilingClassAdapter(final ClassVisitor cv, String innerClassName) {
         super(ASM9, cv);
@@ -53,12 +61,12 @@ public class ProfilingClassAdapter extends ClassVisitor {
     }
 
     private boolean isInvocationHandler(String[] interfaces) {
-        if (interfaces == null || interfaces.length <= 0) {
+        if (interfaces == null) {
             return false;
         }
 
-        for (int i = 0; i < interfaces.length; ++i) {
-            if ("java/lang/reflect/InvocationHandler".equals(interfaces[i])) {
+        for (String inf : interfaces) {
+            if (JAVA_INVOCATION_HANDLER.equals(inf)) {
                 return true;
             }
         }
@@ -67,11 +75,10 @@ public class ProfilingClassAdapter extends ClassVisitor {
 
     @Override
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-        String upFieldName = name.substring(0, 1).toUpperCase() + name.substring(1);
-        fieldNameList.add("get" + upFieldName);
-        fieldNameList.add("set" + upFieldName);
-        fieldNameList.add("is" + upFieldName);
-
+        final String upFieldName = name.substring(0, 1).toUpperCase() + name.substring(1);
+        fieldMethods.add("get" + upFieldName);
+        fieldMethods.add("set" + upFieldName);
+        fieldMethods.add("is" + upFieldName);
         return super.visitField(access, name, desc, signature, value);
     }
 
@@ -85,18 +92,17 @@ public class ProfilingClassAdapter extends ClassVisitor {
             return super.visitMethod(access, name, desc, signature, exceptions);
         }
 
-        String classMethodName = simpleClassName + "." + name;
+        final String classMethodName = simpleClassName + "." + name;
         if (ProfilingFilter.isNotNeedInjectMethod(classMethodName)) {
             return super.visitMethod(access, name, desc, signature, exceptions);
         }
 
-        String desc4Human = TypeDescUtils.getMethodParamsDesc(desc);
-        classMethodName = classMethodName + desc4Human;
-        if (ProfilingFilter.isNotNeedInjectMethod(classMethodName)) {
+        final String desc4Human = TypeDescUtils.getMethodParamsDesc(desc);
+        if (ProfilingFilter.isNotNeedInjectMethod(classMethodName + desc4Human)) {
             return super.visitMethod(access, name, desc, signature, exceptions);
         }
 
-        MethodVisitor mv = cv.visitMethod(access, name, desc, signature, exceptions);
+        final MethodVisitor mv = cv.visitMethod(access, name, desc, signature, exceptions);
         if (mv == null) {
             return null;
         }
@@ -128,12 +134,7 @@ public class ProfilingClassAdapter extends ClassVisitor {
         if ("<init>".equals(name) || "<clinit>".equals(name)) {
             return false;
         }
-
-        if (fieldNameList.contains(name) || ProfilingFilter.isNotNeedInjectMethod(name)) {
-            return false;
-        }
-
-        return true;
+        return !fieldMethods.contains(name) && !ProfilingFilter.isNotNeedInjectMethod(name);
     }
 
     private boolean isInvokeMethod(String methodName, String methodDesc) {
