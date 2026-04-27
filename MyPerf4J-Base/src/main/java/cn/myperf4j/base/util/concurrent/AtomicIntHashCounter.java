@@ -19,11 +19,11 @@ public class AtomicIntHashCounter implements IntHashCounter {
 
     private static final Unsafe UNSAFE = UnsafeUtils.getUnsafe();
 
-    private static final int I_BASE = Unsafe.ARRAY_INT_BASE_OFFSET;
+    private static final int L_BASE = Unsafe.ARRAY_LONG_BASE_OFFSET;
 
-    private static final int I_SCALE = Unsafe.ARRAY_INT_INDEX_SCALE;
+    private static final int L_SCALE = Unsafe.ARRAY_LONG_INDEX_SCALE;
 
-    private static final int I_SHIFT = 31 - Integer.numberOfLeadingZeros(I_SCALE);
+    private static final int L_SHIFT = 31 - Integer.numberOfLeadingZeros(L_SCALE);
 
     private static final long IHC_OFFSET = fieldOffset(AtomicIntHashCounter.class, "ihc");
 
@@ -48,7 +48,7 @@ public class AtomicIntHashCounter implements IntHashCounter {
     private static final int TOMB_PRIME = MIN_VALUE;
 
     static {
-        if ((I_SCALE & (I_SCALE - 1)) != 0) {
+        if ((L_SCALE & (L_SCALE - 1)) != 0) {
             throw new Error("data type scale not a power of two");
         }
     }
@@ -168,12 +168,11 @@ public class AtomicIntHashCounter implements IntHashCounter {
         }
 
         final IHC topIhc = finishCopy();
-        final int[] kvs = topIhc.kvs;
-        for (int k = 0, len = kvs.length; k < len; k += 2) {
-            final int value = kvs[k + 1];
-            if (value > 0) {
-                longBuf.write(kvs[k], value);
-                totalCount += value;
+        for (final long kv : topIhc.kvs) {
+            final int v = parseValue(kv);
+            if (v != 0) {
+                longBuf.write(parseKey(kv), v);
+                totalCount += v;
             }
         }
 
@@ -228,17 +227,17 @@ public class AtomicIntHashCounter implements IntHashCounter {
 
         private volatile long copyIdx;
 
-        private final int[] kvs;
-
         private final int len;
+
+        private final long[] kvs;
 
         private final int reProbeLimit;
 
         IHC(AtomicIntHashCounter aihc, int logSize) {
             this.aihc = aihc;
             this.slots = 0;
-            this.kvs = new int[(1 << logSize) << 1];
-            this.len = len(this.kvs);
+            this.len = 1 << logSize;
+            this.kvs = new long[this.len];
             this.reProbeLimit = reProbeLimit(this.len);
         }
 
@@ -248,7 +247,7 @@ public class AtomicIntHashCounter implements IntHashCounter {
             this.resizeThreads = 0L;
             this.copyDone = 0L;
             this.copyIdx = 0L;
-            UNSAFE.setMemory(kvs, byteOffset(0), ((long) kvs.length) * I_SCALE, (byte) 0);
+            UNSAFE.setMemory(kvs, byteOffset(0), ((long) kvs.length) * L_SCALE, (byte) 0);
         }
 
         private boolean casNextIhc(IHC newIhc) {
@@ -256,27 +255,18 @@ public class AtomicIntHashCounter implements IntHashCounter {
         }
 
         private boolean casKv(int idx, long oldKv, long newKv) {
-            return UNSAFE.compareAndSwapLong(kvs, byteOffset(idx << 1), oldKv, newKv);
-        }
-
-        private boolean casValue(int idx, int oldVal, int newVal) {
-            return UNSAFE.compareAndSwapInt(kvs, byteOffset((idx << 1) + 1), oldVal, newVal);
+            return UNSAFE.compareAndSwapLong(kvs, byteOffset(idx), oldKv, newKv);
         }
 
         private long getKv(int idx) {
-            return UNSAFE.getLongVolatile(kvs, byteOffset(idx << 1));
-        }
-
-        private int getValue(int idx) {
-            return UNSAFE.getIntVolatile(kvs, byteOffset((idx << 1) + 1));
+            return UNSAFE.getLongVolatile(kvs, byteOffset(idx));
         }
 
         private int get(final int key) {
             final int lenMask = len - 1;
-            int idx = key & lenMask; // First key hash
-
             long kv;
             int k, reProbeTimes = 0;
+            int idx = key & lenMask; // First key hash
             while (true) {
                 if ((kv = getKv(idx)) == 0L) {
                     return 0; // A clear miss
@@ -352,12 +342,13 @@ public class AtomicIntHashCounter implements IntHashCounter {
                         }
 
                         // Try to increase the value with delta
-                        if (casValue(idx, v, v + delta)) {
+                        if (casKv(idx, kv, composeKv(key, v + delta))) {
                             return v;
                         }
 
                         // CAS failed, get updated value
-                        v = getValue(idx);
+                        kv = getKv(idx);
+                        v = parseValue(kv);
                     }
                 }
 
@@ -527,7 +518,7 @@ public class AtomicIntHashCounter implements IntHashCounter {
     }
 
     private static long byteOffset(int idx) {
-        return ((long) idx << I_SHIFT) + I_BASE;
+        return ((long) idx << L_SHIFT) + L_BASE;
     }
 
     private static long composeKv(int key, int value) {
@@ -552,9 +543,5 @@ public class AtomicIntHashCounter implements IntHashCounter {
 
     private static int reProbeLimit(int len) {
         return RE_PROBE_LIMIT + (len >> 4);
-    }
-
-    private static int len(int[] kvs) {
-        return kvs.length >> 1;
     }
 }
