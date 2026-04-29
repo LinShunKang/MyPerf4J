@@ -45,27 +45,27 @@ import static org.openjdk.jmh.annotations.Mode.Throughput;
  * <p>
  * # Threads: 1 thread
  * Benchmark                                         (mapSize)   Mode  Cnt    Score    Error   Units
- * AtomicIntHashCounterBench.intArray                  1048576  thrpt    5  479.665 ±  9.160  ops/us
- * AtomicIntHashCounterBench.jdkIntegerMap             1048576  thrpt    5   52.057 ±  9.182  ops/us
- * AtomicIntHashCounterBench.scalableIntHashCounter    1048576  thrpt    5  306.693 ± 31.459  ops/us
+ * AtomicIntHashCounterBench.intArray                  1048576  thrpt    5  468.846 ±  1.929  ops/us
+ * AtomicIntHashCounterBench.jdkIntegerMap             1048576  thrpt    5   51.444 ± 12.695  ops/us
+ * AtomicIntHashCounterBench.scalableIntHashCounter    1048576  thrpt    5  295.312 ±  7.982  ops/us
  * <p>
  * # Threads: 2 thread
  * Benchmark                                         (mapSize)   Mode  Cnt    Score    Error   Units
- * AtomicIntHashCounterBench.intArray                  1048576  thrpt    5  715.743 ± 27.729  ops/us
- * AtomicIntHashCounterBench.jdkIntegerMap             1048576  thrpt    5   88.456 ± 33.757  ops/us
- * AtomicIntHashCounterBench.scalableIntHashCounter    1048576  thrpt    5  560.248 ± 51.571  ops/us
+ * AtomicIntHashCounterBench.intArray                  1048576  thrpt    5  705.684 ± 11.277  ops/us
+ * AtomicIntHashCounterBench.jdkIntegerMap             1048576  thrpt    5   98.496 ± 22.287  ops/us
+ * AtomicIntHashCounterBench.scalableIntHashCounter    1048576  thrpt    5  553.091 ± 43.590  ops/us
  * <p>
  * # Threads: 4 thread
- * Benchmark                                         (mapSize)   Mode  Cnt    Score    Error   Units
- * AtomicIntHashCounterBench.intArray                  1048576  thrpt    5  884.382 ± 28.148  ops/us
- * AtomicIntHashCounterBench.jdkIntegerMap             1048576  thrpt    5  161.475 ± 28.986  ops/us
- * AtomicIntHashCounterBench.scalableIntHashCounter    1048576  thrpt    5  861.470 ± 44.142  ops/us
+ * Benchmark                                         (mapSize)   Mode  Cnt    Score     Error   Units
+ * AtomicIntHashCounterBench.intArray                  1048576  thrpt    5  879.251 ±  35.852  ops/us
+ * AtomicIntHashCounterBench.jdkIntegerMap             1048576  thrpt    5  161.563 ±  29.734  ops/us
+ * AtomicIntHashCounterBench.scalableIntHashCounter    1048576  thrpt    5  820.666 ± 101.836  ops/us
  * <p>
  * # Threads: 8 thread
- * Benchmark                                         (mapSize)   Mode  Cnt    Score     Error   Units
- * AtomicIntHashCounterBench.intArray                  1048576  thrpt    5  265.919 ± 167.425  ops/us
- * AtomicIntHashCounterBench.jdkIntegerMap             1048576  thrpt    5  296.200 ±  31.805  ops/us
- * AtomicIntHashCounterBench.scalableIntHashCounter    1048576  thrpt    5  299.786 ±  79.376  ops/us
+ * Benchmark                                         (mapSize)   Mode  Cnt    Score    Error   Units
+ * AtomicIntHashCounterBench.intArray                  1048576  thrpt    5  283.531 ± 36.862  ops/us
+ * AtomicIntHashCounterBench.jdkIntegerMap             1048576  thrpt    5  280.059 ± 35.053  ops/us
+ * AtomicIntHashCounterBench.scalableIntHashCounter    1048576  thrpt    5  298.224 ± 95.668  ops/us
  */
 @Threads(value = 1)
 @State(Scope.Thread)
