@@ -10,25 +10,34 @@ import cn.myperf4j.core.recorder.Recorders;
 import cn.myperf4j.core.recorder.RoughRecorder;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Threads;
+import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
-import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReferenceArray;
+
+import static java.util.concurrent.TimeUnit.MICROSECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.openjdk.jmh.annotations.Mode.Throughput;
 
 /**
  * Created by LinShunkang on 2019/08/31
  */
-@BenchmarkMode({Mode.Throughput})
-@OutputTimeUnit(TimeUnit.SECONDS)
+@Threads(value = 8)
 @State(Scope.Thread)
+@BenchmarkMode(Throughput)
+@OutputTimeUnit(MICROSECONDS)
+@Warmup(iterations = 3, time = 10, timeUnit = SECONDS)
+@Measurement(iterations = 5, time = 10, timeUnit = SECONDS)
+@Fork(value = 2, jvmArgs = {"-server", "-Xmx8G", "-Xms8G", "-Xmn4G"})
 public class MethodMetricsBench {
 
     private Recorders recorders;
@@ -86,12 +95,6 @@ public class MethodMetricsBench {
     }
 
     public static void main(String[] args) throws RunnerException {
-        final Options opt = new OptionsBuilder()
-                .include(MethodMetricsBench.class.getSimpleName())
-                .forks(2)
-                .warmupIterations(3)
-                .measurementIterations(5)
-                .build();
-        new Runner(opt).run();
+        new Runner(new OptionsBuilder().include(MethodMetricsBench.class.getSimpleName()).build()).run();
     }
 }
