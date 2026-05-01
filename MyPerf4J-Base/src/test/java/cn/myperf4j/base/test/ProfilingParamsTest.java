@@ -12,10 +12,9 @@ public class ProfilingParamsTest {
     @Test
     public void test() {
         ProfilingParams params = ProfilingParams.of(1000, 10);
-        Assert.assertEquals(params.getMostTimeThreshold(), 1000);
-        Assert.assertNotEquals(params.getMostTimeThreshold(), -1000);
-
-        Assert.assertEquals(params.getOutThresholdCount(), 10);
-        Assert.assertNotEquals(params.getOutThresholdCount(), -10);
+        Assert.assertEquals(1000, params.mostTimeThreshold());
+        Assert.assertNotEquals(-1000, params.mostTimeThreshold());
+        Assert.assertEquals(10, params.outThresholdCount());
+        Assert.assertNotEquals(-10, params.outThresholdCount());
     }
 }

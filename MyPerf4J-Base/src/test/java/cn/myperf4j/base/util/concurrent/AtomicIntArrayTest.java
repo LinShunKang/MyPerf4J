@@ -1,14 +1,22 @@
 package cn.myperf4j.base.util.concurrent;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
  * Created by LinShunkang on 2020/11/24
  */
-public class AtomicIntArrayTest {
+public abstract class AtomicIntArrayTest {
 
     protected AtomicIntArray atomicIntArray;
+
+    @Before
+    public void setUp() {
+        this.atomicIntArray = createInstance();
+    }
+
+    protected abstract AtomicIntArray createInstance();
 
     @Test
     public void testReset() {

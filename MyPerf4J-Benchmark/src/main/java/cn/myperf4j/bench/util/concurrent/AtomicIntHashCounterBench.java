@@ -1,35 +1,41 @@
 package cn.myperf4j.bench.util.concurrent;
 
-import cn.myperf4j.base.util.concurrent.SimpleAtomicIntArray;
-import cn.myperf4j.base.util.concurrent.IntHashCounter;
 import cn.myperf4j.base.util.concurrent.AtomicIntHashCounter;
+import cn.myperf4j.base.util.concurrent.IntHashCounter;
+import cn.myperf4j.base.util.concurrent.SimpleAtomicIntArray;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Threads;
+import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
-import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static java.util.concurrent.TimeUnit.MICROSECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.openjdk.jmh.annotations.Mode.Throughput;
 
 /**
  * Created by LinShunkang on 2022/03/20
  * <p>
- * # JMH version: 1.34
- * # VM version: JDK 17.0.4, Java HotSpot(TM) 64-Bit Server VM, 17.0.4+11-LTS-179
+ * # CPU: Apple M4 Max
+ * # JMH version: 1.37
+ * # VM version: JDK 17.0.12, Java HotSpot(TM) 64-Bit Server VM, 17.0.12+8-LTS-286
  * # VM invoker: /Library/Java/JavaVirtualMachines/jdk-17.0.4.jdk/Contents/Home/bin/java
- * # VM options: -ea -Xmx8G -Xms8G -Xmn4G
+ * # VM options: -server -Xmx8G -Xms8G -Xmn4G
  * # Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
  * # Warmup: 1 iterations, 10 s each
  * # Measurement: 5 iterations, 10 s each
@@ -39,31 +45,35 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <p>
  * # Threads: 1 thread
  * Benchmark                                         (mapSize)   Mode  Cnt    Score    Error   Units
- * AtomicIntHashCounterBench.intArray                  1048576  thrpt    5  241.139 ±  2.975  ops/us
- * AtomicIntHashCounterBench.jdkIntegerMap             1048576  thrpt    5   13.969 ±  3.741  ops/us
- * AtomicIntHashCounterBench.scalableIntHashCounter    1048576  thrpt    5  184.314 ± 32.741  ops/us
+ * AtomicIntHashCounterBench.intArray                  1048576  thrpt    5  468.846 ±  1.929  ops/us
+ * AtomicIntHashCounterBench.jdkIntegerMap             1048576  thrpt    5   51.444 ± 12.695  ops/us
+ * AtomicIntHashCounterBench.scalableIntHashCounter    1048576  thrpt    5  295.312 ±  7.982  ops/us
  * <p>
  * # Threads: 2 thread
  * Benchmark                                         (mapSize)   Mode  Cnt    Score    Error   Units
- * AtomicIntHashCounterBench.intArray                  1048576  thrpt    5  375.245 ± 23.964  ops/us
- * AtomicIntHashCounterBench.jdkIntegerMap             1048576  thrpt    5   33.437 ±  7.945  ops/us
- * AtomicIntHashCounterBench.scalableIntHashCounter    1048576  thrpt    5  327.925 ± 44.565  ops/us
+ * AtomicIntHashCounterBench.intArray                  1048576  thrpt    5  705.684 ± 11.277  ops/us
+ * AtomicIntHashCounterBench.jdkIntegerMap             1048576  thrpt    5   98.496 ± 22.287  ops/us
+ * AtomicIntHashCounterBench.scalableIntHashCounter    1048576  thrpt    5  553.091 ± 43.590  ops/us
  * <p>
  * # Threads: 4 thread
- * Benchmark                                         (mapSize)   Mode  Cnt    Score    Error   Units
- * AtomicIntHashCounterBench.intArray                  1048576  thrpt    5  532.269 ± 21.093  ops/us
- * AtomicIntHashCounterBench.jdkIntegerMap             1048576  thrpt    5   67.699 ±  2.826  ops/us
- * AtomicIntHashCounterBench.scalableIntHashCounter    1048576  thrpt    5  503.602 ± 61.535  ops/us
+ * Benchmark                                         (mapSize)   Mode  Cnt    Score     Error   Units
+ * AtomicIntHashCounterBench.intArray                  1048576  thrpt    5  879.251 ±  35.852  ops/us
+ * AtomicIntHashCounterBench.jdkIntegerMap             1048576  thrpt    5  161.563 ±  29.734  ops/us
+ * AtomicIntHashCounterBench.scalableIntHashCounter    1048576  thrpt    5  820.666 ± 101.836  ops/us
  * <p>
  * # Threads: 8 thread
- * Benchmark                                         (mapSize)   Mode  Cnt    Score   Error   Units
- * AtomicIntHashCounterBench.intArray                  1048576  thrpt    5   86.101 ± 8.562  ops/us
- * AtomicIntHashCounterBench.jdkIntegerMap             1048576  thrpt    5  133.705 ± 3.813  ops/us
- * AtomicIntHashCounterBench.scalableIntHashCounter    1048576  thrpt    5   86.922 ± 6.591  ops/us
+ * Benchmark                                         (mapSize)   Mode  Cnt    Score    Error   Units
+ * AtomicIntHashCounterBench.intArray                  1048576  thrpt    5  283.531 ± 36.862  ops/us
+ * AtomicIntHashCounterBench.jdkIntegerMap             1048576  thrpt    5  280.059 ± 35.053  ops/us
+ * AtomicIntHashCounterBench.scalableIntHashCounter    1048576  thrpt    5  298.224 ± 95.668  ops/us
  */
-@BenchmarkMode({Mode.Throughput})
-@OutputTimeUnit(TimeUnit.MICROSECONDS)
-@State(Scope.Benchmark)
+@Threads(value = 1)
+@State(Scope.Thread)
+@BenchmarkMode(Throughput)
+@OutputTimeUnit(MICROSECONDS)
+@Warmup(iterations = 1, time = 10, timeUnit = SECONDS)
+@Measurement(iterations = 5, time = 10, timeUnit = SECONDS)
+@Fork(value = 2, jvmArgs = {"-server", "-Xmx8G", "-Xms8G", "-Xmn4G"})
 public class AtomicIntHashCounterBench {
 
     private IntHashCounter intHashCounter;
@@ -123,15 +133,7 @@ public class AtomicIntHashCounterBench {
     }
 
     public static void main(String[] args) throws RunnerException {
-        // 使用一个单独进程执行测试，执行3遍warmup，然后执行5遍测试
-        final Options opt = new OptionsBuilder()
-                .include(AtomicIntHashCounterBench.class.getSimpleName())
-                .forks(1)
-                .threads(1)
-                .warmupIterations(1)
-                .measurementIterations(5)
-                .build();
-        new Runner(opt).run();
+        new Runner(new OptionsBuilder().include(AtomicIntHashCounterBench.class.getSimpleName()).build()).run();
     }
 
     @State(Scope.Thread)
