@@ -13,9 +13,16 @@ import java.util.Date;
 public class DateFormatUtilsTest {
 
     @Test
-    public void test() {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        long mills = System.currentTimeMillis();
-        Assert.assertEquals(DateFormatUtils.format(mills), format.format(new Date(mills)));
+    public void testFormatToSeconds() {
+        final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        final long mills = System.currentTimeMillis();
+        Assert.assertEquals(format.format(new Date(mills)), DateFormatUtils.formatToSeconds(mills));
+    }
+
+    @Test
+    public void testFormatToMillis() {
+        final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        final long mills = System.currentTimeMillis();
+        Assert.assertEquals(format.format(new Date(mills)), DateFormatUtils.formatToMillis(mills));
     }
 }

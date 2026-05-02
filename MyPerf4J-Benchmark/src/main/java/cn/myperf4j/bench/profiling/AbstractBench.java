@@ -23,7 +23,7 @@ public class AbstractBench {
 
     @Setup
     public void setup() {
-        System.out.println("tearDown() starting...");
+        System.out.println("setup() starting...");
 
         final boolean initASMBootstrap = EnvUtils.initASMBootstrap(60 * 1000);
         System.out.println("initASMBootstrap=" + initASMBootstrap);

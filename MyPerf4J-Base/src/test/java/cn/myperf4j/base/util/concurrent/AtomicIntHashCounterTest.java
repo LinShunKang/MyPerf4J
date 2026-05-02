@@ -4,8 +4,6 @@ import cn.myperf4j.base.util.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -47,8 +45,8 @@ public class AtomicIntHashCounterTest {
                 intCounter.addAndGet(j + 1, j + 2);
             }
         }
-        Assert.assertEquals(testTimes, intCounter.size());
 
+        Assert.assertEquals(testTimes, intCounter.size());
         for (int i = 0; i < testTimes; i++) {
             Assert.assertEquals((i + 2) * 2, intCounter.get(i + 1));
         }
@@ -57,13 +55,13 @@ public class AtomicIntHashCounterTest {
     @Test
     public void testSize() {
         final IntHashCounter intCounter = new AtomicIntHashCounter();
-        Assert.assertEquals(intCounter.size(), 0);
+        Assert.assertEquals(0, intCounter.size());
 
         intCounter.addAndGet(1, 2);
-        Assert.assertEquals(intCounter.size(), 1);
+        Assert.assertEquals(1, intCounter.size());
 
         intCounter.addAndGet(2, 2);
-        Assert.assertEquals(intCounter.size(), 2);
+        Assert.assertEquals(2, intCounter.size());
 
         for (int i = 1; i < 5; i++) {
             intCounter.addAndGet(i, i);
@@ -74,7 +72,7 @@ public class AtomicIntHashCounterTest {
     @Test
     public void testReset() {
         final IntHashCounter intCounter = new AtomicIntHashCounter();
-        Assert.assertEquals(intCounter.size(), 0);
+        Assert.assertEquals(0, intCounter.size());
 
         final int testTimes = 10240;
         for (int i = 0; i < testTimes; i++) {
@@ -86,7 +84,7 @@ public class AtomicIntHashCounterTest {
         for (int i = 1; i < testTimes; i++) {
             Assert.assertEquals(0, intCounter.get(i));
         }
-        Assert.assertEquals(intCounter.size(), 0);
+        Assert.assertEquals(0, intCounter.size());
 
         for (int i = 0; i < testTimes; i++) {
             Assert.assertEquals(i + 10, intCounter.addAndGet(i, i + 10));
@@ -127,12 +125,10 @@ public class AtomicIntHashCounterTest {
         mode1(intMap, intArray, integerMap, 4, 16 * 1024);
         mode1(intMap, intArray, integerMap, 1, 64 * 1024);
 
-        for (Entry<Integer, AtomicInteger> entry : integerMap.entrySet()) {
-            final int key = entry.getKey();
-            final AtomicInteger value = entry.getValue();
-            Assert.assertEquals("intArray", value.intValue(), intArray.get(key));
-            Assert.assertEquals("intMap", value.intValue(), intMap.get(key));
-        }
+        integerMap.forEach((k, v) -> {
+            Assert.assertEquals("intArray", v.intValue(), intArray.get(k));
+            Assert.assertEquals("intMap", v.intValue(), intMap.get(k));
+        });
     }
 
     private void mode1(IntHashCounter intMap,
@@ -162,12 +158,11 @@ public class AtomicIntHashCounterTest {
 
     @Test
     public void testMultiThread4HighRace() throws InterruptedException, BrokenBarrierException {
+        int failureTimes = 0;
+        final int testTimes = /* 1024 **/ 1024;
+        final ThreadLocalRandom random = ThreadLocalRandom.current();
         final int threadCnt = Math.max(Runtime.getRuntime().availableProcessors() - 2, 1);
         final ExecutorService executor = Executors.newFixedThreadPool(threadCnt);
-        int failureTimes = 0;
-//        final int testTimes = 1024 * 1024;
-        final int testTimes = 16 * 1024;
-        final ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 0; i < testTimes; i++) {
             System.out.printf("--------------------- Round %d start ---------------------\n", i);
             final int randomKeyBound = random.nextInt(18, 514);
@@ -184,12 +179,11 @@ public class AtomicIntHashCounterTest {
 
     @Test
     public void testMultiThread4LowRace() throws InterruptedException, BrokenBarrierException {
+        int failureTimes = 0;
+        final int testTimes = /* 1024 **/ 1024;
+        final ThreadLocalRandom random = ThreadLocalRandom.current();
         final int threadCnt = Math.max(Runtime.getRuntime().availableProcessors() - 2, 1);
         final ExecutorService executor = Executors.newFixedThreadPool(threadCnt);
-        int failureTimes = 0;
-//        final int testTimes = 1024 * 1024;
-        final int testTimes = 16 * 1024;
-        final ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 0; i < testTimes; i++) {
             System.out.printf("--------------------- Round %d start ---------------------\n", i);
             final int randomKeyBound = random.nextInt(514, 1024 * 1024);
@@ -214,29 +208,26 @@ public class AtomicIntHashCounterTest {
         final ConcurrentMap<Integer, AtomicInteger> integerMap = new ConcurrentHashMap<>(testTimes);
         final CyclicBarrier barrier = new CyclicBarrier(threadCnt + 1);
         for (int i = 0; i < threadCnt; i++) {
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
+            executor.execute(() -> {
+                try {
+                    barrier.await();
+                } catch (InterruptedException | BrokenBarrierException e) {
+                    e.printStackTrace(System.err);
+                }
+
+                try {
+                    final ThreadLocalRandom random = ThreadLocalRandom.current();
+                    for (int k = 0; k < testTimes; k++) {
+                        final int randomKey = random.nextInt(0, randomKeyBound);
+                        final int randomDelta = random.nextInt(1, randomDeltaBound);
+                        intMap.getAndAdd(randomKey, randomDelta);
+                        increase(integerMap, randomKey, randomDelta);
+                    }
+                } finally {
                     try {
                         barrier.await();
                     } catch (InterruptedException | BrokenBarrierException e) {
-                        e.printStackTrace();
-                    }
-
-                    try {
-                        final ThreadLocalRandom random = ThreadLocalRandom.current();
-                        for (int k = 0; k < testTimes; k++) {
-                            final int randomKey = random.nextInt(0, randomKeyBound);
-                            final int randomDelta = random.nextInt(1, randomDeltaBound);
-                            intMap.getAndAdd(randomKey, randomDelta);
-                            increase(integerMap, randomKey, randomDelta);
-                        }
-                    } finally {
-                        try {
-                            barrier.await();
-                        } catch (InterruptedException | BrokenBarrierException e) {
-                            e.printStackTrace();
-                        }
+                        e.printStackTrace(System.err);
                     }
                 }
             });
@@ -250,12 +241,7 @@ public class AtomicIntHashCounterTest {
         barrier.await();
         System.out.printf("Cost %dms, size=%d\n", (System.nanoTime() - start) / 1_000_000L, integerMap.size());
 
-        for (Map.Entry<Integer, AtomicInteger> entry : integerMap.entrySet()) {
-            final int key = entry.getKey();
-            final int expectedVal = entry.getValue().intValue();
-            Assert.assertEquals(expectedVal, intMap.get(key));
-        }
-
+        integerMap.forEach((k, v) -> Assert.assertEquals(v.get(), intMap.get(k)));
         Assert.assertEquals(integerMap.size(), intMap.size());
         System.out.println("Congratulations!");
         return true;

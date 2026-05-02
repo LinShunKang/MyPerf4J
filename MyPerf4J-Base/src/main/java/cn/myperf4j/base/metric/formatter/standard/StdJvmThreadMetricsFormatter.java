@@ -2,11 +2,11 @@ package cn.myperf4j.base.metric.formatter.standard;
 
 import cn.myperf4j.base.metric.JvmThreadMetrics;
 import cn.myperf4j.base.metric.formatter.JvmThreadMetricsFormatter;
-import cn.myperf4j.base.util.text.DateFormatUtils;
 
 import java.util.List;
 
 import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
+import static cn.myperf4j.base.util.text.DateFormatUtils.formatToSeconds;
 
 /**
  * Created by LinShunkang on 2018/8/21
@@ -20,8 +20,8 @@ public class StdJvmThreadMetricsFormatter implements JvmThreadMetricsFormatter {
     @Override
     public String format(List<JvmThreadMetrics> metricsList, long startMillis, long stopMillis) {
         final StringBuilder sb = new StringBuilder((metricsList.size() + 2) * (14 * 10 + 64));
-        sb.append("MyPerf4J JVM Thread Metrics [").append(DateFormatUtils.format(startMillis)).append(", ")
-                .append(DateFormatUtils.format(stopMillis)).append(']').append(LINE_SEPARATOR);
+        sb.append("MyPerf4J JVM Thread Metrics [").append(formatToSeconds(startMillis)).append(", ")
+                .append(formatToSeconds(stopMillis)).append(']').append(LINE_SEPARATOR);
         sb.append(String.format(TITLE_FORMAT, "TotalStarted", "Active", "Peak", "Daemon", "New", "Runnable",
                 "Blocked", "Waiting", "TimedWaiting", "Terminated"));
         if (metricsList.isEmpty()) {

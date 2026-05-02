@@ -6,11 +6,11 @@ import cn.myperf4j.base.util.collections.MapUtils;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import static cn.myperf4j.base.http.HttpMethod.GET;
 import static cn.myperf4j.base.http.HttpMethod.HEAD;
 import static cn.myperf4j.base.http.HttpMethod.POST;
+import static cn.myperf4j.base.util.StrUtils.isNotEmpty;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -76,10 +76,7 @@ public final class HttpRequest {
     }
 
     public String getFullUrl() {
-        if (StrUtils.isNotEmpty(fullUrl)) {
-            return fullUrl;
-        }
-        return fullUrl = createFullUrl();
+        return isNotEmpty(fullUrl) ? fullUrl : (fullUrl = createFullUrl());
     }
 
     private String createFullUrl() {
@@ -88,8 +85,8 @@ public final class HttpRequest {
             if (!url.startsWith("http://") && !url.startsWith("https://")) {
                 sb.append("http://");
             }
-            sb.append(url);
 
+            sb.append(url);
             if (MapUtils.isEmpty(params)) {
                 return sb.toString();
             }
@@ -100,10 +97,7 @@ public final class HttpRequest {
                 sb.append('&');
             }
 
-            for (Entry<String, List<String>> param : params.entrySet()) {
-                final List<String> values = param.getValue();
-                values.forEach(v -> sb.append(param.getKey()).append('=').append(v).append('&'));
-            }
+            params.forEach((k, vs) -> vs.forEach(v -> sb.append(k).append('=').append(v).append('&')));
             return sb.substring(0, sb.length() - 1);
         } finally {
             sb.setLength(0);
@@ -112,10 +106,7 @@ public final class HttpRequest {
 
     public String getParam(String key) {
         final List<String> values = params.get(key);
-        if (values == null) {
-            return null;
-        }
-        return values.get(0);
+        return values != null ? values.get(0) : null;
     }
 
     public Boolean getBoolParam(String key) {

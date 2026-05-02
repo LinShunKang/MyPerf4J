@@ -34,7 +34,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import static cn.myperf4j.base.config.BasicConfig.loadBasicConfig;
 import static cn.myperf4j.base.config.FilterConfig.loadFilterConfig;
@@ -61,6 +60,7 @@ import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getThreadM
 import static cn.myperf4j.base.util.StrUtils.splitAsList;
 import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
 import static cn.myperf4j.base.util.net.NetUtils.isPortAvailable;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * Created by LinShunkang on 2018/4/11
@@ -260,9 +260,7 @@ public abstract class AbstractBootstrap {
                 return true;
             }
 
-            final List<String> mappingPairs = splitAsList(levelMappings, ELE);
-            for (int i = 0; i < mappingPairs.size(); ++i) {
-                final String mappingPair = mappingPairs.get(i);
+            for (String mappingPair : splitAsList(levelMappings, ELE)) {
                 final List<String> pairs = splitAsList(mappingPair, ELE_KV);
                 if (pairs.size() != 2) {
                     Logger.warn("MethodLevelMapping is not correct: " + mappingPair);
@@ -346,7 +344,7 @@ public abstract class AbstractBootstrap {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             Logger.info("ENTER ShutdownHook...");
             try {
-                ExecutorManager.stopAll(6, TimeUnit.SECONDS);
+                ExecutorManager.stopAll(6, SECONDS);
             } finally {
                 Logger.info("EXIT ShutdownHook...");
             }
