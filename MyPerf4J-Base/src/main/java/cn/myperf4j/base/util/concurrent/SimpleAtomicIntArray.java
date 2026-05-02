@@ -6,6 +6,8 @@ import sun.misc.Unsafe;
 
 import java.io.Serializable;
 
+import static cn.myperf4j.base.util.NumUtils.isPowerOfTwo;
+
 /**
  * Created by LinShunkang on 2020/11/24
  */
@@ -13,16 +15,31 @@ public final class SimpleAtomicIntArray implements AtomicIntArray, Serializable 
 
     private static final long serialVersionUID = 4512166855752664301L;
 
-    private static final Unsafe unsafe = UnsafeUtils.getUnsafe();
-    private static final int base = Unsafe.ARRAY_INT_BASE_OFFSET;
-    private static final int scale = Unsafe.ARRAY_INT_INDEX_SCALE;
-    private static final int shift = 31 - Integer.numberOfLeadingZeros(scale);
-    private final int[] array;
+    private static final Unsafe UNSAFE = UnsafeUtils.getUnsafe();
+    private static final int BASE = Unsafe.ARRAY_INT_BASE_OFFSET;
+    private static final int SCALE = Unsafe.ARRAY_INT_INDEX_SCALE;
+    private static final int SHIFT = 31 - Integer.numberOfLeadingZeros(SCALE);
 
     static {
-        if ((scale & (scale - 1)) != 0) {
+        if (!isPowerOfTwo(SCALE)) {
             throw new Error("data type scale not a power of two");
         }
+    }
+
+    private final int[] array;
+
+    public SimpleAtomicIntArray(int length) {
+        this.array = new int[length];
+    }
+
+    @Override
+    public int length() {
+        return array.length;
+    }
+
+    @Override
+    public int get(int index) {
+        return UNSAFE.getIntVolatile(array, checkedByteOffset(index));
     }
 
     private long checkedByteOffset(int i) {
@@ -33,25 +50,7 @@ public final class SimpleAtomicIntArray implements AtomicIntArray, Serializable 
     }
 
     private static long byteOffset(int i) {
-        return ((long) i << shift) + base;
-    }
-
-    public SimpleAtomicIntArray(int length) {
-        array = new int[length];
-    }
-
-    @Override
-    public int length() {
-        return array.length;
-    }
-
-    @Override
-    public int get(int index) {
-        return getRaw(checkedByteOffset(index));
-    }
-
-    private int getRaw(long offset) {
-        return unsafe.getIntVolatile(array, offset);
+        return ((long) i << SHIFT) + BASE;
     }
 
     @Override
@@ -61,7 +60,7 @@ public final class SimpleAtomicIntArray implements AtomicIntArray, Serializable 
 
     @Override
     public int getAndAdd(int index, int delta) {
-        return unsafe.getAndAddInt(array, checkedByteOffset(index), delta);
+        return UNSAFE.getAndAddInt(array, checkedByteOffset(index), delta);
     }
 
     @Override
@@ -76,7 +75,7 @@ public final class SimpleAtomicIntArray implements AtomicIntArray, Serializable 
 
     @Override
     public void reset() {
-        unsafe.setMemory(array, byteOffset(0), (long) array.length * scale, (byte) 0);
+        UNSAFE.setMemory(array, byteOffset(0), (long) array.length * SCALE, (byte) 0);
     }
 
     @Override

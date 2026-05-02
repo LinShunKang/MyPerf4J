@@ -17,14 +17,14 @@ public final class FastAtomicIntArray implements AtomicIntArray, Serializable {
 
     private static final long serialVersionUID = -4361761107900070905L;
 
-    private static final Unsafe unsafe = UnsafeUtils.getUnsafe();
-    private static final int base = Unsafe.ARRAY_INT_BASE_OFFSET;
-    private static final int scale = Unsafe.ARRAY_INT_INDEX_SCALE;
-    private static final int shift = 31 - numberOfLeadingZeros(scale);
-    private static final int falseSharingShift = 31 - numberOfLeadingZeros(64 / scale);
+    private static final Unsafe UNSAFE = UnsafeUtils.getUnsafe();
+    private static final int BASE = Unsafe.ARRAY_INT_BASE_OFFSET;
+    private static final int SCALE = Unsafe.ARRAY_INT_INDEX_SCALE;
+    private static final int SHIFT = 31 - numberOfLeadingZeros(SCALE);
+    private static final int FALSE_SHARING_SHIFT = 31 - numberOfLeadingZeros(64 / SCALE);
 
     static {
-        if (!isPowerOfTwo(scale)) {
+        if (!isPowerOfTwo(SCALE)) {
             throw new Error("data type scale not a power of two");
         }
     }
@@ -35,7 +35,26 @@ public final class FastAtomicIntArray implements AtomicIntArray, Serializable {
 
     private final int actualLength;
 
-    // int[n][m]: [A11,A12,A13,....,A1m, A21,A22,A23,....,A2m, An1,....,Anm]
+    /**
+     * Represents a flattened 2D array structure.
+     * <ul>
+     * <li>{@code n}: shards</li>
+     * <li>{@code m}: length</li>
+     * </ul>
+     * <p><strong>2D Array Structure ({@code int[n][m]}):</strong></p>
+     * <pre>{@code
+     * [
+     * [A11, A12, A13, ... , A1m],
+     * [A21, A22, A23, ... , A2m],
+     * ...
+     * [An1, An2, An3, ... , Anm]
+     * ]
+     * }</pre>
+     * <p><strong>Equivalent 1D Array Structure ({@code int[n * m]}):</strong></p>
+     * <pre>{@code
+     * [A11, A12, A13, ... , A1m, A21, A22, A23, ... , A2m, ... , An1, An2, An3, ... , Anm]
+     * }</pre>
+     */
     private final int[] array;
 
     public FastAtomicIntArray(int length) {
@@ -49,7 +68,7 @@ public final class FastAtomicIntArray implements AtomicIntArray, Serializable {
 
         this.shards = shards;
         this.length = length;
-        this.actualLength = length << (falseSharingShift + (31 - numberOfLeadingZeros(shards)));
+        this.actualLength = length << (FALSE_SHARING_SHIFT + (31 - numberOfLeadingZeros(shards)));
         this.array = new int[actualLength];
     }
 
@@ -61,7 +80,7 @@ public final class FastAtomicIntArray implements AtomicIntArray, Serializable {
     }
 
     private static long byteOffset(int index) {
-        return ((long) index << shift) + base;
+        return ((long) index << SHIFT) + BASE;
     }
 
     @Override
@@ -75,9 +94,13 @@ public final class FastAtomicIntArray implements AtomicIntArray, Serializable {
         final int[] array = this.array;
         final int length = this.length;
         for (int shardIdx = 0; shardIdx < shards; shardIdx++) {
-            result += unsafe.getIntVolatile(array, checkedByteOffset((index + shardIdx * length) << falseSharingShift));
+            result += UNSAFE.getIntVolatile(array, checkedByteOffset(actualIndex(index, shardIdx, length)));
         }
         return result;
+    }
+
+    private static int actualIndex(int index, int shardIdx, int length) {
+        return (index + shardIdx * length) << FALSE_SHARING_SHIFT;
     }
 
     @Override
@@ -88,8 +111,8 @@ public final class FastAtomicIntArray implements AtomicIntArray, Serializable {
     @Override
     public int getAndAdd(int index, int delta) {
         final int shardIdx = (shards - 1) & hash(currentThread().getId());
-        final long byteOffset = checkedByteOffset((index + shardIdx * length) << falseSharingShift);
-        return unsafe.getAndAddInt(array, byteOffset, delta);
+        final long byteOffset = checkedByteOffset(actualIndex(index, shardIdx, length));
+        return UNSAFE.getAndAddInt(array, byteOffset, delta);
     }
 
     private int hash(long threadId) {
@@ -108,7 +131,7 @@ public final class FastAtomicIntArray implements AtomicIntArray, Serializable {
 
     @Override
     public void reset() {
-        unsafe.setMemory(array, byteOffset(0), (long) array.length * scale, (byte) 0);
+        UNSAFE.setMemory(array, byteOffset(0), (long) actualLength * SCALE, (byte) 0);
     }
 
     @Override
