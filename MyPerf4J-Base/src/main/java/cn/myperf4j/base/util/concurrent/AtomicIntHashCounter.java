@@ -6,6 +6,7 @@ import sun.misc.Unsafe;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.concurrent.locks.LockSupport;
 
 import static cn.myperf4j.base.util.NumUtils.isPowerOfTwo;
 import static cn.myperf4j.base.util.UnsafeUtils.fieldOffset;
@@ -60,7 +61,7 @@ public class AtomicIntHashCounter implements IntHashCounter {
     private int size;
 
     // Value for Key: NO_KEY
-    private int val0;
+    private volatile int val0;
 
     public AtomicIntHashCounter() {
         this(MIN_SIZE);
@@ -83,7 +84,7 @@ public class AtomicIntHashCounter implements IntHashCounter {
      */
     private static int tableSizeFor(int cap) {
         final int n = -1 >>> Integer.numberOfLeadingZeros(cap - 1);
-        return (n < 0) ? 1 : (n >= MAX_CAPACITY) ? MAX_CAPACITY : n + 1;
+        return (n < 0) ? MIN_SIZE : (n >= MAX_CAPACITY) ? MAX_CAPACITY : n + 1;
     }
 
     private boolean CAS(final long offset, final Object oldObj, final Object newObj) {
@@ -168,7 +169,8 @@ public class AtomicIntHashCounter implements IntHashCounter {
         }
 
         final IHC topIhc = finishCopy();
-        for (final long kv : topIhc.kvs) {
+        for (int i = 0, length = topIhc.kvs.length; i < length; i++) {
+            final long kv = topIhc.getKv(i);
             final int v = parseValue(kv);
             if (v != 0) {
                 longBuf.write(parseKey(kv), v);
@@ -389,11 +391,7 @@ public class AtomicIntHashCounter implements IntHashCounter {
                 // is ready, or after the timeout in any case.
                 // For now, sleep a tad and see if the 2 guys already trying to make
                 // the table actually get around to making it happen.
-                try {
-                    Thread.sleep(megs);
-                } catch (Exception e) {
-                    //ignore
-                }
+                LockSupport.parkNanos(megs * 1_000_000L);
             }
 
             // Last check, since the 'new' below is expensive and there is a chance

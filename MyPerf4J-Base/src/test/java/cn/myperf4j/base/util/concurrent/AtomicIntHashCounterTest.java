@@ -1,5 +1,6 @@
 package cn.myperf4j.base.util.concurrent;
 
+import cn.myperf4j.base.buffer.LongBuf;
 import cn.myperf4j.base.util.Logger;
 import org.junit.Assert;
 import org.junit.Test;
@@ -114,6 +115,23 @@ public class AtomicIntHashCounterTest {
     }
 
     @Test
+    public void testFillSortedKvs() {
+        final IntHashCounter intCounter = new AtomicIntHashCounter(8);
+        for (int i = 0; i < 16; i++) {
+            intCounter.incrementAndGet(i);
+        }
+
+        try (LongBuf longBuf = new LongBuf(16)) {
+            Assert.assertEquals(16, intCounter.fillSortedKvs(longBuf));
+            for (int i = 0; i < longBuf.writerIndex(); i++) {
+                final long kv = longBuf.getLong(i);
+                Assert.assertEquals("i=" + i, i, (int) kv);
+                Assert.assertEquals("i=" + i, 1, (int) (kv >> 32));
+            }
+        }
+    }
+
+    @Test
     public void testSingleThread() {
         final IntHashCounter intMap = new AtomicIntHashCounter(128 * 1024);
         final AtomicIntegerArray intArray = new AtomicIntegerArray(128 * 1024);
@@ -159,7 +177,7 @@ public class AtomicIntHashCounterTest {
     @Test
     public void testMultiThread4HighRace() throws InterruptedException, BrokenBarrierException {
         int failureTimes = 0;
-        final int testTimes = Integer.getInteger("MyPerf4J.zih.testTimes", 1024);
+        final int testTimes = Integer.getInteger("MyPerf4J.aih.testTimes", 1024);
         final ThreadLocalRandom random = ThreadLocalRandom.current();
         final int threadCnt = Math.max(Runtime.getRuntime().availableProcessors() - 2, 1);
         final ExecutorService executor = Executors.newFixedThreadPool(threadCnt);
@@ -180,7 +198,7 @@ public class AtomicIntHashCounterTest {
     @Test
     public void testMultiThread4LowRace() throws InterruptedException, BrokenBarrierException {
         int failureTimes = 0;
-        final int testTimes = Integer.getInteger("MyPerf4J.zih.testTimes", 1024);
+        final int testTimes = Integer.getInteger("MyPerf4J.aih.testTimes", 1024);
         final ThreadLocalRandom random = ThreadLocalRandom.current();
         final int threadCnt = Math.max(Runtime.getRuntime().availableProcessors() - 2, 1);
         final ExecutorService executor = Executors.newFixedThreadPool(threadCnt);
