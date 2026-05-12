@@ -25,4 +25,12 @@ public final class ConfigKey {
     public static ConfigKey of(String key, String legacyKey) {
         return new ConfigKey(key, legacyKey);
     }
+
+    @Override
+    public String toString() {
+        return "ConfigKey{" +
+                "key='" + key + '\'' +
+                ", legacyKey='" + legacyKey + '\'' +
+                '}';
+    }
 }
