@@ -13,7 +13,7 @@ import cn.myperf4j.base.metric.exporter.JvmMemoryMetricsExporter;
 import cn.myperf4j.base.metric.exporter.JvmThreadMetricsExporter;
 import cn.myperf4j.base.metric.exporter.MetricsExporterFactory;
 import cn.myperf4j.core.BaseTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Created by LinShunkang on 2018/10/19

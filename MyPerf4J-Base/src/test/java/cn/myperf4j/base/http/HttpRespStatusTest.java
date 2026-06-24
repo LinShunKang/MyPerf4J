@@ -1,7 +1,7 @@
 package cn.myperf4j.base.http;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import static cn.myperf4j.base.http.HttpRespStatus.BAD_REQUEST;
 import static cn.myperf4j.base.http.HttpRespStatus.CONTINUE;
@@ -17,14 +17,14 @@ public class HttpRespStatusTest {
 
     @Test
     public void testValueOf() {
-        Assert.assertEquals(CONTINUE, HttpRespStatus.valueOf(100));
-        Assert.assertEquals(OK, HttpRespStatus.valueOf(200));
-        Assert.assertEquals(MULTIPLE_CHOICES, HttpRespStatus.valueOf(300));
-        Assert.assertEquals(MOVED_PERMANENTLY, HttpRespStatus.valueOf(301));
-        Assert.assertEquals(BAD_REQUEST, HttpRespStatus.valueOf(400));
-        Assert.assertEquals(INTERNAL_SERVER_ERROR, HttpRespStatus.valueOf(500));
+        Assertions.assertEquals(CONTINUE, HttpRespStatus.valueOf(100));
+        Assertions.assertEquals(OK, HttpRespStatus.valueOf(200));
+        Assertions.assertEquals(MULTIPLE_CHOICES, HttpRespStatus.valueOf(300));
+        Assertions.assertEquals(MOVED_PERMANENTLY, HttpRespStatus.valueOf(301));
+        Assertions.assertEquals(BAD_REQUEST, HttpRespStatus.valueOf(400));
+        Assertions.assertEquals(INTERNAL_SERVER_ERROR, HttpRespStatus.valueOf(500));
 
-        Assert.assertEquals(100, HttpRespStatus.valueOf(100).code());
-        Assert.assertEquals(200, HttpRespStatus.valueOf(200).code());
+        Assertions.assertEquals(100, HttpRespStatus.valueOf(100).code());
+        Assertions.assertEquals(200, HttpRespStatus.valueOf(200).code());
     }
 }

@@ -4,7 +4,7 @@ import cn.myperf4j.base.file.AutoRollingFileWriter;
 import cn.myperf4j.base.file.DailyRollingFileWriter;
 import cn.myperf4j.base.file.HourlyRollingFileWriter;
 import cn.myperf4j.base.file.MinutelyRollingFileWriter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Created by LinShunkang on 2018/10/17

@@ -1,8 +1,8 @@
 package cn.myperf4j.base.influxdb;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * Created by LinShunkang on 2020/05/19
@@ -10,9 +10,9 @@ import org.junit.Test;
 public class InfluxDbV2ClientTest {
 
     private final InfluxDbV2Client influxDbClient = new InfluxDbV2Client.Builder()
-            .orgName("localhost")
+            .orgName("MyOrg")
             .host("127.0.0.1")
-            .port(8086)
+            .port(8186)
             .connectTimeout(100)
             .readTimeout(1000)
             .database("MyPerf4J")
@@ -22,13 +22,13 @@ public class InfluxDbV2ClientTest {
 
     @Test
     public void testWrite() {
-        Assert.assertTrue(influxDbClient.writeMetricsSync(
+        Assertions.assertTrue(influxDbClient.writeMetricsSync(
                 "cpu_load_short,host=server01,region=us-west value=0.64 1434055562000000000\n" +
                         "cpu_load_short,host=server02,region=us-west value=0.96 1434055562000000000"));
     }
 
-    @After
+    @AfterEach
     public void testClose() {
-        Assert.assertTrue(influxDbClient.close());
+        Assertions.assertTrue(influxDbClient.close());
     }
 }

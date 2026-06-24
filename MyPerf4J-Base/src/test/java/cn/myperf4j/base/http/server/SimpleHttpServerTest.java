@@ -8,10 +8,10 @@ import cn.myperf4j.base.http.HttpResponse;
 import cn.myperf4j.base.http.client.HttpClient;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.util.collections.MapUtils;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -54,12 +54,12 @@ public class SimpleHttpServerTest {
             })
             .build();
 
-    @BeforeClass
+    @BeforeAll
     public static void start() {
         server.startAsync();
     }
 
-    @AfterClass
+    @AfterAll
     public static void stop() {
         server.stop();
     }
@@ -67,12 +67,10 @@ public class SimpleHttpServerTest {
     @Test
     public void test() throws InterruptedException {
         final int TEST_TIMES = 1000;
-        final ExecutorService executor = Executors.newFixedThreadPool(10);
-        final CountDownLatch latch = new CountDownLatch(TEST_TIMES);
-        for (int i = 0; i < TEST_TIMES; i++) {
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
+        try (ExecutorService executor = Executors.newFixedThreadPool(10)) {
+            final CountDownLatch latch = new CountDownLatch(TEST_TIMES);
+            for (int i = 0; i < TEST_TIMES; i++) {
+                executor.execute(() -> {
                     try {
                         long startMillis = System.currentTimeMillis();
                         final HttpResponse response = httpClient.execute(new Builder()
@@ -82,17 +80,16 @@ public class SimpleHttpServerTest {
                                 .build());
                         Logger.info(" Receive response=" + response.getBodyString() +
                                 ", cost=" + (System.currentTimeMillis() - startMillis) + "ms");
-                        Assert.assertEquals(RESP_STR, response.getBodyString());
+                        Assertions.assertEquals(RESP_STR, response.getBodyString());
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        e.printStackTrace(System.err);
                     } finally {
                         latch.countDown();
                     }
-                }
-            });
-        }
+                });
+            }
 
-        latch.await();
-        executor.shutdownNow();
+            latch.await();
+        }
     }
 }

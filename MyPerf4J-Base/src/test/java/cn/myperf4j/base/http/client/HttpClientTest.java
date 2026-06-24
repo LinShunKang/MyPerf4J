@@ -5,10 +5,10 @@ import cn.myperf4j.base.http.HttpRequest;
 import cn.myperf4j.base.http.HttpResponse;
 import cn.myperf4j.base.http.server.SimpleHttpServer;
 import cn.myperf4j.base.util.collections.MapUtils;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.List;
@@ -28,7 +28,7 @@ public class HttpClientTest {
 
     private static SimpleHttpServer server;
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         server = new SimpleHttpServer.Builder()
                 .port(8686)
@@ -40,7 +40,7 @@ public class HttpClientTest {
         server.startAsync();
     }
 
-    @AfterClass
+    @AfterAll
     public static void clean() {
         if (server != null) {
             server.stop();
@@ -80,8 +80,8 @@ public class HttpClientTest {
         for (int i = 0; i < 10; i++) {
             try {
                 final HttpResponse resp = httpClient.execute(req);
-                Assert.assertEquals(OK, resp.getStatus());
-                Assert.assertEquals(RESPONSE_BODY, resp.getBodyString());
+                Assertions.assertEquals(OK, resp.getStatus());
+                Assertions.assertEquals(RESPONSE_BODY, resp.getBodyString());
             } catch (Exception e) {
                 e.printStackTrace(System.err);
             }

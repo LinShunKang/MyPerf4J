@@ -1,7 +1,7 @@
 package cn.myperf4j.base.util;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 
@@ -16,20 +16,20 @@ public class DateUtilsTest {
 
     @Test
     public void testSameDay() {
-        Assert.assertTrue(isSameDay(new Date(), new Date()));
-        Assert.assertFalse(isSameDay(new Date(), new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000)));
+        Assertions.assertTrue(isSameDay(new Date(), new Date()));
+        Assertions.assertFalse(isSameDay(new Date(), new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000)));
     }
 
     @Test
     public void testSameMinute() {
-        Assert.assertTrue(isSameMinute(new Date(), new Date()));
-        Assert.assertFalse(isSameMinute(new Date(), new Date(System.currentTimeMillis() + 60 * 1000)));
+        Assertions.assertTrue(isSameMinute(new Date(), new Date()));
+        Assertions.assertFalse(isSameMinute(new Date(), new Date(System.currentTimeMillis() + 60 * 1000)));
     }
 
     @Test
     public void testSameHour() {
-        Assert.assertTrue(isSameHour(new Date(), new Date()));
-        Assert.assertFalse(isSameHour(new Date(), new Date(System.currentTimeMillis() + 60 * 60 * 1000)));
+        Assertions.assertTrue(isSameHour(new Date(), new Date()));
+        Assertions.assertFalse(isSameHour(new Date(), new Date(System.currentTimeMillis() + 60 * 60 * 1000)));
     }
 
 }

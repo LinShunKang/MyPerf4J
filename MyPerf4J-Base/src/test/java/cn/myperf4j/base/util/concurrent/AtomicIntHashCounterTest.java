@@ -2,8 +2,8 @@ package cn.myperf4j.base.util.concurrent;
 
 import cn.myperf4j.base.buffer.LongBuf;
 import cn.myperf4j.base.util.Logger;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,18 +23,18 @@ public class AtomicIntHashCounterTest {
     @Test
     public void testSimpleIncrease() {
         final IntHashCounter intCounter = new AtomicIntHashCounter(1);
-        Assert.assertEquals(1, intCounter.incrementAndGet(1));
-        Assert.assertEquals(1, intCounter.get(1));
-        Assert.assertEquals(3, intCounter.addAndGet(1, 2));
-        Assert.assertEquals(3, intCounter.get(1));
-        Assert.assertEquals(3, intCounter.getAndIncrement(1));
-        Assert.assertEquals(4, intCounter.get(1));
-        Assert.assertEquals(4, intCounter.getAndAdd(1, 2));
-        Assert.assertEquals(6, intCounter.get(1));
+        Assertions.assertEquals(1, intCounter.incrementAndGet(1));
+        Assertions.assertEquals(1, intCounter.get(1));
+        Assertions.assertEquals(3, intCounter.addAndGet(1, 2));
+        Assertions.assertEquals(3, intCounter.get(1));
+        Assertions.assertEquals(3, intCounter.getAndIncrement(1));
+        Assertions.assertEquals(4, intCounter.get(1));
+        Assertions.assertEquals(4, intCounter.getAndAdd(1, 2));
+        Assertions.assertEquals(6, intCounter.get(1));
 
-        Assert.assertEquals(1, intCounter.size());
+        Assertions.assertEquals(1, intCounter.size());
         intCounter.reset();
-        Assert.assertEquals(0, intCounter.size());
+        Assertions.assertEquals(0, intCounter.size());
     }
 
     @Test
@@ -47,55 +47,55 @@ public class AtomicIntHashCounterTest {
             }
         }
 
-        Assert.assertEquals(testTimes, intCounter.size());
+        Assertions.assertEquals(testTimes, intCounter.size());
         for (int i = 0; i < testTimes; i++) {
-            Assert.assertEquals((i + 2) * 2, intCounter.get(i + 1));
+            Assertions.assertEquals((i + 2) * 2, intCounter.get(i + 1));
         }
     }
 
     @Test
     public void testSize() {
         final IntHashCounter intCounter = new AtomicIntHashCounter();
-        Assert.assertEquals(0, intCounter.size());
+        Assertions.assertEquals(0, intCounter.size());
 
         intCounter.addAndGet(1, 2);
-        Assert.assertEquals(1, intCounter.size());
+        Assertions.assertEquals(1, intCounter.size());
 
         intCounter.addAndGet(2, 2);
-        Assert.assertEquals(2, intCounter.size());
+        Assertions.assertEquals(2, intCounter.size());
 
         for (int i = 1; i < 5; i++) {
             intCounter.addAndGet(i, i);
         }
-        Assert.assertEquals(4, intCounter.size());
+        Assertions.assertEquals(4, intCounter.size());
     }
 
     @Test
     public void testReset() {
         final IntHashCounter intCounter = new AtomicIntHashCounter();
-        Assert.assertEquals(0, intCounter.size());
+        Assertions.assertEquals(0, intCounter.size());
 
         final int testTimes = 10240;
         for (int i = 0; i < testTimes; i++) {
-            Assert.assertEquals(1, intCounter.addAndGet(i, 1));
+            Assertions.assertEquals(1, intCounter.addAndGet(i, 1));
         }
-        Assert.assertEquals(testTimes, intCounter.size());
+        Assertions.assertEquals(testTimes, intCounter.size());
 
         intCounter.reset();
         for (int i = 1; i < testTimes; i++) {
-            Assert.assertEquals(0, intCounter.get(i));
+            Assertions.assertEquals(0, intCounter.get(i));
         }
-        Assert.assertEquals(0, intCounter.size());
+        Assertions.assertEquals(0, intCounter.size());
 
         for (int i = 0; i < testTimes; i++) {
-            Assert.assertEquals(i + 10, intCounter.addAndGet(i, i + 10));
+            Assertions.assertEquals(i + 10, intCounter.addAndGet(i, i + 10));
         }
-        Assert.assertEquals(testTimes, intCounter.size());
+        Assertions.assertEquals(testTimes, intCounter.size());
 
         for (int i = 0; i < testTimes; i++) {
-            Assert.assertEquals(i + 10, intCounter.get(i));
+            Assertions.assertEquals(i + 10, intCounter.get(i));
         }
-        Assert.assertEquals(testTimes, intCounter.size());
+        Assertions.assertEquals(testTimes, intCounter.size());
     }
 
     @Test
@@ -122,11 +122,11 @@ public class AtomicIntHashCounterTest {
         }
 
         try (LongBuf longBuf = new LongBuf(16)) {
-            Assert.assertEquals(16, intCounter.fillSortedKvs(longBuf));
+            Assertions.assertEquals(16, intCounter.fillSortedKvs(longBuf));
             for (int i = 0; i < longBuf.writerIndex(); i++) {
                 final long kv = longBuf.getLong(i);
-                Assert.assertEquals("i=" + i, i, (int) kv);
-                Assert.assertEquals("i=" + i, 1, (int) (kv >> 32));
+                Assertions.assertEquals(i, (int) kv, "i=" + i);
+                Assertions.assertEquals(1, (int) (kv >> 32), "i=" + i);
             }
         }
     }
@@ -144,8 +144,8 @@ public class AtomicIntHashCounterTest {
         mode1(intMap, intArray, integerMap, 1, 64 * 1024);
 
         integerMap.forEach((k, v) -> {
-            Assert.assertEquals("intArray", v.intValue(), intArray.get(k));
-            Assert.assertEquals("intMap", v.intValue(), intMap.get(k));
+            Assertions.assertEquals(v.intValue(), intArray.get(k), "intArray");
+            Assertions.assertEquals(v.intValue(), intMap.get(k), "intMap");
         });
     }
 
@@ -259,8 +259,8 @@ public class AtomicIntHashCounterTest {
         barrier.await();
         System.out.printf("Cost %dms, size=%d\n", (System.nanoTime() - start) / 1_000_000L, integerMap.size());
 
-        integerMap.forEach((k, v) -> Assert.assertEquals(v.get(), intMap.get(k)));
-        Assert.assertEquals(integerMap.size(), intMap.size());
+        integerMap.forEach((k, v) -> Assertions.assertEquals(v.get(), intMap.get(k)));
+        Assertions.assertEquals(integerMap.size(), intMap.size());
         System.out.println("Congratulations!");
         return true;
     }

@@ -1,7 +1,7 @@
 package cn.myperf4j.base.http;
 
 import cn.myperf4j.base.http.server.QueryStringDecoder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;

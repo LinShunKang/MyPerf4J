@@ -1,6 +1,6 @@
 package cn.myperf4j.base.influxdb;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Created by LinShunkang on 2020/05/19
