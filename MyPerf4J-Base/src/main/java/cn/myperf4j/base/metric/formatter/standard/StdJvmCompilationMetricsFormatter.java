@@ -1,7 +1,7 @@
 package cn.myperf4j.base.metric.formatter.standard;
 
 import cn.myperf4j.base.metric.JvmCompilationMetrics;
-import cn.myperf4j.base.metric.formatter.JvmCompilationMetricsFormatter;
+import cn.myperf4j.base.metric.formatter.TextMetricsFormatter;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import static cn.myperf4j.base.util.text.DateFormatUtils.formatToSeconds;
 /**
  * Created by LinShunkang on 2018/8/21
  */
-public final class StdJvmCompilationMetricsFormatter implements JvmCompilationMetricsFormatter {
+public final class StdJvmCompilationMetricsFormatter implements TextMetricsFormatter<JvmCompilationMetrics> {
 
     private static final String TITLE_FORMAT = "%-16s%16s%n";
 
@@ -19,18 +19,19 @@ public final class StdJvmCompilationMetricsFormatter implements JvmCompilationMe
 
     @Override
     public String format(List<JvmCompilationMetrics> metricsList, long startMillis, long stopMillis) {
-        final StringBuilder sb = new StringBuilder((metricsList.size() + 2) * (16 + 24));
-        sb.append("MyPerf4J JVM Compilation Metrics [").append(formatToSeconds(startMillis)).append(", ")
-                .append(formatToSeconds(stopMillis)).append(']').append(LINE_SEPARATOR);
-        sb.append(String.format(TITLE_FORMAT, "Time(ms)", "TotalTime(ms)"));
-        if (metricsList.isEmpty()) {
+        final StringBuilder sb = SB_TL.get();
+        try {
+            sb.append("MyPerf4J JVM Compilation Metrics [").append(formatToSeconds(startMillis)).append(", ")
+                    .append(formatToSeconds(stopMillis)).append(']').append(LINE_SEPARATOR);
+            sb.append(String.format(TITLE_FORMAT, "Time(ms)", "TotalTime(ms)"));
+            metricsList.forEach(m -> sb.append(formatData(m)));
             return sb.toString();
+        } finally {
+            sb.setLength(0);
         }
+    }
 
-        for (int i = 0; i < metricsList.size(); ++i) {
-            final JvmCompilationMetrics metrics = metricsList.get(i);
-            sb.append(String.format(DATA_FORMAT, metrics.getTime(), metrics.getTotalTime()));
-        }
-        return sb.toString();
+    private String formatData(JvmCompilationMetrics m) {
+        return String.format(DATA_FORMAT, m.getTime(), m.getTotalTime());
     }
 }

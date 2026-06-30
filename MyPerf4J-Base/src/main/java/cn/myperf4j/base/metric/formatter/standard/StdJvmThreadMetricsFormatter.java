@@ -1,7 +1,7 @@
 package cn.myperf4j.base.metric.formatter.standard;
 
 import cn.myperf4j.base.metric.JvmThreadMetrics;
-import cn.myperf4j.base.metric.formatter.JvmThreadMetricsFormatter;
+import cn.myperf4j.base.metric.formatter.TextMetricsFormatter;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import static cn.myperf4j.base.util.text.DateFormatUtils.formatToSeconds;
 /**
  * Created by LinShunkang on 2018/8/21
  */
-public class StdJvmThreadMetricsFormatter implements JvmThreadMetricsFormatter {
+public class StdJvmThreadMetricsFormatter implements TextMetricsFormatter<JvmThreadMetrics> {
 
     private static final String TITLE_FORMAT = "%-14s%14s%14s%14s%14s%14s%14s%14s%14s%14s%n";
 
@@ -19,32 +19,31 @@ public class StdJvmThreadMetricsFormatter implements JvmThreadMetricsFormatter {
 
     @Override
     public String format(List<JvmThreadMetrics> metricsList, long startMillis, long stopMillis) {
-        final StringBuilder sb = new StringBuilder((metricsList.size() + 2) * (14 * 10 + 64));
-        sb.append("MyPerf4J JVM Thread Metrics [").append(formatToSeconds(startMillis)).append(", ")
-                .append(formatToSeconds(stopMillis)).append(']').append(LINE_SEPARATOR);
-        sb.append(String.format(TITLE_FORMAT, "TotalStarted", "Active", "Peak", "Daemon", "New", "Runnable",
-                "Blocked", "Waiting", "TimedWaiting", "Terminated"));
-        if (metricsList.isEmpty()) {
+        final StringBuilder sb = SB_TL.get();
+        try {
+            sb.append("MyPerf4J JVM Thread Metrics [").append(formatToSeconds(startMillis)).append(", ")
+                    .append(formatToSeconds(stopMillis)).append(']').append(LINE_SEPARATOR);
+            sb.append(String.format(TITLE_FORMAT, "TotalStarted", "Active", "Peak", "Daemon", "New", "Runnable",
+                    "Blocked", "Waiting", "TimedWaiting", "Terminated"));
+            metricsList.forEach(m -> sb.append(formatData(m)));
             return sb.toString();
+        } finally {
+            sb.setLength(0);
         }
+    }
 
-        for (int i = 0; i < metricsList.size(); ++i) {
-            final JvmThreadMetrics metrics = metricsList.get(i);
-            sb.append(
-                    String.format(DATA_FORMAT,
-                            metrics.getTotalStarted(),
-                            metrics.getActive(),
-                            metrics.getPeak(),
-                            metrics.getDaemon(),
-                            metrics.getNews(),
-                            metrics.getRunnable(),
-                            metrics.getBlocked(),
-                            metrics.getWaiting(),
-                            metrics.getTimedWaiting(),
-                            metrics.getTerminated()
-                    )
-            );
-        }
-        return sb.toString();
+    private String formatData(JvmThreadMetrics m) {
+        return String.format(DATA_FORMAT,
+                m.getTotalStarted(),
+                m.getActive(),
+                m.getPeak(),
+                m.getDaemon(),
+                m.getNews(),
+                m.getRunnable(),
+                m.getBlocked(),
+                m.getWaiting(),
+                m.getTimedWaiting(),
+                m.getTerminated()
+        );
     }
 }

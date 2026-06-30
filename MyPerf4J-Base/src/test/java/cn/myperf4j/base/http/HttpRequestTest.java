@@ -32,7 +32,7 @@ public class HttpRequestTest {
         Assert.assertEquals(MapUtils.of("k2", singletonList("v2")), req.getParams());
 
         Assert.assertEquals(POST, req.getMethod());
-        Assert.assertArrayEquals("abcd".getBytes(UTF_8), req.getBody());
+        Assert.assertArrayEquals("abcd".getBytes(UTF_8), req.getBody().bytes());
     }
 
     @Test
@@ -53,7 +53,7 @@ public class HttpRequestTest {
         Assert.assertEquals(MapUtils.of("k2", singletonList("v2")), req.getParams());
 
         Assert.assertEquals(GET, req.getMethod());
-        Assert.assertArrayEquals("".getBytes(UTF_8), req.getBody());
+        Assert.assertArrayEquals("".getBytes(UTF_8), req.getBody().bytes());
     }
 
     @Test

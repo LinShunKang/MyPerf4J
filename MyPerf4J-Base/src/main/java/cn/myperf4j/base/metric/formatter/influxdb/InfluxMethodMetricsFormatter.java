@@ -2,43 +2,44 @@ package cn.myperf4j.base.metric.formatter.influxdb;
 
 import cn.myperf4j.base.MethodTag;
 import cn.myperf4j.base.config.ProfilingConfig;
+import cn.myperf4j.base.io.Bytes;
+import cn.myperf4j.base.io.BytesBuilder;
 import cn.myperf4j.base.metric.MethodMetrics;
-import cn.myperf4j.base.metric.formatter.MethodMetricsFormatter;
-import cn.myperf4j.base.util.collections.ListUtils;
+import cn.myperf4j.base.metric.formatter.BinaryMetricsFormatter;
 
 import java.util.List;
 
-import static cn.myperf4j.base.util.net.IpUtils.getLocalhostName;
 import static cn.myperf4j.base.util.LineProtocolUtils.processTagOrField;
+import static cn.myperf4j.base.util.collections.ListUtils.isEmpty;
+import static cn.myperf4j.base.util.net.IpUtils.getLocalhostName;
 import static cn.myperf4j.base.util.text.NumFormatUtils.doubleFormat;
 
 /**
  * Created by LinShunkang on 2020/5/17
  */
-public final class InfluxMethodMetricsFormatter implements MethodMetricsFormatter {
+public final class InfluxMethodMetricsFormatter implements BinaryMetricsFormatter<MethodMetrics> {
+
+    private static final Bytes EMPTY_BYTES = Bytes.copy(new byte[0]);
 
     @Override
-    public String format(List<MethodMetrics> metricsList, long startMillis, long stopMillis) {
-        if (ListUtils.isEmpty(metricsList)) {
-            return "";
+    public Bytes format(List<MethodMetrics> metricsList, long startMillis, long stopMillis) {
+        if (isEmpty(metricsList)) {
+            return EMPTY_BYTES;
         }
 
-        final StringBuilder sb = SB_TL.get();
-        try {
+        try (BytesBuilder bb = BB_TL.get()) {
             final long startNanos = startMillis * 1000 * 1000L;
-            for (int i = 0, size = metricsList.size(); i < size; ++i) {
-                appendLineProtocol(metricsList.get(i), startNanos, sb);
+            for (MethodMetrics methodMetrics : metricsList) {
+                appendLineProtocol(methodMetrics, startNanos, bb);
             }
-            return sb.substring(0, Math.max(0, sb.length() - 1));
-        } finally {
-            sb.setLength(0);
+            return bb.toBytes();
         }
     }
 
-    private void appendLineProtocol(MethodMetrics metrics, long startNanos, StringBuilder sb) {
+    private void appendLineProtocol(MethodMetrics metrics, long startNanos, BytesBuilder bb) {
         final MethodTag methodTag = metrics.getMethodTag();
         final String methodDesc = processTagOrField(methodTag.getSimpleDesc());
-        sb.append("method_metrics")
+        bb.append("method_metrics")
                 .append(",AppName=").append(ProfilingConfig.basicConfig().appName())
                 .append(",ClassName=").append(methodTag.getSimpleClassName())
                 .append(",Method=").append(methodDesc)

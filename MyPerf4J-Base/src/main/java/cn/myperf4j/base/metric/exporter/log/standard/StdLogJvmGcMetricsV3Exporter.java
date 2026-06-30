@@ -2,7 +2,6 @@ package cn.myperf4j.base.metric.exporter.log.standard;
 
 import cn.myperf4j.base.metric.JvmGcMetricsV3;
 import cn.myperf4j.base.metric.exporter.log.AbstractLogJvmGcMetricsV3Exporter;
-import cn.myperf4j.base.metric.formatter.JvmGcMetricsV3Formatter;
 import cn.myperf4j.base.metric.formatter.standard.StdJvmGcMetricsV3Formatter;
 import cn.myperf4j.base.util.Logger;
 
@@ -16,7 +15,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class StdLogJvmGcMetricsV3Exporter extends AbstractLogJvmGcMetricsV3Exporter {
 
-    private static final JvmGcMetricsV3Formatter METRICS_FORMATTER = new StdJvmGcMetricsV3Formatter();
+    private static final StdJvmGcMetricsV3Formatter FORMATTER = new StdJvmGcMetricsV3Formatter();
 
     private final ConcurrentMap<Long, List<JvmGcMetricsV3>> metricsMap = new ConcurrentHashMap<>(8);
 
@@ -40,7 +39,7 @@ public class StdLogJvmGcMetricsV3Exporter extends AbstractLogJvmGcMetricsV3Expor
     public void afterProcess(long processId, long startMillis, long stopMillis) {
         final List<JvmGcMetricsV3> metricsList = metricsMap.remove(processId);
         if (metricsList != null) {
-            logger.logAndFlush(METRICS_FORMATTER.format(metricsList, startMillis, stopMillis));
+            logger.logAndFlush(FORMATTER.format(metricsList, startMillis, stopMillis));
         } else {
             Logger.error("StdLogJvmGcMetricsV3Exporter.afterProcess(" + processId + ", " + startMillis + ", "
                     + stopMillis + "): metricsList is null!!!");

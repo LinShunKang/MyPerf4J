@@ -5,7 +5,7 @@ import cn.myperf4j.base.http.HttpMethod;
 import cn.myperf4j.base.http.HttpRequest;
 import cn.myperf4j.base.http.HttpRespStatus;
 import cn.myperf4j.base.http.HttpResponse;
-import cn.myperf4j.base.util.collections.ArrayUtils;
+import cn.myperf4j.base.io.Bytes;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -65,8 +65,7 @@ public final class HttpClient {
     private void configureHeaders(HttpRequest request, HttpURLConnection conn) {
         final HttpHeaders headers = request.getHeaders();
         final List<String> names = headers.names();
-        for (int i = 0, size = names.size(); i < size; i++) {
-            final String name = names.get(i);
+        for (final String name : names) {
             final List<String> values = headers.getValues(name);
             if (isNotEmpty(values)) {
                 values.forEach(value -> conn.addRequestProperty(name, value));
@@ -76,10 +75,10 @@ public final class HttpClient {
 
     private void writeBody(HttpRequest request, HttpURLConnection conn) throws IOException {
         final HttpMethod method = request.getMethod();
-        final byte[] body = request.getBody();
-        if (method.isPermitsBody() && ArrayUtils.isNotEmpty(body)) {
+        final Bytes body = request.getBody();
+        if (method.isPermitsBody() && body.isNotEmpty()) {
             try (BufferedOutputStream bufferedOs = new BufferedOutputStream(conn.getOutputStream())) {
-                bufferedOs.write(body);
+                bufferedOs.write(body.bytes(), 0, body.length());
             }
         }
     }
