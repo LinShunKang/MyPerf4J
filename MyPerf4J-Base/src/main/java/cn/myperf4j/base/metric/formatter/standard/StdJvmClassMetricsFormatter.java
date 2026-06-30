@@ -5,7 +5,6 @@ import cn.myperf4j.base.metric.formatter.TextMetricsFormatter;
 
 import java.util.List;
 
-import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
 import static cn.myperf4j.base.util.text.DateFormatUtils.formatToSeconds;
 
 /**
@@ -13,7 +12,9 @@ import static cn.myperf4j.base.util.text.DateFormatUtils.formatToSeconds;
  */
 public final class StdJvmClassMetricsFormatter implements TextMetricsFormatter<JvmClassMetrics> {
 
-    private static final String TITLE_FORMAT = "%-10s%10s%10s%n";
+    private static final String TITLE_FORMAT = "MyPerf4J JVM Class Metrics [%s, %s]%n";
+
+    private static final String DATA_TITLE_FORMAT = "%-10s%10s%10s%n";
 
     private static final String DATA_FORMAT = "%-10d%10d%10d%n";
 
@@ -21,9 +22,8 @@ public final class StdJvmClassMetricsFormatter implements TextMetricsFormatter<J
     public String format(List<JvmClassMetrics> metricsList, long startMillis, long stopMillis) {
         final StringBuilder sb = SB_TL.get();
         try {
-            sb.append("MyPerf4J JVM Class Metrics [").append(formatToSeconds(startMillis)).append(", ")
-                    .append(formatToSeconds(stopMillis)).append(']').append(LINE_SEPARATOR);
-            sb.append(String.format(TITLE_FORMAT, "Total", "Loaded", "Unloaded"));
+            sb.append(String.format(TITLE_FORMAT, formatToSeconds(startMillis), formatToSeconds(stopMillis)))
+                    .append(String.format(DATA_TITLE_FORMAT, "Total", "Loaded", "Unloaded"));
             metricsList.forEach(m -> sb.append(formatData(m)));
             return sb.toString();
         } finally {

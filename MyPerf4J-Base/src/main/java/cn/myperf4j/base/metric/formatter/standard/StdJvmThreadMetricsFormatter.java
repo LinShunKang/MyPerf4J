@@ -5,7 +5,6 @@ import cn.myperf4j.base.metric.formatter.TextMetricsFormatter;
 
 import java.util.List;
 
-import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
 import static cn.myperf4j.base.util.text.DateFormatUtils.formatToSeconds;
 
 /**
@@ -13,7 +12,9 @@ import static cn.myperf4j.base.util.text.DateFormatUtils.formatToSeconds;
  */
 public class StdJvmThreadMetricsFormatter implements TextMetricsFormatter<JvmThreadMetrics> {
 
-    private static final String TITLE_FORMAT = "%-14s%14s%14s%14s%14s%14s%14s%14s%14s%14s%n";
+    private static final String TITLE_FORMAT = "MyPerf4J JVM Thread Metrics [%s, %s]%n";
+
+    private static final String DATA_TITLE_FORMAT = "%-14s%14s%14s%14s%14s%14s%14s%14s%14s%14s%n";
 
     private static final String DATA_FORMAT = "%-14s%14d%14d%14d%14d%14d%14d%14d%14d%14d%n";
 
@@ -21,10 +22,9 @@ public class StdJvmThreadMetricsFormatter implements TextMetricsFormatter<JvmThr
     public String format(List<JvmThreadMetrics> metricsList, long startMillis, long stopMillis) {
         final StringBuilder sb = SB_TL.get();
         try {
-            sb.append("MyPerf4J JVM Thread Metrics [").append(formatToSeconds(startMillis)).append(", ")
-                    .append(formatToSeconds(stopMillis)).append(']').append(LINE_SEPARATOR);
-            sb.append(String.format(TITLE_FORMAT, "TotalStarted", "Active", "Peak", "Daemon", "New", "Runnable",
-                    "Blocked", "Waiting", "TimedWaiting", "Terminated"));
+            sb.append(String.format(TITLE_FORMAT, formatToSeconds(startMillis), formatToSeconds(stopMillis)))
+                    .append(String.format(DATA_TITLE_FORMAT, "TotalStarted", "Active", "Peak", "Daemon", "New",
+                            "Runnable", "Blocked", "Waiting", "TimedWaiting", "Terminated"));
             metricsList.forEach(m -> sb.append(formatData(m)));
             return sb.toString();
         } finally {

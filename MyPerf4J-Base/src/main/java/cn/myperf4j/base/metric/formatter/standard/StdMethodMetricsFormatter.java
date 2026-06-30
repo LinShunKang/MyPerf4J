@@ -6,7 +6,6 @@ import cn.myperf4j.base.util.text.NumFormatUtils;
 
 import java.util.List;
 
-import static cn.myperf4j.base.util.SysProperties.LINE_SEPARATOR;
 import static cn.myperf4j.base.util.text.DateFormatUtils.formatToSeconds;
 
 /**
@@ -14,17 +13,18 @@ import static cn.myperf4j.base.util.text.DateFormatUtils.formatToSeconds;
  */
 public final class StdMethodMetricsFormatter implements TextMetricsFormatter<MethodMetrics> {
 
+    private static final String TITLE_FORMAT = "MyPerf4J Method Metrics [%s, %s]%n";
+
     @Override
     public String format(List<MethodMetrics> metricsList, long startMillis, long stopMillis) {
         final StringBuilder sb = SB_TL.get();
         try {
             final int maxApiLength = getMaxApiLength(metricsList);
             final String dataTitleFormat = "%-" + maxApiLength + "s%13s%13s%13s%9s%9s%9s%9s%10s%9s%9s%9s%9s%9s%9s%9s%n";
-            sb.append("MyPerf4J Method Metrics [").append(formatToSeconds(startMillis)).append(", ")
-                    .append(formatToSeconds(stopMillis)).append(']').append(LINE_SEPARATOR);
-            sb.append(String.format(dataTitleFormat, "Method[" + metricsList.size() + "]", "Type", "Level",
-                    "TimePercent", "RPS", "Avg(ms)", "Min(ms)", "Max(ms)", "StdDev", "Count", "TP50", "TP90", "TP95",
-                    "TP99", "TP999", "TP9999"));
+            sb.append(String.format(TITLE_FORMAT, formatToSeconds(startMillis), formatToSeconds(stopMillis)))
+                    .append(String.format(dataTitleFormat, "Method[" + metricsList.size() + "]", "Type", "Level",
+                            "TimePercent", "RPS", "Avg(ms)", "Min(ms)", "Max(ms)", "StdDev", "Count", "TP50", "TP90",
+                            "TP95", "TP99", "TP999", "TP9999"));
 
             final String dataFormat = "%-" + maxApiLength + "s%13s%13s%13s%9d%9.2f%9d%9d%9.2f%10d%9d%9d%9d%9d%9d%9d%n";
             sortByTotalTime(metricsList);
