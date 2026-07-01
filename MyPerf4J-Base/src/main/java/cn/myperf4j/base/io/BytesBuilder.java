@@ -124,6 +124,10 @@ public final class BytesBuilder implements AutoCloseable {
         return unsafeWrap(this.value, this.count);
     }
 
+    public Bytes toBytes(int count) {
+        return unsafeWrap(this.value, count);
+    }
+
     @Override
     public String toString() {
         return new String(this.value, 0, this.count, UTF_8);

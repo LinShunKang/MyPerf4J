@@ -32,7 +32,7 @@ public final class InfluxMethodMetricsFormatter implements BinaryMetricsFormatte
             for (MethodMetrics methodMetrics : metricsList) {
                 appendLineProtocol(methodMetrics, startNanos, bb);
             }
-            return bb.toBytes();
+            return bb.toBytes(Math.max(0, bb.getCount() - 1));
         }
     }
 

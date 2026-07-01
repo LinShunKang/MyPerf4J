@@ -23,7 +23,7 @@ public final class StdJvmFileDescMetricsFormatter implements TextMetricsFormatte
         final StringBuilder sb = SB_TL.get();
         try {
             sb.append(String.format(TITLE_FORMAT, formatToSeconds(startMillis), formatToSeconds(stopMillis)))
-                    .append(String.format(DATA_TITLE_FORMAT, "OpenCount", "OpenPercent", "MaxPercent"));
+                    .append(String.format(DATA_TITLE_FORMAT, "OpenCount", "OpenPercent", "MaxCount"));
             metricsList.forEach(m -> sb.append(formatData(m)));
             return sb.toString();
         } finally {

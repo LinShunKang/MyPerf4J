@@ -24,7 +24,7 @@ public class InfluxJvmGcMetricsFormatter implements BinaryMetricsFormatter<JvmGc
             for (JvmGcMetrics metrics : metricsList) {
                 appendLineProtocol(metrics, startNanos, bb);
             }
-            return bb.toBytes();
+            return bb.toBytes(Math.max(0, bb.getCount() - 1));
         }
     }
 

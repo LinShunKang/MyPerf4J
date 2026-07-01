@@ -3,16 +3,9 @@ package cn.myperf4j.core.scheduler;
 import cn.myperf4j.base.config.MetricsConfig;
 import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.constant.PropertyValues.Metrics;
-import cn.myperf4j.base.metric.exporter.JvmBufferPoolMetricsExporter;
-import cn.myperf4j.base.metric.exporter.JvmClassMetricsExporter;
-import cn.myperf4j.base.metric.exporter.JvmCompilationMetricsExporter;
-import cn.myperf4j.base.metric.exporter.JvmFileDescMetricsExporter;
-import cn.myperf4j.base.metric.exporter.JvmGcMetricsExporter;
-import cn.myperf4j.base.metric.exporter.JvmGcMetricsV3Exporter;
-import cn.myperf4j.base.metric.exporter.JvmMemoryMetricsExporter;
-import cn.myperf4j.base.metric.exporter.JvmThreadMetricsExporter;
 import cn.myperf4j.base.metric.exporter.MetricsExporterFactory;
 import cn.myperf4j.core.BaseTest;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -20,42 +13,34 @@ import org.junit.Test;
  */
 public class JvmMetricsSchedulerTest extends BaseTest {
 
-    @Test
-    public void test() {
-        init();
-
-        String exporter = Metrics.EXPORTER_LOG_STDOUT;
-        JvmClassMetricsExporter classExporter = MetricsExporterFactory.getClassMetricsExporter(exporter);
-        JvmGcMetricsExporter gcExporter = MetricsExporterFactory.getGcMetricsExporter(exporter);
-        JvmGcMetricsV3Exporter gcExporterV3 = MetricsExporterFactory.getGcMetricsV3Exporter(exporter);
-        JvmMemoryMetricsExporter memoryExporter = MetricsExporterFactory.getMemoryMetricsExporter(exporter);
-        JvmBufferPoolMetricsExporter bufferPoolExporter = MetricsExporterFactory.getBufferPoolMetricsExporter(exporter);
-        JvmThreadMetricsExporter threadExporter = MetricsExporterFactory.getThreadMetricsExporter(exporter);
-        JvmCompilationMetricsExporter compilationExporter = MetricsExporterFactory.getCompilationExporter(exporter);
-        JvmFileDescMetricsExporter fileDescExporter = MetricsExporterFactory.getFileDescExporter(exporter);
-        JvmMetricsScheduler scheduler = new JvmMetricsScheduler(
-                classExporter,
-                gcExporter,
-                gcExporterV3,
-                memoryExporter,
-                bufferPoolExporter,
-                threadExporter,
-                compilationExporter,
-                fileDescExporter
-        );
-
-        long startMills = System.currentTimeMillis();
-        for (int i = 0; i < 10; i++) {
-            scheduler.run(startMills, startMills + i * 60 * 1000);
-        }
-    }
-
-    private void init() {
+    @Before
+    public void setUp() {
         initProperties();
         ProfilingConfig.metricsConfig(MetricsConfig.loadMetricsConfig());
 
         MetricsConfig metricsConfig = ProfilingConfig.metricsConfig();
         metricsConfig.logRollingTimeUnit("DAILY");
         metricsConfig.logReserveCount(7);
+    }
+
+    @Test
+    public void test() {
+        final String exporter = Metrics.EXPORTER_LOG_STDOUT;
+        final JvmMetricsScheduler scheduler = new JvmMetricsScheduler(
+                MetricsExporterFactory.getClassMetricsExporter(exporter),
+                MetricsExporterFactory.getGcMetricsExporter(exporter),
+                MetricsExporterFactory.getGcMetricsV3Exporter(exporter),
+                MetricsExporterFactory.getMemoryMetricsExporter(exporter),
+                MetricsExporterFactory.getMemoryMetricsV3Exporter(exporter),
+                MetricsExporterFactory.getBufferPoolMetricsExporter(exporter),
+                MetricsExporterFactory.getThreadMetricsExporter(exporter),
+                MetricsExporterFactory.getCompilationExporter(exporter),
+                MetricsExporterFactory.getFileDescExporter(exporter)
+        );
+
+        final long startMills = System.currentTimeMillis();
+        for (int i = 0; i < 10; i++) {
+            scheduler.run(startMills, startMills + i * 60 * 1000);
+        }
     }
 }

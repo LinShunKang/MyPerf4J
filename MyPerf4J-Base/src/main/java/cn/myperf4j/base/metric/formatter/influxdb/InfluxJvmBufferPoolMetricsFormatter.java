@@ -23,7 +23,7 @@ public class InfluxJvmBufferPoolMetricsFormatter implements BinaryMetricsFormatt
             for (JvmBufferPoolMetrics metrics : metricsList) {
                 appendLineProtocol(metrics, startNanos, bb);
             }
-            return bb.toBytes();
+            return bb.toBytes(Math.max(0, bb.getCount() - 1));
         }
     }
 
@@ -32,7 +32,7 @@ public class InfluxJvmBufferPoolMetricsFormatter implements BinaryMetricsFormatt
                 .append(",AppName=").append(ProfilingConfig.basicConfig().appName())
                 .append(",PoolName=").append(processTagOrField(metrics.getName()))
                 .append(",host=").append(processTagOrField(getLocalhostName()))
-                .append(" Count=").append(metrics.getCount()).append('i')
+                .append(" Count=").append(metrics.getBuffCount()).append('i')
                 .append(",MemoryUsed=").append(metrics.getMemoryUsed()).append('i')
                 .append(",MemoryCapacity=").append(metrics.getMemoryCapacity()).append('i')
                 .append(' ').append(startNanos).append('\n');

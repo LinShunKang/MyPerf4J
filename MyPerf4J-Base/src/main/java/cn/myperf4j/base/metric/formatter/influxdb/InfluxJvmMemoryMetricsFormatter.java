@@ -24,7 +24,7 @@ public class InfluxJvmMemoryMetricsFormatter implements BinaryMetricsFormatter<J
             for (JvmMemoryMetrics metrics : metricsList) {
                 appendLineProtocol(metrics, startNanos, bb);
             }
-            return bb.toBytes();
+            return bb.toBytes(Math.max(0, bb.getCount() - 1));
         }
     }
 

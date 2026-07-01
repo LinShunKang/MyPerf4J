@@ -55,6 +55,7 @@ import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getFileDes
 import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getGcMetricsExporter;
 import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getGcMetricsV3Exporter;
 import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getMemoryMetricsExporter;
+import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getMemoryMetricsV3Exporter;
 import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getMethodMetricsExporter;
 import static cn.myperf4j.base.metric.exporter.MetricsExporterFactory.getThreadMetricsExporter;
 import static cn.myperf4j.base.util.StrUtils.splitAsList;
@@ -372,6 +373,7 @@ public abstract class AbstractBootstrap {
                 getGcMetricsExporter(exporter),
                 getGcMetricsV3Exporter(exporter),
                 getMemoryMetricsExporter(exporter),
+                getMemoryMetricsV3Exporter(exporter),
                 getBufferPoolMetricsExporter(exporter),
                 getThreadMetricsExporter(exporter),
                 getCompilationExporter(exporter),

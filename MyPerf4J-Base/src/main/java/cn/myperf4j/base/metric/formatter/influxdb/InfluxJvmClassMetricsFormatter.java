@@ -23,7 +23,7 @@ public final class InfluxJvmClassMetricsFormatter implements BinaryMetricsFormat
             for (JvmClassMetrics metrics : metricsList) {
                 appendLineProtocol(metrics, startNanos, bb);
             }
-            return bb.toBytes();
+            return bb.toBytes(Math.max(0, bb.getCount() - 1));
         }
     }
 

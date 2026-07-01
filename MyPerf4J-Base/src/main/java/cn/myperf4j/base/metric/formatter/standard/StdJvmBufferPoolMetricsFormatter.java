@@ -23,7 +23,7 @@ public class StdJvmBufferPoolMetricsFormatter implements TextMetricsFormatter<Jv
         final StringBuilder sb = SB_TL.get();
         try {
             sb.append(String.format(TITLE_FORMAT, formatToSeconds(startMillis), formatToSeconds(stopMillis)))
-                    .append(String.format(DATA_TITLE_FORMAT, "Name", "Count", "MemoryUsed", "MemoryCapacity"));
+                    .append(String.format(DATA_TITLE_FORMAT, "BufferPool", "BufferCount", "Used", "Capacity"));
             metricsList.forEach(m -> sb.append(formatData(m)));
             return sb.toString();
         } finally {
@@ -32,6 +32,6 @@ public class StdJvmBufferPoolMetricsFormatter implements TextMetricsFormatter<Jv
     }
 
     private String formatData(JvmBufferPoolMetrics m) {
-        return String.format(DATA_FORMAT, m.getName(), m.getCount(), m.getMemoryUsed(), m.getMemoryCapacity());
+        return String.format(DATA_FORMAT, m.getName(), m.getBuffCount(), m.getMemoryUsed(), m.getMemoryCapacity());
     }
 }

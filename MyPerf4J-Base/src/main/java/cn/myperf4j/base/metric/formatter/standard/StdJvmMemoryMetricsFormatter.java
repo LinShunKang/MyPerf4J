@@ -8,7 +8,7 @@ import java.util.List;
 import static cn.myperf4j.base.util.text.DateFormatUtils.formatToSeconds;
 
 /**
- * Created by LinShunkang on 1919/8/21
+ * Created by LinShunkang on 2018/8/21
  */
 public class StdJvmMemoryMetricsFormatter implements TextMetricsFormatter<JvmMemoryMetrics> {
 
