@@ -1,7 +1,7 @@
 package cn.myperf4j.base.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import static cn.myperf4j.base.util.DigitUtils.stringSize;
 
@@ -19,7 +19,7 @@ public class DigitUtilsTest {
         };
 
         for (int num : nums) {
-            Assert.assertEquals(String.valueOf(num).length(), stringSize(num));
+            Assertions.assertEquals(String.valueOf(num).length(), stringSize(num));
         }
     }
 
@@ -34,7 +34,7 @@ public class DigitUtilsTest {
         };
 
         for (long num : nums) {
-            Assert.assertEquals(String.valueOf(num).length(), stringSize(num));
+            Assertions.assertEquals(String.valueOf(num).length(), stringSize(num));
         }
     }
 }

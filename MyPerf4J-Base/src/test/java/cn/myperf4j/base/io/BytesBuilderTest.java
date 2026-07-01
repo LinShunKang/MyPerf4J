@@ -1,7 +1,7 @@
 package cn.myperf4j.base.io;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
@@ -34,8 +34,8 @@ public class BytesBuilderTest {
     }
 
     private static void assertBytesEquals(byte[] expected, Bytes actual) {
-        Assert.assertEquals(expected.length, actual.length());
-        Assert.assertArrayEquals(expected, Arrays.copyOf(actual.bytes(), actual.length()));
+        Assertions.assertEquals(expected.length, actual.length());
+        Assertions.assertArrayEquals(expected, Arrays.copyOf(actual.bytes(), actual.length()));
     }
 
     @Test
@@ -44,7 +44,7 @@ public class BytesBuilderTest {
             builder.append((byte) 48);
             builder.append((byte) 49);
             builder.append((byte) 50);
-            Assert.assertEquals("012", builder.toString());
+            Assertions.assertEquals("012", builder.toString());
         }
     }
 
@@ -54,7 +54,7 @@ public class BytesBuilderTest {
             builder.append(-0);
             builder.append(-1);
             builder.append(2);
-            Assert.assertEquals("0-12", builder.toString());
+            Assertions.assertEquals("0-12", builder.toString());
         }
     }
 
@@ -64,7 +64,7 @@ public class BytesBuilderTest {
             builder.append(-0L);
             builder.append(1L);
             builder.append(-2L);
-            Assert.assertEquals("01-2", builder.toString());
+            Assertions.assertEquals("01-2", builder.toString());
         }
     }
 
@@ -74,7 +74,7 @@ public class BytesBuilderTest {
             builder.append(-0F);
             builder.append(-1F);
             builder.append(2F);
-            Assert.assertEquals("-0.0-1.02.0", builder.toString());
+            Assertions.assertEquals("-0.0-1.02.0", builder.toString());
         }
     }
 
@@ -84,7 +84,7 @@ public class BytesBuilderTest {
             builder.append(-0D);
             builder.append(1D);
             builder.append(-2D);
-            Assert.assertEquals("-0.01.0-2.0", builder.toString());
+            Assertions.assertEquals("-0.01.0-2.0", builder.toString());
         }
     }
 
@@ -97,7 +97,7 @@ public class BytesBuilderTest {
             builder.append('你');
             builder.append('こ');
             builder.append('안');
-            Assert.assertEquals("01A你こ안", builder.toString());
+            Assertions.assertEquals("01A你こ안", builder.toString());
         }
     }
 
@@ -118,7 +118,7 @@ public class BytesBuilderTest {
             bb.append(-2.0 / 3D);
             bb.append(',');
             bb.append('你');
-            Assert.assertEquals(bb.toBytes().toString(UTF_8), bb.toString());
+            Assertions.assertEquals(bb.toBytes().toString(UTF_8), bb.toString());
             System.out.println(bb.toBytes().toString(UTF_8));
             System.out.println(bb);
         }

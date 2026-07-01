@@ -5,15 +5,15 @@ import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.constant.PropertyValues.Metrics;
 import cn.myperf4j.base.metric.exporter.MetricsExporterFactory;
 import cn.myperf4j.core.BaseTest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Created by LinShunkang on 2018/10/19
  */
 public class JvmMetricsSchedulerTest extends BaseTest {
 
-    @Before
+    @BeforeEach
     public void setUp() {
         initProperties();
         ProfilingConfig.metricsConfig(MetricsConfig.loadMetricsConfig());

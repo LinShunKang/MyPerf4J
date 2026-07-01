@@ -1,6 +1,6 @@
 package cn.myperf4j.base.test;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.lang.management.CompilationMXBean;
 import java.lang.management.ManagementFactory;

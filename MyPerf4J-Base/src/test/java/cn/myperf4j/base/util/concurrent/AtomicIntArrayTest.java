@@ -1,8 +1,8 @@
 package cn.myperf4j.base.util.concurrent;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Created by LinShunkang on 2020/11/24
@@ -11,7 +11,7 @@ public abstract class AtomicIntArrayTest {
 
     protected AtomicIntArray atomicIntArray;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.atomicIntArray = createInstance();
     }
@@ -26,13 +26,13 @@ public abstract class AtomicIntArrayTest {
         }
 
         for (int i = 0; i < length; i++) {
-            Assert.assertEquals(i, atomicIntArray.get(i));
+            Assertions.assertEquals(i, atomicIntArray.get(i));
         }
 
         atomicIntArray.reset();
 
         for (int i = 0; i < length; i++) {
-            Assert.assertEquals(0, atomicIntArray.get(i));
+            Assertions.assertEquals(0, atomicIntArray.get(i));
         }
     }
 
@@ -40,19 +40,19 @@ public abstract class AtomicIntArrayTest {
     public void testIncrementAndGet() {
         final int length = atomicIntArray.length();
         for (int i = 0; i < length; i++) {
-            Assert.assertEquals(1, atomicIntArray.incrementAndGet(i));
+            Assertions.assertEquals(1, atomicIntArray.incrementAndGet(i));
         }
 
         for (int i = 0; i < length; i++) {
-            Assert.assertEquals(1, atomicIntArray.get(i));
+            Assertions.assertEquals(1, atomicIntArray.get(i));
         }
 
         for (int i = 0; i < length; i++) {
-            Assert.assertEquals(2, atomicIntArray.incrementAndGet(i));
+            Assertions.assertEquals(2, atomicIntArray.incrementAndGet(i));
         }
 
         for (int i = 0; i < length; i++) {
-            Assert.assertEquals(2, atomicIntArray.get(i));
+            Assertions.assertEquals(2, atomicIntArray.get(i));
         }
     }
 
@@ -60,36 +60,36 @@ public abstract class AtomicIntArrayTest {
     public void testGetAndIncrement() {
         final int length = atomicIntArray.length();
         for (int i = 0; i < length; i++) {
-            Assert.assertEquals(0, atomicIntArray.getAndIncrement(i));
+            Assertions.assertEquals(0, atomicIntArray.getAndIncrement(i));
         }
 
         for (int i = 0; i < length; i++) {
-            Assert.assertEquals(1, atomicIntArray.get(i));
+            Assertions.assertEquals(1, atomicIntArray.get(i));
         }
 
         for (int i = 0; i < length; i++) {
-            Assert.assertEquals(1, atomicIntArray.getAndIncrement(i));
+            Assertions.assertEquals(1, atomicIntArray.getAndIncrement(i));
         }
 
         for (int i = 0; i < length; i++) {
-            Assert.assertEquals(2, atomicIntArray.get(i));
+            Assertions.assertEquals(2, atomicIntArray.get(i));
         }
     }
 
     @Test
     public void testBitShift() {
         for (int i = 0; i < 1024; i++) {
-            Assert.assertEquals(i << 1, i * 2);
-            Assert.assertEquals(i << 1, i * (1 << 1));
+            Assertions.assertEquals(i << 1, i * 2);
+            Assertions.assertEquals(i << 1, i * (1 << 1));
 
-            Assert.assertEquals(i << 2, i * 4);
-            Assert.assertEquals(i << 2, i * (1 << 2));
+            Assertions.assertEquals(i << 2, i * 4);
+            Assertions.assertEquals(i << 2, i * (1 << 2));
 
-            Assert.assertEquals(i << 3, i * 8);
-            Assert.assertEquals(i << 3, i * (1 << 3));
+            Assertions.assertEquals(i << 3, i * 8);
+            Assertions.assertEquals(i << 3, i * (1 << 3));
 
-            Assert.assertEquals(i << 4, i * 16);
-            Assert.assertEquals(i << 4, i * (1 << 4));
+            Assertions.assertEquals(i << 4, i * 16);
+            Assertions.assertEquals(i << 4, i * (1 << 4));
         }
     }
 }

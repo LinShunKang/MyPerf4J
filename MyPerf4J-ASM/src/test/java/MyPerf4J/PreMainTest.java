@@ -4,10 +4,10 @@ import cn.myperf4j.asm.ASMBootstrap;
 import cn.myperf4j.asm.aop.ProfilingTransformer;
 import cn.myperf4j.base.constant.PropertyKeys;
 import cn.myperf4j.base.constant.PropertyValues.Metrics;
-import cn.myperf4j.base.util.concurrent.ThreadUtils;
 import cn.myperf4j.base.file.AutoRollingFileWriter;
 import cn.myperf4j.base.file.MinutelyRollingFileWriter;
-import org.junit.Test;
+import cn.myperf4j.base.util.concurrent.ThreadUtils;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +37,7 @@ public class PreMainTest {
                     method.invoke(obj);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                e.printStackTrace(System.err);
             }
             ThreadUtils.sleepQuietly(2, TimeUnit.SECONDS);
         }
@@ -67,10 +67,9 @@ public class PreMainTest {
                         targetClass, null, ClassFileUtils.getClassFileContent(targetClass.getName()));
                 return defineClass(name, transformBytes, 0, transformBytes.length);
             } catch (IOException e) {
-                e.printStackTrace();
+                e.printStackTrace(System.err);
             }
             return null;
         }
     }
-
 }

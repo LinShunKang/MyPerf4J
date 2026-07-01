@@ -1,9 +1,9 @@
 package cn.myperf4j.base.influxdb;
 
 import cn.myperf4j.base.io.Bytes;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * Created by LinShunkang on 2020/05/19
@@ -23,7 +23,7 @@ public class InfluxDbV2ClientTest {
 
     @Test
     public void testIdentityWrite() {
-        Assert.assertTrue(influxDbClient.writeMetricsSync(
+        Assertions.assertTrue(influxDbClient.writeMetricsSync(
                 Bytes.copy("cpu_load_short,host=server01,region=us-west value=0.64 1434055562000000000\n" +
                         "cpu_load_short,host=server02,region=us-west value=0.96 1434055562000000000")));
     }
@@ -41,8 +41,8 @@ public class InfluxDbV2ClientTest {
         System.out.println("write = " + write);
     }
 
-    @After
+    @AfterEach
     public void testClose() {
-        Assert.assertTrue(influxDbClient.close());
+        Assertions.assertTrue(influxDbClient.close());
     }
 }

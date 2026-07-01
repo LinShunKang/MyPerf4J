@@ -5,9 +5,9 @@ import cn.myperf4j.base.metric.MethodMetrics;
 import cn.myperf4j.core.recorder.DefaultRecorder;
 import cn.myperf4j.core.recorder.Recorder;
 import cn.myperf4j.core.recorder.Recorders;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
@@ -24,7 +24,7 @@ public class MethodMetricsTest {
 
     private Recorder recorder;
 
-    @Before
+    @BeforeEach
     public void init() {
         final MethodTag methodTag = MethodTag.getGeneralInstance("", "Test", "Api", "m1", "");
         final int methodTagId = methodTagMaintainer.addMethodTag(methodTag);
@@ -44,16 +44,16 @@ public class MethodMetricsTest {
         MethodMetrics methodMetrics = calMetrics(recorder, methodTag, startMillis, startMillis + 1000);
         System.out.println(methodMetrics);
 
-        Assert.assertEquals(methodMetrics.getMinTime(), 1);
+        Assertions.assertEquals(1, methodMetrics.getMinTime());
         assert methodMetrics.getAvgTime() == 5000.5D;
-        Assert.assertEquals(methodMetrics.getTP50(), 5000);
-        Assert.assertEquals(methodMetrics.getTP90(), 9000);
-        Assert.assertEquals(methodMetrics.getTP95(), 9500);
-        Assert.assertEquals(methodMetrics.getTP99(), 9900);
-        Assert.assertEquals(methodMetrics.getTP999(), 9990);
-        Assert.assertEquals(methodMetrics.getTP9999(), 9999);
-        Assert.assertEquals(methodMetrics.getTP100(), 10000);
-        Assert.assertEquals(methodMetrics.getTP100(), methodMetrics.getMaxTime());
+        Assertions.assertEquals(5000, methodMetrics.getTP50());
+        Assertions.assertEquals(9000, methodMetrics.getTP90());
+        Assertions.assertEquals(9500, methodMetrics.getTP95());
+        Assertions.assertEquals(9900, methodMetrics.getTP99());
+        Assertions.assertEquals(9990, methodMetrics.getTP999());
+        Assertions.assertEquals(9999, methodMetrics.getTP9999());
+        Assertions.assertEquals(10000, methodMetrics.getTP100());
+        Assertions.assertEquals(methodMetrics.getTP100(), methodMetrics.getMaxTime());
     }
 
     @Test
@@ -65,16 +65,16 @@ public class MethodMetricsTest {
         MethodMetrics methodMetrics = calMetrics(recorder, methodTag, startMillis, startMillis + 1000);
         System.out.println(methodMetrics);
 
-        Assert.assertEquals(methodMetrics.getMinTime(), 1);
+        Assertions.assertEquals(1, methodMetrics.getMinTime());
         assert methodMetrics.getAvgTime() == 1D;
-        Assert.assertEquals(methodMetrics.getTP50(), 1);
-        Assert.assertEquals(methodMetrics.getTP90(), 1);
-        Assert.assertEquals(methodMetrics.getTP95(), 1);
-        Assert.assertEquals(methodMetrics.getTP99(), 1);
-        Assert.assertEquals(methodMetrics.getTP999(), 1);
-        Assert.assertEquals(methodMetrics.getTP9999(), 1);
-        Assert.assertEquals(methodMetrics.getTP100(), 1);
-        Assert.assertEquals(methodMetrics.getTP100(), methodMetrics.getMaxTime());
+        Assertions.assertEquals(1, methodMetrics.getTP50());
+        Assertions.assertEquals(1, methodMetrics.getTP90());
+        Assertions.assertEquals(1, methodMetrics.getTP95());
+        Assertions.assertEquals(1, methodMetrics.getTP99());
+        Assertions.assertEquals(1, methodMetrics.getTP999());
+        Assertions.assertEquals(1, methodMetrics.getTP9999());
+        Assertions.assertEquals(1, methodMetrics.getTP100());
+        Assertions.assertEquals(methodMetrics.getTP100(), methodMetrics.getMaxTime());
     }
 
     private void recordRecords(Recorder recorder, long elapsedMills, int times) {
@@ -98,16 +98,16 @@ public class MethodMetricsTest {
         final MethodMetrics methodMetrics = calMetrics(recorder, methodTag, startMillis, startMillis + 1000);
         System.out.println(methodMetrics);
 
-        Assert.assertEquals(methodMetrics.getMinTime(), 1);
+        Assertions.assertEquals(1, methodMetrics.getMinTime());
         assert methodMetrics.getAvgTime() == 2.07D;
-        Assert.assertEquals(methodMetrics.getTP50(), 2);
-        Assert.assertEquals(methodMetrics.getTP90(), 3);
-        Assert.assertEquals(methodMetrics.getTP95(), 4);
-        Assert.assertEquals(methodMetrics.getTP99(), 6);
-        Assert.assertEquals(methodMetrics.getTP999(), 6);
-        Assert.assertEquals(methodMetrics.getTP9999(), 6);
-        Assert.assertEquals(methodMetrics.getTP100(), 6);
-        Assert.assertEquals(methodMetrics.getTP100(), methodMetrics.getMaxTime());
+        Assertions.assertEquals(2, methodMetrics.getTP50());
+        Assertions.assertEquals(3, methodMetrics.getTP90());
+        Assertions.assertEquals(4, methodMetrics.getTP95());
+        Assertions.assertEquals(6, methodMetrics.getTP99());
+        Assertions.assertEquals(6, methodMetrics.getTP999());
+        Assertions.assertEquals(6, methodMetrics.getTP9999());
+        Assertions.assertEquals(6, methodMetrics.getTP100());
+        Assertions.assertEquals(methodMetrics.getTP100(), methodMetrics.getMaxTime());
     }
 
     @Test
@@ -124,16 +124,16 @@ public class MethodMetricsTest {
         final MethodMetrics methodMetrics = calMetrics(recorder, methodTag, startMillis, startMillis + 1000);
         System.out.println(methodMetrics);
 
-        Assert.assertEquals(methodMetrics.getMinTime(), 1);
+        Assertions.assertEquals(1, methodMetrics.getMinTime());
         assert methodMetrics.getAvgTime() == 1.6511D;
-        Assert.assertEquals(methodMetrics.getTP50(), 2);
-        Assert.assertEquals(methodMetrics.getTP90(), 2);
-        Assert.assertEquals(methodMetrics.getTP95(), 2);
-        Assert.assertEquals(methodMetrics.getTP99(), 3);
-        Assert.assertEquals(methodMetrics.getTP999(), 4);
-        Assert.assertEquals(methodMetrics.getTP9999(), 5);
-        Assert.assertEquals(methodMetrics.getTP100(), 6);
-        Assert.assertEquals(methodMetrics.getTP100(), methodMetrics.getMaxTime());
+        Assertions.assertEquals(2, methodMetrics.getTP50());
+        Assertions.assertEquals(2, methodMetrics.getTP90());
+        Assertions.assertEquals(2, methodMetrics.getTP95());
+        Assertions.assertEquals(3, methodMetrics.getTP99());
+        Assertions.assertEquals(4, methodMetrics.getTP999());
+        Assertions.assertEquals(5, methodMetrics.getTP9999());
+        Assertions.assertEquals(6, methodMetrics.getTP100());
+        Assertions.assertEquals(methodMetrics.getTP100(), methodMetrics.getMaxTime());
     }
 
     @Test
@@ -146,15 +146,15 @@ public class MethodMetricsTest {
         System.out.println(metrics);
         recorder.resetRecord();
 
-        Assert.assertEquals(metrics.getMinTime(), -1);
+        Assertions.assertEquals(-1, metrics.getMinTime());
         assert metrics.getAvgTime() == -1D;
-        Assert.assertEquals(metrics.getTP50(), -1);
-        Assert.assertEquals(metrics.getTP90(), -1);
-        Assert.assertEquals(metrics.getTP95(), -1);
-        Assert.assertEquals(metrics.getTP99(), -1);
-        Assert.assertEquals(metrics.getTP999(), -1);
-        Assert.assertEquals(metrics.getTP9999(), -1);
-        Assert.assertEquals(metrics.getTP100(), -1);
-        Assert.assertEquals(metrics.getTP100(), metrics.getMaxTime());
+        Assertions.assertEquals(-1, metrics.getTP50());
+        Assertions.assertEquals(-1, metrics.getTP90());
+        Assertions.assertEquals(-1, metrics.getTP95());
+        Assertions.assertEquals(-1, metrics.getTP99());
+        Assertions.assertEquals(-1, metrics.getTP999());
+        Assertions.assertEquals(-1, metrics.getTP9999());
+        Assertions.assertEquals(-1, metrics.getTP100());
+        Assertions.assertEquals(metrics.getTP100(), metrics.getMaxTime());
     }
 }

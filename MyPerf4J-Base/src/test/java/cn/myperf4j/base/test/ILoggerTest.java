@@ -5,8 +5,8 @@ import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.constant.PropertyValues.Metrics;
 import cn.myperf4j.base.log.ILogger;
 import cn.myperf4j.base.log.LoggerFactory;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ILoggerTest {
 
@@ -47,7 +47,7 @@ public class ILoggerTest {
 
     private static void writeFile(String file) {
         ILogger logger = LoggerFactory.getLogger(file);
-        Assert.assertNotNull(logger);
+        Assertions.assertNotNull(logger);
 
         logger.log("111111111");
         logger.log("222222222");
