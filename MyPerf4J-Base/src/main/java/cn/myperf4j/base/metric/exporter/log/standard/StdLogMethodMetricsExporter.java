@@ -2,7 +2,6 @@ package cn.myperf4j.base.metric.exporter.log.standard;
 
 import cn.myperf4j.base.metric.MethodMetrics;
 import cn.myperf4j.base.metric.exporter.log.AbstractLogMethodMetricsExporter;
-import cn.myperf4j.base.metric.formatter.MethodMetricsFormatter;
 import cn.myperf4j.base.metric.formatter.standard.StdMethodMetricsFormatter;
 import cn.myperf4j.base.util.Logger;
 
@@ -16,7 +15,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class StdLogMethodMetricsExporter extends AbstractLogMethodMetricsExporter {
 
-    private static final MethodMetricsFormatter METRICS_FORMATTER = new StdMethodMetricsFormatter();
+    private static final StdMethodMetricsFormatter FORMATTER = new StdMethodMetricsFormatter();
 
     private final ConcurrentMap<Long, List<MethodMetrics>> metricsMap = new ConcurrentHashMap<>(8);
 
@@ -27,7 +26,7 @@ public class StdLogMethodMetricsExporter extends AbstractLogMethodMetricsExporte
 
     @Override
     public void process(MethodMetrics metrics, long processId, long startMillis, long stopMillis) {
-        List<MethodMetrics> metricsList = metricsMap.get(processId);
+        final List<MethodMetrics> metricsList = metricsMap.get(processId);
         if (metricsList != null) {
             metricsList.add(metrics);
         } else {
@@ -38,9 +37,9 @@ public class StdLogMethodMetricsExporter extends AbstractLogMethodMetricsExporte
 
     @Override
     public void afterProcess(long processId, long startMillis, long stopMillis) {
-        List<MethodMetrics> metricsList = metricsMap.remove(processId);
+        final List<MethodMetrics> metricsList = metricsMap.remove(processId);
         if (metricsList != null) {
-            logger.logAndFlush(METRICS_FORMATTER.format(metricsList, startMillis, stopMillis));
+            logger.logAndFlush(FORMATTER.format(metricsList, startMillis, stopMillis));
         } else {
             Logger.error("StdLogMethodMetricsExporter.afterProcess(" + processId + ", " + startMillis + ", "
                     + stopMillis + "): metricsList is null!!!");

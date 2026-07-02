@@ -4,6 +4,7 @@ import cn.myperf4j.base.http.HttpHeaders;
 import cn.myperf4j.base.http.HttpRequest;
 import cn.myperf4j.base.http.HttpResponse;
 import cn.myperf4j.base.http.server.SimpleHttpServer;
+import cn.myperf4j.base.io.Bytes;
 import cn.myperf4j.base.util.collections.MapUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -33,7 +34,8 @@ public class HttpClientTest {
         server = new SimpleHttpServer.Builder()
                 .port(8686)
                 .dispatcher(request -> {
-                    System.out.println("Dispatcher.dispatch(): request.body=" + new String(request.getBody(), UTF_8));
+                    final Bytes body = request.getBody();
+                    System.out.println("Dispatcher.dispatch(): request.body=" + body.toString(UTF_8));
                     return new HttpResponse(OK, new HttpHeaders(0), RESPONSE_BODY.getBytes(UTF_8));
                 })
                 .build();

@@ -4,7 +4,6 @@ import cn.myperf4j.base.influxdb.InfluxDbClient;
 import cn.myperf4j.base.influxdb.InfluxDbClientFactory;
 import cn.myperf4j.base.metric.JvmCompilationMetrics;
 import cn.myperf4j.base.metric.exporter.JvmCompilationMetricsExporter;
-import cn.myperf4j.base.metric.formatter.JvmCompilationMetricsFormatter;
 import cn.myperf4j.base.metric.formatter.influxdb.InfluxJvmCompilationMetricsFormatter;
 import cn.myperf4j.base.util.Logger;
 
@@ -18,7 +17,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class InfluxHttpJvmCompilationMetricsExporter implements JvmCompilationMetricsExporter {
 
-    private static final JvmCompilationMetricsFormatter METRICS_FORMATTER = new InfluxJvmCompilationMetricsFormatter();
+    private static final InfluxJvmCompilationMetricsFormatter FORMATTER = new InfluxJvmCompilationMetricsFormatter();
 
     private static final InfluxDbClient CLIENT = InfluxDbClientFactory.getClient();
 
@@ -44,7 +43,7 @@ public class InfluxHttpJvmCompilationMetricsExporter implements JvmCompilationMe
     public void afterProcess(long processId, long startMillis, long stopMillis) {
         final List<JvmCompilationMetrics> metricsList = metricsMap.remove(processId);
         if (metricsList != null) {
-            CLIENT.writeMetricsAsync(METRICS_FORMATTER.format(metricsList, startMillis, stopMillis));
+            CLIENT.writeMetricsAsync(FORMATTER.format(metricsList, startMillis, stopMillis));
         } else {
             Logger.error("InfluxHttpJvmCompilationMetricsExporter.afterProcess(" + processId + ", " + startMillis
                     + ", " + stopMillis + "): metricsList is null!!!");

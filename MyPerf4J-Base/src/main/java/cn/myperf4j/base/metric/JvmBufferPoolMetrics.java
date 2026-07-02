@@ -11,7 +11,7 @@ public class JvmBufferPoolMetrics extends Metrics {
 
     private final String name;
 
-    private final long count;
+    private final long buffCount;
 
     private final long memoryUsed; //KB
 
@@ -19,7 +19,7 @@ public class JvmBufferPoolMetrics extends Metrics {
 
     public JvmBufferPoolMetrics(BufferPoolMXBean mxBean) {
         this.name = mxBean.getName();
-        this.count = mxBean.getCount();
+        this.buffCount = mxBean.getCount();
         this.memoryUsed = mxBean.getMemoryUsed() >> 10;
         this.memoryCapacity = mxBean.getTotalCapacity() >> 10;
     }
@@ -28,8 +28,8 @@ public class JvmBufferPoolMetrics extends Metrics {
         return name;
     }
 
-    public long getCount() {
-        return count;
+    public long getBuffCount() {
+        return buffCount;
     }
 
     public long getMemoryUsed() {
@@ -44,7 +44,7 @@ public class JvmBufferPoolMetrics extends Metrics {
     public String toString() {
         return "JvmBufferPoolMetrics{" +
                 "name='" + name + '\'' +
-                ", count=" + count +
+                ", buffCount=" + buffCount +
                 ", memoryUsed=" + memoryUsed +
                 ", memoryCapacity=" + memoryCapacity +
                 '}';

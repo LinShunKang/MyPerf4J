@@ -7,6 +7,7 @@ import cn.myperf4j.base.metric.exporter.discard.DiscardJvmFileDescMetricsExporte
 import cn.myperf4j.base.metric.exporter.discard.DiscardJvmGcMetricsExporter;
 import cn.myperf4j.base.metric.exporter.discard.DiscardJvmGcMetricsV3Exporter;
 import cn.myperf4j.base.metric.exporter.discard.DiscardJvmMemoryMetricsExporter;
+import cn.myperf4j.base.metric.exporter.discard.DiscardJvmMemoryMetricsV3Exporter;
 import cn.myperf4j.base.metric.exporter.discard.DiscardJvmThreadMetricsExporter;
 import cn.myperf4j.base.metric.exporter.http.influxdb.InfluxHttpJvmBufferPoolMetricsExporter;
 import cn.myperf4j.base.metric.exporter.http.influxdb.InfluxHttpJvmClassMetricsExporter;
@@ -15,6 +16,7 @@ import cn.myperf4j.base.metric.exporter.http.influxdb.InfluxHttpJvmFileDescMetri
 import cn.myperf4j.base.metric.exporter.http.influxdb.InfluxHttpJvmGcMetricsExporter;
 import cn.myperf4j.base.metric.exporter.http.influxdb.InfluxHttpJvmGcMetricsV3Exporter;
 import cn.myperf4j.base.metric.exporter.http.influxdb.InfluxHttpJvmMemoryMetricsExporter;
+import cn.myperf4j.base.metric.exporter.http.influxdb.InfluxHttpJvmMemoryMetricsV3Exporter;
 import cn.myperf4j.base.metric.exporter.http.influxdb.InfluxHttpJvmThreadMetricsExporter;
 import cn.myperf4j.base.metric.exporter.http.influxdb.InfluxHttpMethodMetricsExporter;
 import cn.myperf4j.base.metric.exporter.log.influxdb.InfluxLogJvmBufferPoolMetricsExporter;
@@ -24,6 +26,7 @@ import cn.myperf4j.base.metric.exporter.log.influxdb.InfluxLogJvmFileDescMetrics
 import cn.myperf4j.base.metric.exporter.log.influxdb.InfluxLogJvmGcMetricsExporter;
 import cn.myperf4j.base.metric.exporter.log.influxdb.InfluxLogJvmGcMetricsV3Exporter;
 import cn.myperf4j.base.metric.exporter.log.influxdb.InfluxLogJvmMemoryMetricsExporter;
+import cn.myperf4j.base.metric.exporter.log.influxdb.InfluxLogJvmMemoryMetricsV3Exporter;
 import cn.myperf4j.base.metric.exporter.log.influxdb.InfluxLogJvmThreadMetricsExporter;
 import cn.myperf4j.base.metric.exporter.log.influxdb.InfluxLogMethodMetricsExporter;
 import cn.myperf4j.base.metric.exporter.log.standard.StdLogJvmBufferPoolMetricsExporter;
@@ -33,6 +36,7 @@ import cn.myperf4j.base.metric.exporter.log.standard.StdLogJvmFileDescMetricsExp
 import cn.myperf4j.base.metric.exporter.log.standard.StdLogJvmGcMetricsExporter;
 import cn.myperf4j.base.metric.exporter.log.standard.StdLogJvmGcMetricsV3Exporter;
 import cn.myperf4j.base.metric.exporter.log.standard.StdLogJvmMemoryMetricsExporter;
+import cn.myperf4j.base.metric.exporter.log.standard.StdLogJvmMemoryMetricsV3Exporter;
 import cn.myperf4j.base.metric.exporter.log.standard.StdLogJvmThreadMetricsExporter;
 import cn.myperf4j.base.metric.exporter.log.standard.StdLogMethodMetricsExporter;
 
@@ -100,6 +104,20 @@ public final class MetricsExporterFactory {
                 return new InfluxHttpJvmMemoryMetricsExporter();
             default:
                 return new DiscardJvmMemoryMetricsExporter();
+        }
+    }
+
+    public static JvmMemoryMetricsV3Exporter getMemoryMetricsV3Exporter(String exporter) {
+        switch (exporter) {
+            case EXPORTER_LOG_STANDARD:
+            case EXPORTER_LOG_STDOUT:
+                return new StdLogJvmMemoryMetricsV3Exporter();
+            case EXPORTER_LOG_INFLUX_DB:
+                return new InfluxLogJvmMemoryMetricsV3Exporter();
+            case EXPORTER_HTTP_INFLUX_DB:
+                return new InfluxHttpJvmMemoryMetricsV3Exporter();
+            default:
+                return new DiscardJvmMemoryMetricsV3Exporter();
         }
     }
 

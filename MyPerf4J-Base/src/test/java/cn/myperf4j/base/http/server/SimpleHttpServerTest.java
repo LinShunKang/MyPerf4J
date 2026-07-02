@@ -67,7 +67,8 @@ public class SimpleHttpServerTest {
     @Test
     public void test() throws InterruptedException {
         final int TEST_TIMES = 1000;
-        try (ExecutorService executor = Executors.newFixedThreadPool(10)) {
+        final ExecutorService executor = Executors.newFixedThreadPool(10);
+        try {
             final CountDownLatch latch = new CountDownLatch(TEST_TIMES);
             for (int i = 0; i < TEST_TIMES; i++) {
                 executor.execute(() -> {
@@ -90,6 +91,8 @@ public class SimpleHttpServerTest {
             }
 
             latch.await();
+        } finally {
+            executor.shutdownNow();
         }
     }
 }

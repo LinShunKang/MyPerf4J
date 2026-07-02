@@ -4,15 +4,18 @@ import cn.myperf4j.base.http.HttpRequest;
 import cn.myperf4j.base.http.HttpRespStatus;
 import cn.myperf4j.base.http.HttpResponse;
 import cn.myperf4j.base.http.client.HttpClient;
+import cn.myperf4j.base.io.Bytes;
+import cn.myperf4j.base.io.UnsafeByteArrayOutputStream;
 import cn.myperf4j.base.util.Base64;
 import cn.myperf4j.base.util.Base64.Encoder;
 import cn.myperf4j.base.util.Logger;
-import cn.myperf4j.base.util.StrUtils;
 import cn.myperf4j.base.util.concurrent.ExecutorManager;
 
 import java.io.IOException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor.DiscardOldestPolicy;
+import java.util.zip.GZIPOutputStream;
 
 import static cn.myperf4j.base.http.HttpStatusClass.INFORMATIONAL;
 import static cn.myperf4j.base.http.HttpStatusClass.SUCCESS;
@@ -26,6 +29,8 @@ import static java.util.concurrent.TimeUnit.MINUTES;
  */
 public final class InfluxDbV2Client implements InfluxDbClient {
 
+    private static final int MIN_COMPRESS_BYTES = 1024;
+
     private static final String API_SIGN_IN = "/api/v2/signin";
 
     private static final String API_SIGN_OUT = "/api/v2/signout";
@@ -37,9 +42,9 @@ public final class InfluxDbV2Client implements InfluxDbClient {
             2,
             3,
             MINUTES,
-            new LinkedBlockingQueue<Runnable>(1024),
+            new LinkedBlockingQueue<>(1024),
             newThreadFactory("MyPerf4J-InfluxDbV2Client_"),
-            new ThreadPoolExecutor.DiscardOldestPolicy());
+            new DiscardOldestPolicy());
 
     static {
         ExecutorManager.addExecutorService(ASYNC_EXECUTOR);
@@ -104,48 +109,74 @@ public final class InfluxDbV2Client implements InfluxDbClient {
     }
 
     @Override
-    public boolean writeMetricsSync(String content) {
+    public boolean writeMetricsSync(Bytes content) {
         if (!trySignIn()) {
             Logger.warn("try login fails, so do not continue write content!");
             return false;
         }
 
-        final HttpRequest req = new HttpRequest.Builder()
-                .url(writeReqUrl)
-                .header("Cookie", cookie)
-                .post(content)
-                .build();
         try {
-            final HttpResponse response = httpClient.execute(req);
-            final HttpRespStatus status = response.getStatus();
-            if (status.statusClass() == SUCCESS) {
-                if (Logger.isDebugEnable()) {
-                    Logger.debug("InfluxDbV2Client.writeMetricsSync(): respStatus=" + status.simpleString()
-                            + ", reqBody=" + content);
-                }
-                return true;
-            }
-
-            if (status.statusClass() != INFORMATIONAL && status.statusClass() != SUCCESS) {
-                Logger.warn("InfluxDbV2Client.writeMetricsSync(): respStatus=" + status.simpleString()
-                        + ", reqBody=" + content);
-            }
-        } catch (IOException e) {
-            Logger.warn("InfluxDbV2Client.writeMetricsSync() catch IOException!", e);
+            return writeMetrics0(generateWriteReq(content));
         } catch (Throwable t) {
             Logger.error("InfluxDbV2Client.writeMetricsSync() catch Exception!", t);
         }
         return false;
     }
 
+    private HttpRequest generateWriteReq(Bytes content) throws IOException {
+        final HttpRequest.Builder reqBuilder = new HttpRequest.Builder()
+                .url(writeReqUrl)
+                .header("Cookie", cookie);
+        return contentEncoding(reqBuilder, content).build();
+    }
+
+    private HttpRequest.Builder contentEncoding(HttpRequest.Builder builder, Bytes content) throws IOException {
+        final boolean compressing = content.length() >= MIN_COMPRESS_BYTES;
+        return builder
+                .header("Content-Encoding", compressing ? "gzip" : "identity")
+                .post(compressing ? gzip(content) : Bytes.copy(content));
+    }
+
+    private Bytes gzip(Bytes content) throws IOException {
+        try (UnsafeByteArrayOutputStream bos = new UnsafeByteArrayOutputStream(content.length() / 4);
+             GZIPOutputStream gzipOs = new GZIPOutputStream(bos)) {
+            gzipOs.write(content.bytes(), 0, content.length());
+            gzipOs.finish();
+            return bos.toBytes();
+        }
+    }
+
+    private boolean writeMetrics0(HttpRequest request) {
+        try {
+            final HttpResponse response = httpClient.execute(request);
+            final HttpRespStatus status = response.getStatus();
+            if (status.statusClass() == SUCCESS) {
+                if (Logger.isDebugEnable()) {
+                    Logger.debug("InfluxDbV2Client.writeMetrics0(): respStatus=" + status.simpleString());
+                }
+                return true;
+            }
+
+            if (status.statusClass() != INFORMATIONAL && status.statusClass() != SUCCESS) {
+                Logger.warn("InfluxDbV2Client.writeMetrics0(): respStatus=" + status.simpleString());
+            }
+        } catch (IOException e) {
+            Logger.warn("InfluxDbV2Client.writeMetrics0() catch IOException!", e);
+        } catch (Throwable t) {
+            Logger.error("InfluxDbV2Client.writeMetrics0() catch Exception!", t);
+        }
+        return false;
+    }
+
     @Override
-    public boolean writeMetricsAsync(final String content) {
-        if (StrUtils.isBlank(content)) {
+    public boolean writeMetricsAsync(Bytes content) {
+        if (content == null || content.isEmpty()) {
             return false;
         }
 
         try {
-            ASYNC_EXECUTOR.execute(() -> writeMetricsSync(content));
+            final HttpRequest request = generateWriteReq(content);
+            ASYNC_EXECUTOR.execute(() -> writeMetrics0(request));
             return true;
         } catch (Throwable t) {
             Logger.error("InfluxDbV2Client.writeMetricsAsync(): t=" + t.getMessage(), t);

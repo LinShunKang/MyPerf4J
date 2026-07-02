@@ -2,7 +2,6 @@ package cn.myperf4j.base.metric.exporter.log.standard;
 
 import cn.myperf4j.base.metric.JvmFileDescriptorMetrics;
 import cn.myperf4j.base.metric.exporter.log.AbstractLogJvmFileDescMetricsExporter;
-import cn.myperf4j.base.metric.formatter.JvmFileDescMetricsFormatter;
 import cn.myperf4j.base.metric.formatter.standard.StdJvmFileDescMetricsFormatter;
 import cn.myperf4j.base.util.Logger;
 
@@ -16,7 +15,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class StdLogJvmFileDescMetricsExporter extends AbstractLogJvmFileDescMetricsExporter {
 
-    private static final JvmFileDescMetricsFormatter METRICS_FORMATTER = new StdJvmFileDescMetricsFormatter();
+    private static final StdJvmFileDescMetricsFormatter FORMATTER = new StdJvmFileDescMetricsFormatter();
 
     private final ConcurrentMap<Long, List<JvmFileDescriptorMetrics>> metricsMap = new ConcurrentHashMap<>(8);
 
@@ -27,7 +26,7 @@ public class StdLogJvmFileDescMetricsExporter extends AbstractLogJvmFileDescMetr
 
     @Override
     public void process(JvmFileDescriptorMetrics metrics, long processId, long startMillis, long stopMillis) {
-        List<JvmFileDescriptorMetrics> metricsList = metricsMap.get(processId);
+        final List<JvmFileDescriptorMetrics> metricsList = metricsMap.get(processId);
         if (metricsList != null) {
             metricsList.add(metrics);
         } else {
@@ -38,9 +37,9 @@ public class StdLogJvmFileDescMetricsExporter extends AbstractLogJvmFileDescMetr
 
     @Override
     public void afterProcess(long processId, long startMillis, long stopMillis) {
-        List<JvmFileDescriptorMetrics> metricsList = metricsMap.remove(processId);
+        final List<JvmFileDescriptorMetrics> metricsList = metricsMap.remove(processId);
         if (metricsList != null) {
-            logger.logAndFlush(METRICS_FORMATTER.format(metricsList, startMillis, stopMillis));
+            logger.logAndFlush(FORMATTER.format(metricsList, startMillis, stopMillis));
         } else {
             Logger.error("StdLogJvmFileDescMetricsExporter.afterProcess(" + processId + ", " + startMillis + ", "
                     + stopMillis + "): metricsList is null!!!");

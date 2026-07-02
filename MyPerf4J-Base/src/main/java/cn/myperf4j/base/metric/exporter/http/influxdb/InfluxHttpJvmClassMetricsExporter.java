@@ -4,7 +4,6 @@ import cn.myperf4j.base.influxdb.InfluxDbClient;
 import cn.myperf4j.base.influxdb.InfluxDbClientFactory;
 import cn.myperf4j.base.metric.JvmClassMetrics;
 import cn.myperf4j.base.metric.exporter.JvmClassMetricsExporter;
-import cn.myperf4j.base.metric.formatter.JvmClassMetricsFormatter;
 import cn.myperf4j.base.metric.formatter.influxdb.InfluxJvmClassMetricsFormatter;
 import cn.myperf4j.base.util.Logger;
 
@@ -18,7 +17,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class InfluxHttpJvmClassMetricsExporter implements JvmClassMetricsExporter {
 
-    private static final JvmClassMetricsFormatter METRICS_FORMATTER = new InfluxJvmClassMetricsFormatter();
+    private static final InfluxJvmClassMetricsFormatter METRICS_FORMATTER = new InfluxJvmClassMetricsFormatter();
 
     private static final InfluxDbClient CLIENT = InfluxDbClientFactory.getClient();
 

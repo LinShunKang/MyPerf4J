@@ -1,5 +1,6 @@
 package cn.myperf4j.base.influxdb;
 
+import cn.myperf4j.base.io.Bytes;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -21,10 +22,23 @@ public class InfluxDbV2ClientTest {
             .build();
 
     @Test
-    public void testWrite() {
+    public void testIdentityWrite() {
         Assertions.assertTrue(influxDbClient.writeMetricsSync(
-                "cpu_load_short,host=server01,region=us-west value=0.64 1434055562000000000\n" +
-                        "cpu_load_short,host=server02,region=us-west value=0.96 1434055562000000000"));
+                Bytes.copy("cpu_load_short,host=server01,region=us-west value=0.64 1434055562000000000\n" +
+                        "cpu_load_short,host=server02,region=us-west value=0.96 1434055562000000000")));
+    }
+
+    @Test
+    public void testGzipWrite() {
+        final long startMillis = (System.currentTimeMillis() / 1000) * 1000;
+        final StringBuilder sb = new StringBuilder(16384);
+        for (int i = 0; i < 1024; i++) {
+            final long curNanos = (startMillis + i * 1000L) * 1_000_000L;
+            sb.append("cpu_load,host=server01,region=china value=3.14 ").append(curNanos).append('\n');
+        }
+
+        final boolean write = influxDbClient.writeMetricsSync(Bytes.copy(sb.toString()));
+        System.out.println("write = " + write);
     }
 
     @AfterEach

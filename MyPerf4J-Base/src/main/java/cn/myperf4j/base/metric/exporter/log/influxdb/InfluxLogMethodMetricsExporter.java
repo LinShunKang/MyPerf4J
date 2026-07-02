@@ -2,9 +2,9 @@ package cn.myperf4j.base.metric.exporter.log.influxdb;
 
 import cn.myperf4j.base.metric.MethodMetrics;
 import cn.myperf4j.base.metric.exporter.log.AbstractLogMethodMetricsExporter;
-import cn.myperf4j.base.metric.formatter.MethodMetricsFormatter;
 import cn.myperf4j.base.metric.formatter.influxdb.InfluxMethodMetricsFormatter;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.singletonList;
 
 /**
@@ -12,10 +12,10 @@ import static java.util.Collections.singletonList;
  */
 public class InfluxLogMethodMetricsExporter extends AbstractLogMethodMetricsExporter {
 
-    private static final MethodMetricsFormatter METRICS_FORMATTER = new InfluxMethodMetricsFormatter();
+    private static final InfluxMethodMetricsFormatter FORMATTER = new InfluxMethodMetricsFormatter();
 
     @Override
     public void process(MethodMetrics metrics, long processId, long startMillis, long stopMillis) {
-        logger.log(METRICS_FORMATTER.format(singletonList(metrics), startMillis, stopMillis));
+        logger.log(FORMATTER.format(singletonList(metrics), startMillis, stopMillis).toString(UTF_8));
     }
 }
