@@ -19,7 +19,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 public final class HttpRequest {
 
-    private static final Bytes EMPTY_BODY = unsafeWrap(new byte[0], 0);
+    private static final Bytes EMPTY_BODY = unsafeWrap(new byte[0]);
 
     private static final ThreadLocal<StringBuilder> SB_TL = ThreadLocal.withInitial(() -> new StringBuilder(512));
 
@@ -185,7 +185,7 @@ public final class HttpRequest {
         }
 
         public Builder post(byte[] body) {
-            return method(POST, unsafeWrap(body, body.length));
+            return method(POST, unsafeWrap(body));
         }
 
         public Builder post(Bytes body) {

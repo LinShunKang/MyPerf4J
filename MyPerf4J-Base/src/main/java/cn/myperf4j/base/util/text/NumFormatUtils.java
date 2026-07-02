@@ -13,7 +13,7 @@ public final class NumFormatUtils {
 
     private static final ThreadLocal<DecimalFormat> PERCENT_FORMAT = withInitial(() -> new DecimalFormat("0.00%"));
 
-    public static String doubleFormat(double num) {
+    public static String numFormat(double num) {
         return DECIMAL_FORMAT.get().format(num);
     }
 

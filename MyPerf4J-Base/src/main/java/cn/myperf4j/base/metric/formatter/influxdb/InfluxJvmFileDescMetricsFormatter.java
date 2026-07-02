@@ -1,6 +1,5 @@
 package cn.myperf4j.base.metric.formatter.influxdb;
 
-import cn.myperf4j.base.config.ProfilingConfig;
 import cn.myperf4j.base.io.Bytes;
 import cn.myperf4j.base.io.BytesBuilder;
 import cn.myperf4j.base.metric.JvmFileDescriptorMetrics;
@@ -8,13 +7,20 @@ import cn.myperf4j.base.metric.formatter.BinaryMetricsFormatter;
 
 import java.util.List;
 
-import static cn.myperf4j.base.util.LineProtocolUtils.processTagOrField;
-import static cn.myperf4j.base.util.net.IpUtils.getLocalhostName;
+import static cn.myperf4j.base.metric.formatter.influxdb.InfluxDBFields.F_OPEN_COUNT;
+import static cn.myperf4j.base.metric.formatter.influxdb.InfluxDBFields.F_OPEN_PERCENT;
+import static cn.myperf4j.base.metric.formatter.influxdb.InfluxDBTags.T_APP_NAME;
+import static cn.myperf4j.base.metric.formatter.influxdb.InfluxDBTags.T_HOST;
+import static cn.myperf4j.base.metric.formatter.influxdb.InfluxDBValues.V_APP_NAME;
+import static cn.myperf4j.base.metric.formatter.influxdb.InfluxDBValues.V_HOST;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Created by LinShunkang on 2020/5/17
  */
 public final class InfluxJvmFileDescMetricsFormatter implements BinaryMetricsFormatter<JvmFileDescriptorMetrics> {
+
+    private static final byte[] MEASUREMENTS = "jvm_file_descriptor_metrics".getBytes(UTF_8);
 
     @Override
     public Bytes format(List<JvmFileDescriptorMetrics> metricsList, long startMillis, long stopMillis) {
@@ -28,11 +34,12 @@ public final class InfluxJvmFileDescMetricsFormatter implements BinaryMetricsFor
     }
 
     private void appendLineProtocol(JvmFileDescriptorMetrics metrics, long startNanos, BytesBuilder bb) {
-        bb.append("jvm_file_descriptor_metrics")
-                .append(",AppName=").append(ProfilingConfig.basicConfig().appName())
-                .append(",host=").append(processTagOrField(getLocalhostName()))
-                .append(" OpenCount=").append(metrics.getOpenCount()).append('i')
-                .append(",OpenPercent=").append(metrics.getOpenPercent())
-                .append(' ').append(startNanos).append('\n');
+        bb.append(MEASUREMENTS).append(',')
+                .append(T_APP_NAME).append('=').append(V_APP_NAME).append(',')
+                .append(T_HOST).append('=').append(V_HOST).append(' ')
+                .append(F_OPEN_COUNT).append('=').append(metrics.getOpenCount()).append('i').append(',')
+                .append(F_OPEN_PERCENT).append('=').append(metrics.getOpenPercent()).append(' ')
+                .append(startNanos)
+                .append('\n');
     }
 }

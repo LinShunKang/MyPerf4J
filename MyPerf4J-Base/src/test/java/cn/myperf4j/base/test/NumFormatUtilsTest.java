@@ -3,7 +3,7 @@ package cn.myperf4j.base.test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static cn.myperf4j.base.util.text.NumFormatUtils.doubleFormat;
+import static cn.myperf4j.base.util.text.NumFormatUtils.numFormat;
 import static cn.myperf4j.base.util.text.NumFormatUtils.doublePercent;
 
 /**
@@ -12,15 +12,15 @@ import static cn.myperf4j.base.util.text.NumFormatUtils.doublePercent;
 public class NumFormatUtilsTest {
 
     @Test
-    public void testDoubleFormat() {
-        Assertions.assertEquals("10011.22", doubleFormat(10011.22222D));
-        Assertions.assertEquals("10011.22", doubleFormat(10011.22D));
-        Assertions.assertEquals("1.22", doubleFormat(1.2222D));
-        Assertions.assertEquals("1.20", doubleFormat(1.2D));
-        Assertions.assertEquals("1.00", doubleFormat(1D));
-        Assertions.assertEquals("0.00", doubleFormat(0D));
-        Assertions.assertEquals("-1.00", doubleFormat(-1D));
-        Assertions.assertEquals("-1.10", doubleFormat(-1.1D));
+    public void testNumFormat() {
+        Assertions.assertEquals("10011.22", numFormat(10011.22222D));
+        Assertions.assertEquals("10011.22", numFormat(10011.22D));
+        Assertions.assertEquals("1.22", numFormat(1.2222D));
+        Assertions.assertEquals("1.20", numFormat(1.2D));
+        Assertions.assertEquals("1.00", numFormat(1D));
+        Assertions.assertEquals("0.00", numFormat(0D));
+        Assertions.assertEquals("-1.00", numFormat(-1D));
+        Assertions.assertEquals("-1.10", numFormat(-1.1D));
     }
 
     @Test
