@@ -78,6 +78,8 @@ public interface PropertyKeys {
 
         ConfigKey PASSWORD = ConfigKey.of("influxdb.password", "influxdb.password");
 
+        ConfigKey TOKEN = ConfigKey.of("influxdb.token", "influxdb.token");
+
         ConfigKey CONN_TIMEOUT = ConfigKey.of("influxdb.conn_timeout", "influxdb.conn_timeout");
 
         ConfigKey READ_TIMEOUT = ConfigKey.of("influxdb.read_timeout", "influxdb.read_timeout");

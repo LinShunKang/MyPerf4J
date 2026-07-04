@@ -11,6 +11,7 @@ import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.ORG_NAME;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.PASSWORD;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.PORT;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.READ_TIMEOUT;
+import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.TOKEN;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.USERNAME;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.VERSION;
 import static cn.myperf4j.base.util.StrUtils.isBlank;
@@ -26,7 +27,7 @@ public class InfluxDbConfig {
 
     private int port;
 
-    private String orgName;
+    private String orgName; //for 2.x
 
     private String database;
 
@@ -34,9 +35,11 @@ public class InfluxDbConfig {
 
     private int readTimeout;
 
-    private String username;
+    private String username; //for 1.x and 2.x
 
-    private String password;
+    private String password; //for 1.x and 2.x
+
+    private String token; //for 3.x
 
     public String version() {
         return version;
@@ -110,6 +113,14 @@ public class InfluxDbConfig {
         this.password = password;
     }
 
+    public String token() {
+        return token;
+    }
+
+    public void token(String token) {
+        this.token = token;
+    }
+
     @Override
     public String toString() {
         return "InfluxDbConfig{" +
@@ -122,6 +133,7 @@ public class InfluxDbConfig {
                 ", readTimeout=" + readTimeout +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
+                ", token='" + token + '\'' +
                 '}';
     }
 
@@ -152,6 +164,7 @@ public class InfluxDbConfig {
         config.database(getStr(DATABASE));
         config.username(getStr(USERNAME));
         config.password(getStr(PASSWORD));
+        config.token(getStr(TOKEN));
         config.connectTimeout(getInt(CONN_TIMEOUT, 3000));
         config.readTimeout(getInt(READ_TIMEOUT, 5000));
         return config;
