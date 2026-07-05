@@ -6,36 +6,25 @@ import cn.myperf4j.base.http.HttpResponse;
 import cn.myperf4j.base.http.client.HttpClient;
 import cn.myperf4j.base.io.Bytes;
 import cn.myperf4j.base.io.UnsafeByteArrayOutputStream;
-import cn.myperf4j.base.util.Base64;
-import cn.myperf4j.base.util.Base64.Encoder;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.util.concurrent.ExecutorManager;
 
 import java.io.IOException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.ThreadPoolExecutor.DiscardOldestPolicy;
 import java.util.zip.GZIPOutputStream;
 
 import static cn.myperf4j.base.http.HttpStatusClass.INFORMATIONAL;
 import static cn.myperf4j.base.http.HttpStatusClass.SUCCESS;
-import static cn.myperf4j.base.util.StrUtils.isNotBlank;
 import static cn.myperf4j.base.util.concurrent.ThreadUtils.newThreadFactory;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
 /**
- * Created by LinShunkang on 2022/02/02
+ * Created by LinShunkang on 2026/07/03
  */
-public final class InfluxDbV2Client implements InfluxDbClient {
+public class InfluxDbV3Client implements InfluxDbClient {
 
     private static final int MIN_COMPRESS_BYTES = 1024;
-
-    private static final String API_SIGN_IN = "/api/v2/signin";
-
-    private static final String API_SIGN_OUT = "/api/v2/signout";
-
-    private static final Encoder BASE64_ENCODER = Base64.getEncoder();
 
     private static final ThreadPoolExecutor ASYNC_EXECUTOR = new ThreadPoolExecutor(
             1,
@@ -43,8 +32,8 @@ public final class InfluxDbV2Client implements InfluxDbClient {
             3,
             MINUTES,
             new LinkedBlockingQueue<>(1024),
-            newThreadFactory("MyPerf4J-InfluxDbV2Client_"),
-            new DiscardOldestPolicy());
+            newThreadFactory("MyPerf4J-InfluxDb3Client_"),
+            new ThreadPoolExecutor.DiscardOldestPolicy());
 
     static {
         ExecutorManager.addExecutorService(ASYNC_EXECUTOR);
@@ -58,54 +47,18 @@ public final class InfluxDbV2Client implements InfluxDbClient {
 
     private final HttpClient httpClient;
 
-    private String cookie;
-
-    public InfluxDbV2Client(Builder builder) {
+    public InfluxDbV3Client(Builder builder) {
         this.url = "http://" + builder.host + ":" + builder.port;
         this.writeReqUrl = buildWriteReqUrl(builder);
-        this.authorization = buildAuthorization(builder);
+        this.authorization = "Bearer " + builder.token;
         this.httpClient = new HttpClient.Builder()
                 .connectTimeout(builder.connectTimeout)
                 .readTimeout(builder.readTimeout)
                 .build();
-        this.cookie = "";
-        this.trySignIn();
     }
 
     private String buildWriteReqUrl(Builder builder) {
-        return url + "/api/v2/write?org=" + builder.orgName + "&bucket=" + builder.database + "&precision=ns";
-    }
-
-    private String buildAuthorization(Builder builder) {
-        if (isNotBlank(builder.username) && isNotBlank(builder.password)) {
-            final String auth = builder.username + ':' + builder.password;
-            return "Basic " + BASE64_ENCODER.encodeToString(auth.getBytes(UTF_8));
-        }
-        return "";
-    }
-
-    private boolean trySignIn() {
-        if (isNotBlank(this.cookie)) {
-            return true;
-        }
-
-        final HttpRequest req = new HttpRequest.Builder()
-                .url(url + API_SIGN_IN)
-                .header("Authorization", authorization)
-                .post(" ")
-                .build();
-        try {
-            final HttpResponse response = httpClient.execute(req);
-            Logger.info("InfluxDbV2Client login response.status=" + response.getStatus());
-
-            if (response.getStatus().statusClass() == SUCCESS) {
-                this.cookie = response.getHeaders().get("Set-Cookie");
-                return true;
-            }
-        } catch (IOException e) {
-            Logger.error("InfluxDbV2Client.trySignIn(): e=" + e.getMessage(), e);
-        }
-        return false;
+        return url + "/api/v3/write_lp?no_sync=true&db=" + builder.database + "&precision=nanosecond";
     }
 
     @Override
@@ -114,15 +67,10 @@ public final class InfluxDbV2Client implements InfluxDbClient {
             return false;
         }
 
-        if (!trySignIn()) {
-            Logger.warn("try login fails, so do not continue write content!");
-            return false;
-        }
-
         try {
             return writeMetrics0(generateWriteReq(content));
         } catch (Throwable t) {
-            Logger.error("InfluxDbV2Client.writeMetricsSync() catch Exception!", t);
+            Logger.error("InfluxDbV3Client.writeMetricsSync() catch Exception!", t);
         }
         return false;
     }
@@ -130,7 +78,7 @@ public final class InfluxDbV2Client implements InfluxDbClient {
     private HttpRequest generateWriteReq(Bytes content) throws IOException {
         final HttpRequest.Builder reqBuilder = new HttpRequest.Builder()
                 .url(writeReqUrl)
-                .header("Cookie", cookie);
+                .header("Authorization", authorization);
         return contentEncoding(reqBuilder, content).build();
     }
 
@@ -156,18 +104,18 @@ public final class InfluxDbV2Client implements InfluxDbClient {
             final HttpRespStatus status = response.getStatus();
             if (status.statusClass() == SUCCESS) {
                 if (Logger.isDebugEnable()) {
-                    Logger.debug("InfluxDbV2Client.writeMetrics0(): respStatus=" + status.simpleString());
+                    Logger.debug("InfluxDbV3Client.writeMetrics0(): respStatus=" + status.simpleString());
                 }
                 return true;
             }
 
             if (status.statusClass() != INFORMATIONAL && status.statusClass() != SUCCESS) {
-                Logger.warn("InfluxDbV2Client.writeMetrics0(): respStatus=" + status.simpleString());
+                Logger.warn("InfluxDbV3Client.writeMetrics0(): respStatus=" + status.simpleString());
             }
         } catch (IOException e) {
-            Logger.warn("InfluxDbV2Client.writeMetrics0() catch IOException!", e);
+            Logger.warn("InfluxDbV3Client.writeMetrics0() catch IOException!", e);
         } catch (Throwable t) {
-            Logger.error("InfluxDbV2Client.writeMetrics0() catch Exception!", t);
+            Logger.error("InfluxDbV3Client.writeMetrics0() catch Exception!", t);
         }
         return false;
     }
@@ -190,27 +138,7 @@ public final class InfluxDbV2Client implements InfluxDbClient {
 
     @Override
     public boolean close() {
-        return trySignOut();
-    }
-
-    private boolean trySignOut() {
-        final HttpRequest req = new HttpRequest.Builder()
-                .url(url + API_SIGN_OUT)
-                .header("Cookie", this.cookie)
-                .post(" ")
-                .build();
-        try {
-            final HttpResponse response = httpClient.execute(req);
-            Logger.info("InfluxDbV2Client sign out response.status=" + response.getStatus());
-
-            if (response.getStatus().statusClass() == SUCCESS) {
-                this.cookie = "";
-                return true;
-            }
-        } catch (IOException e) {
-            Logger.error("InfluxDbV2Client.trySignOut(): e=" + e.getMessage(), e);
-        }
-        return false;
+        return true; //do nothing.
     }
 
     public static class Builder {
@@ -223,13 +151,9 @@ public final class InfluxDbV2Client implements InfluxDbClient {
 
         private int port;
 
-        private String orgName;
-
         private String database;
 
-        private String username;
-
-        private String password;
+        private String token;
 
         private int connectTimeout;
 
@@ -250,23 +174,13 @@ public final class InfluxDbV2Client implements InfluxDbClient {
             return this;
         }
 
-        public Builder orgName(String organized) {
-            this.orgName = organized;
-            return this;
-        }
-
         public Builder database(String database) {
             this.database = database;
             return this;
         }
 
-        public Builder username(String username) {
-            this.username = username;
-            return this;
-        }
-
-        public Builder password(String password) {
-            this.password = password;
+        public Builder token(String token) {
+            this.token = token;
             return this;
         }
 
@@ -280,8 +194,8 @@ public final class InfluxDbV2Client implements InfluxDbClient {
             return this;
         }
 
-        public InfluxDbV2Client build() {
-            return new InfluxDbV2Client(this);
+        public InfluxDbV3Client build() {
+            return new InfluxDbV3Client(this);
         }
     }
 }
