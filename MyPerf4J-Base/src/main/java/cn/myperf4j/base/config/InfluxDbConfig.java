@@ -8,11 +8,13 @@ import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.CONN_TIMEOUT;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.DATABASE;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.HOST;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.ORG_NAME;
-import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.PASSWORD;
+import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.PASSWORD_V1;
+import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.PASSWORD_V2;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.PORT;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.READ_TIMEOUT;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.TOKEN;
-import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.USERNAME;
+import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.USERNAME_V1;
+import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.USERNAME_V2;
 import static cn.myperf4j.base.constant.PropertyKeys.InfluxDB.VERSION;
 import static cn.myperf4j.base.util.StrUtils.isBlank;
 
@@ -21,104 +23,49 @@ import static cn.myperf4j.base.util.StrUtils.isBlank;
  */
 public class InfluxDbConfig {
 
-    private String version;
+    private final String version;
 
-    private String host;
+    private final String host;
 
-    private int port;
+    private final int port;
 
-    private String orgName; //for 2.x
+    private final String database;
 
-    private String database;
+    private final int connectTimeout;
 
-    private int connectTimeout;
+    private final int readTimeout;
 
-    private int readTimeout;
-
-    private String username; //for 1.x and 2.x
-
-    private String password; //for 1.x and 2.x
-
-    private String token; //for 3.x
+    public InfluxDbConfig(String version, String host, int port, String database, int connectTimeout, int readTimeout) {
+        this.version = version;
+        this.host = host;
+        this.port = port;
+        this.database = database;
+        this.connectTimeout = connectTimeout;
+        this.readTimeout = readTimeout;
+    }
 
     public String version() {
         return version;
-    }
-
-    public void version(String version) {
-        this.version = version;
     }
 
     public String host() {
         return host;
     }
 
-    public void host(String host) {
-        this.host = host;
-    }
-
     public int port() {
         return port;
-    }
-
-    public void port(int port) {
-        this.port = port;
-    }
-
-    public String orgName() {
-        return orgName;
-    }
-
-    public void orgName(String ortName) {
-        this.orgName = ortName;
     }
 
     public String database() {
         return database;
     }
 
-    public void database(String database) {
-        this.database = database;
-    }
-
     public int connectTimeout() {
         return connectTimeout;
     }
 
-    public void connectTimeout(int connectTimeout) {
-        this.connectTimeout = connectTimeout;
-    }
-
     public int readTimeout() {
         return readTimeout;
-    }
-
-    public void readTimeout(int readTimeout) {
-        this.readTimeout = readTimeout;
-    }
-
-    public String username() {
-        return username;
-    }
-
-    public void username(String username) {
-        this.username = username;
-    }
-
-    public String password() {
-        return password;
-    }
-
-    public void password(String password) {
-        this.password = password;
-    }
-
-    public String token() {
-        return token;
-    }
-
-    public void token(String token) {
-        this.token = token;
     }
 
     @Override
@@ -127,13 +74,9 @@ public class InfluxDbConfig {
                 "version='" + version + '\'' +
                 ", host='" + host + '\'' +
                 ", port=" + port +
-                ", orgName='" + orgName + '\'' +
                 ", database='" + database + '\'' +
                 ", connectTimeout=" + connectTimeout +
                 ", readTimeout=" + readTimeout +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", token='" + token + '\'' +
                 '}';
     }
 
@@ -156,17 +99,47 @@ public class InfluxDbConfig {
             Logger.info(PORT.key() + " is not configured, so use '8086' as default port.");
         }
 
-        final InfluxDbConfig config = new InfluxDbConfig();
-        config.version(version);
-        config.host(host);
-        config.port(port);
-        config.orgName(getStr(ORG_NAME));
-        config.database(getStr(DATABASE));
-        config.username(getStr(USERNAME));
-        config.password(getStr(PASSWORD));
-        config.token(getStr(TOKEN));
-        config.connectTimeout(getInt(CONN_TIMEOUT, 3000));
-        config.readTimeout(getInt(READ_TIMEOUT, 5000));
-        return config;
+        final String db = getStr(DATABASE);
+        final int connTimeout = getInt(CONN_TIMEOUT, 3000);
+        final int readTimeout = getInt(READ_TIMEOUT, 5000);
+        if (version.startsWith("3.")) {
+            return loadV3Config(version, host, port, db, connTimeout, readTimeout);
+        } else if (version.startsWith("2.")) {
+            return loadV2Config(version, host, port, db, connTimeout, readTimeout);
+        } else {
+            return loadV1Config(version, host, port, db, connTimeout, readTimeout);
+        }
+    }
+
+    private static InfluxDbV3Config loadV3Config(String v,
+                                                 String host,
+                                                 int port,
+                                                 String db,
+                                                 int connTimeout,
+                                                 int readTimeout) {
+        return new InfluxDbV3Config(v, host, port, db, connTimeout, readTimeout, getStr(TOKEN));
+    }
+
+    private static InfluxDbV2Config loadV2Config(String v,
+                                                 String host,
+                                                 int port,
+                                                 String db,
+                                                 int connTimeout,
+                                                 int readTimeout) {
+        final String orgName = getStr(ORG_NAME);
+        final String username = getStr(USERNAME_V2);
+        final String password = getStr(PASSWORD_V2);
+        return new InfluxDbV2Config(v, host, port, db, connTimeout, readTimeout, orgName, username, password);
+    }
+
+    private static InfluxDbV1Config loadV1Config(String v,
+                                                 String host,
+                                                 int port,
+                                                 String db,
+                                                 int connTimeout,
+                                                 int readTimeout) {
+        final String username = getStr(USERNAME_V1);
+        final String password = getStr(PASSWORD_V1);
+        return new InfluxDbV1Config(v, host, port, db, connTimeout, readTimeout, username, password);
     }
 }

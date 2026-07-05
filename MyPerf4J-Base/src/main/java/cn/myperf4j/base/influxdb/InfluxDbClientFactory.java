@@ -1,6 +1,9 @@
 package cn.myperf4j.base.influxdb;
 
 import cn.myperf4j.base.config.InfluxDbConfig;
+import cn.myperf4j.base.config.InfluxDbV1Config;
+import cn.myperf4j.base.config.InfluxDbV2Config;
+import cn.myperf4j.base.config.InfluxDbV3Config;
 import cn.myperf4j.base.config.ProfilingConfig;
 
 /**
@@ -12,17 +15,16 @@ public final class InfluxDbClientFactory {
 
     private static InfluxDbClient generateClient() {
         final InfluxDbConfig config = ProfilingConfig.influxDBConfig();
-        final String version = config.version();
-        if (version.startsWith("3.")) {
-            return generateV3Client(config);
-        } else if (version.startsWith("2.")) {
-            return generateV2Client(config);
+        if (config instanceof InfluxDbV3Config) {
+            return generateV3Client((InfluxDbV3Config) config);
+        } else if (config instanceof InfluxDbV2Config) {
+            return generateV2Client((InfluxDbV2Config) config);
         } else {
-            return generateV1Client(config);
+            return generateV1Client((InfluxDbV1Config) config);
         }
     }
 
-    private static InfluxDbV3Client generateV3Client(InfluxDbConfig config) {
+    private static InfluxDbV3Client generateV3Client(InfluxDbV3Config config) {
         return new InfluxDbV3Client.Builder()
                 .host(config.host())
                 .port(config.port())
@@ -33,7 +35,7 @@ public final class InfluxDbClientFactory {
                 .build();
     }
 
-    private static InfluxDbV2Client generateV2Client(InfluxDbConfig config) {
+    private static InfluxDbV2Client generateV2Client(InfluxDbV2Config config) {
         return new InfluxDbV2Client.Builder()
                 .host(config.host())
                 .port(config.port())
@@ -46,7 +48,7 @@ public final class InfluxDbClientFactory {
                 .build();
     }
 
-    private static InfluxDbClient generateV1Client(InfluxDbConfig config) {
+    private static InfluxDbClient generateV1Client(InfluxDbV1Config config) {
         return new InfluxDbV1Client.Builder()
                 .host(config.host())
                 .port(config.port())

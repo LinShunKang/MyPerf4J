@@ -42,7 +42,7 @@ public final class ProfilingConfig {
     }
 
     public static void influxDBConfig(InfluxDbConfig influxDBConfig) {
-        ProfilingConfig.INFLUX_DB_CONFIG = influxDBConfig;
+        INFLUX_DB_CONFIG = influxDBConfig;
     }
 
     public static MetricsConfig metricsConfig() {
