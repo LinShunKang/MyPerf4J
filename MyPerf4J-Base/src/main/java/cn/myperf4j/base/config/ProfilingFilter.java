@@ -38,9 +38,24 @@ public final class ProfilingFilter {
     private static final Set<String> excludeMethods = new HashSet<>();
 
     /**
-     * 不注入的 ClassLoader 集合
+     * 不需要注入的 ClassLoader 集合
      */
-    private static final Set<String> excludeClassLoader = new HashSet<>();
+    private static final Set<String> excludeClassLoaders = new HashSet<>();
+
+    /**
+     * 需要扫描注解的 Package 前缀 集合
+     */
+    private static final Set<String> scanAnnoPackagePrefix = new HashSet<>();
+
+    /**
+     * 需要扫描注解的 Package表达式 集合
+     */
+    private static final Set<String> scanAnnoPackageExp = new HashSet<>();
+
+    /**
+     * 需要注入的 Annotation 集合
+     */
+    private static final Set<String> includeAnnotations = new HashSet<>();
 
     static {
         // 默认不注入的 package
@@ -150,6 +165,8 @@ public final class ProfilingFilter {
     }
 
     /**
+     * 是否是不需要执行代码注入的方法
+     *
      * @return : true->需要修改字节码  false->不需要修改字节码
      */
     public static boolean isNotNeedInjectMethod(String methodName) {
@@ -180,15 +197,44 @@ public final class ProfilingFilter {
     }
 
     public static void addExcludeClassLoader(String classLoader) {
-        excludeClassLoader.add(classLoader);
+        excludeClassLoaders.add(classLoader);
     }
 
     /**
-     * 是否是不需要注入的类加载器
+     * 是否是不需要执行代码注入的类加载器
      *
      * @return : true->不需要修改字节码  false->需要修改字节码
      */
     public static boolean isNotNeedInjectClassLoader(String classLoader) {
-        return excludeClassLoader.contains(classLoader);
+        return excludeClassLoaders.contains(classLoader);
+    }
+
+    /**
+     * 是否需要扫描注解
+     */
+    public static boolean isNeedScanAnnotation(String innerClassName) {
+        if (innerClassName == null) {
+            return false;
+        }
+        return isMatch(innerClassName, scanAnnoPackagePrefix, scanAnnoPackageExp);
+    }
+
+    public static void addScanAnnotationPackages(String pkg) {
+        if (StrUtils.isNotEmpty(pkg)) {
+            addPackages(pkg, scanAnnoPackagePrefix, scanAnnoPackageExp);
+        }
+    }
+
+    public static void addIncludeAnnotation(String annotationClassName) {
+        includeAnnotations.add("L" + annotationClassName.replace('.', '/') + ";");
+    }
+
+    /**
+     * 是否是需要执行代码注入的注解
+     *
+     * @return : true->需要修改字节码  false->不需要修改字节码
+     */
+    public static boolean isNeedInjectAnnotation(String annotationDesc) {
+        return includeAnnotations.contains(annotationDesc);
     }
 }

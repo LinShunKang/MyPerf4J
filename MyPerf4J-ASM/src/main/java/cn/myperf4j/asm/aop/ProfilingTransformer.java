@@ -8,6 +8,7 @@ import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
 
 import static cn.myperf4j.base.config.ProfilingFilter.isNeedInject;
+import static cn.myperf4j.base.config.ProfilingFilter.isNeedScanAnnotation;
 import static cn.myperf4j.base.config.ProfilingFilter.isNotNeedInject;
 import static cn.myperf4j.base.config.ProfilingFilter.isNotNeedInjectClassLoader;
 import static org.objectweb.asm.ClassReader.EXPAND_FRAMES;
@@ -27,17 +28,19 @@ public class ProfilingTransformer implements ClassFileTransformer {
                             byte[] classFileBuffer) {
         final String classLoaderName = getClassLoaderName(loader);
         try {
-            if (isNotNeedInject(className) || !isNeedInject(className)) {
+            if (isNotNeedInject(className) || (loader != null && isNotNeedInjectClassLoader(classLoaderName))) {
                 return classFileBuffer;
             }
 
-            if (loader != null && isNotNeedInjectClassLoader(classLoaderName)) {
-                return classFileBuffer;
+            if (isNeedInject(className)) {
+                Logger.info("ProfilingTransformer.transform(" + classLoaderName + ", " + className
+                        + ", classBeingRedefined, protectionDomain, " + classFileBuffer.length + ")...");
+                return transformWithClassAdapter(loader, className, classFileBuffer);
             }
 
-            Logger.info("ProfilingTransformer.transform(" + classLoaderName + ", " + className
-                    + ", classBeingRedefined, protectionDomain, " + classFileBuffer.length + ")...");
-            return getBytes(loader, className, classFileBuffer);
+            if (isNeedScanAnnotation(className)) {
+                return transformWithAnnoClassAdapter(loader, className, classFileBuffer);
+            }
         } catch (Throwable t) {
             Logger.error("ProfilingTransformer.transform(" + classLoaderName + ", " + className + ", "
                     + classBeingRedefined + ", protectionDomain, " + classFileBuffer.length + ")", t);
@@ -49,7 +52,7 @@ public class ProfilingTransformer implements ClassFileTransformer {
         return classLoader == null ? "null" : classLoader.getClass().getName();
     }
 
-    private byte[] getBytes(ClassLoader loader, String className, byte[] classFileBuffer) {
+    private byte[] transformWithClassAdapter(ClassLoader loader, String className, byte[] classFileBuffer) {
         final ClassReader cr = new ClassReader(classFileBuffer);
         final ClassWriter cw = new ClassWriter(cr, computeMax(loader) ? COMPUTE_MAXS : COMPUTE_FRAMES);
         cr.accept(new ProfilingClassAdapter(cw, className), EXPAND_FRAMES);
@@ -68,5 +71,12 @@ public class ProfilingTransformer implements ClassFileTransformer {
                 || loaderName.equals("org.springframework.boot.loader.launch.LaunchedClassLoader")
                 || loaderName.startsWith("org.apache.flink.runtime.execution.librarycache.FlinkUserCodeClassLoaders")
                 ;
+    }
+
+    private byte[] transformWithAnnoClassAdapter(ClassLoader loader, String className, byte[] classFileBuffer) {
+        final ClassReader cr = new ClassReader(classFileBuffer);
+        final ClassWriter cw = new ClassWriter(cr, computeMax(loader) ? COMPUTE_MAXS : COMPUTE_FRAMES);
+        cr.accept(new AnnotationProfilingClassAdapter(cw, className), EXPAND_FRAMES);
+        return cw.toByteArray();
     }
 }
