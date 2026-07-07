@@ -215,11 +215,8 @@ public abstract class AbstractBootstrap {
     private boolean initPackageFilter() {
         try {
             final FilterConfig filterConfig = ProfilingConfig.filterConfig();
-            final List<String> includeList = splitAsList(filterConfig.includePackages(), ELE);
-            includeList.forEach(ProfilingFilter::addIncludePackage);
-
-            final List<String> excludeList = splitAsList(filterConfig.excludePackages(), ELE);
-            excludeList.forEach(ProfilingFilter::addExcludePackage);
+            ProfilingFilter.addAllIncludePackage(splitAsList(filterConfig.includePackages(), ELE));
+            ProfilingFilter.addAllExcludePackage(splitAsList(filterConfig.excludePackages(), ELE));
             return true;
         } catch (Exception e) {
             Logger.error("AbstractBootstrap.initPackageFilter()", e);
