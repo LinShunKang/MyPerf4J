@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static cn.myperf4j.base.util.StrMatchUtils.WILDCARD;
 import static cn.myperf4j.base.util.collections.ConvertUtils.groupBy;
 
 /**
@@ -36,7 +37,7 @@ public class PackageMatcher {
     }
 
     private static String prefix(String packageExpr) {
-        final int index = packageExpr.indexOf('*');
+        final int index = packageExpr.indexOf(WILDCARD);
         return index < 0 ? packageExpr : packageExpr.substring(0, index);
     }
 
@@ -91,7 +92,7 @@ public class PackageMatcher {
         PackagePredicate(String expression, int prefixLen) {
             this.expression = expression;
             this.prefixLen = prefixLen;
-            this.prefixOnly = expression.indexOf('*') < 0;
+            this.prefixOnly = expression.length() == prefixLen || expression.length() - 1 == prefixLen;
         }
 
         public boolean isMatch(String packageName) {

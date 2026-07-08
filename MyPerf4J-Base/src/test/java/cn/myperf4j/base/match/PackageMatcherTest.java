@@ -16,7 +16,7 @@ public class PackageMatcherTest {
     @Test
     public void testPrefixMatch() {
         final PackageMatcher matcher = new PackageMatcher();
-        matcher.init(setOf("java/", "javax/", "cn/myperf4j/"));
+        matcher.init(setOf("java/", "javax/", "cn/myperf4j/*"));
 
         Assertions.assertTrue(matcher.isMatch("java/lang/String"));
         Assertions.assertTrue(matcher.isMatch("javax/servlet/Filter"));
