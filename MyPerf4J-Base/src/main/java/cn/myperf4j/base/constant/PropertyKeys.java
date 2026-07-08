@@ -95,6 +95,10 @@ public interface PropertyKeys {
 
         ConfigKey PACKAGES_EXCLUDE = ConfigKey.of("filter.packages.exclude", "ExcludePackages");
 
+        ConfigKey ANNOTATIONS_SCAN_PKG = ConfigKey.of("filter.annotations.scan.base.packages", "NOT_EXIST");
+
+        ConfigKey ANNOTATIONS_INCLUDE = ConfigKey.of("filter.annotations.include", "NOT_EXIST");
+
         ConfigKey METHODS_EXCLUDE = ConfigKey.of("filter.methods.exclude", "ExcludeMethods");
 
         ConfigKey METHODS_EXCLUDE_PRIVATE = ConfigKey.of("filter.methods.exclude_private", "ExcludePrivateMethod");

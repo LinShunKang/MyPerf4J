@@ -122,6 +122,11 @@ public abstract class AbstractBootstrap {
             return false;
         }
 
+        if (!initAnnotationFilter()) {
+            Logger.error("AbstractBootstrap initAnnotationFilter() FAILURE!!!");
+            return false;
+        }
+
         if (!initMethodFilter()) {
             Logger.error("AbstractBootstrap initMethodFilter() FAILURE!!!");
             return false;
@@ -232,6 +237,19 @@ public abstract class AbstractBootstrap {
             return true;
         } catch (Exception e) {
             Logger.error("AbstractBootstrap.initClassLoaderFilter()", e);
+        }
+        return false;
+    }
+
+    private boolean initAnnotationFilter() {
+        try {
+            final FilterConfig filterConfig = ProfilingConfig.filterConfig();
+            final List<String> includeList = splitAsList(filterConfig.includeAnnotations(), ELE);
+            includeList.forEach(ProfilingFilter::addIncludeAnnotation);
+            ProfilingFilter.addAllAnnotationScanPackages(splitAsList(filterConfig.annotationScanPackages(), ELE));
+            return true;
+        } catch (Exception e) {
+            Logger.error("AbstractBootstrap.initAnnotationFilter()", e);
         }
         return false;
     }

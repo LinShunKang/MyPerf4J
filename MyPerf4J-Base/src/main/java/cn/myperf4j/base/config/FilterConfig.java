@@ -4,6 +4,8 @@ import cn.myperf4j.base.util.StrUtils;
 
 import static cn.myperf4j.base.config.MyProperties.getBoolean;
 import static cn.myperf4j.base.config.MyProperties.getStr;
+import static cn.myperf4j.base.constant.PropertyKeys.Filter.ANNOTATIONS_INCLUDE;
+import static cn.myperf4j.base.constant.PropertyKeys.Filter.ANNOTATIONS_SCAN_PKG;
 import static cn.myperf4j.base.constant.PropertyKeys.Filter.CLASS_LOADERS_EXCLUDE;
 import static cn.myperf4j.base.constant.PropertyKeys.Filter.METHODS_EXCLUDE;
 import static cn.myperf4j.base.constant.PropertyKeys.Filter.METHODS_EXCLUDE_PRIVATE;
@@ -20,6 +22,10 @@ public class FilterConfig {
     private String includePackages;
 
     private String excludePackages;
+
+    private String annotationScanPackages;
+
+    private String includeAnnotations;
 
     private String excludeMethods;
 
@@ -49,6 +55,22 @@ public class FilterConfig {
         this.excludePackages = excludePackages;
     }
 
+    public String annotationScanPackages() {
+        return annotationScanPackages;
+    }
+
+    public void annotationScanPackages(String annotationScanPackages) {
+        this.annotationScanPackages = annotationScanPackages;
+    }
+
+    public String includeAnnotations() {
+        return includeAnnotations;
+    }
+
+    public void includeAnnotations(String includeAnnotations) {
+        this.includeAnnotations = includeAnnotations;
+    }
+
     public String excludeMethods() {
         return excludeMethods;
     }
@@ -71,6 +93,8 @@ public class FilterConfig {
                 "excludeClassLoaders='" + excludeClassLoaders + '\'' +
                 ", includePackages='" + includePackages + '\'' +
                 ", excludePackages='" + excludePackages + '\'' +
+                ", annotationScanPackages='" + annotationScanPackages + '\'' +
+                ", includeAnnotations='" + includeAnnotations + '\'' +
                 ", excludeMethods='" + excludeMethods + '\'' +
                 ", excludePrivateMethod=" + excludePrivateMethod +
                 '}';
@@ -87,6 +111,8 @@ public class FilterConfig {
         config.includePackages(includePackages);
         config.excludeClassLoaders(getStr(CLASS_LOADERS_EXCLUDE));
         config.excludePackages(getStr(PACKAGES_EXCLUDE));
+        config.annotationScanPackages(getStr(ANNOTATIONS_SCAN_PKG));
+        config.includeAnnotations(getStr(ANNOTATIONS_INCLUDE));
         config.excludeMethods(getStr(METHODS_EXCLUDE));
         config.excludePrivateMethod(getBoolean(METHODS_EXCLUDE_PRIVATE, true));
         return config;
