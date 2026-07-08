@@ -246,9 +246,7 @@ public abstract class AbstractBootstrap {
             final FilterConfig filterConfig = ProfilingConfig.filterConfig();
             final List<String> includeList = splitAsList(filterConfig.includeAnnotations(), ELE);
             includeList.forEach(ProfilingFilter::addIncludeAnnotation);
-
-            final List<String> scanPackages = splitAsList(filterConfig.annotationScanPackages(), ELE);
-            scanPackages.forEach(ProfilingFilter::addScanAnnotationPackages);
+            ProfilingFilter.addAllAnnotationScanPackages(splitAsList(filterConfig.annotationScanPackages(), ELE));
             return true;
         } catch (Exception e) {
             Logger.error("AbstractBootstrap.initAnnotationFilter()", e);

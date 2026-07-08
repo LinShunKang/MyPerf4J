@@ -5,9 +5,9 @@ import cn.myperf4j.base.algorithm.trie.Trie;
 import cn.myperf4j.base.util.StrMatchUtils;
 import cn.myperf4j.base.util.collections.ListUtils;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static cn.myperf4j.base.util.StrMatchUtils.WILDCARD;
 import static cn.myperf4j.base.util.collections.ConvertUtils.groupBy;
@@ -26,12 +26,12 @@ public class PackageMatcher {
         this.inited = false;
     }
 
-    public void init(Set<String> packageExprSet) {
+    public void init(Collection<String> packageExprs) {
         if (inited) {
             throw new IllegalStateException("PackageMatcher is already inited!");
         }
 
-        final Map<String, List<String>> prefixGroups = groupBy(packageExprSet, PackageMatcher::prefix);
+        final Map<String, List<String>> prefixGroups = groupBy(packageExprs, PackageMatcher::prefix);
         prefixGroups.forEach((prefix, exprList) -> trie.put(prefix, new PackagePredicates(prefix, exprList)));
         inited = true;
     }

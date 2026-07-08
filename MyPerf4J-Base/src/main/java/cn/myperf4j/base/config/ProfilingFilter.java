@@ -30,45 +30,37 @@ public final class ProfilingFilter {
 
     private static final PackageMatcher EXCLUDE_PACKAGE_MATCHER = new PackageMatcher();
 
+    private static final PackageMatcher ANNOTATION_SCAN_PACKAGE_MATCHER = new PackageMatcher();
+
     /**
      * 不需要注入的 method 集合
      */
-    private static final Set<String> excludeMethods = new HashSet<>();
+    private static final Set<String> EXCLUDE_METHODS = new HashSet<>();
 
     /**
      * 不需要注入的 ClassLoader 集合
      */
-    private static final Set<String> excludeClassLoaders = new HashSet<>();
-
-    /**
-     * 需要扫描注解的 Package 前缀 集合
-     */
-    private static final Set<String> scanAnnoPackagePrefix = new HashSet<>();
-
-    /**
-     * 需要扫描注解的 Package表达式 集合
-     */
-    private static final Set<String> scanAnnoPackageExp = new HashSet<>();
+    private static final Set<String> EXCLUDE_CLASS_LOADERS = new HashSet<>();
 
     /**
      * 需要注入的 Annotation 集合
      */
-    private static final Set<String> includeAnnotations = new HashSet<>();
+    private static final Set<String> INCLUDE_ANNOTATIONS = new HashSet<>();
 
     static {
         //默认不注入的method
-        excludeMethods.add("main");
-        excludeMethods.add("premain");
-        excludeMethods.add("getClass"); //java.lang.Object
-        excludeMethods.add("hashCode"); //java.lang.Object
-        excludeMethods.add("equals"); //java.lang.Object
-        excludeMethods.add("clone"); //java.lang.Object
-        excludeMethods.add("toString"); //java.lang.Object
-        excludeMethods.add("notify"); //java.lang.Object
-        excludeMethods.add("notifyAll"); //java.lang.Object
-        excludeMethods.add("wait"); //java.lang.Object
-        excludeMethods.add("finalize"); //java.lang.Object
-        excludeMethods.add("afterPropertiesSet"); //spring
+        EXCLUDE_METHODS.add("main");
+        EXCLUDE_METHODS.add("premain");
+        EXCLUDE_METHODS.add("getClass"); //java.lang.Object
+        EXCLUDE_METHODS.add("hashCode"); //java.lang.Object
+        EXCLUDE_METHODS.add("equals"); //java.lang.Object
+        EXCLUDE_METHODS.add("clone"); //java.lang.Object
+        EXCLUDE_METHODS.add("toString"); //java.lang.Object
+        EXCLUDE_METHODS.add("notify"); //java.lang.Object
+        EXCLUDE_METHODS.add("notifyAll"); //java.lang.Object
+        EXCLUDE_METHODS.add("wait"); //java.lang.Object
+        EXCLUDE_METHODS.add("finalize"); //java.lang.Object
+        EXCLUDE_METHODS.add("afterPropertiesSet"); //spring
     }
 
     private ProfilingFilter() {
@@ -87,13 +79,19 @@ public final class ProfilingFilter {
     }
 
     public static void addAllExcludePackage(List<String> pkgExprList) {
-        final Set<String> packages = new HashSet<>(BUILT_IN_EXCLUDE_PACKAGES);
+        final Set<String> packages = parsePackageExpr(pkgExprList);
+        packages.addAll(BUILT_IN_EXCLUDE_PACKAGES);
+        EXCLUDE_PACKAGE_MATCHER.init(packages);
+    }
+
+    private static Set<String> parsePackageExpr(List<String> pkgExprList) {
+        final Set<String> packages = new HashSet<>(pkgExprList.size() * 2);
         for (String pkgExpr : pkgExprList) {
             for (String pkg : PkgExpUtils.parse(pkgExpr)) {
                 packages.add(preprocess(pkg));
             }
         }
-        EXCLUDE_PACKAGE_MATCHER.init(packages);
+        return packages;
     }
 
     private static String preprocess(String pkg) {
@@ -109,12 +107,8 @@ public final class ProfilingFilter {
     }
 
     public static void addAllIncludePackage(List<String> pkgExprList) {
-        final Set<String> packages = new HashSet<>(BUILT_IN_INCLUDE_PACKAGES);
-        for (String pkgExpr : pkgExprList) {
-            for (String pkg : PkgExpUtils.parse(pkgExpr)) {
-                packages.add(preprocess(pkg));
-            }
-        }
+        final Set<String> packages = parsePackageExpr(pkgExprList);
+        packages.addAll(BUILT_IN_INCLUDE_PACKAGES);
         INCLUDE_PACKAGE_MATCHER.init(packages);
     }
 
@@ -131,7 +125,7 @@ public final class ProfilingFilter {
         if (isSpecialMethod(methodName)) {
             return true;
         }
-        return excludeMethods.contains(methodName);
+        return EXCLUDE_METHODS.contains(methodName);
     }
 
     private static boolean isSpecialMethod(String methodName) {
@@ -146,12 +140,12 @@ public final class ProfilingFilter {
 
     public static void addExcludeMethods(String method) {
         if (method != null) {
-            excludeMethods.add(method.trim());
+            EXCLUDE_METHODS.add(method.trim());
         }
     }
 
     public static void addExcludeClassLoader(String classLoader) {
-        excludeClassLoaders.add(classLoader);
+        EXCLUDE_CLASS_LOADERS.add(classLoader);
     }
 
     /**
@@ -160,27 +154,22 @@ public final class ProfilingFilter {
      * @return : true->不需要修改字节码  false->需要修改字节码
      */
     public static boolean isNotNeedInjectClassLoader(String classLoader) {
-        return excludeClassLoaders.contains(classLoader);
+        return EXCLUDE_CLASS_LOADERS.contains(classLoader);
     }
 
     /**
-     * 是否需要扫描注解
+     * 是否需要扫描 innerClassName 中包含指定注解
      */
     public static boolean isNeedScanAnnotation(String innerClassName) {
-        if (innerClassName == null) {
-            return false;
-        }
-        return isMatch(innerClassName, scanAnnoPackagePrefix, scanAnnoPackageExp);
+        return innerClassName != null && ANNOTATION_SCAN_PACKAGE_MATCHER.isMatch(innerClassName);
     }
 
-    public static void addScanAnnotationPackages(String pkg) {
-        if (StrUtils.isNotEmpty(pkg)) {
-            addPackages(pkg, scanAnnoPackagePrefix, scanAnnoPackageExp);
-        }
+    public static void addAllAnnotationScanPackages(List<String> pkgExprList) {
+        ANNOTATION_SCAN_PACKAGE_MATCHER.init(parsePackageExpr(pkgExprList));
     }
 
     public static void addIncludeAnnotation(String annotationClassName) {
-        includeAnnotations.add("L" + annotationClassName.replace('.', '/') + ";");
+        INCLUDE_ANNOTATIONS.add("L" + annotationClassName.replace('.', '/') + ";");
     }
 
     /**
@@ -189,6 +178,6 @@ public final class ProfilingFilter {
      * @return : true->需要修改字节码  false->不需要修改字节码
      */
     public static boolean isNeedInjectAnnotation(String annotationDesc) {
-        return includeAnnotations.contains(annotationDesc);
+        return INCLUDE_ANNOTATIONS.contains(annotationDesc);
     }
 }
