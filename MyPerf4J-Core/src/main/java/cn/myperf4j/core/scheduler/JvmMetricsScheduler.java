@@ -9,6 +9,7 @@ import cn.myperf4j.base.metric.JvmFileDescriptorMetrics;
 import cn.myperf4j.base.metric.JvmGcMetrics;
 import cn.myperf4j.base.metric.JvmGcMetricsV3;
 import cn.myperf4j.base.metric.JvmMemoryMetrics;
+import cn.myperf4j.base.metric.JvmMemoryMetricsV3;
 import cn.myperf4j.base.metric.JvmThreadMetrics;
 import cn.myperf4j.base.metric.collector.JvmBufferPoolCollector;
 import cn.myperf4j.base.metric.collector.JvmClassCollector;
@@ -17,6 +18,7 @@ import cn.myperf4j.base.metric.collector.JvmFileDescCollector;
 import cn.myperf4j.base.metric.collector.JvmGcCollector;
 import cn.myperf4j.base.metric.collector.JvmGcV3Collector;
 import cn.myperf4j.base.metric.collector.JvmMemoryCollector;
+import cn.myperf4j.base.metric.collector.JvmMemoryV3Collector;
 import cn.myperf4j.base.metric.collector.JvmThreadCollector;
 import cn.myperf4j.base.metric.exporter.JvmBufferPoolMetricsExporter;
 import cn.myperf4j.base.metric.exporter.JvmClassMetricsExporter;
@@ -25,6 +27,7 @@ import cn.myperf4j.base.metric.exporter.JvmFileDescMetricsExporter;
 import cn.myperf4j.base.metric.exporter.JvmGcMetricsExporter;
 import cn.myperf4j.base.metric.exporter.JvmGcMetricsV3Exporter;
 import cn.myperf4j.base.metric.exporter.JvmMemoryMetricsExporter;
+import cn.myperf4j.base.metric.exporter.JvmMemoryMetricsV3Exporter;
 import cn.myperf4j.base.metric.exporter.JvmThreadMetricsExporter;
 import cn.myperf4j.base.util.Logger;
 
@@ -43,6 +46,8 @@ public class JvmMetricsScheduler implements Scheduler {
 
     private final JvmMemoryMetricsExporter memoryMetricsProcessor;
 
+    private final JvmMemoryMetricsV3Exporter memoryMetricsV3Processor;
+
     private final JvmBufferPoolMetricsExporter bufferPoolMetricsProcessor;
 
     private final JvmThreadMetricsExporter threadMetricsProcessor;
@@ -55,6 +60,7 @@ public class JvmMetricsScheduler implements Scheduler {
                                JvmGcMetricsExporter gcMetricsProcessor,
                                JvmGcMetricsV3Exporter gcMetricsV3Processor,
                                JvmMemoryMetricsExporter memoryMetricsProcessor,
+                               JvmMemoryMetricsV3Exporter memoryMetricsV3Processor,
                                JvmBufferPoolMetricsExporter bufferPoolMetricsProcessor,
                                JvmThreadMetricsExporter threadMetricsProcessor,
                                JvmCompilationMetricsExporter compilationProcessor,
@@ -63,6 +69,7 @@ public class JvmMetricsScheduler implements Scheduler {
         this.gcMetricsProcessor = gcMetricsProcessor;
         this.gcMetricsV3Processor = gcMetricsV3Processor;
         this.memoryMetricsProcessor = memoryMetricsProcessor;
+        this.memoryMetricsV3Processor = memoryMetricsV3Processor;
         this.bufferPoolMetricsProcessor = bufferPoolMetricsProcessor;
         this.threadMetricsProcessor = threadMetricsProcessor;
         this.compilationProcessor = compilationProcessor;
@@ -76,6 +83,7 @@ public class JvmMetricsScheduler implements Scheduler {
         processGCMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
         processGCMetricsV3(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
         processMemoryMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
+        processMemoryMetricsV3(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
         processBufferPoolMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
         processThreadMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
         processCompilationMetrics(lastTimeSliceStartTime, lastTimeSliceStartTime, stopMillis);
@@ -116,9 +124,8 @@ public class JvmMetricsScheduler implements Scheduler {
     private void processGCMetricsV3(long processId, long startMillis, long stopMillis) {
         gcMetricsV3Processor.beforeProcess(processId, startMillis, stopMillis);
         try {
-            final List<JvmGcMetricsV3> metricsList = JvmGcV3Collector.collectGcMetrics();
-            for (int i = 0, size = metricsList.size(); i < size; i++) {
-                gcMetricsV3Processor.process(metricsList.get(i), processId, startMillis, stopMillis);
+            for (JvmGcMetricsV3 metrics : JvmGcV3Collector.collectGcMetrics()) {
+                gcMetricsV3Processor.process(metrics, processId, startMillis, stopMillis);
             }
         } catch (Throwable t) {
             Logger.error("JvmMetricsScheduler.processGCMetricsV3(" + processId + ", " + startMillis + ", "
@@ -141,12 +148,25 @@ public class JvmMetricsScheduler implements Scheduler {
         }
     }
 
+    private void processMemoryMetricsV3(long processId, long startMillis, long stopMillis) {
+        memoryMetricsV3Processor.beforeProcess(processId, startMillis, stopMillis);
+        try {
+            for (JvmMemoryMetricsV3 metrics : JvmMemoryV3Collector.collectMemoryMetrics()) {
+                memoryMetricsV3Processor.process(metrics, processId, startMillis, stopMillis);
+            }
+        } catch (Throwable t) {
+            Logger.error("JvmMetricsScheduler.processMemoryMetricsV3(" + processId + ", " + startMillis + ", "
+                    + stopMillis + ")", t);
+        } finally {
+            memoryMetricsV3Processor.afterProcess(processId, startMillis, stopMillis);
+        }
+    }
+
     private void processBufferPoolMetrics(long processId, long startMillis, long stopMillis) {
         bufferPoolMetricsProcessor.beforeProcess(processId, startMillis, stopMillis);
         try {
-            final List<JvmBufferPoolMetrics> metricsList = JvmBufferPoolCollector.collectBufferPoolMetrics();
-            for (int i = 0, size = metricsList.size(); i < size; i++) {
-                bufferPoolMetricsProcessor.process(metricsList.get(i), processId, startMillis, stopMillis);
+            for (JvmBufferPoolMetrics metrics : JvmBufferPoolCollector.collectBufferPoolMetrics()) {
+                bufferPoolMetricsProcessor.process(metrics, processId, startMillis, stopMillis);
             }
         } catch (Throwable t) {
             Logger.error("JvmMetricsScheduler.processBufferPoolMetrics(" + processId + ", " + startMillis + ", "

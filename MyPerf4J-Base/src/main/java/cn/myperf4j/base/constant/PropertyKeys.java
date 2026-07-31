@@ -70,13 +70,19 @@ public interface PropertyKeys {
 
         ConfigKey PORT = ConfigKey.of("influxdb.port", "influxdb.port");
 
-        ConfigKey ORG_NAME = ConfigKey.of("influxdb.orgName", "influxdb.orgName");
+        ConfigKey ORG_NAME = ConfigKey.of("influxdb.v2.orgName", "influxdb.orgName");
 
         ConfigKey DATABASE = ConfigKey.of("influxdb.database", "influxdb.database");
 
-        ConfigKey USERNAME = ConfigKey.of("influxdb.username", "influxdb.username");
+        ConfigKey USERNAME_V1 = ConfigKey.of("influxdb.v1.username", "influxdb.username");
 
-        ConfigKey PASSWORD = ConfigKey.of("influxdb.password", "influxdb.password");
+        ConfigKey USERNAME_V2 = ConfigKey.of("influxdb.v2.username", "influxdb.username");
+
+        ConfigKey PASSWORD_V1 = ConfigKey.of("influxdb.v1.password", "influxdb.password");
+
+        ConfigKey PASSWORD_V2 = ConfigKey.of("influxdb.v2.password", "influxdb.password");
+
+        ConfigKey TOKEN = ConfigKey.of("influxdb.v3.token", "influxdb.v3.token");
 
         ConfigKey CONN_TIMEOUT = ConfigKey.of("influxdb.conn_timeout", "influxdb.conn_timeout");
 
@@ -89,6 +95,10 @@ public interface PropertyKeys {
 
         ConfigKey PACKAGES_EXCLUDE = ConfigKey.of("filter.packages.exclude", "ExcludePackages");
 
+        ConfigKey ANNOTATIONS_SCAN_PKG = ConfigKey.of("filter.annotations.scan.base.packages", "NOT_EXIST");
+
+        ConfigKey ANNOTATIONS_INCLUDE = ConfigKey.of("filter.annotations.include", "NOT_EXIST");
+
         ConfigKey METHODS_EXCLUDE = ConfigKey.of("filter.methods.exclude", "ExcludeMethods");
 
         ConfigKey METHODS_EXCLUDE_PRIVATE = ConfigKey.of("filter.methods.exclude_private", "ExcludePrivateMethod");
@@ -99,8 +109,6 @@ public interface PropertyKeys {
     interface Recorder {
 
         ConfigKey BACKUP_COUNT = ConfigKey.of("recorders.backup_count", "BackupRecordersCount");
-
-        ConfigKey MODE = ConfigKey.of("recorder.mode", "RecorderMode");
 
         ConfigKey SIZE_TIMING_ARR = ConfigKey.of("recorder.size.timing_arr", "ProfilingTimeThreshold");
 

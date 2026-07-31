@@ -1,7 +1,7 @@
 package cn.myperf4j.base.test;
 
 import cn.myperf4j.base.util.Logger;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Created by LinShunkang on 2018/10/17

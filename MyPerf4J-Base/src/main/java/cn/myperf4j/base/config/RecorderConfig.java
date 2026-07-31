@@ -5,19 +5,14 @@ import cn.myperf4j.base.util.collections.MapUtils;
 import java.util.Map;
 
 import static cn.myperf4j.base.config.MyProperties.getInt;
-import static cn.myperf4j.base.config.MyProperties.getStr;
 import static cn.myperf4j.base.constant.PropertyKeys.Recorder.BACKUP_COUNT;
-import static cn.myperf4j.base.constant.PropertyKeys.Recorder.MODE;
 import static cn.myperf4j.base.constant.PropertyKeys.Recorder.SIZE_TIMING_ARR;
 import static cn.myperf4j.base.constant.PropertyKeys.Recorder.SIZE_TIMING_MAP;
-import static cn.myperf4j.base.constant.PropertyValues.Recorder.MODE_ACCURATE;
 
 /**
  * Created by LinShunkang on 2020/05/24
  */
 public class RecorderConfig {
-
-    private String mode;
 
     private int backupCount;
 
@@ -28,18 +23,6 @@ public class RecorderConfig {
     private ProfilingParams commonProfilingParams;
 
     private final Map<String, ProfilingParams> profilingParamsMap = MapUtils.createHashMap(1024);
-
-    public String mode() {
-        return mode;
-    }
-
-    public void mode(String mode) {
-        this.mode = mode;
-    }
-
-    public boolean accurateMode() {
-        return MODE_ACCURATE.equalsIgnoreCase(mode);
-    }
 
     public int backupCount() {
         return backupCount;
@@ -74,27 +57,22 @@ public class RecorderConfig {
     }
 
     public ProfilingParams getProfilingParam(String methodName) {
-        ProfilingParams params = profilingParamsMap.get(methodName);
-        if (params != null) {
-            return params;
-        }
-        return commonProfilingParams;
+        return profilingParamsMap.getOrDefault(methodName, commonProfilingParams);
     }
 
     @Override
     public String toString() {
         return "RecorderConfig{" +
-                "mode='" + mode + '\'' +
-                ", backupCount=" + backupCount +
+                "backupCount=" + backupCount +
                 ", timingArrSize=" + timingArrSize +
                 ", timingMapSize=" + timingMapSize +
                 ", commonProfilingParams=" + commonProfilingParams +
+                ", profilingParamsMap=" + profilingParamsMap +
                 '}';
     }
 
     public static RecorderConfig loadRecorderConfig() {
         final RecorderConfig config = new RecorderConfig();
-        config.mode(getStr(MODE, MODE_ACCURATE));
         config.backupCount(getInt(BACKUP_COUNT, 1));
         config.timingArrSize(getInt(SIZE_TIMING_ARR, 1024));
         config.timingMapSize(getInt(SIZE_TIMING_MAP, 32));

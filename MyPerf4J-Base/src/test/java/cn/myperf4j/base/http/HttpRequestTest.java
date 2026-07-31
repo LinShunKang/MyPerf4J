@@ -1,8 +1,8 @@
 package cn.myperf4j.base.http;
 
 import cn.myperf4j.base.util.collections.MapUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import static cn.myperf4j.base.http.HttpMethod.GET;
 import static cn.myperf4j.base.http.HttpMethod.POST;
@@ -24,15 +24,15 @@ public class HttpRequestTest {
                 .post("abcd")
                 .build();
 
-        Assert.assertEquals("http://localhost:8086/write?k1=v1&k2=v2", req.getFullUrl());
+        Assertions.assertEquals("http://localhost:8086/write?k1=v1&k2=v2", req.getFullUrl());
 
-        Assert.assertEquals("Keep-Alive", req.getHeaders().get("Connection"));
-        Assert.assertEquals("gzip, deflate", req.getHeaders().get("Accept-Encoding"));
+        Assertions.assertEquals("Keep-Alive", req.getHeaders().get("Connection"));
+        Assertions.assertEquals("gzip, deflate", req.getHeaders().get("Accept-Encoding"));
 
-        Assert.assertEquals(MapUtils.of("k2", singletonList("v2")), req.getParams());
+        Assertions.assertEquals(MapUtils.of("k2", singletonList("v2")), req.getParams());
 
-        Assert.assertEquals(POST, req.getMethod());
-        Assert.assertArrayEquals("abcd".getBytes(UTF_8), req.getBody());
+        Assertions.assertEquals(POST, req.getMethod());
+        Assertions.assertArrayEquals("abcd".getBytes(UTF_8), req.getBody().bytes());
     }
 
     @Test
@@ -45,15 +45,15 @@ public class HttpRequestTest {
                 .get()
                 .build();
 
-        Assert.assertEquals("http://localhost:8086/write?k1=v1&k2=v2", req.getFullUrl());
+        Assertions.assertEquals("http://localhost:8086/write?k1=v1&k2=v2", req.getFullUrl());
 
-        Assert.assertEquals("Keep-Alive", req.getHeaders().get("Connection"));
-        Assert.assertEquals("gzip, deflate", req.getHeaders().get("Accept-Encoding"));
+        Assertions.assertEquals("Keep-Alive", req.getHeaders().get("Connection"));
+        Assertions.assertEquals("gzip, deflate", req.getHeaders().get("Accept-Encoding"));
 
-        Assert.assertEquals(MapUtils.of("k2", singletonList("v2")), req.getParams());
+        Assertions.assertEquals(MapUtils.of("k2", singletonList("v2")), req.getParams());
 
-        Assert.assertEquals(GET, req.getMethod());
-        Assert.assertArrayEquals("".getBytes(UTF_8), req.getBody());
+        Assertions.assertEquals(GET, req.getMethod());
+        Assertions.assertArrayEquals("".getBytes(UTF_8), req.getBody().bytes());
     }
 
     @Test
@@ -63,21 +63,21 @@ public class HttpRequestTest {
                 .params(MapUtils.of("k1", singletonList("v1")))
                 .get()
                 .build();
-        Assert.assertEquals("http://localhost:8086/write?k1=v1", req0.getFullUrl());
+        Assertions.assertEquals("http://localhost:8086/write?k1=v1", req0.getFullUrl());
 
         HttpRequest req1 = new HttpRequest.Builder()
                 .url("localhost:8086/write?")
                 .params(MapUtils.of("k1", singletonList("v1")))
                 .get()
                 .build();
-        Assert.assertEquals("http://localhost:8086/write?k1=v1", req1.getFullUrl());
+        Assertions.assertEquals("http://localhost:8086/write?k1=v1", req1.getFullUrl());
 
         HttpRequest req2 = new HttpRequest.Builder()
                 .url("localhost:8086/write?k1=v1")
                 .params(MapUtils.of("k2", singletonList("v2")))
                 .post("abcd")
                 .build();
-        Assert.assertEquals("http://localhost:8086/write?k1=v1&k2=v2", req2.getFullUrl());
+        Assertions.assertEquals("http://localhost:8086/write?k1=v1&k2=v2", req2.getFullUrl());
     }
 
     @Test
@@ -87,20 +87,20 @@ public class HttpRequestTest {
                 .params(MapUtils.of("k1", singletonList("v1")))
                 .get()
                 .build();
-        Assert.assertEquals("http://localhost:8086/write?k1=v1", req0.getFullUrl());
+        Assertions.assertEquals("http://localhost:8086/write?k1=v1", req0.getFullUrl());
 
         HttpRequest req1 = new HttpRequest.Builder()
                 .url("http://localhost:8086/write?")
                 .params(MapUtils.of("k1", singletonList("v1")))
                 .get()
                 .build();
-        Assert.assertEquals("http://localhost:8086/write?k1=v1", req1.getFullUrl());
+        Assertions.assertEquals("http://localhost:8086/write?k1=v1", req1.getFullUrl());
 
         HttpRequest req2 = new HttpRequest.Builder()
                 .url("https://localhost:8086/write?k1=v1")
                 .params(MapUtils.of("k2", singletonList("v2")))
                 .post("abcd")
                 .build();
-        Assert.assertEquals("https://localhost:8086/write?k1=v1&k2=v2", req2.getFullUrl());
+        Assertions.assertEquals("https://localhost:8086/write?k1=v1&k2=v2", req2.getFullUrl());
     }
 }

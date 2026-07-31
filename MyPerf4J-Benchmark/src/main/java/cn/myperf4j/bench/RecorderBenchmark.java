@@ -1,8 +1,7 @@
 package cn.myperf4j.bench;
 
-import cn.myperf4j.core.recorder.AccurateRecorder;
+import cn.myperf4j.core.recorder.DefaultRecorder;
 import cn.myperf4j.core.recorder.Recorder;
-import cn.myperf4j.core.recorder.RoughRecorder;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -33,19 +32,11 @@ import static org.openjdk.jmh.annotations.Mode.Throughput;
 @Fork(value = 2, jvmArgs = {"-server", "-Xmx8G", "-Xms8G", "-Xmn4G"})
 public class RecorderBenchmark {
 
-    private Recorder roughRecorder;
-
     private Recorder accurateRecorder;
 
     @Setup
     public void setup() {
-        roughRecorder = RoughRecorder.getInstance(0, 1024);
-        accurateRecorder = AccurateRecorder.getInstance(1, 1024, 64);
-    }
-
-    @Benchmark
-    public void roughRecorderBench() {
-        roughRecorder.recordTime(0L, 1000000000L);
+        accurateRecorder = DefaultRecorder.getInstance(1, 1024, 64);
     }
 
     @Benchmark

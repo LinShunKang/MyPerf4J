@@ -4,8 +4,9 @@
         "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
 <module name="Checker">
     <module name="SuppressionFilter">
-        <property name="file" value="/io/netty/suppressions.xml"/>
+        <property name="file" value="config/checkstyle/suppressions.xml"/>
     </module>
+
     <module name="io.netty.build.checkstyle.SuppressionFilter">
         <property name="pattern"
                   value="((LocalTime|WorldClock)Protocol|LinkedTransferQueue|Version|jzlib/.*|chmv8/.*|com/sun/nio/sctp/.*)\.java"/>

@@ -207,11 +207,9 @@ public class MetricsConfig {
     }
 
     public static MetricsConfig loadMetricsConfig() {
-        MetricsConfig config = new MetricsConfig();
-
-        String exporter = getExporter();
+        final MetricsConfig config = new MetricsConfig();
+        final String exporter = getExporter();
         config.metricsExporter(exporter);
-
         config.methodMetricsFile(getMetricsFile(LOG_METHOD, exporter));
         config.classMetricsFile(getMetricsFile(LOG_CLASS_LOADING, exporter));
         config.gcMetricsFile(getMetricsFile(LOG_GC, exporter));
@@ -220,13 +218,10 @@ public class MetricsConfig {
         config.threadMetricsFile(getMetricsFile(LOG_THREAD, exporter));
         config.compilationMetricsFile(getMetricsFile(LOG_COMPILATION, exporter));
         config.fileDescMetricsFile(getMetricsFile(LOG_FILE_DESC, exporter));
-
         config.logRollingTimeUnit(getStr(LOG_ROLLING_TIME_UNIT, LOG_ROLLING_DAILY));
         config.logReserveCount(getInt(LOG_RESERVE_COUNT, 7));
-
         config.methodMilliTimeSlice(getLong(TIME_SLICE_METHOD, DEFAULT_TIME_SLICE));
         config.jvmMilliTimeSlice(getLong(TIME_SLICE_JVM, DEFAULT_TIME_SLICE));
-
         config.showMethodParams(getBoolean(METHOD_SHOW_PARAMS, true));
         config.classLevelMapping(getStr(CLASS_LEVEL_MAPPINGS));
         return config;

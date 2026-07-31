@@ -3,9 +3,9 @@ package cn.myperf4j.base.http.server;
 import cn.myperf4j.base.http.HttpMethod;
 import cn.myperf4j.base.http.HttpRequest;
 import cn.myperf4j.base.http.HttpResponse;
-import cn.myperf4j.base.util.concurrent.ExecutorManager;
 import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.util.StrUtils;
+import cn.myperf4j.base.util.concurrent.ExecutorManager;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -27,8 +27,9 @@ import java.util.concurrent.ThreadPoolExecutor.DiscardPolicy;
 
 import static cn.myperf4j.base.http.HttpMethod.UNKNOWN;
 import static cn.myperf4j.base.http.HttpRespStatus.METHOD_NOT_ALLOWED;
-import static cn.myperf4j.base.util.io.InputStreamUtils.toBytes;
+import static cn.myperf4j.base.io.Bytes.unsafeWrap;
 import static cn.myperf4j.base.util.concurrent.ThreadUtils.newThreadFactory;
+import static cn.myperf4j.base.util.io.InputStreamUtils.toBytes;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
@@ -56,7 +57,7 @@ public class SimpleHttpServer {
                 builder.maxWorkers,
                 1,
                 MINUTES,
-                new ArrayBlockingQueue<Runnable>(builder.acceptCnt),
+                new ArrayBlockingQueue<>(builder.acceptCnt),
                 newThreadFactory("MyPerf4J-HttpServer-"),
                 new DiscardPolicy());
         ExecutorManager.addExecutorService(executor);
@@ -64,12 +65,7 @@ public class SimpleHttpServer {
     }
 
     public void startAsync() {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                start();
-            }
-        });
+        executor.execute(this::start);
     }
 
     /**
@@ -87,12 +83,7 @@ public class SimpleHttpServer {
 
     private static class DispatchHandler implements HttpHandler {
 
-        private static final ThreadLocal<StringBuilder> URL_SB = new ThreadLocal<StringBuilder>() {
-            @Override
-            protected StringBuilder initialValue() {
-                return new StringBuilder(128);
-            }
-        };
+        private static final ThreadLocal<StringBuilder> URL_SB = ThreadLocal.withInitial(() -> new StringBuilder(128));
 
         private final Dispatcher dispatcher;
 
@@ -135,7 +126,7 @@ public class SimpleHttpServer {
                     .url(buildUrl(exchange))
                     .headers(exchange.getRequestHeaders())
                     .params(parseParams(uri.getRawQuery()))
-                    .method(httpMethod, toBytes(exchange.getRequestBody()));
+                    .method(httpMethod, unsafeWrap(toBytes(exchange.getRequestBody())));
             return reqBuilder.build();
         }
 

@@ -1,10 +1,11 @@
 package cn.myperf4j.base.config;
 
+import cn.myperf4j.base.match.PackageMatcher;
 import cn.myperf4j.base.util.PkgExpUtils;
-import cn.myperf4j.base.util.StrMatchUtils;
-import cn.myperf4j.base.util.StrUtils;
 
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -12,68 +13,54 @@ import java.util.Set;
  */
 public final class ProfilingFilter {
 
-    /**
-     * 不需要注入的 Package前缀 集合
-     */
-    private static final Set<String> excludePackagePrefix = new HashSet<>();
+    private static final List<String> BUILT_IN_INCLUDE_PACKAGES = Arrays.asList(
+            "net/paoding/rose/jade/context/JadeInvocationHandler", //Jade
+            "org/apache/ibatis/binding/MapperProxy", //Mybatis
+            "com/alibaba/dubbo/rpc/proxy/InvokerInvocationHandler", //DUBBO
+            "org/apache/dubbo/rpc/proxy/InvokerInvocationHandler", //DUBBO
+            "com/alipay/sofa/rpc/proxy/jdk/JDKInvocationHandler", //SOFA
+            "com/weibo/api/motan/proxy/RefererInvocationHandler" //Motan
+    );
 
-    /**
-     * 不需要注入的 Package表达式 集合
-     */
-    private static final Set<String> excludePackageExp = new HashSet<>();
+    private static final List<String> BUILT_IN_EXCLUDE_PACKAGES = Arrays.asList(
+            "java/", "javax/", "sun/", "com/sun/", "com/intellij/", "cn/myperf4j/"
+    );
 
-    /**
-     * 需要注入的 Package前缀 集合
-     */
-    private static final Set<String> includePackagePrefix = new HashSet<>();
+    private static final PackageMatcher INCLUDE_PACKAGE_MATCHER = new PackageMatcher();
 
-    /**
-     * 需要注入的 Package表达式 集合
-     */
-    private static final Set<String> includePackageExp = new HashSet<>();
+    private static final PackageMatcher EXCLUDE_PACKAGE_MATCHER = new PackageMatcher();
+
+    private static final PackageMatcher ANNOTATION_SCAN_PACKAGE_MATCHER = new PackageMatcher();
 
     /**
      * 不需要注入的 method 集合
      */
-    private static final Set<String> excludeMethods = new HashSet<>();
+    private static final Set<String> EXCLUDE_METHODS = new HashSet<>();
 
     /**
-     * 不注入的 ClassLoader 集合
+     * 不需要注入的 ClassLoader 集合
      */
-    private static final Set<String> excludeClassLoader = new HashSet<>();
+    private static final Set<String> EXCLUDE_CLASS_LOADERS = new HashSet<>();
+
+    /**
+     * 需要注入的 Annotation 集合
+     */
+    private static final Set<String> INCLUDE_ANNOTATIONS = new HashSet<>();
 
     static {
-        // 默认不注入的 package
-        excludePackagePrefix.add("java/");
-        excludePackagePrefix.add("javax/");
-        excludePackagePrefix.add("sun/");
-        excludePackagePrefix.add("com/sun/");
-        excludePackagePrefix.add("com/intellij/");
-
-        // 不注入 MyPerf4J 本身
-        excludePackagePrefix.add("cn/myperf4j/");
-
-        // 默认注入的 package
-        includePackagePrefix.add("net/paoding/rose/jade/context/JadeInvocationHandler"); //Jade
-        includePackagePrefix.add("org/apache/ibatis/binding/MapperProxy"); //Mybatis
-        includePackagePrefix.add("com/alibaba/dubbo/rpc/proxy/InvokerInvocationHandler"); //DUBBO
-        includePackagePrefix.add("org/apache/dubbo/rpc/proxy/InvokerInvocationHandler"); //DUBBO
-        includePackagePrefix.add("com/alipay/sofa/rpc/proxy/jdk/JDKInvocationHandler"); //SOFA jdk-proxy
-        includePackagePrefix.add("com/weibo/api/motan/proxy/RefererInvocationHandler"); //Motan
-
         //默认不注入的method
-        excludeMethods.add("main");
-        excludeMethods.add("premain");
-        excludeMethods.add("getClass"); //java.lang.Object
-        excludeMethods.add("hashCode"); //java.lang.Object
-        excludeMethods.add("equals"); //java.lang.Object
-        excludeMethods.add("clone"); //java.lang.Object
-        excludeMethods.add("toString"); //java.lang.Object
-        excludeMethods.add("notify"); //java.lang.Object
-        excludeMethods.add("notifyAll"); //java.lang.Object
-        excludeMethods.add("wait"); //java.lang.Object
-        excludeMethods.add("finalize"); //java.lang.Object
-        excludeMethods.add("afterPropertiesSet"); //spring
+        EXCLUDE_METHODS.add("main");
+        EXCLUDE_METHODS.add("premain");
+        EXCLUDE_METHODS.add("getClass"); //java.lang.Object
+        EXCLUDE_METHODS.add("hashCode"); //java.lang.Object
+        EXCLUDE_METHODS.add("equals"); //java.lang.Object
+        EXCLUDE_METHODS.add("clone"); //java.lang.Object
+        EXCLUDE_METHODS.add("toString"); //java.lang.Object
+        EXCLUDE_METHODS.add("notify"); //java.lang.Object
+        EXCLUDE_METHODS.add("notifyAll"); //java.lang.Object
+        EXCLUDE_METHODS.add("wait"); //java.lang.Object
+        EXCLUDE_METHODS.add("finalize"); //java.lang.Object
+        EXCLUDE_METHODS.add("afterPropertiesSet"); //spring
     }
 
     private ProfilingFilter() {
@@ -85,50 +72,26 @@ public final class ProfilingFilter {
      * @return : true->不需要修改字节码  false->需要修改字节码
      */
     public static boolean isNotNeedInject(String innerClassName) {
-        if (innerClassName == null) {
-            return false;
-        }
-
-        if (innerClassName.indexOf('$') >= 0) {
+        if (innerClassName == null || innerClassName.indexOf('$') >= 0) {
             return true;
         }
-
-        return isMatch(innerClassName, excludePackagePrefix, excludePackageExp);
+        return EXCLUDE_PACKAGE_MATCHER.isMatch(innerClassName);
     }
 
-    private static boolean isMatch(String innerClassName, Set<String> pkgPrefixSet, Set<String> pkgExpSet) {
-        for (String prefix : pkgPrefixSet) {
-            if (innerClassName.startsWith(prefix)) {
-                return true;
-            }
-        }
-
-        for (String exp : pkgExpSet) {
-            if (StrMatchUtils.isMatch(innerClassName, exp)) {
-                return true;
-            }
-        }
-        return false;
+    public static void addAllExcludePackage(List<String> pkgExprList) {
+        final Set<String> packages = parsePackageExpr(pkgExprList);
+        packages.addAll(BUILT_IN_EXCLUDE_PACKAGES);
+        EXCLUDE_PACKAGE_MATCHER.init(packages);
     }
 
-    public static void addExcludePackage(String pkg) {
-        if (StrUtils.isEmpty(pkg)) {
-            return;
-        }
-
-        addPackages(pkg, excludePackagePrefix, excludePackageExp);
-    }
-
-    private static void addPackages(String packages, Set<String> pkgPrefixSet, Set<String> pkgExpSet) {
-        Set<String> pkgSet = PkgExpUtils.parse(packages);
-        for (String pkg : pkgSet) {
-            pkg = preprocess(pkg);
-            if (pkg.indexOf('*') > 0) {
-                pkgExpSet.add(pkg);
-            } else {
-                pkgPrefixSet.add(pkg);
+    private static Set<String> parsePackageExpr(List<String> pkgExprList) {
+        final Set<String> packages = new HashSet<>(pkgExprList.size() * 2);
+        for (String pkgExpr : pkgExprList) {
+            for (String pkg : PkgExpUtils.parse(pkgExpr)) {
+                packages.add(preprocess(pkg));
             }
         }
+        return packages;
     }
 
     private static String preprocess(String pkg) {
@@ -140,31 +103,18 @@ public final class ProfilingFilter {
      * @return : true->需要修改字节码  false->不需要修改字节码
      */
     public static boolean isNeedInject(String innerClassName) {
-        if (innerClassName == null) {
-            return false;
-        }
-
-        return isMatch(innerClassName, includePackagePrefix, includePackageExp);
+        return innerClassName != null && INCLUDE_PACKAGE_MATCHER.isMatch(innerClassName);
     }
 
-    public static void addIncludePackage(String pkg) {
-        if (StrUtils.isEmpty(pkg)) {
-            return;
-        }
-
-        addPackages(pkg, includePackagePrefix, includePackageExp);
-    }
-
-    public static Set<String> getExcludePackagePrefix() {
-        return new HashSet<>(excludePackagePrefix);
-    }
-
-    public static Set<String> getIncludePackagePrefix() {
-        return new HashSet<>(includePackagePrefix);
+    public static void addAllIncludePackage(List<String> pkgExprList) {
+        final Set<String> packages = parsePackageExpr(pkgExprList);
+        packages.addAll(BUILT_IN_INCLUDE_PACKAGES);
+        INCLUDE_PACKAGE_MATCHER.init(packages);
     }
 
     /**
-     * @param methodName
+     * 是否是不需要执行代码注入的方法
+     *
      * @return : true->需要修改字节码  false->不需要修改字节码
      */
     public static boolean isNotNeedInjectMethod(String methodName) {
@@ -175,42 +125,59 @@ public final class ProfilingFilter {
         if (isSpecialMethod(methodName)) {
             return true;
         }
-
-        return excludeMethods.contains(methodName);
+        return EXCLUDE_METHODS.contains(methodName);
     }
 
     private static boolean isSpecialMethod(String methodName) {
-        int symbolIndex = methodName.indexOf('$');
+        final int symbolIndex = methodName.indexOf('$');
         if (symbolIndex < 0) {
             return false;
         }
 
-        int leftParenIndex = methodName.indexOf('(');
+        final int leftParenIndex = methodName.indexOf('(');
         return leftParenIndex < 0 || symbolIndex < leftParenIndex;
     }
 
     public static void addExcludeMethods(String method) {
-        if (method == null) {
-            return;
+        if (method != null) {
+            EXCLUDE_METHODS.add(method.trim());
         }
-
-        excludeMethods.add(method.trim());
-    }
-
-    public static Set<String> getExcludeMethods() {
-        return new HashSet<>(excludeMethods);
     }
 
     public static void addExcludeClassLoader(String classLoader) {
-        excludeClassLoader.add(classLoader);
+        EXCLUDE_CLASS_LOADERS.add(classLoader);
     }
 
     /**
-     * 是否是不需要注入的类加载器
+     * 是否是不需要执行代码注入的类加载器
      *
      * @return : true->不需要修改字节码  false->需要修改字节码
      */
     public static boolean isNotNeedInjectClassLoader(String classLoader) {
-        return excludeClassLoader.contains(classLoader);
+        return EXCLUDE_CLASS_LOADERS.contains(classLoader);
+    }
+
+    /**
+     * 是否需要扫描 innerClassName 中包含指定注解
+     */
+    public static boolean isNeedScanAnnotation(String innerClassName) {
+        return innerClassName != null && ANNOTATION_SCAN_PACKAGE_MATCHER.isMatch(innerClassName);
+    }
+
+    public static void addAllAnnotationScanPackages(List<String> pkgExprList) {
+        ANNOTATION_SCAN_PACKAGE_MATCHER.init(parsePackageExpr(pkgExprList));
+    }
+
+    public static void addIncludeAnnotation(String annotationClassName) {
+        INCLUDE_ANNOTATIONS.add("L" + annotationClassName.replace('.', '/') + ";");
+    }
+
+    /**
+     * 是否是需要执行代码注入的注解
+     *
+     * @return : true->需要修改字节码  false->不需要修改字节码
+     */
+    public static boolean isNeedInjectAnnotation(String annotationDesc) {
+        return INCLUDE_ANNOTATIONS.contains(annotationDesc);
     }
 }

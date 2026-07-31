@@ -6,7 +6,9 @@ import sun.misc.Unsafe;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.concurrent.locks.LockSupport;
 
+import static cn.myperf4j.base.util.NumUtils.isPowerOfTwo;
 import static cn.myperf4j.base.util.UnsafeUtils.fieldOffset;
 import static java.lang.Integer.MIN_VALUE;
 
@@ -19,11 +21,11 @@ public class AtomicIntHashCounter implements IntHashCounter {
 
     private static final Unsafe UNSAFE = UnsafeUtils.getUnsafe();
 
-    private static final int I_BASE = Unsafe.ARRAY_INT_BASE_OFFSET;
+    private static final int L_BASE = Unsafe.ARRAY_LONG_BASE_OFFSET;
 
-    private static final int I_SCALE = Unsafe.ARRAY_INT_INDEX_SCALE;
+    private static final int L_SCALE = Unsafe.ARRAY_LONG_INDEX_SCALE;
 
-    private static final int I_SHIFT = 31 - Integer.numberOfLeadingZeros(I_SCALE);
+    private static final int L_SHIFT = 31 - Integer.numberOfLeadingZeros(L_SCALE);
 
     private static final long IHC_OFFSET = fieldOffset(AtomicIntHashCounter.class, "ihc");
 
@@ -33,7 +35,7 @@ public class AtomicIntHashCounter implements IntHashCounter {
 
     private static final int MIN_LOG_SIZE = 4;
 
-    private static final int MAX_LOG_SIZE = 29;
+    private static final int MAX_LOG_SIZE = 30;
 
     private static final int MAX_CAPACITY = 1 << MAX_LOG_SIZE;
 
@@ -48,7 +50,7 @@ public class AtomicIntHashCounter implements IntHashCounter {
     private static final int TOMB_PRIME = MIN_VALUE;
 
     static {
-        if ((I_SCALE & (I_SCALE - 1)) != 0) {
+        if (!isPowerOfTwo(L_SCALE)) {
             throw new Error("data type scale not a power of two");
         }
     }
@@ -59,7 +61,7 @@ public class AtomicIntHashCounter implements IntHashCounter {
     private int size;
 
     // Value for Key: NO_KEY
-    private int val0;
+    private volatile int val0;
 
     public AtomicIntHashCounter() {
         this(MIN_SIZE);
@@ -72,18 +74,17 @@ public class AtomicIntHashCounter implements IntHashCounter {
             throw new IllegalArgumentException("Max initialCapacity need low than " + MAX_CAPACITY);
         }
 
-        this.ihc = new IHC(this, log2Size(initialCapacity));
+        this.ihc = new IHC(this, tableSizeFor(initialCapacity));
         this.size = 0;
         this.val0 = 0;
     }
 
-    // Convert to next largest power-of-2
-    private static int log2Size(int minSize) {
-        int log2;
-        for (log2 = MIN_LOG_SIZE; (1L << log2) < minSize; log2++) {
-            //empty
-        }
-        return log2;
+    /**
+     * Returns a power of two size for the given target capacity.
+     */
+    private static int tableSizeFor(int cap) {
+        final int n = -1 >>> Integer.numberOfLeadingZeros(cap - 1);
+        return (n < 0) ? MIN_SIZE : (n >= MAX_CAPACITY) ? MAX_CAPACITY : n + 1;
     }
 
     private boolean CAS(final long offset, final Object oldObj, final Object newObj) {
@@ -102,7 +103,7 @@ public class AtomicIntHashCounter implements IntHashCounter {
     }
 
     private void incrementSize() {
-        UnsafeUtils.getAndAddInt(this, SIZE_OFFSET, 1);
+        UNSAFE.getAndAddInt(this, SIZE_OFFSET, 1);
     }
 
     @Override
@@ -128,7 +129,7 @@ public class AtomicIntHashCounter implements IntHashCounter {
 
     private int addDelta(int key, int delta) {
         if (key == NO_KEY) {
-            return UnsafeUtils.getAndAddInt(this, VAL_0_OFFSET, delta);
+            return UNSAFE.getAndAddInt(this, VAL_0_OFFSET, delta);
         }
 
         final int res = ihc.addDelta(key, delta, false);
@@ -168,12 +169,12 @@ public class AtomicIntHashCounter implements IntHashCounter {
         }
 
         final IHC topIhc = finishCopy();
-        final int[] kvs = topIhc.kvs;
-        for (int k = 0, len = kvs.length; k < len; k += 2) {
-            final int value = kvs[k + 1];
-            if (value > 0) {
-                longBuf.write(kvs[k], value);
-                totalCount += value;
+        for (int i = 0, length = topIhc.kvs.length; i < length; i++) {
+            final long kv = topIhc.getKv(i);
+            final int v = parseValue(kv);
+            if (v != 0) {
+                longBuf.write(parseKey(kv), v);
+                totalCount += v;
             }
         }
 
@@ -216,39 +217,41 @@ public class AtomicIntHashCounter implements IntHashCounter {
         // Back-pointer to top-level structure
         private final AtomicIntHashCounter aihc;
 
-        // Count of used slots, to tell when table is full of dead unusable slots
-        private volatile int slots;
-
-        private volatile IHC nextIhc;
-
-        // Count of threads attempting an initial resize
-        private volatile long resizeThreads;
-
-        private volatile long copyDone;
-
-        private volatile long copyIdx;
-
-        private final int[] kvs;
-
         private final int len;
+
+        private final int lenMask;
+
+        private final long[] kvs;
 
         private final int reProbeLimit;
 
-        IHC(AtomicIntHashCounter aihc, int logSize) {
+        private volatile IHC nextIhc;
+
+        // Count of used slots, to tell when table is full of dead unusable slots
+        private volatile int slots;
+
+        // Count of threads attempting an initial resize
+        private volatile int resizeThreads;
+
+        private volatile int copyDone;
+
+        private volatile int copyIdx;
+
+        IHC(AtomicIntHashCounter aihc, int capacity) {
             this.aihc = aihc;
-            this.slots = 0;
-            this.kvs = new int[(1 << logSize) << 1];
-            this.len = len(this.kvs);
+            this.len = capacity;
+            this.lenMask = len - 1;
+            this.kvs = new long[this.len];
             this.reProbeLimit = reProbeLimit(this.len);
         }
 
         public void reset() {
-            this.slots = 0;
             this.nextIhc = null;
-            this.resizeThreads = 0L;
-            this.copyDone = 0L;
-            this.copyIdx = 0L;
-            UNSAFE.setMemory(kvs, byteOffset(0), ((long) kvs.length) * I_SCALE, (byte) 0);
+            this.slots = 0;
+            this.resizeThreads = 0;
+            this.copyDone = 0;
+            this.copyIdx = 0;
+            UNSAFE.setMemory(kvs, byteOffset(0), ((long) kvs.length) * L_SCALE, (byte) 0);
         }
 
         private boolean casNextIhc(IHC newIhc) {
@@ -256,27 +259,17 @@ public class AtomicIntHashCounter implements IntHashCounter {
         }
 
         private boolean casKv(int idx, long oldKv, long newKv) {
-            return UNSAFE.compareAndSwapLong(kvs, byteOffset(idx << 1), oldKv, newKv);
-        }
-
-        private boolean casValue(int idx, int oldVal, int newVal) {
-            return UNSAFE.compareAndSwapInt(kvs, byteOffset((idx << 1) + 1), oldVal, newVal);
+            return UNSAFE.compareAndSwapLong(kvs, byteOffset(idx), oldKv, newKv);
         }
 
         private long getKv(int idx) {
-            return UNSAFE.getLongVolatile(kvs, byteOffset(idx << 1));
-        }
-
-        private int getValue(int idx) {
-            return UNSAFE.getIntVolatile(kvs, byteOffset((idx << 1) + 1));
+            return UNSAFE.getLongVolatile(kvs, byteOffset(idx));
         }
 
         private int get(final int key) {
-            final int lenMask = len - 1;
-            int idx = key & lenMask; // First key hash
-
             long kv;
-            int k, reProbeTimes = 0;
+            final int lenMask = this.lenMask;
+            int k, reProbeTimes = 0, idx = key & lenMask; // First key hash
             while (true) {
                 if ((kv = getKv(idx)) == 0L) {
                     return 0; // A clear miss
@@ -307,11 +300,9 @@ public class AtomicIntHashCounter implements IntHashCounter {
 
         private int addDelta(final int key, final int delta, final boolean fromTableCopy) {
             assert key > 0 && delta > 0;
-            final int lenMask = len - 1;
-            int idx = key & lenMask; // First key hash
-
             long kv;
-            int k, v, reProbeTimes = 0;
+            final int lenMask = this.lenMask;
+            int k, v, reProbeTimes = 0, idx = key & lenMask;
             while (true) {
                 kv = getKv(idx);
                 k = parseKey(kv);
@@ -325,7 +316,7 @@ public class AtomicIntHashCounter implements IntHashCounter {
 
                         // See if we want to move to a new table (to avoid high average re-probe counts).
                         // We only check on the initial set of a Value from zero to not-zero
-                        final int slots = UnsafeUtils.getAndAddInt(this, SLOTS_OFFSET, 1);
+                        final int slots = UNSAFE.getAndAddInt(this, SLOTS_OFFSET, 1);
                         if (slots >= (len >> 1) + (len >> 2)) { // Table is full? slots > len * 3/4
                             resize(); // Force the new table copy to start
                             if (!fromTableCopy) {
@@ -343,7 +334,7 @@ public class AtomicIntHashCounter implements IntHashCounter {
 
                 if (k == key) {
                     while (true) {
-                        // If a Prime'd value got installed, we need to re-run the addDelta on the new table.
+                        // If a Primed value got installed, we need to re-run the addDelta on the new table.
                         if (isPrime(v)) { // Simply retry from the start.
                             if (!fromTableCopy) {
                                 aihc.helpCopy(); // help along an existing copy
@@ -352,12 +343,13 @@ public class AtomicIntHashCounter implements IntHashCounter {
                         }
 
                         // Try to increase the value with delta
-                        if (casValue(idx, v, v + delta)) {
+                        if (casKv(idx, kv, composeKv(key, v + delta))) {
                             return v;
                         }
 
                         // CAS failed, get updated value
-                        v = getValue(idx);
+                        kv = getKv(idx);
+                        v = parseValue(kv);
                     }
                 }
 
@@ -378,25 +370,19 @@ public class AtomicIntHashCounter implements IntHashCounter {
                 return newIhc;
             }
 
-            final int newSize = this.len << 1;
-            final int log2 = log2Size(newSize); // Convert to power-of-2
-
             // Prevent integer overflow - limit of 2^31 elements in a Java array.
             // So here, 2^30 is the largest number of elements in the hash table
-            if (log2 > MAX_LOG_SIZE) {
-                throw new RuntimeException("Table is full, size=" + aihc.size + ", newSize=" + newSize);
+            final long newCapacity = (long) this.len << 1;
+            if (newCapacity > MAX_CAPACITY) {
+                throw new RuntimeException("Table is full, size=" + aihc.size + ", newCapacity=" + newCapacity);
             }
 
             // Now limit the number of threads actually allocating memory to a
             // handful - lest we have 750 threads all trying to allocate a giant
             // resized array.
-            final long r = UnsafeUtils.getAndAddLong(this, RESIZE_THREADS_OFFSET, 1);
-
-            // Size calculation: 2 words (K+V) per table entry, plus a handful.  We
-            // guess at 64-bit pointers; 32-bit pointers screws up the size calc by
-            // 2x but does not screw up the heuristic very much.
-            final long megs = ((((1L << log2) << 1) + 8) << 3/*word to bytes*/) >> 20/*megs*/;
-            if (r >= 2 && megs > 0) { // Already 2 guys trying; wait and see
+            final int threads = UNSAFE.getAndAddInt(this, RESIZE_THREADS_OFFSET, 1);
+            final long megs = (newCapacity << 3 /*word to bytes*/) >> 20 /*megs*/;
+            if (threads >= 2 && megs > 0) { // Already 2 guys trying; wait and see
                 if ((newIhc = nextIhc) != null) {
                     return newIhc;
                 }
@@ -405,11 +391,7 @@ public class AtomicIntHashCounter implements IntHashCounter {
                 // is ready, or after the timeout in any case.
                 // For now, sleep a tad and see if the 2 guys already trying to make
                 // the table actually get around to making it happen.
-                try {
-                    Thread.sleep(megs);
-                } catch (Exception e) {
-                    //ignore
-                }
+                LockSupport.parkNanos(megs * 1_000_000L);
             }
 
             // Last check, since the 'new' below is expensive and there is a chance
@@ -419,7 +401,7 @@ public class AtomicIntHashCounter implements IntHashCounter {
             }
 
             // New IHC - actually allocate the big arrays
-            newIhc = new IHC(aihc, log2);
+            newIhc = new IHC(aihc, (int) newCapacity);
 
             // Another check after the slow allocation
             if (nextIhc != null) { // See if resize is already in progress
@@ -452,7 +434,7 @@ public class AtomicIntHashCounter implements IntHashCounter {
                 // algorithm) or do the copy work ourselves.  Tiny tables with huge
                 // thread counts trying to copy the table often 'panic'.
                 if (panicStart == -1) { // No panic?
-                    copyIdx = (int) UnsafeUtils.getAndAddLong(this, COPY_IDX_OFFSET, MIN_COPY_WORK);
+                    copyIdx = UNSAFE.getAndAddInt(this, COPY_IDX_OFFSET, MIN_COPY_WORK);
                     if (!(copyIdx < (oldLen << 1))) { // Panic!
                         panicStart = copyIdx; // Record where we started to panic-copy
                     }
@@ -509,25 +491,25 @@ public class AtomicIntHashCounter implements IntHashCounter {
         private void copyCheckAndPromote(int workDone) {
             final int oldLen = this.len;
             // We made a slot unusable and so did some needed copy work
-            long copyDone = this.copyDone;
+            int copyDone = this.copyDone;
             assert (copyDone + workDone) <= oldLen;
             if (workDone > 0) {
-                copyDone = UnsafeUtils.getAndAddLong(this, COPY_DONE_OFFSET, workDone);
+                copyDone = UNSAFE.getAndAddInt(this, COPY_DONE_OFFSET, workDone);
                 assert (copyDone + workDone) <= oldLen;
             }
 
             // Check for copy being ALL done, and promote.  Note that we might have
             // nested in-progress copies and manage to finish a nested copy before
             // finishing the top-level copy.  We only promote top-level copies.
-            if (copyDone + workDone == oldLen && // Ready to promote this table?
-                    aihc.ihc == this) {        // Looking at the top-level table?
+            if (copyDone + workDone == oldLen // Ready to promote this table?
+                    && aihc.ihc == this) {    // Looking at the top-level table?
                 aihc.CAS(IHC_OFFSET, this, nextIhc);
             }
         }
     }
 
     private static long byteOffset(int idx) {
-        return ((long) idx << I_SHIFT) + I_BASE;
+        return ((long) idx << L_SHIFT) + L_BASE;
     }
 
     private static long composeKv(int key, int value) {
@@ -552,9 +534,5 @@ public class AtomicIntHashCounter implements IntHashCounter {
 
     private static int reProbeLimit(int len) {
         return RE_PROBE_LIMIT + (len >> 4);
-    }
-
-    private static int len(int[] kvs) {
-        return kvs.length >> 1;
     }
 }

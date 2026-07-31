@@ -1,7 +1,7 @@
 package cn.myperf4j.base.http;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import static cn.myperf4j.base.http.HttpMethod.GET;
 import static cn.myperf4j.base.http.HttpMethod.HEAD;
@@ -14,9 +14,8 @@ public class HttpMethodTest {
 
     @Test
     public void testPermitsBody() {
-        Assert.assertFalse(HEAD.isPermitsBody());
-        Assert.assertFalse(GET.isPermitsBody());
-        Assert.assertTrue(POST.isPermitsBody());
+        Assertions.assertFalse(HEAD.isPermitsBody());
+        Assertions.assertFalse(GET.isPermitsBody());
+        Assertions.assertTrue(POST.isPermitsBody());
     }
-
 }

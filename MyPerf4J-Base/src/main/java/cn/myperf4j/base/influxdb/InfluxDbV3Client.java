@@ -1,0 +1,201 @@
+package cn.myperf4j.base.influxdb;
+
+import cn.myperf4j.base.http.HttpRequest;
+import cn.myperf4j.base.http.HttpRespStatus;
+import cn.myperf4j.base.http.HttpResponse;
+import cn.myperf4j.base.http.client.HttpClient;
+import cn.myperf4j.base.io.Bytes;
+import cn.myperf4j.base.io.UnsafeByteArrayOutputStream;
+import cn.myperf4j.base.util.Logger;
+import cn.myperf4j.base.util.concurrent.ExecutorManager;
+
+import java.io.IOException;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.zip.GZIPOutputStream;
+
+import static cn.myperf4j.base.http.HttpStatusClass.INFORMATIONAL;
+import static cn.myperf4j.base.http.HttpStatusClass.SUCCESS;
+import static cn.myperf4j.base.util.concurrent.ThreadUtils.newThreadFactory;
+import static java.util.concurrent.TimeUnit.MINUTES;
+
+/**
+ * Created by LinShunkang on 2026/07/03
+ */
+public class InfluxDbV3Client implements InfluxDbClient {
+
+    private static final int MIN_COMPRESS_BYTES = 1024;
+
+    private static final ThreadPoolExecutor ASYNC_EXECUTOR = new ThreadPoolExecutor(
+            1,
+            2,
+            3,
+            MINUTES,
+            new LinkedBlockingQueue<>(1024),
+            newThreadFactory("MyPerf4J-InfluxDb3Client_"),
+            new ThreadPoolExecutor.DiscardOldestPolicy());
+
+    static {
+        ExecutorManager.addExecutorService(ASYNC_EXECUTOR);
+    }
+
+    private final String url;
+
+    private final String writeReqUrl;
+
+    private final String authorization;
+
+    private final HttpClient httpClient;
+
+    public InfluxDbV3Client(Builder builder) {
+        this.url = "http://" + builder.host + ":" + builder.port;
+        this.writeReqUrl = buildWriteReqUrl(builder);
+        this.authorization = "Bearer " + builder.token;
+        this.httpClient = new HttpClient.Builder()
+                .connectTimeout(builder.connectTimeout)
+                .readTimeout(builder.readTimeout)
+                .build();
+    }
+
+    private String buildWriteReqUrl(Builder builder) {
+        return url + "/api/v3/write_lp?no_sync=true&db=" + builder.database + "&precision=nanosecond";
+    }
+
+    @Override
+    public boolean writeMetricsSync(Bytes content) {
+        if (content == null || content.isEmpty()) {
+            return false;
+        }
+
+        try {
+            return writeMetrics0(generateWriteReq(content));
+        } catch (Throwable t) {
+            Logger.error("InfluxDbV3Client.writeMetricsSync() catch Exception!", t);
+        }
+        return false;
+    }
+
+    private HttpRequest generateWriteReq(Bytes content) throws IOException {
+        final HttpRequest.Builder reqBuilder = new HttpRequest.Builder()
+                .url(writeReqUrl)
+                .header("Authorization", authorization);
+        return contentEncoding(reqBuilder, content).build();
+    }
+
+    private HttpRequest.Builder contentEncoding(HttpRequest.Builder builder, Bytes content) throws IOException {
+        final boolean compressing = content.length() >= MIN_COMPRESS_BYTES;
+        return builder
+                .header("Content-Encoding", compressing ? "gzip" : "identity")
+                .post(compressing ? gzip(content) : Bytes.copy(content));
+    }
+
+    private Bytes gzip(Bytes content) throws IOException {
+        try (UnsafeByteArrayOutputStream bos = new UnsafeByteArrayOutputStream(content.length() / 4);
+             GZIPOutputStream gzipOs = new GZIPOutputStream(bos)) {
+            gzipOs.write(content.bytes(), 0, content.length());
+            gzipOs.finish();
+            return bos.toBytes();
+        }
+    }
+
+    private boolean writeMetrics0(HttpRequest request) {
+        try {
+            final HttpResponse response = httpClient.execute(request);
+            final HttpRespStatus status = response.getStatus();
+            if (status.statusClass() == SUCCESS) {
+                if (Logger.isDebugEnable()) {
+                    Logger.debug("InfluxDbV3Client.writeMetrics0(): respStatus=" + status.simpleString());
+                }
+                return true;
+            }
+
+            if (status.statusClass() != INFORMATIONAL && status.statusClass() != SUCCESS) {
+                Logger.warn("InfluxDbV3Client.writeMetrics0(): respStatus=" + status.simpleString());
+            }
+        } catch (IOException e) {
+            Logger.warn("InfluxDbV3Client.writeMetrics0() catch IOException!", e);
+        } catch (Throwable t) {
+            Logger.error("InfluxDbV3Client.writeMetrics0() catch Exception!", t);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean writeMetricsAsync(Bytes content) {
+        if (content == null || content.isEmpty()) {
+            return false;
+        }
+
+        try {
+            final HttpRequest request = generateWriteReq(content);
+            ASYNC_EXECUTOR.execute(() -> writeMetrics0(request));
+            return true;
+        } catch (Throwable t) {
+            Logger.error("InfluxDbV2Client.writeMetricsAsync(): t=" + t.getMessage(), t);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean close() {
+        return true; //do nothing.
+    }
+
+    public static class Builder {
+
+        private static final int DEFAULT_CONNECT_TIMEOUT = 3000;
+
+        private static final int DEFAULT_READ_TIMEOUT = 5000;
+
+        private String host;
+
+        private int port;
+
+        private String database;
+
+        private String token;
+
+        private int connectTimeout;
+
+        private int readTimeout;
+
+        public Builder() {
+            this.connectTimeout = DEFAULT_CONNECT_TIMEOUT;
+            this.readTimeout = DEFAULT_READ_TIMEOUT;
+        }
+
+        public Builder host(String host) {
+            this.host = host;
+            return this;
+        }
+
+        public Builder port(int port) {
+            this.port = port;
+            return this;
+        }
+
+        public Builder database(String database) {
+            this.database = database;
+            return this;
+        }
+
+        public Builder token(String token) {
+            this.token = token;
+            return this;
+        }
+
+        public Builder connectTimeout(int connectTimeout) {
+            this.connectTimeout = connectTimeout;
+            return this;
+        }
+
+        public Builder readTimeout(int readTimeout) {
+            this.readTimeout = readTimeout;
+            return this;
+        }
+
+        public InfluxDbV3Client build() {
+            return new InfluxDbV3Client(this);
+        }
+    }
+}

@@ -1,8 +1,8 @@
 package cn.myperf4j.base.util;
 
 import cn.myperf4j.base.util.Base64.Encoder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -16,7 +16,7 @@ public class Base64Test {
     @Test
     public void test() {
         byte[] bytes = "Hello, Base64!".getBytes(UTF_8);
-        Assert.assertEquals("SGVsbG8sIEJhc2U2NCE=", encoder.encodeToString(bytes));
-        Assert.assertArrayEquals("SGVsbG8sIEJhc2U2NCE=".getBytes(UTF_8), encoder.encode(bytes));
+        Assertions.assertEquals("SGVsbG8sIEJhc2U2NCE=", encoder.encodeToString(bytes));
+        Assertions.assertArrayEquals("SGVsbG8sIEJhc2U2NCE=".getBytes(UTF_8), encoder.encode(bytes));
     }
 }

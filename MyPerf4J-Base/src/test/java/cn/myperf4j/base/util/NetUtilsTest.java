@@ -2,8 +2,8 @@ package cn.myperf4j.base.util;
 
 import cn.myperf4j.base.util.net.NetUtils;
 import com.sun.net.httpserver.HttpServer;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -18,7 +18,7 @@ public class NetUtilsTest {
         final int port = 1234;
         final HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
         server.start();
-        Assert.assertFalse(NetUtils.isPortAvailable(port));
-        Assert.assertTrue(NetUtils.isPortAvailable(1235));
+        Assertions.assertFalse(NetUtils.isPortAvailable(port));
+        Assertions.assertTrue(NetUtils.isPortAvailable(1235));
     }
 }

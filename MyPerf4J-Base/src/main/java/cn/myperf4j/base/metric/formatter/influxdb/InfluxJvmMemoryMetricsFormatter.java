@@ -1,54 +1,75 @@
 package cn.myperf4j.base.metric.formatter.influxdb;
 
-import cn.myperf4j.base.config.ProfilingConfig;
+import cn.myperf4j.base.io.Bytes;
+import cn.myperf4j.base.io.BytesBuilder;
 import cn.myperf4j.base.metric.JvmMemoryMetrics;
-import cn.myperf4j.base.metric.formatter.JvmMemoryMetricsFormatter;
+import cn.myperf4j.base.metric.formatter.BinaryMetricsFormatter;
 
 import java.util.List;
 
-import static cn.myperf4j.base.util.net.IpUtils.getLocalhostName;
-import static cn.myperf4j.base.util.LineProtocolUtils.processTagOrField;
-import static cn.myperf4j.base.util.text.NumFormatUtils.doubleFormat;
+import static cn.myperf4j.base.metric.formatter.influxdb.InfluxDBFields.F_CODE_CACHE_USED;
+import static cn.myperf4j.base.metric.formatter.influxdb.InfluxDBFields.F_CODE_CACHE_USED_PERCENT;
+import static cn.myperf4j.base.metric.formatter.influxdb.InfluxDBFields.F_EDEN_USED;
+import static cn.myperf4j.base.metric.formatter.influxdb.InfluxDBFields.F_EDEN_USED_PERCENT;
+import static cn.myperf4j.base.metric.formatter.influxdb.InfluxDBFields.F_HEAP_USED;
+import static cn.myperf4j.base.metric.formatter.influxdb.InfluxDBFields.F_HEAP_USED_PERCENT;
+import static cn.myperf4j.base.metric.formatter.influxdb.InfluxDBFields.F_METASPACE_USED;
+import static cn.myperf4j.base.metric.formatter.influxdb.InfluxDBFields.F_METASPACE_USED_PERCENT;
+import static cn.myperf4j.base.metric.formatter.influxdb.InfluxDBFields.F_NON_HEAP_USED;
+import static cn.myperf4j.base.metric.formatter.influxdb.InfluxDBFields.F_NON_HEAP_USED_PERCENT;
+import static cn.myperf4j.base.metric.formatter.influxdb.InfluxDBFields.F_OLD_GEN_USED;
+import static cn.myperf4j.base.metric.formatter.influxdb.InfluxDBFields.F_OLD_GEN_USED_PERCENT;
+import static cn.myperf4j.base.metric.formatter.influxdb.InfluxDBFields.F_PERM_GEN_USED;
+import static cn.myperf4j.base.metric.formatter.influxdb.InfluxDBFields.F_PERM_GEN_USED_PERCENT;
+import static cn.myperf4j.base.metric.formatter.influxdb.InfluxDBFields.F_SURVIVOR_USED;
+import static cn.myperf4j.base.metric.formatter.influxdb.InfluxDBFields.F_SURVIVOR_USED_PERCENT;
+import static cn.myperf4j.base.metric.formatter.influxdb.InfluxDBTags.T_APP_NAME;
+import static cn.myperf4j.base.metric.formatter.influxdb.InfluxDBTags.T_HOST;
+import static cn.myperf4j.base.metric.formatter.influxdb.InfluxDBValues.V_APP_NAME;
+import static cn.myperf4j.base.metric.formatter.influxdb.InfluxDBValues.V_HOST;
+import static cn.myperf4j.base.util.text.NumFormatUtils.numFormat;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Created by LinShunkang on 2020/5/17
  */
-public class InfluxJvmMemoryMetricsFormatter implements JvmMemoryMetricsFormatter {
+public class InfluxJvmMemoryMetricsFormatter implements BinaryMetricsFormatter<JvmMemoryMetrics> {
+
+    private static final byte[] MEASUREMENTS = "jvm_memory_metrics_v2".getBytes(UTF_8);
 
     @Override
-    public String format(List<JvmMemoryMetrics> metricsList, long startMillis, long stopMillis) {
-        final StringBuilder sb = SB_TL.get();
-        try {
+    public Bytes format(List<JvmMemoryMetrics> metricsList, long startMillis, long stopMillis) {
+        try (BytesBuilder bb = BB_TL.get()) {
             final long startNanos = startMillis * 1000 * 1000L;
-            for (int i = 0, size = metricsList.size(); i < size; ++i) {
-                appendLineProtocol(metricsList.get(i), startNanos, sb);
+            for (JvmMemoryMetrics metrics : metricsList) {
+                appendLineProtocol(metrics, startNanos, bb);
             }
-            return sb.substring(0, Math.max(0, sb.length() - 1));
-        } finally {
-            sb.setLength(0);
+            return bb.toBytes(Math.max(0, bb.getCount() - 1));
         }
     }
 
-    private void appendLineProtocol(JvmMemoryMetrics metrics, long startNanos, StringBuilder sb) {
-        sb.append("jvm_memory_metrics_v2")
-                .append(",AppName=").append(ProfilingConfig.basicConfig().appName())
-                .append(",host=").append(processTagOrField(getLocalhostName()))
-                .append(" HeapUsed=").append(metrics.getHeapUsed()).append('i')
-                .append(",HeapUsedPercent=").append(doubleFormat(metrics.getHeapUsedPercent()))
-                .append(",NonHeapUsed=").append(metrics.getNonHeapUsed()).append('i')
-                .append(",NonHeapUsedPercent=").append(doubleFormat(metrics.getNonHeapUsedPercent()))
-                .append(",PermGenUsed=").append(metrics.getPermGenUsed()).append('i')
-                .append(",PermGenUsedPercent=").append(doubleFormat(metrics.getPermGenUsedPercent()))
-                .append(",MetaspaceUsed=").append(metrics.getMetaspaceUsed()).append('i')
-                .append(",MetaspaceUsedPercent=").append(doubleFormat(metrics.getMetaspaceUsedPercent()))
-                .append(",CodeCacheUsed=").append(metrics.getCodeCacheUsed()).append('i')
-                .append(",CodeCacheUsedPercent=").append(doubleFormat(metrics.getCodeCacheUsedPercent()))
-                .append(",OldGenUsed=").append(metrics.getOldGenUsed()).append('i')
-                .append(",OldGenUsedPercent=").append(doubleFormat(metrics.getOldGenUsedPercent()))
-                .append(",EdenUsed=").append(metrics.getEdenUsed()).append('i')
-                .append(",EdenUsedPercent=").append(doubleFormat(metrics.getEdenUsedPercent()))
-                .append(",SurvivorUsed=").append(metrics.getSurvivorUsed()).append('i')
-                .append(",SurvivorUsedPercent=").append(metrics.getSurvivorUsedPercent())
-                .append(' ').append(startNanos).append('\n');
+    private void appendLineProtocol(JvmMemoryMetrics m, long startNanos, BytesBuilder bb) {
+        bb.append(MEASUREMENTS).append(',')
+                .append(T_APP_NAME).append('=').append(V_APP_NAME).append(',')
+                .append(T_HOST).append('=').append(V_HOST).append(' ')
+                .append(F_HEAP_USED).append('=').append(m.getHeapUsed()).append('i').append(',')
+                .append(F_HEAP_USED_PERCENT).append('=').append(numFormat(m.getHeapUsedPercent())).append(',')
+                .append(F_NON_HEAP_USED).append('=').append(m.getNonHeapUsed()).append('i').append(',')
+                .append(F_NON_HEAP_USED_PERCENT).append('=').append(numFormat(m.getNonHeapUsedPercent())).append(',')
+                .append(F_PERM_GEN_USED).append('=').append(m.getPermGenUsed()).append('i').append(',')
+                .append(F_PERM_GEN_USED_PERCENT).append('=').append(numFormat(m.getPermGenUsedPercent())).append(',')
+                .append(F_METASPACE_USED).append('=').append(m.getMetaspaceUsed()).append('i').append(',')
+                .append(F_METASPACE_USED_PERCENT).append('=').append(numFormat(m.getMetaspaceUsedPercent())).append(',')
+                .append(F_CODE_CACHE_USED).append('=').append(m.getCodeCacheUsed()).append('i').append(',')
+                .append(F_CODE_CACHE_USED_PERCENT).append('=').append(numFormat(m.getCodeCacheUsedPercent()))
+                .append(',')
+                .append(F_OLD_GEN_USED).append('=').append(m.getOldGenUsed()).append('i').append(',')
+                .append(F_OLD_GEN_USED_PERCENT).append('=').append(numFormat(m.getOldGenUsedPercent())).append(',')
+                .append(F_EDEN_USED).append('=').append(m.getEdenUsed()).append('i').append(',')
+                .append(F_EDEN_USED_PERCENT).append('=').append(numFormat(m.getEdenUsedPercent())).append(',')
+                .append(F_SURVIVOR_USED).append('=').append(m.getSurvivorUsed()).append('i').append(',')
+                .append(F_SURVIVOR_USED_PERCENT).append('=').append(m.getSurvivorUsedPercent()).append(' ')
+                .append(startNanos)
+                .append('\n');
     }
 }

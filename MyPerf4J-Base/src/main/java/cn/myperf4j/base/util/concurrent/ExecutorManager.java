@@ -25,10 +25,10 @@ public final class ExecutorManager {
     }
 
     public static void stopAll(long timeout, TimeUnit unit) {
-        for (ExecutorService executorService : executors) {
+        for (ExecutorService executor : executors) {
             try {
-                executorService.shutdown();
-                executorService.awaitTermination(timeout, unit);
+                executor.shutdown();
+                executor.awaitTermination(timeout, unit);
             } catch (InterruptedException e) {
                 Logger.error("ExecutorManager.stopAll()", e);
                 Thread.currentThread().interrupt();

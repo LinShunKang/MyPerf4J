@@ -1,7 +1,7 @@
 package cn.myperf4j.base.http;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,11 +18,11 @@ public class HttpHeadersTest {
         headers.set("Connection", "Keep-Alive");
         headers.set("Accept-Encoding", "gzip, deflate");
 
-        Assert.assertEquals("Keep-Alive", headers.get("Connection"));
-        Assert.assertEquals("gzip, deflate", headers.get("Accept-Encoding"));
+        Assertions.assertEquals("Keep-Alive", headers.get("Connection"));
+        Assertions.assertEquals("gzip, deflate", headers.get("Accept-Encoding"));
 
-        Assert.assertEquals(Collections.singletonList("Keep-Alive"), headers.getValues("Connection"));
-        Assert.assertEquals(Collections.singletonList("gzip, deflate"), headers.getValues("Accept-Encoding"));
+        Assertions.assertEquals(Collections.singletonList("Keep-Alive"), headers.getValues("Connection"));
+        Assertions.assertEquals(Collections.singletonList("gzip, deflate"), headers.getValues("Accept-Encoding"));
     }
 
     @Test
@@ -31,8 +31,8 @@ public class HttpHeadersTest {
         headers.set("Connection", "Keep-Alive");
         headers.add("Connection", "close");
 
-        Assert.assertEquals("Keep-Alive", headers.get("Connection"));
-        Assert.assertEquals(Arrays.asList("Keep-Alive", "close"), headers.getValues("Connection"));
+        Assertions.assertEquals("Keep-Alive", headers.get("Connection"));
+        Assertions.assertEquals(Arrays.asList("Keep-Alive", "close"), headers.getValues("Connection"));
     }
 
 }

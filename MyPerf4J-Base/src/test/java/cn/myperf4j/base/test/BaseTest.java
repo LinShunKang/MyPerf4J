@@ -1,21 +1,22 @@
 package cn.myperf4j.base.test;
 
 import cn.myperf4j.base.config.MyProperties;
-import cn.myperf4j.base.constant.PropertyKeys;
-import cn.myperf4j.base.constant.PropertyValues;
 import cn.myperf4j.base.constant.PropertyValues.Metrics;
-import cn.myperf4j.base.util.io.IOUtils;
-import cn.myperf4j.base.util.Logger;
 import cn.myperf4j.base.file.AutoRollingFileWriter;
 import cn.myperf4j.base.file.MinutelyRollingFileWriter;
-import org.junit.After;
-import org.junit.BeforeClass;
+import cn.myperf4j.base.util.Logger;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Properties;
+
+import static cn.myperf4j.base.constant.PropertyKeys.PRO_FILE_NAME;
+import static cn.myperf4j.base.constant.PropertyValues.DEFAULT_PRO_FILE;
 
 /**
  * Created by LinShunkang on 2018/10/28
@@ -32,9 +33,9 @@ public abstract class BaseTest {
 
     public static final int MILLI_TIMES_LICE = 1000;
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
-        System.setProperty(PropertyKeys.PRO_FILE_NAME, TEMP_FILE);
+        System.setProperty(PRO_FILE_NAME, TEMP_FILE);
         AutoRollingFileWriter writer = new MinutelyRollingFileWriter(TEMP_FILE, 1);
         writer.write("AppName=" + APP_NAME + "\n");
         writer.write("metrics.exporter=" + METRICS_EXPORTER + "\n");
@@ -48,23 +49,17 @@ public abstract class BaseTest {
     }
 
     private static void initProperties() {
-        InputStream in = null;
-        try {
-            in = new FileInputStream(System.getProperty(PropertyKeys.PRO_FILE_NAME, PropertyValues.DEFAULT_PRO_FILE));
-
+        try (InputStream in = Files.newInputStream(Paths.get(System.getProperty(PRO_FILE_NAME, DEFAULT_PRO_FILE)))) {
             Properties properties = new Properties();
             properties.load(in);
             MyProperties.initial(properties);
         } catch (IOException e) {
             Logger.error("BaseTest.initProperties()", e);
-        } finally {
-            IOUtils.closeQuietly(in);
         }
     }
 
-    @After
+    @AfterEach
     public void clean() {
         new File(TEMP_FILE).delete();
     }
-
 }

@@ -1,7 +1,7 @@
 package cn.myperf4j.base.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
@@ -16,26 +16,26 @@ public class StrUtilsTest {
 
     @Test
     public void testBlank() {
-        Assert.assertTrue(isBlank(" "));
-        Assert.assertTrue(isBlank("\t"));
-        Assert.assertTrue(isBlank("\n"));
-        Assert.assertTrue(isBlank(""));
-        Assert.assertTrue(isBlank(null));
-        Assert.assertFalse(isBlank("a"));
+        Assertions.assertTrue(isBlank(" "));
+        Assertions.assertTrue(isBlank("\t"));
+        Assertions.assertTrue(isBlank("\n"));
+        Assertions.assertTrue(isBlank(""));
+        Assertions.assertTrue(isBlank(null));
+        Assertions.assertFalse(isBlank("a"));
     }
 
     @Test
     public void testEmpty() {
-        Assert.assertTrue(isEmpty(""));
-        Assert.assertTrue(isEmpty(null));
-        Assert.assertFalse(isEmpty("a"));
+        Assertions.assertTrue(isEmpty(""));
+        Assertions.assertTrue(isEmpty(null));
+        Assertions.assertFalse(isEmpty("a"));
     }
 
     @Test
     public void testSplitAsList() {
-        Assert.assertEquals(Arrays.asList("A", "B", "C"), splitAsList("A,B,C", ','));
-        Assert.assertEquals(Arrays.asList("A", "B", "C"), splitAsList("A,B,C,", ','));
-        Assert.assertEquals(Arrays.asList("A", "B", "C"), splitAsList(",A,B,C,", ','));
-        Assert.assertEquals(Arrays.asList("A", "B", "C"), splitAsList(",,,,A,B,C,,,,", ','));
+        Assertions.assertEquals(Arrays.asList("A", "B", "C"), splitAsList("A,B,C", ','));
+        Assertions.assertEquals(Arrays.asList("A", "B", "C"), splitAsList("A,B,C,", ','));
+        Assertions.assertEquals(Arrays.asList("A", "B", "C"), splitAsList(",A,B,C,", ','));
+        Assertions.assertEquals(Arrays.asList("A", "B", "C"), splitAsList(",,,,A,B,C,,,,", ','));
     }
 }

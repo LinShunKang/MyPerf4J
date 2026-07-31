@@ -20,18 +20,18 @@ public class QueryStringDecoder {
 
     private static final int DEFAULT_MAX_PARAMS = 1024;
 
-    private static final ThreadLocal<TempBuf> DECODE_TEMP_BUF = new ThreadLocal<TempBuf>() {
-        @Override
-        protected TempBuf initialValue() {
-            return new TempBuf(1024);
-        }
-    };
+    private static final ThreadLocal<TempBuf> DECODE_TEMP_BUF = ThreadLocal.withInitial(() -> new TempBuf(1024));
 
     private final Charset charset;
+
     private final String uri;
+
     private final int maxParams;
+
     private final boolean semicolonIsNormalChar;
+
     private int pathEndIdx;
+
     private Map<String, List<String>> params;
 
     public QueryStringDecoder(String uri, Charset charset, boolean hasPath) {
@@ -77,7 +77,7 @@ public class QueryStringDecoder {
                                                           Charset charset,
                                                           int paramsLimit,
                                                           boolean semicolonIsNormalChar) {
-        int len = str.length();
+        final int len = str.length();
         if (from >= len) {
             return Collections.emptyMap();
         }
@@ -86,11 +86,9 @@ public class QueryStringDecoder {
             from++;
         }
 
-        TempBuf tempBuf = DECODE_TEMP_BUF.get();
-        Map<String, List<String>> params = new LinkedHashMap<>();
-        int nameStart = from;
-        int valueStart = -1;
-        int i;
+        final TempBuf tempBuf = DECODE_TEMP_BUF.get();
+        final Map<String, List<String>> params = new LinkedHashMap<>();
+        int nameStart = from, valueStart = -1, i;
         loop:
         for (i = from; i < len; i++) {
             switch (str.charAt(i)) {
@@ -140,14 +138,9 @@ public class QueryStringDecoder {
             valueStart = valueEnd + 1;
         }
 
-        String name = decodeComponent(s, nameStart, valueStart - 1, charset, false, tempBuf);
-        String value = decodeComponent(s, valueStart, valueEnd, charset, false, tempBuf);
-        List<String> values = params.get(name);
-        if (values == null) {
-            values = new ArrayList<>(1);  // Often there's only 1 value.
-            params.put(name, values);
-        }
-        values.add(value);
+        final String name = decodeComponent(s, nameStart, valueStart - 1, charset, false, tempBuf);
+        final String value = decodeComponent(s, valueStart, valueEnd, charset, false, tempBuf);
+        params.computeIfAbsent(name, k -> new ArrayList<>(1)).add(value); // Often there's only 1 value.
         return true;
     }
 
@@ -157,14 +150,14 @@ public class QueryStringDecoder {
                                           Charset charset,
                                           boolean isPath,
                                           TempBuf tempBuf) {
-        int len = toExcluded - from;
+        final int len = toExcluded - from;
         if (len <= 0) {
             return EMPTY_STRING;
         }
 
         int firstEscaped = -1;
         for (int i = from; i < toExcluded; i++) {
-            char c = s.charAt(i);
+            final char c = s.charAt(i);
             if (c == '%' || c == '+' && !isPath) {
                 firstEscaped = i;
                 break;
@@ -176,12 +169,12 @@ public class QueryStringDecoder {
         }
 
         // Each encoded byte takes 3 characters (e.g. "%20")
-        int decodedCapacity = (toExcluded - firstEscaped) / 3;
-        byte[] buf = tempBuf.byteBuf(decodedCapacity);
-        char[] charBuf = tempBuf.charBuf(len);
+        final int decodedCapacity = (toExcluded - firstEscaped) / 3;
+        final byte[] buf = tempBuf.byteBuf(decodedCapacity);
+        final char[] charBuf = tempBuf.charBuf(len);
         s.getChars(from, firstEscaped, charBuf, 0);
 
-        int charBufIdx = firstEscaped - from;
+        final int charBufIdx = firstEscaped - from;
         return decodeComponent(s, firstEscaped, toExcluded, charset, isPath, buf, charBuf, charBufIdx);
     }
 
@@ -195,7 +188,7 @@ public class QueryStringDecoder {
                                           int charBufIdx) {
         int byteBufIdx;
         for (int i = firstEscaped; i < toExcluded; i++) {
-            char c = str.charAt(i);
+            final char c = str.charAt(i);
             if (c != '%') {
                 charBuf[charBufIdx++] = c != '+' || isPath ? c : SPACE;
                 continue;
@@ -211,7 +204,7 @@ public class QueryStringDecoder {
             } while (i < toExcluded && str.charAt(i) == '%');
             i--;
 
-            String decodedStr = new String(byteBuf, 0, byteBufIdx, charset);
+            final String decodedStr = new String(byteBuf, 0, byteBufIdx, charset);
             decodedStr.getChars(0, decodedStr.length(), charBuf, charBufIdx);
             charBufIdx += decodedStr.length();
         }
@@ -219,9 +212,9 @@ public class QueryStringDecoder {
     }
 
     private static int findPathEndIndex(String uri) {
-        int len = uri.length();
+        final int len = uri.length();
         for (int i = 0; i < len; i++) {
-            char c = uri.charAt(i);
+            final char c = uri.charAt(i);
             if (c == '?' || c == '#') {
                 return i;
             }

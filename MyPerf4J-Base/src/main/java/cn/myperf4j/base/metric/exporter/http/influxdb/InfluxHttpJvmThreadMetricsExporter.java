@@ -3,9 +3,8 @@ package cn.myperf4j.base.metric.exporter.http.influxdb;
 import cn.myperf4j.base.influxdb.InfluxDbClient;
 import cn.myperf4j.base.influxdb.InfluxDbClientFactory;
 import cn.myperf4j.base.metric.JvmThreadMetrics;
-import cn.myperf4j.base.metric.formatter.JvmThreadMetricsFormatter;
-import cn.myperf4j.base.metric.formatter.influxdb.InfluxJvmThreadMetricsFormatter;
 import cn.myperf4j.base.metric.exporter.JvmThreadMetricsExporter;
+import cn.myperf4j.base.metric.formatter.influxdb.InfluxJvmThreadMetricsFormatter;
 import cn.myperf4j.base.util.Logger;
 
 import java.util.ArrayList;
@@ -18,7 +17,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class InfluxHttpJvmThreadMetricsExporter implements JvmThreadMetricsExporter {
 
-    private static final JvmThreadMetricsFormatter METRICS_FORMATTER = new InfluxJvmThreadMetricsFormatter();
+    private static final InfluxJvmThreadMetricsFormatter FORMATTER = new InfluxJvmThreadMetricsFormatter();
 
     private static final InfluxDbClient CLIENT = InfluxDbClientFactory.getClient();
 
@@ -26,7 +25,7 @@ public class InfluxHttpJvmThreadMetricsExporter implements JvmThreadMetricsExpor
 
     @Override
     public void beforeProcess(long processId, long startMillis, long stopMillis) {
-        metricsMap.put(processId, new ArrayList<JvmThreadMetrics>(1));
+        metricsMap.put(processId, new ArrayList<>(1));
     }
 
     @Override
@@ -44,7 +43,7 @@ public class InfluxHttpJvmThreadMetricsExporter implements JvmThreadMetricsExpor
     public void afterProcess(long processId, long startMillis, long stopMillis) {
         final List<JvmThreadMetrics> metricsList = metricsMap.remove(processId);
         if (metricsList != null) {
-            CLIENT.writeMetricsAsync(METRICS_FORMATTER.format(metricsList, startMillis, stopMillis));
+            CLIENT.writeMetricsAsync(FORMATTER.format(metricsList, startMillis, stopMillis));
         } else {
             Logger.error("InfluxHttpJvmThreadMetricsExporter.afterProcess(" + processId + ", " + startMillis + ", "
                     + stopMillis + "): metricsList is null!!!");

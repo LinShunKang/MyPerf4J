@@ -42,9 +42,11 @@ This is a list of what it currently monitors:
 MyPerf4J adopts JavaAgent configuration mode, **transparent** access application, and the application code is completely **no-intrusive**.
 
 ### Download
-* Download and unzip [MyPerf4J-ASM.zip](https://github.com/LinShunKang/Objects/blob/master/zips/EN/MyPerf4J-ASM-3.6.0.zip?raw=true)
+* Download and unzip [MyPerf4J-ASM.zip](https://github.com/LinShunKang/Objects/blob/master/zips/EN/MyPerf4J-ASM-4.0.0-SNAPSHOT.zip?raw=true)
 * Read the `README` file
 * Modify `app_name`, `metrics.log.xxx` and `filter.packages.include` in `MyPerf4J.properties` 
+
+> View the [configuration file template](https://github.com/LinShunKang/Objects/blob/master/jars/MyPerf4J-4.x.properties). Want to learn more about the configuration? See [here](https://github.com/LinShunKang/MyPerf4J/wiki/4.x-Configuration)
 
 ### Configure
 Add the following two parameters to the JVM startup parameters

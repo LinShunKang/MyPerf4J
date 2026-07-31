@@ -1,9 +1,8 @@
 package cn.myperf4j.base.metric.exporter.log.standard;
 
 import cn.myperf4j.base.metric.JvmBufferPoolMetrics;
-import cn.myperf4j.base.metric.formatter.JvmBufferPoolMetricsFormatter;
-import cn.myperf4j.base.metric.formatter.standard.StdJvmBufferPoolMetricsFormatter;
 import cn.myperf4j.base.metric.exporter.log.AbstractLogJvmBufferPoolMetricsExporter;
+import cn.myperf4j.base.metric.formatter.standard.StdJvmBufferPoolMetricsFormatter;
 import cn.myperf4j.base.util.Logger;
 
 import java.util.ArrayList;
@@ -16,18 +15,18 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class StdLogJvmBufferPoolMetricsExporter extends AbstractLogJvmBufferPoolMetricsExporter {
 
-    private static final JvmBufferPoolMetricsFormatter METRICS_FORMATTER = new StdJvmBufferPoolMetricsFormatter();
+    private static final StdJvmBufferPoolMetricsFormatter FORMATTER = new StdJvmBufferPoolMetricsFormatter();
 
     private final ConcurrentMap<Long, List<JvmBufferPoolMetrics>> metricsMap = new ConcurrentHashMap<>(8);
 
     @Override
     public void beforeProcess(long processId, long startMillis, long stopMillis) {
-        metricsMap.put(processId, new ArrayList<JvmBufferPoolMetrics>(2));
+        metricsMap.put(processId, new ArrayList<>(2));
     }
 
     @Override
     public void process(JvmBufferPoolMetrics metrics, long processId, long startMillis, long stopMillis) {
-        List<JvmBufferPoolMetrics> metricsList = metricsMap.get(processId);
+        final List<JvmBufferPoolMetrics> metricsList = metricsMap.get(processId);
         if (metricsList != null) {
             metricsList.add(metrics);
         } else {
@@ -38,9 +37,9 @@ public class StdLogJvmBufferPoolMetricsExporter extends AbstractLogJvmBufferPool
 
     @Override
     public void afterProcess(long processId, long startMillis, long stopMillis) {
-        List<JvmBufferPoolMetrics> metricsList = metricsMap.remove(processId);
+        final List<JvmBufferPoolMetrics> metricsList = metricsMap.remove(processId);
         if (metricsList != null) {
-            logger.logAndFlush(METRICS_FORMATTER.format(metricsList, startMillis, stopMillis));
+            logger.logAndFlush(FORMATTER.format(metricsList, startMillis, stopMillis));
         } else {
             Logger.error("StdLogJvmBufferPoolMetricsExporter.afterProcess(" + processId + ", " + startMillis + ", "
                     + stopMillis + "): metricsList is null!!!");

@@ -15,12 +15,8 @@ import static cn.myperf4j.base.util.NumUtils.parseValue;
  */
 public final class MethodMetricsCalculator {
 
-    private static final ThreadLocal<long[]> LONG_ARR_TL = new ThreadLocal<long[]>() {
-        @Override
-        protected long[] initialValue() {
-            return new long[MethodMetrics.getPercentiles().length];
-        }
-    };
+    private static final ThreadLocal<long[]> LONG_ARR_TL =
+            ThreadLocal.withInitial(() -> new long[MethodMetrics.getPercentiles().length]);
 
     private static final LongBufPool longBufPool = LongBufPool.getInstance();
 

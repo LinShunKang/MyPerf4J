@@ -1,8 +1,8 @@
 package cn.myperf4j.base.http;
 
-import cn.myperf4j.base.util.collections.ArrayUtils;
-import cn.myperf4j.base.util.collections.MapUtils;
+import cn.myperf4j.base.io.Bytes;
 import cn.myperf4j.base.util.StrUtils;
+import cn.myperf4j.base.util.collections.MapUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -10,6 +10,8 @@ import java.util.Map;
 import static cn.myperf4j.base.http.HttpMethod.GET;
 import static cn.myperf4j.base.http.HttpMethod.HEAD;
 import static cn.myperf4j.base.http.HttpMethod.POST;
+import static cn.myperf4j.base.io.Bytes.unsafeWrap;
+import static cn.myperf4j.base.util.StrUtils.isNotEmpty;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -17,14 +19,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 public final class HttpRequest {
 
-    private static final byte[] EMPTY_BODY = {};
+    private static final Bytes EMPTY_BODY = unsafeWrap(new byte[0]);
 
-    private static final ThreadLocal<StringBuilder> SB_TL = new ThreadLocal<StringBuilder>() {
-        @Override
-        protected StringBuilder initialValue() {
-            return new StringBuilder(512);
-        }
-    };
+    private static final ThreadLocal<StringBuilder> SB_TL = ThreadLocal.withInitial(() -> new StringBuilder(512));
 
     private final String path;
 
@@ -36,7 +33,7 @@ public final class HttpRequest {
 
     private final Map<String, List<String>> params;
 
-    private final byte[] body;
+    private final Bytes body;
 
     private String fullUrl;
 
@@ -62,7 +59,7 @@ public final class HttpRequest {
         return params;
     }
 
-    public byte[] getBody() {
+    public Bytes getBody() {
         return body;
     }
 
@@ -70,25 +67,18 @@ public final class HttpRequest {
         return path;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
     public String getFullUrl() {
-        if (StrUtils.isNotEmpty(fullUrl)) {
-            return fullUrl;
-        }
-        return fullUrl = createFullUrl();
+        return isNotEmpty(fullUrl) ? fullUrl : (fullUrl = createFullUrl());
     }
 
     private String createFullUrl() {
-        StringBuilder sb = SB_TL.get();
+        final StringBuilder sb = SB_TL.get();
         try {
             if (!url.startsWith("http://") && !url.startsWith("https://")) {
                 sb.append("http://");
             }
-            sb.append(url);
 
+            sb.append(url);
             if (MapUtils.isEmpty(params)) {
                 return sb.toString();
             }
@@ -99,12 +89,7 @@ public final class HttpRequest {
                 sb.append('&');
             }
 
-            for (Map.Entry<String, List<String>> param : params.entrySet()) {
-                final List<String> values = param.getValue();
-                for (int i = 0; i < values.size(); i++) {
-                    sb.append(param.getKey()).append('=').append(values.get(i)).append('&');
-                }
-            }
+            params.forEach((k, vs) -> vs.forEach(v -> sb.append(k).append('=').append(v).append('&')));
             return sb.substring(0, sb.length() - 1);
         } finally {
             sb.setLength(0);
@@ -113,10 +98,7 @@ public final class HttpRequest {
 
     public String getParam(String key) {
         final List<String> values = params.get(key);
-        if (values == null) {
-            return null;
-        }
-        return values.get(0);
+        return values != null ? values.get(0) : null;
     }
 
     public Boolean getBoolParam(String key) {
@@ -146,7 +128,7 @@ public final class HttpRequest {
 
         private Map<String, List<String>> params;
 
-        private byte[] body;
+        private Bytes body;
 
         public Builder() {
             this.method = GET;
@@ -198,24 +180,28 @@ public final class HttpRequest {
             return method(GET, EMPTY_BODY);
         }
 
+        public Builder post(String body) {
+            return post(body.getBytes(UTF_8));
+        }
+
         public Builder post(byte[] body) {
+            return method(POST, unsafeWrap(body));
+        }
+
+        public Builder post(Bytes body) {
             return method(POST, body);
         }
 
-        public Builder post(String body) {
-            return method(POST, body.getBytes(UTF_8));
-        }
-
-        public Builder method(HttpMethod method, byte[] body) {
-            if (method == null) {
-                throw new IllegalArgumentException("method is null!");
+        public Builder method(HttpMethod method, Bytes body) {
+            if (method == null || body == null) {
+                throw new IllegalArgumentException("method or body is null!");
             }
 
-            if (ArrayUtils.isNotEmpty(body) && !method.isPermitsBody()) {
+            if (!method.isPermitsBody() && body.isNotEmpty()) {
                 throw new IllegalArgumentException("method " + method + " must not have a request body!");
             }
 
-            if (ArrayUtils.isEmpty(body) && method.isPermitsBody()) {
+            if (method.isPermitsBody() && body.isEmpty()) {
                 throw new IllegalArgumentException("method " + method + " must have a request body!");
             }
 

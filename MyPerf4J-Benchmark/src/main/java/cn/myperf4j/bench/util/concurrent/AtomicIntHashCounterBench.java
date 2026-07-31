@@ -1,8 +1,8 @@
 package cn.myperf4j.bench.util.concurrent;
 
-import cn.myperf4j.base.util.concurrent.AtomicIntArray;
 import cn.myperf4j.base.util.concurrent.AtomicIntHashCounter;
 import cn.myperf4j.base.util.concurrent.IntHashCounter;
+import cn.myperf4j.base.util.concurrent.SimpleAtomicIntArray;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -45,27 +45,27 @@ import static org.openjdk.jmh.annotations.Mode.Throughput;
  * <p>
  * # Threads: 1 thread
  * Benchmark                                         (mapSize)   Mode  Cnt    Score    Error   Units
- * AtomicIntHashCounterBench.intArray                  1048576  thrpt    5  479.665 ±  9.160  ops/us
- * AtomicIntHashCounterBench.jdkIntegerMap             1048576  thrpt    5   52.057 ±  9.182  ops/us
- * AtomicIntHashCounterBench.scalableIntHashCounter    1048576  thrpt    5  306.693 ± 31.459  ops/us
+ * AtomicIntHashCounterBench.intArray                  1048576  thrpt   10  579.254 ±  5.959  ops/us
+ * AtomicIntHashCounterBench.jdkIntegerMap             1048576  thrpt   10   45.843 ±  2.514  ops/us
+ * AtomicIntHashCounterBench.scalableIntHashCounter    1048576  thrpt   10  310.047 ± 14.509  ops/us
  * <p>
  * # Threads: 2 thread
- * Benchmark                                         (mapSize)   Mode  Cnt    Score    Error   Units
- * AtomicIntHashCounterBench.intArray                  1048576  thrpt    5  715.743 ± 27.729  ops/us
- * AtomicIntHashCounterBench.jdkIntegerMap             1048576  thrpt    5   88.456 ± 33.757  ops/us
- * AtomicIntHashCounterBench.scalableIntHashCounter    1048576  thrpt    5  560.248 ± 51.571  ops/us
+ * Benchmark                                         (mapSize)   Mode  Cnt     Score    Error   Units
+ * AtomicIntHashCounterBench.intArray                  1048576  thrpt   10  1122.663 ± 21.171  ops/us
+ * AtomicIntHashCounterBench.jdkIntegerMap             1048576  thrpt   10    73.660 ±  1.066  ops/us
+ * AtomicIntHashCounterBench.scalableIntHashCounter    1048576  thrpt   10   422.496 ± 28.765  ops/us
  * <p>
  * # Threads: 4 thread
- * Benchmark                                         (mapSize)   Mode  Cnt    Score    Error   Units
- * AtomicIntHashCounterBench.intArray                  1048576  thrpt    5  884.382 ± 28.148  ops/us
- * AtomicIntHashCounterBench.jdkIntegerMap             1048576  thrpt    5  161.475 ± 28.986  ops/us
- * AtomicIntHashCounterBench.scalableIntHashCounter    1048576  thrpt    5  861.470 ± 44.142  ops/us
+ * Benchmark                                         (mapSize)   Mode  Cnt     Score    Error   Units
+ * AtomicIntHashCounterBench.intArray                  1048576  thrpt   10  1511.564 ± 30.855  ops/us
+ * AtomicIntHashCounterBench.jdkIntegerMap             1048576  thrpt   10   110.105 ±  1.626  ops/us
+ * AtomicIntHashCounterBench.scalableIntHashCounter    1048576  thrpt   10   578.243 ± 35.284  ops/us
  * <p>
  * # Threads: 8 thread
- * Benchmark                                         (mapSize)   Mode  Cnt    Score     Error   Units
- * AtomicIntHashCounterBench.intArray                  1048576  thrpt    5  265.919 ± 167.425  ops/us
- * AtomicIntHashCounterBench.jdkIntegerMap             1048576  thrpt    5  296.200 ±  31.805  ops/us
- * AtomicIntHashCounterBench.scalableIntHashCounter    1048576  thrpt    5  299.786 ±  79.376  ops/us
+ * Benchmark                                         (mapSize)   Mode  Cnt     Score    Error   Units
+ * AtomicIntHashCounterBench.intArray                  1048576  thrpt   10  2960.445 ± 50.955  ops/us
+ * AtomicIntHashCounterBench.jdkIntegerMap             1048576  thrpt   10   195.558 ±  5.885  ops/us
+ * AtomicIntHashCounterBench.scalableIntHashCounter    1048576  thrpt   10   977.150 ± 34.249  ops/us
  */
 @Threads(value = 1)
 @State(Scope.Thread)
@@ -78,7 +78,7 @@ public class AtomicIntHashCounterBench {
 
     private IntHashCounter intHashCounter;
 
-    private AtomicIntArray intArray;
+    private SimpleAtomicIntArray intArray;
 
     private ConcurrentMap<Integer, AtomicInteger> jdkIntegerMap;
 
@@ -88,7 +88,7 @@ public class AtomicIntHashCounterBench {
     @Setup(Level.Iteration)
     public void setup() {
         intHashCounter = new AtomicIntHashCounter(128);
-        intArray = new AtomicIntArray(mapSize + 1);
+        intArray = new SimpleAtomicIntArray(mapSize + 1);
         jdkIntegerMap = new ConcurrentHashMap<>(128);
 
         final ThreadLocalRandom random = ThreadLocalRandom.current();

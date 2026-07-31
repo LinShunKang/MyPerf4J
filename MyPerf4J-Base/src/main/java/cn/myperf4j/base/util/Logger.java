@@ -1,20 +1,12 @@
 package cn.myperf4j.base.util;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import static cn.myperf4j.base.util.text.DateFormatUtils.formatToMillis;
+import static java.lang.System.currentTimeMillis;
 
 /**
  * Created by LinShunkang on 2018/3/20
  */
 public final class Logger {
-
-    private static final ThreadLocal<DateFormat> TO_MILLS_DATE_FORMAT = new ThreadLocal<DateFormat>() {
-        @Override
-        protected DateFormat initialValue() {
-            return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        }
-    };
 
     private static boolean debugEnable;
 
@@ -45,11 +37,7 @@ public final class Logger {
     }
 
     private static String getPrefix(String logLevel) {
-        return getToMillisStr(new Date()) + PREFIX + logLevel + "[" + Thread.currentThread().getName() + "] ";
-    }
-
-    private static String getToMillisStr(Date date) {
-        return TO_MILLS_DATE_FORMAT.get().format(date);
+        return formatToMillis(currentTimeMillis()) + PREFIX + logLevel + "[" + Thread.currentThread().getName() + "] ";
     }
 
     public static void debug(String msg) {

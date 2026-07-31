@@ -4,7 +4,7 @@
     <groupId>MyPerf4J</groupId>
     <artifactId>MyPerf4J</artifactId>
     <packaging>pom</packaging>
-    <version>3.6.0</version>
+    <version>4.0.0-SNAPSHOT</version>
     <modules>
         <module>MyPerf4J-Core</module>
         <module>MyPerf4J-ASM</module>
@@ -17,16 +17,16 @@
         <asm-version>9.9</asm-version>
         <jmh-version>1.37</jmh-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
     </properties>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.13.2</version>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>5.10.3</version>
                 <scope>test</scope>
             </dependency>
 
@@ -112,7 +112,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <source>${maven.compiler.source}</source>
-                    <source>${maven.compiler.target}</source>
+                    <target>${maven.compiler.target}</target>
                     <verbose>true</verbose>
                     <encoding>UTF-8</encoding>
                     <compilerArguments>
@@ -121,34 +121,35 @@
                 </configuration>
             </plugin>
 
-            <!--            <plugin>-->
-            <!--                <groupId>org.apache.maven.plugins</groupId>-->
-            <!--                <artifactId>maven-resources-plugin</artifactId>-->
-            <!--                <executions>-->
-            <!--                    <execution>-->
-            <!--                        <id>copy-resources</id>-->
-            <!--                        <phase>validate</phase>-->
-            <!--                        <goals>-->
-            <!--                            <goal>copy-resources</goal>-->
-            <!--                        </goals>-->
-            <!--                        <configuration>-->
-            <!--                            <outputDirectory>${project.build.directory}/classes/</outputDirectory>-->
-            <!--                            <resources>-->
-            <!--                                <resource>-->
-            <!--                                    <directory>src/main/java</directory>-->
-            <!--                                    <filtering>true</filtering>-->
-            <!--                                    <includes>-->
-            <!--                                        <include>**/*.*</include>-->
-            <!--                                    </includes>-->
-            <!--                                    <excludes>-->
-            <!--                                        <exclude>.svn</exclude>-->
-            <!--                                    </excludes>-->
-            <!--                                </resource>-->
-            <!--                            </resources>-->
-            <!--                        </configuration>-->
-            <!--                    </execution>-->
-            <!--                </executions>-->
-            <!--            </plugin>-->
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-resources-plugin</artifactId>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>copy-resources</id>-->
+<!--                        <phase>validate</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>copy-resources</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <outputDirectory>${project.build.directory}/classes/</outputDirectory>-->
+<!--                            <resources>-->
+<!--                                <resource>-->
+<!--                                    <directory>src/main/java</directory>-->
+<!--                                    <filtering>true</filtering>-->
+<!--                                    <includes>-->
+<!--                                        <include>**/*.*</include>-->
+<!--                                    </includes>-->
+<!--                                    <excludes>-->
+<!--                                        <exclude>.svn</exclude>-->
+<!--                                    </excludes>-->
+<!--                                </resource>-->
+<!--                            </resources>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
+
             <plugin>
                 <groupId>org.eluder.coveralls</groupId>
                 <artifactId>coveralls-maven-plugin</artifactId>

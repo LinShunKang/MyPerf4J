@@ -3,13 +3,13 @@ package cn.myperf4j.base.http.client;
 import cn.myperf4j.base.http.HttpHeaders;
 import cn.myperf4j.base.http.HttpRequest;
 import cn.myperf4j.base.http.HttpResponse;
-import cn.myperf4j.base.http.server.Dispatcher;
 import cn.myperf4j.base.http.server.SimpleHttpServer;
+import cn.myperf4j.base.io.Bytes;
 import cn.myperf4j.base.util.collections.MapUtils;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,22 +29,20 @@ public class HttpClientTest {
 
     private static SimpleHttpServer server;
 
-    @BeforeClass
+    @BeforeAll
     public static void init() {
         server = new SimpleHttpServer.Builder()
                 .port(8686)
-                .dispatcher(new Dispatcher() {
-                    @Override
-                    public HttpResponse dispatch(HttpRequest request) {
-                        System.out.println("Dispatcher.dispatch(): request.body=" + new String(request.getBody()));
-                        return new HttpResponse(OK, new HttpHeaders(0), RESPONSE_BODY.getBytes(UTF_8));
-                    }
+                .dispatcher(request -> {
+                    final Bytes body = request.getBody();
+                    System.out.println("Dispatcher.dispatch(): request.body=" + body.toString(UTF_8));
+                    return new HttpResponse(OK, new HttpHeaders(0), RESPONSE_BODY.getBytes(UTF_8));
                 })
                 .build();
         server.startAsync();
     }
 
-    @AfterClass
+    @AfterAll
     public static void clean() {
         if (server != null) {
             server.stop();
@@ -53,28 +51,28 @@ public class HttpClientTest {
 
     @Test
     public void testGet() {
-        HttpRequest req = new HttpRequest.Builder()
-                .url("http://www.baidu.com")
-//                .header("Connection", "close")
+        final HttpRequest req = new HttpRequest.Builder()
+                .url("https://www.baidu.com/sugrec?prod=pc&wd=MyPerf4J&cb=jq")
+                .header("Connection", "close")
                 .get()
                 .build();
         try {
-            HttpResponse resp = httpClient.execute(req);
-            HttpHeaders headers = resp.getHeaders();
+            final HttpResponse resp = httpClient.execute(req);
+            final HttpHeaders headers = resp.getHeaders();
             System.out.println("Status=" + resp.getStatus());
             System.out.println("Connection=" + headers.get("Connection"));
             System.out.println(resp.getBodyString());
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }
     }
 
     @Test
     public void testPost() {
-        Map<String, List<String>> params = MapUtils.createHashMap(2);
+        final Map<String, List<String>> params = MapUtils.createHashMap(2);
         params.put("db", Collections.singletonList("http"));
 
-        HttpRequest req = new HttpRequest.Builder()
+        final HttpRequest req = new HttpRequest.Builder()
                 .url("localhost:8686/write")
                 .params(params)
                 .post("cpu_load_short,host=server01,region=us-west value=0.64 1434055562000000000\n" +
@@ -83,11 +81,11 @@ public class HttpClientTest {
 
         for (int i = 0; i < 10; i++) {
             try {
-                HttpResponse resp = httpClient.execute(req);
-                Assert.assertEquals(OK, resp.getStatus());
-                Assert.assertEquals(RESPONSE_BODY, resp.getBodyString());
+                final HttpResponse resp = httpClient.execute(req);
+                Assertions.assertEquals(OK, resp.getStatus());
+                Assertions.assertEquals(RESPONSE_BODY, resp.getBodyString());
             } catch (Exception e) {
-                e.printStackTrace();
+                e.printStackTrace(System.err);
             }
         }
     }

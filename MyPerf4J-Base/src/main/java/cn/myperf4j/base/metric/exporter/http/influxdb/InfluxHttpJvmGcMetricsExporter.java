@@ -3,9 +3,8 @@ package cn.myperf4j.base.metric.exporter.http.influxdb;
 import cn.myperf4j.base.influxdb.InfluxDbClient;
 import cn.myperf4j.base.influxdb.InfluxDbClientFactory;
 import cn.myperf4j.base.metric.JvmGcMetrics;
-import cn.myperf4j.base.metric.formatter.JvmGcMetricsFormatter;
-import cn.myperf4j.base.metric.formatter.influxdb.InfluxJvmGcMetricsFormatter;
 import cn.myperf4j.base.metric.exporter.JvmGcMetricsExporter;
+import cn.myperf4j.base.metric.formatter.influxdb.InfluxJvmGcMetricsFormatter;
 import cn.myperf4j.base.util.Logger;
 
 import java.util.ArrayList;
@@ -18,7 +17,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class InfluxHttpJvmGcMetricsExporter implements JvmGcMetricsExporter {
 
-    private static final JvmGcMetricsFormatter METRICS_FORMATTER = new InfluxJvmGcMetricsFormatter();
+    private static final InfluxJvmGcMetricsFormatter FORMATTER = new InfluxJvmGcMetricsFormatter();
 
     private static final InfluxDbClient CLIENT = InfluxDbClientFactory.getClient();
 
@@ -26,7 +25,7 @@ public class InfluxHttpJvmGcMetricsExporter implements JvmGcMetricsExporter {
 
     @Override
     public void beforeProcess(long processId, long startMillis, long stopMillis) {
-        metricsMap.put(processId, new ArrayList<JvmGcMetrics>(1));
+        metricsMap.put(processId, new ArrayList<>(1));
     }
 
     @Override
@@ -44,7 +43,7 @@ public class InfluxHttpJvmGcMetricsExporter implements JvmGcMetricsExporter {
     public void afterProcess(long processId, long startMillis, long stopMillis) {
         final List<JvmGcMetrics> metricsList = metricsMap.remove(processId);
         if (metricsList != null) {
-            CLIENT.writeMetricsAsync(METRICS_FORMATTER.format(metricsList, startMillis, stopMillis));
+            CLIENT.writeMetricsAsync(FORMATTER.format(metricsList, startMillis, stopMillis));
         } else {
             Logger.error("InfluxHttpJvmGcMetricsExporter.afterProcess(" + processId + ", " + startMillis + ", "
                     + stopMillis + "): metricsList is null!!!");
