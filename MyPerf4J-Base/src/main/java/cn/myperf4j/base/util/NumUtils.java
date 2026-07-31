@@ -10,7 +10,7 @@ public final class NumUtils {
     }
 
     public static boolean isPowerOfTwo(int i) {
-        return (i & (i - 1)) == 0;
+        return i > 0 && (i & (i - 1)) == 0;
     }
 
     public static double getPercent(double curNum, double maxNum) {

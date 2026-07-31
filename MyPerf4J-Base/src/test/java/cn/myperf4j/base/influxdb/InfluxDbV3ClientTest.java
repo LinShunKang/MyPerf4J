@@ -3,6 +3,8 @@ package cn.myperf4j.base.influxdb;
 import cn.myperf4j.base.io.Bytes;
 import org.junit.jupiter.api.Test;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * Created by LinShunkang on 2026/07/03
  */
@@ -14,7 +16,7 @@ public class InfluxDbV3ClientTest {
             .connectTimeout(100)
             .readTimeout(1000)
             .database("MyPerf4J")
-            .token("apiv3_8eEcSvqTPRqVaaNz1Fc5NFELKdqJv-fMRGMSj5Z7TNvYqFTHPCPuoMhQKqe9L6Z3VZK0ORkYEMPQmRNfG5Bk4g")
+            .token(requireNonNull(System.getenv("INFLUXDB3_AUTH_TOKEN")))
             .build();
 
     @Test
