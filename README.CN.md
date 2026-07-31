@@ -46,7 +46,7 @@ MyPerf4J 采用 JavaAgent 配置方式，**透明化**接入应用，对应用�
 * 阅读解压出的 `README` 文件
 * 修改解压出的 `MyPerf4J.properties` 配置文件中 `app_name`、`metrics.log.xxx` 和 `filter.packages.include` 的配置值
 
-> 查看[配置文件模板](https://github.com/LinShunKang/Objects/blob/master/jars/MyPerf4J-3.x.properties)。想了解更多的配置？请看[这里](https://github.com/LinShunKang/MyPerf4J/wiki/3.x-%E9%85%8D%E7%BD%AE)
+> 查看[配置文件模板](https://github.com/LinShunKang/Objects/blob/master/jars/MyPerf4J-4.x.properties)。想了解更多的配置？请看[这里](https://github.com/LinShunKang/MyPerf4J/wiki/4.x-%E9%85%8D%E7%BD%AE)
 
 ### 配置
 在 JVM 启动参数里加上以下两个参数
